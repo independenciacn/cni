@@ -1,0 +1,6 @@
+PHP Version 5.2.6
+PDO
+PDO support	enabled
+PDO drivers 	mysql, sqlite, sqlite2
+pdo_mysql
+PDO Driver for MySQL, client library version	5.0.51a

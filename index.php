@@ -1,4 +1,4 @@
-<?
+<?php
 session_start(); 
 error_reporting(0);
 ?>
@@ -16,7 +16,7 @@ error_reporting(0);
 </head>
 <body>
 <div id='cuerpo'>
-<?
+<?php
 /*
  * TODO: Que se pueda modificar la contraseña de acceso
  * TODO: Agregar un nuevo campo a la factura: Nº Pedido
@@ -37,7 +37,7 @@ else
 </center>
 <p />
 <center>
-	<?
+	<?php
 	if(isset($_GET["exit"]))
 		echo "<span class='ok'>Sesion Cerrada</span>";
 	if(isset($_GET["error"]))
@@ -74,13 +74,13 @@ else
   	<a href='http://www.ensenalia.com'><img src='imagenes/ensenalia.jpg' width='128' /></a>
   </p></center>
  </div>
-<? 
+<?php 
 } 
 ?>
 </div>
 <div id='datos_interesantes'></div>
 <div id='debug'></div>
-<? 
+<?php 
 if(isset($_SESSION[usuario]))
 {
 	echo "<div id='avisos'>";
