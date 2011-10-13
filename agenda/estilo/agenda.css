@@ -1,0 +1,537 @@
+body {
+	/*font-family: Tahoma, Verdana, Arial, Georgia, sans-serif;*/
+	font-family: "Trebuchet MS";
+	font-size:small;
+	background:#eeeeee;
+}
+table
+{
+	
+	/*font-family: Tahoma, Verdana, Arial, Georgia, sans-serif;*/
+	font-family: "Trebuchet MS";
+	font-size:small;
+	border-style:solid;
+	/*border-color:#bbddff;*/
+	border-color:#38052d;
+	border-width:thin;
+	/*background:#ffffcc;*/
+	background:#ffffff;
+}
+a
+{
+	color:#000000;
+	text-decoration:none;
+	
+}
+a:hover
+{
+	text-decoration:underline;
+}
+table th
+{
+	/*font-family: Tahoma, Verdana, Arial, Georgia, sans-serif;*/
+	font-family: "Trebuchet MS";
+	font-size:smaller;
+	/*background:#bbddff;*/
+	background:#7d0063;
+	/*color:#003366;*/
+	color:#ffffff;
+}
+.hoy
+{
+	background:#aa0086;
+}
+#semana td
+{
+	background:#ffffff;
+	border-style:solid;
+	border-color:#38052d;
+	border-width:thin;
+}
+#agenda td
+{
+	background:#ffffff;
+	border-style:solid;
+	border-color:#38052d;
+	border-width:thin;
+}
+input
+{
+	/*font-family: Tahoma, Verdana, Arial, Georgia, sans-serif;*/
+	font-family: "Trebuchet MS";
+	font-size:small;
+	border-style:solid;
+	border-color:#38052d;
+	border-width:thin;
+	padding:0.1em;
+}
+input submit,button,textarea
+{
+	/*font-family: Tahoma, Verdana, Arial, Georgia, sans-serif;*/
+	font-family: "Trebuchet MS";
+	font-size:small;
+	border-style:solid;
+	border-color:#38052d;
+	border-width:thin;
+	padding:0.1em;
+}
+select
+{
+	/*font-family: Tahoma, Verdana, Arial, Georgia, sans-serif;*/
+	font-family: "Trebuchet MS";
+	font-size:small;
+	border-style:solid;
+	border-color:#38052d;
+	border-width:thin;
+	padding:0.1em;
+	
+}
+form
+{
+	border-style:dotted;
+	border-color:#38052d;
+	border-width:thin;
+	padding:0.1em;
+	background:#7d0063;
+	color:#ffffff;
+}
+img
+{
+	border:none;
+}
+#vista
+{
+	width:74%;
+	position:absolute;
+	left:1px;
+}
+#informacion_despacho
+{
+	width:22%;
+	position:absolute;
+	right:3%;
+	font-size:smaller;
+}
+#formulario_agenda
+{
+	width:22%;
+	position:absolute;
+	right:3%;
+	font-size:smaller;
+}
+.seccion
+{
+	background:#7d0063;
+	color:#ffffff;
+	text-indent:10px;
+}
+#listado_clientes_agenda
+{
+	font-size:smaller;
+	z-index:1;
+	opacity:0.90;
+	filter:alpha(opacity=90);
+	-moz-opacity:0.90;
+	position:absolute;
+	background:#ffffff;
+	width:98%;
+	color:#000000;
+	border-style:solid;
+	border-width:1px;
+	border-color:#7d0063;
+	font-weight:bold;	
+}
+.boton_cerrar
+{
+	background:url('../imagenes/close.png') no-repeat;
+	width:32px;
+	height:32px;
+	position:absolute;
+	right:-20px;
+	top:-10px;
+	cursor:pointer;
+}
+.despacho_ocupado
+{
+	font-size:smaller;
+	color:#003366;
+	border-style:dotted;
+	border-color:#38052d;
+	border-width:thin;
+	width:98%;
+	/*background:#ffcc99;*/
+}
+.mini_boton
+{
+	font-size:smaller;
+	background:#dddddd;
+	color:#333333;
+	border-style:solid;
+	border-width:thin;
+	border-color:#38052d;
+	cursor:pointer;
+	
+}
+.confirmado
+{
+	font-size:smaller;
+	font-weight:bold;
+	color:#339966;
+}
+.no_confirmado
+{
+	font-size:smaller;
+	font-weight:bold;
+	color:#cc3333;
+}
+
+/*
+ * Seccion de los despachos
+ */
+.cabezera_despacho
+{
+	/*font-family: Tahoma, Verdana, Arial, Georgia, sans-serif;*/
+	font-family: "Trebuchet MS";
+	font-size:smaller;
+	font-weight:bold;
+	background:#38052d;
+	color:#ffffff;
+}
+/*
+ * Seccion de la interna
+ */
+.celda
+{
+	font-size:smaller;
+	cursor:pointer;
+}
+
+.celda:hover
+{
+	text-decoration:underline;
+}
+/*
+ * Tareas Pendientes
+ */
+.lista_impar
+{
+	background:#cccccc;
+	padding:0.2em;
+	border-bottom-style:dotted;
+	border-bottom-width:thin;
+	border-bottom-color:#7d0063;
+	/*font-family: Tahoma, Verdana, Arial, Georgia, sans-serif;*/
+	font-family: "Trebuchet MS";
+	font-size:small;
+	
+}
+.lista_par
+{
+	background:#dddddd;
+	padding:0.2em;
+	border-bottom-style:dotted;
+	border-bottom-width:thin;
+	border-bottom-color:#7d0063;
+	/*font-family: Tahoma, Verdana, Arial, Georgia, sans-serif;*/
+	font-family: "Trebuchet MS";
+	font-size:small;
+	
+}
+.fecha_tarea
+{
+	color:#7d0063;
+	font-weight:bold;
+	font-size:small;
+	/*font-family: Tahoma, Verdana, Arial, Georgia, sans-serif;*/
+	font-family: "Trebuchet MS";
+}
+.prioridad_normal
+{
+	font-size:small;
+	font-weight:bold;
+	color:#99ff00;
+	background:url('imagenes/green_flag.png') no-repeat center center;
+}
+.prioridad_media
+{
+	font-size:small;
+	font-weight:bold;
+	color:#ffff00;
+	background:url('imagenes/yellow_flag.png') no-repeat center center;
+}
+.prioridad_alta
+{
+	font-size:small;
+	font-weight:bold;
+	color:#ff9900;
+	background:url('imagenes/orange_flag.png') no-repeat center center;
+}
+.prioridad_muy_alta
+{
+	font-size:small;
+	font-weight:bold;
+	color:#ff0000;
+	background:url('imagenes/red_flag.png') no-repeat center center;
+}
+.check
+{
+	position:absolute;
+	right:1px;
+}
+/* Notas */
+.fecha_nota
+{
+	color:#7d0063;
+	border-top-style:dotted;
+	border-top-width:1px;
+	border-top-color:#7d0063;
+	border-left-style:dotted;
+	border-left-width:1px;
+	border-left-color:#7d0063;
+	border-right-style:dotted;
+	border-right-width:1px;
+	border-right-color:#7d0063;
+	padding:2px;
+}
+.texto_nota
+{
+	border-style:dotted;
+	border-width:1px;
+	border-color:#7d0063;
+	color:#000000;
+	padding:2px;
+	text-indent:16px;
+}
+/* The main calendar widget.  DIV containing a table. */
+
+div.calendar { position: relative; }
+
+.calendar, .calendar table {
+  border: 1px solid #556;
+  font-size: 11px;
+  color: #000;
+  cursor: default;
+  background: #eef;
+  font-family: tahoma,verdana,sans-serif;
+}
+
+/* Header part -- contains navigation buttons and day names. */
+
+.calendar .button { /* "<<", "<", ">", ">>" buttons have this class */
+  text-align: center;    /* They are the navigation buttons */
+  padding: 2px;          /* Make the buttons seem like they're pressing */
+}
+
+.calendar .nav {
+  background: #778 url(../menuarrow.gif) no-repeat 100% 100%;
+}
+
+.calendar thead .title { /* This holds the current "month, year" */
+  font-weight: bold;      /* Pressing it will take you to the current date */
+  text-align: center;
+  background: #fff;
+  color: #000;
+  padding: 2px;
+}
+
+.calendar thead .headrow { /* Row <TR> containing navigation buttons */
+  background: #778;
+  color: #fff;
+}
+
+.calendar thead .daynames { /* Row <TR> containing the day names */
+  background: #bdf;
+}
+
+.calendar thead .name { /* Cells <TD> containing the day names */
+  border-bottom: 1px solid #556;
+  padding: 2px;
+  text-align: center;
+  color: #000;
+}
+
+.calendar thead .weekend { /* How a weekend day name shows in header */
+  color: #a66;
+}
+
+.calendar thead .hilite { /* How do the buttons in header appear when hover */
+  background-color: #aaf;
+  color: #000;
+  border: 1px solid #04f;
+  padding: 1px;
+}
+
+.calendar thead .active { /* Active (pressed) buttons in header */
+  background-color: #77c;
+  padding: 2px 0px 0px 2px;
+}
+
+/* The body part -- contains all the days in month. */
+
+.calendar tbody .day { /* Cells <TD> containing month days dates */
+  width: 2em;
+  color: #456;
+  text-align: right;
+  padding: 2px 4px 2px 2px;
+}
+.calendar tbody .day.othermonth {
+  font-size: 80%;
+  color: #bbb;
+}
+.calendar tbody .day.othermonth.oweekend {
+  color: #fbb;
+}
+
+.calendar table .wn {
+  padding: 2px 3px 2px 2px;
+  border-right: 1px solid #000;
+  background: #bdf;
+}
+
+.calendar tbody .rowhilite td {
+  background: #def;
+}
+
+.calendar tbody .rowhilite td.wn {
+  background: #eef;
+}
+
+.calendar tbody td.hilite { /* Hovered cells <TD> */
+  background: #def;
+  padding: 1px 3px 1px 1px;
+  border: 1px solid #bbb;
+}
+
+.calendar tbody td.active { /* Active (pressed) cells <TD> */
+  background: #cde;
+  padding: 2px 2px 0px 2px;
+}
+
+.calendar tbody td.selected { /* Cell showing today date */
+  font-weight: bold;
+  border: 1px solid #000;
+  padding: 1px 3px 1px 1px;
+  background: #fff;
+  color: #000;
+}
+
+.calendar tbody td.weekend { /* Cells showing weekend days */
+  color: #a66;
+}
+
+.calendar tbody td.today { /* Cell showing selected date */
+  font-weight: bold;
+  color: #00f;
+}
+
+.calendar tbody .disabled { color: #999; }
+
+.calendar tbody .emptycell { /* Empty cells (the best is to hide them) */
+  visibility: hidden;
+}
+
+.calendar tbody .emptyrow { /* Empty row (some months need less than 6 rows) */
+  display: none;
+}
+
+/* The footer part -- status bar and "Close" button */
+
+.calendar tfoot .footrow { /* The <TR> in footer (only one right now) */
+  text-align: center;
+  background: #556;
+  color: #fff;
+}
+
+.calendar tfoot .ttip { /* Tooltip (status bar) cell <TD> */
+  background: #fff;
+  color: #445;
+  border-top: 1px solid #556;
+  padding: 1px;
+}
+
+.calendar tfoot .hilite { /* Hover style for buttons in footer */
+  background: #aaf;
+  border: 1px solid #04f;
+  color: #000;
+  padding: 1px;
+}
+
+.calendar tfoot .active { /* Active (pressed) style for buttons in footer */
+  background: #77c;
+  padding: 2px 0px 0px 2px;
+}
+
+/* Combo boxes (menus that display months/years for direct selection) */
+
+.calendar .combo {
+  position: absolute;
+  display: none;
+  top: 0px;
+  left: 0px;
+  width: 4em;
+  cursor: default;
+  border: 1px solid #655;
+  background: #def;
+  color: #000;
+  font-size: 90%;
+  z-index: 100;
+}
+
+.calendar .combo .label,
+.calendar .combo .label-IEfix {
+  text-align: center;
+  padding: 1px;
+}
+
+.calendar .combo .label-IEfix {
+  width: 4em;
+}
+
+.calendar .combo .hilite {
+  background: #acf;
+}
+
+.calendar .combo .active {
+  border-top: 1px solid #46a;
+  border-bottom: 1px solid #46a;
+  background: #eef;
+  font-weight: bold;
+}
+
+.calendar td.time {
+  border-top: 1px solid #000;
+  padding: 1px 0px;
+  text-align: center;
+  background-color: #f4f0e8;
+}
+
+.calendar td.time .hour,
+.calendar td.time .minute,
+.calendar td.time .ampm {
+  padding: 0px 3px 0px 4px;
+  border: 1px solid #889;
+  font-weight: bold;
+  background-color: #fff;
+}
+
+.calendar td.time .ampm {
+  text-align: center;
+}
+
+.calendar td.time .colon {
+  padding: 0px 2px 0px 3px;
+  font-weight: bold;
+}
+
+.calendar td.time span.hilite {
+  border-color: #000;
+  background-color: #667;
+  color: #fff;
+}
+
+.calendar td.time span.active {
+  border-color: #f00;
+  background-color: #000;
+  color: #0f0;
+}
+/*Fin del calendario*/

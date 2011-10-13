@@ -15,9 +15,9 @@ echo $cadena;
 //***********************************************************************************************/
 function traduce($texto)
 {
-if(SISTEMA == "windows")
+/*if(SISTEMA == "windows")
 	$bien = utf8_encode($texto); //para windows
-else
+else*/
 	$bien = $texto;//para sistemas *nix
 return $bien;
 }

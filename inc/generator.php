@@ -1,4 +1,4 @@
-<? //funciones de creacion dinamica de contenidos Hecha por Ruben Lacasa Mas en Marzo 2007 ruben@ensenalia.com
+<?php //funciones de creacion dinamica de contenidos Hecha por Ruben Lacasa Mas en Marzo 2007 ruben@ensenalia.com
 //***********************************************************************************************/
 //switch(opcion) Recoge la opcion pasada por la funcion ajax y la redirecciona a la funcion asiganda php
 //despues recoge el valor de la funcion en respuesta y la muestra por pantalla
@@ -26,9 +26,9 @@ echo $respuesta;
 //***********************************************************************************************/
 function traduce($texto)
 {
-if(SISTEMA == "windows")
+/*if(SISTEMA == "windows")
 	$bien = utf8_encode($texto); //para windows
-else
+else*/
 	$bien = $texto;//para sistemas *nix
 return $bien;
 }
