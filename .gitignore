@@ -1,0 +1,16 @@
+.settings
+.settings/*
+.buildpath
+.project
+.hgignore
+doc/
+.DS_Store
+Thumbs.db
+Tests/*
+test/
+test/*
+tests
+copias/*
+tmp/*
+*/tmp/*
+*.sql

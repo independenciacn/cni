@@ -1,0 +1,233 @@
+@CHARSET "UTF-8";
+/*
+Colores a aplicar
+base:#7d0063
+medio-oscuro:#5e174e
+oscuro:#51003f
+alto:#be309f
+medio-alto:#be56a7
+*/
+body {
+	font-size: 1em;
+	font-family: "Trebuchet MS", Verdana, Arial, sans-serif;
+	background:#888888;
+}
+
+
+#container
+{
+	background:#ffffff;
+	margin-top:0;
+	margin-left:auto;
+	margin-right:auto;
+	width:950px;
+	min-height:800px;
+	border:solid thin #5e174e;
+	
+}
+#header{
+	height:125px;
+	margin-bottom:10px;
+}
+#header h1
+{	
+	display:inline;
+	color:#7d0063;
+	font-size:2.5em;
+	position:relative;
+	top:-60px;
+	font-variant:small-caps;
+}
+#menu
+{
+	background-color:#7d0063;
+	color:#ffffff;
+	padding-top:10px;
+	margin-left:10px;
+	margin-right:10px;	
+		
+}
+#menu p
+{
+	text-indent: 16px;
+	margin-top:0px;
+	margin-bottom:10px;
+}
+#frmopciones
+{
+	padding-left: 16px;
+	padding-bottom: 16px;
+	background-color:#ffffff;
+	border:solid thin #7d0063;
+	color:#333333;
+}
+.errorfrm
+{
+	background-color:#fef1ec;
+	color:#cd0a0a;
+}
+.flecha
+{
+	font-size:2em;
+	position:relative;
+	top:5px;
+	left:2px;
+}
+#resultado
+{
+	padding-top:10px;
+	margin:10px;
+	margin-bottom:100px;
+	min-height:700px;
+}
+#resultados{
+	
+}
+#resultados h3{
+	color:#7d0063;
+	font-variant:small-caps;
+}
+#footer {
+	
+	background-color:#5e174e;
+	font-size: 0.8em;
+	text-align: right;
+	color: #ffffff;
+	padding:10px;
+	font-family: 'Reenie Beanie', arial, serif;
+}
+#footer a{
+	color:#ffffff;
+	text-decoration:none;
+}
+/*Botones*/
+
+#carga,#subcarga {
+	text-align: center;
+	display: none;
+}
+/*Tabla acumulada*/
+.listaacumulada{
+	margin-bottom:0.625em;
+	font-size:0.75em;
+}
+.listaacumulada th{
+	background-color:#7d0063;
+	color:#ffffff;
+}
+.listaacumulada td{
+	text-align: right;
+	padding-right: 0.625em;
+}
+.acumulada {
+	width:28em;
+	max-width:28em;
+}
+.datosacumulados{
+	padding-left:1em;
+	padding-right:1em;
+}
+/*Tabla detallada*/
+.seccionlistadetallada{
+	padding-left:0.625em;
+}
+.listadetallada{
+	margin-bottom: 0.625em;
+	font-size:0.75em;
+}
+.listadetallada th{
+	background-color:#7d0063;
+	color:#ffffff;
+}
+.listadetallada td{
+	text-align: right;
+	padding-right: 0.625em;
+}
+
+.categoria{
+	max-width: 8em;
+	width:8em;
+	text-align: right;
+	height: 3.2em;
+	line-height: 0.9em;
+	padding-right: 0.625em;/*10px*/
+}
+.datosdetallados{
+	padding-left:0.5em;
+	padding-right:0.5em;
+}
+.datosdetalladosservicios{
+	padding-left:0.4em;
+	padding-right:0.4em;
+}
+/*Sección anterior*/
+h4{
+	clear:both;
+	color:#7d0063;
+	font-variant:small-caps;
+}
+.listaenlaces{
+	padding-bottom: 2em;
+}
+.enlacedetallada{
+	font-size:0.75em;
+	padding-right: 1em;
+	display:block;
+	float:left;
+}
+.enlacedetallada a{
+	color:#000000;
+}
+.tablacontenedora td {
+	vertical-align: top;
+}
+
+.totales {
+	cursor: pointer;
+}
+
+.totales:hover {
+	text-decoration: underline;
+}
+
+.numero{
+	text-align:center;
+}
+#cerrarGrafica,#grafico{
+	width:952px;
+}
+.serviciosAcumulados
+{
+	float:left;
+	margin-bottom:2em;
+	display:block;
+}
+#servicioDetallado{
+	
+	
+	margin-left: 1em;
+	
+}
+.celdaMarcada,.celdaServicio:hover
+{
+	color:#be56a7;
+	text-decoration:underline;
+}
+.celdaServicio:hover
+{
+	cursor:pointer;
+}
+.celdadialog{
+	background:#ffffff;
+}
+.consumo:hover{
+	color:#be56a7;
+	text-decoration:underline;
+	cursor:pointer;
+}
+.ocupacion:hover{
+	color:#be56a7;
+	text-decoration:underline;
+	cursor:pointer;
+}
+

@@ -1,0 +1,144 @@
+body {
+	color: #333333;
+	text-decoration: none;
+	font-family: "Trebuchet MS";
+	background-color: #aaaaaa;
+	font-size: x-small;
+}
+input,select
+{
+	font-family: "Trebuchet MS";
+	border-color:#333;
+	border-style:solid;
+	border-width:thin;
+	color:#333;
+	background-color: #fff;
+	font-size:12px;
+}
+img
+{
+	border-style:none;
+}
+form
+{
+	background:#7d0063;
+	color:#ffffff;
+	padding:3px;
+}
+.boton /*botones en general*/
+{
+	font-size:smaller;
+	font-weight:bold;
+	color:#7d0063;
+	cursor:pointer;
+	border-style:solid;
+	border-width:1px;
+	border-color:#7d0063;
+	background-color:#eeeeee;
+	padding:3px;
+}
+.boton:hover
+{
+	color:#ffffff;
+	background:#7d0063;
+}
+#titulo
+{
+	color:#7d0063;
+	font-weight:400;
+	font-size:small;
+}
+#botones
+{
+	background:#ffffff;
+	border-style:solid;
+	border-width:1px;
+	border-color:#7d0063;
+	padding:10px;
+}
+#formulario
+{
+	border-style:solid;
+	background:#ffffff;
+	border-width:1px;
+	border-color:#7d0063;
+}
+.par
+{
+	background:#eeeeee;
+}
+.impar
+{
+	background:#dddddd;
+}
+#tabla
+{
+	border-style:solid;
+	border-width:1px;
+	border-color:#7d0063;
+	font-size:small;
+}
+#tabla th
+{
+	background:#7d0063;
+	color:#ffffff;
+}
+.tabla
+{
+	border-style:solid;
+	border-width:1px;
+	border-color:#7d0063;
+	font-size:small;
+}
+.tabla th
+{
+	background:#7d0063;
+	color:#ffffff;
+}
+.calendario
+{
+	height:20px;
+	width:20px;
+	padding:2px;
+	font-size: 12px;
+	text-indent:20px;
+	background:#7d0063 url('../../iconos/date.png') no-repeat center center ;
+	border-style:none;
+	
+	cursor:hand;
+	cursor:pointer;
+	
+}
+.nuevas_comparativas
+{
+	display:table;
+	
+}
+.tit_compa
+{
+	display:table-cell;
+	float:left;
+	border-style:solid;
+	border-width:thin;
+	border-color:#333333;
+	text-indent:16px;
+	width:120px;
+}
+.tit_compa .titulo
+{
+	background:#7d0063;
+	color:#ffffff;
+	font-weight:bold;
+	
+}
+.tit_compa .dato_par
+{
+	font-weight:bold;
+	background:#eeeeee;
+}
+.tit_compa .dato_impar
+{
+	background:#cccccc;
+	font-weight:bold;
+	
+}

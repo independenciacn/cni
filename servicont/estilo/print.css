@@ -1,0 +1,32 @@
+body {
+	color: #333333;
+	text-decoration: none;
+	font-family: "Trebuchet MS";
+	background-color: #ffffff;
+	font-size: small;
+}
+par
+{
+	background:#eeeeee;
+}
+.impar
+{
+	background:#dddddd;
+}
+.tabla th
+{
+	border-bottom-style:solid;
+	border-bottom-width:2px;
+	border-bottom-color:#333333;
+}
+.tabla td
+{
+	border-bottom-style:dotted;
+	border-bottom-width:1px;
+	border-bottom-color:#333333;
+}
+.volver
+{
+	cursor:pointer;
+}
+

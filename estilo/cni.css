@@ -1,0 +1,1326 @@
+/*cni.css hoja de estilos*/
+/*Estilos genericos de la aplicacion*/
+body
+{
+	color: #333333;
+	text-decoration: none;
+	font-family: "Trebuchet MS";
+	background-color: #aaaaaa;
+	font-size: x-small;
+}
+a
+{
+	color: #333333;
+	text-decoration: none;
+}
+
+a:hover
+{
+	color:#333333;
+	text-decoration: underline;
+}
+
+img
+{
+	border:none;
+}
+
+select , input
+{
+	font-family: "Trebuchet MS";
+	border-color:#333;
+	border-style:solid;
+	border-width:thin;
+	color:#333;
+	background-color: #fff;
+	font-size:12px;
+}
+
+textarea
+{
+	color:#333;
+	font-size:12px;
+	font-family: "Trebuchet MS";
+	border-color:#333;
+	border-style:solid;
+	border-width:thin;
+}
+/*Estilos generales*/
+.boton /*botones en general*/
+{
+	font-size:smaller;
+	font-weight:bold;
+	color:#7d0063;
+	cursor:pointer;
+	border-style:solid;
+	border-width:1px;
+	border-color:#7d0063;
+	background-color:#eeeeee;
+	padding:3px;
+}
+
+.boton:hover
+{
+	color:#ffffff;
+	background:#7d0063;
+}
+.boton td
+{
+	color:#7d0063;
+}
+
+.ok
+{
+	font-size:small;
+	color:#006400;
+}
+.ko
+{
+	font-size:small;
+	color:#ff0000;
+}
+.avisok
+{
+	color: #FFFFFF;
+	background-color:#0f0;
+	font-size: smaller;
+	font-weight: bold;
+}
+.avisnok
+{
+	color: #FFFFFF;
+	background-color:#f00;
+	font-size:smaller;
+	font-weight: bold;
+}
+/*Pagina principal index.php*/
+#registro
+{
+	background:#ffffff;
+	border-style:solid;
+	border-width:1px;
+	border-color:#7d0063;
+}
+#menu_general
+{
+	background:#ffffff;
+	border-style:solid;
+	border-width:1px;
+	border-color:#7d0063;
+}
+.login /*Formulario de Login de Usuario*/
+{
+	font-size: small;
+	font-style: normal;
+	border-width: thin;
+	border-style: solid;
+	border-color: #7d0063;
+	color:#333333;
+}
+.validacion /*Pantalla de validacion de Usuario*/
+{
+	background:#ffffff;
+	border-style:solid;
+	border-width:1px;
+	border-color:#7d0063;
+	text-indent:16px;
+	font-size:small;
+	color:#7d0063;
+}
+
+/*Parte especifica de cada una de als partes de dentro ***********************************************/
+#listado
+{
+	color: #000;
+}
+
+#listado th
+{
+	color: #000;
+}
+
+#fijo
+{
+	background:#DDE0FF;
+	border-bottom:solid;
+	border-width:0.5px;
+	border-color:#003399;
+}
+
+#tabla
+{
+	
+}
+#tabla td
+{
+	
+}
+#tabla th
+{
+	
+}
+#tabla a
+{
+	color:#ffffff;
+}
+#tabla a:hover
+{
+	background:#7d0063;
+}
+/*Clase Tabla Generica*/
+.tabla
+{
+	border-style:solid;
+	border-width:1px;
+	border-color:#7d0063;
+	background:#ffffff;
+}
+.tabla td
+{
+	font-size: 11px;
+	color:#333;
+}
+.tabla th
+{
+	font-size:11px;
+	background: #7d0063;
+	color:#ffffff;
+	border-right:solid;
+	border-bottom:solid;
+	border-width:1px;
+	border-color:#dddddd;
+}
+.tabla a
+{
+	color:#333333;
+}
+.tabla a:hover
+{
+	color:#7d0063;
+	text-decoration:underline;
+}
+#servicio
+{
+	font-size:12px;
+}
+#total
+{
+	font-size:12px;
+	/*background:#DDE0FF;*/
+	background:#00ff00;
+}
+#importe
+{
+	font-size:12px;
+	/*background:#DDE0FF;*/
+	background:#00ff00;
+}
+#observa
+{
+	font-size:smaller;
+	visibility: hidden;
+	display: none;
+	position:absolute;
+	left:400px; 
+	top:5px; 
+	z-index:4;
+	background:#DDE0FF;
+	width:200px;
+	height:100px;
+	opacity:0.80;
+	filter:alpha(opacity=80);
+	-moz-opacity:0.80;
+	border-style:solid;
+	border-width:1px;
+	border-color:#003399;
+}
+
+#modificar
+{
+	font-weight: bold;
+	font-size: smaller;
+	visibility: hidden;
+	display: none;
+	position:fixed;
+	left:250px; 
+	top:250px; 
+	z-index:5;
+	background:#dddddd;
+	color:#ffffff;
+	width:520px;
+	height:160px;
+	opacity:0.80;
+	filter:alpha(opacity=80);
+	-moz-opacity:0.80;
+	border-style:solid;
+	border-width:1px;
+	border-color:#003399;
+}
+#modificar textarea
+{
+	font-size:smaller;
+	border-style:solid;
+	border-width:1px;
+	border-color:#FCD393;
+	background:#FFFFFF;
+}
+#modif
+{
+	padding:1px;
+	font-size:smaller;
+	background:#7d0063 url(../imagenes/actual.png) no-repeat center left;
+	border-style:solid;
+	border-width:1px;
+	border-color:#FCD393;
+	color:#ffffff;
+	cursor:hand;
+	cursor:pointer;
+}
+#observaciones
+{
+	cursor:pointer;
+}
+#modi
+{
+	cursor:pointer;
+}
+#borrar
+{
+	cursor:pointer;
+}
+
+/*parte del ajax de creacion de categorias para los servicios*/
+
+
+#tbl_catserv 
+{
+	position:relative;
+	top:20px;
+	left:0px;
+	width:200px;
+}
+#tbl_catserv th
+{
+	background:#B9C0FF;
+}
+#tabla_contrato
+{
+	text-align:left;
+}
+#tabla_contrato th
+{
+	font-size:smaller;
+}
+/*Parte del almacen, para editar*/
+.img_edit
+{
+	cursor:pointer;
+}
+.campo 
+{
+	font-size:small;
+	font-style: normal;
+	color: #333333;
+	text-decoration: none;
+}
+#datos_interesantes
+{
+	font-size:smaller;
+	font-style: normal;
+	text-transform: capitalize;
+	width:300px;
+	height:500px;
+	position: absolute;
+	top:60px;
+	left:250px;
+	z-index:5;
+	visibility:hidden;
+}
+
+.listado_telecos
+{
+	font-size: small;
+	font-style: normal;
+	text-transform: capitalize;
+	border-style: solid;
+	border-color: #CCCCCC;
+	border-width: thin;
+}
+.listado_telecos th
+{
+	color:#fff;
+	background-color: #0066FF;
+	border-style: solid;
+	border-color: #CCCCCC;
+	border-width: thin;
+}
+.listado_telecos td
+{
+	
+	background-color: #CCCCFF;
+	
+}
+#telecos
+{
+	visibility:hidden;
+	display:none;
+}
+/*nueva parte*/
+#resultados
+{
+	position:absolute;
+	left:104px;
+	top:111px;
+	z-index:4;
+	visibility:hidden;
+	display:none;
+	width:200px;
+	border-style:solid;
+	border-width:1px;
+	border-color:#7d0063;
+	font-size:11px;
+	background:#ffffff;
+	padding-left:4px;
+	padding-right:4px;
+	padding-bottom:2px;
+	
+}
+.resalta
+{
+	color:#7d0063;
+	text-decoration:underline;
+	font-weight:500;
+}
+
+.nombre_campo
+{
+	background:#7d0063;
+	color:#ffffff;
+}
+.valor_campo
+{
+	background:#dddddd;
+	
+}
+.pares
+{
+	background:#eeeeee;
+	width:200px;
+}
+.impares
+{
+	background:#dddddd;
+	width:200px;
+}
+.par
+{
+	background:#eeeeee;
+}
+.impar
+{
+	background:#dddddd;
+}
+.pares a
+{
+	text-decoration:none;
+	color:#333;
+}
+.impares a
+{
+	text-decoration:none;
+	color:#333;
+}
+.pares a:hover
+{
+	width:300px;
+	text-decoration:underline;
+	color:#7d0063;
+	font-weight:400;
+	background:#ffffff;
+}
+.impares a:hover
+{
+	width:300px;
+	text-decoration:underline;
+	color:#7d0063;
+	font-weight:400;
+	background:#ffffff;
+}
+#formulario
+{
+	position:relative;
+	z-index:3;
+}
+#avisos
+{
+	position:absolute;
+	z-index:1;
+}
+.formulario
+{
+	font-size:11px;
+	border-style:solid;
+	border-width:1px;
+	border-color:#7d0063;
+	background:#ffffff;
+	color:#333333;
+	width:100%;
+}
+.formulario th
+{
+	color:#ffffff;
+	text-indent:5px;
+}
+
+#debug
+{
+	visibility:hidden;
+	display:none;
+	position:absolute;
+	z-index:10;
+	top:200px;
+	left:300px;
+	font-size:36px;
+	font-style: normal;
+	text-transform: capitalize;
+	vertical-align:middle;
+	text-align:center;
+	color:#7d0063;
+	background:#FFFFFF;
+	border-style:solid;
+	border-width:1px;
+	border-color:#7d0063;
+}
+.listado
+{
+	z-index:0;
+	position:absolute;
+	top:300px;
+	left:220px;
+	width:750px;
+	border-style:solid;
+	border-width:1px;
+	border-bottom-color:#333333;
+	border-right-color:#333333;
+	border-left-color:#CCCCCC;
+	border-top-color:#CCCCCC;
+	font-size:10px;
+	color:#333;
+}
+#subformulario
+{
+	background: #FFCC33;
+	border-style:solid;
+	border-width:1px;
+	border-bottom-color:#333333;
+	border-right-color:#333333;
+	border-left-color:#CCCCCC;
+	border-top-color:#CCCCCC;
+}
+.titulo_categoria
+{
+	font-size: small;
+	font-weight: bold;
+	color: #7d0063;
+	text-decoration: underline;
+}
+#frm_srv_fijos
+{	
+	
+	font-size: small;
+	color:#333;
+}
+#frm_srv_fijos input
+{
+	
+	font-size: small;
+	color:#333;
+	background:#fff;
+}
+/*Seccion de Gestion todas las subsecciones iguales*/
+.gestion_app
+{
+	font-size: small;
+	color:#7d0063;
+	background:#ffffff;
+	padding:5px;
+	border-style:solid;
+	border-width:1px;
+	border-color:#7d0063;
+}
+#formulario_rapido
+{
+	font-size: small;
+	color:#333;
+	padding:2px;
+	border-style:solid;
+	border-width:1px;
+	border-bottom-color:#333333;
+	border-right-color:#333333;
+	border-left-color:#CCCCCC;
+	border-top-color:#CCCCCC;
+}
+#formulario_rapido th
+{
+	font-family: Tahoma, Verdana, Arial, Georgia;
+	font-size: 12px;
+	color:#333;
+	background:#ffffcc;
+	padding:2px;
+}
+/*ALMACEN MODIFICADO a 190407************************************************/
+.almacenaje
+{
+	background:#ddd;
+	color:#333;
+	font-family: Tahoma, Verdana, Arial, Georgia;
+	font-size:12px;
+	font-style: normal;
+	text-transform: capitalize;
+	border-style:solid;
+	border-width:1px;
+	border-bottom-color:#333333;
+	border-right-color:#333333;
+	border-left-color:#CCCCCC;
+	border-top-color:#CCCCCC;
+	padding:4px;
+}
+.almacenaje select
+{
+	color:#333;
+	font-family: Tahoma, Verdana, Arial, Georgia;
+	font-size:12px;
+	font-style: normal;
+	text-transform: capitalize;
+}
+
+
+
+#etq_cliente
+{
+	
+	padding:2px;
+	background:#7d0063;
+	color:#ffffff;
+	width:300px;
+}
+#etq_resto
+{
+	background:#7d0063;
+	color:#ffffff;
+	padding:2px;
+}
+#datos
+{
+	padding:1px;
+}
+#datos th
+{
+	text-align: center;
+	background:#7d0063;
+	color:#ffffff;
+}
+#datos td
+{
+	color:#333;
+	text-align: center;
+	
+}
+#lbl_cliente
+{
+	background:#003399;
+	color:#fff;
+	font: italic 10px Tahoma, Verdana, Arial, Georgia, sans-serif;
+	padding:4px;
+	width:600px;
+}
+/*datos categorias*/
+#parametrostb
+{
+	font-size: 12px;
+	color:#333;
+	background:#dddddd;
+	padding:4px;
+	border-style:solid;
+	border-width:1px;
+	border-bottom-color:#333333;
+	border-right-color:#333333;
+	border-left-color:#CCCCCC;
+	border-top-color:#CCCCCC;
+}
+#datos_consulta
+{
+	border-style:solid;
+	border-width:1px;
+	border-bottom-color:#333333;
+	border-right-color:#333333;
+	border-left-color:#CCCCCC;
+	border-top-color:#CCCCCC;
+}
+.mes
+{
+	border-style:solid;
+	border-width:1px;
+	border-bottom-color:#333333;
+	border-right-color:#333333;
+	border-left-color:#CCCCCC;
+	border-top-color:#CCCCCC;
+	cursor:pointer;
+}
+#listado_clientes
+{
+	width:310px;
+	top:61px;
+	left:99px;
+	position:absolute;
+	z-index:1;
+	color:#333;
+	background:#FFF;
+	opacity:0.80;
+	filter:alpha(opacity=80);
+	-moz-opacity:0.80;
+	border-style:solid;
+	border-width:1px;
+	border-color:#003399;
+	border-style:solid;
+	border-width:1px;
+	border-bottom-color:#333333;
+	border-right-color:#333333;
+	border-left-color:#CCCCCC;
+	border-top-color:#CCCCCC;
+}
+.lbl_clientes
+{
+	cursor:pointer;
+}
+/*Botones personalizados***/
+.agregar
+{
+	height:20px;
+	
+	font-size: 12px;
+	text-indent:16px;
+	background:#7d0063 url(../iconos/edit_add.png) no-repeat center left;
+	color:#ffffff;
+	border-style:solid;
+	border-width:1px;
+	border-color:#333;
+	cursor:hand;
+	cursor:pointer;
+}
+.ver_servicios
+{
+	height:20px;
+	padding:2px;
+	
+	font-size: 12px;
+	text-indent:16px;
+	background:#7d0063 url(../iconos/find.png) no-repeat center left;
+	color:#ffffff;
+	border-style:solid;
+	border-width:1px;
+	border-color:#333;
+	cursor:hand;
+	cursor:pointer;
+}
+.limpiar
+{
+	height:20px;
+	padding:2px;
+	
+	font-size: 12px;
+	text-indent:16px;
+	background:#7d0063 url(../iconos/empty.png) no-repeat center left;
+	color:#ffffff;
+	border-style:solid;
+	border-width:1px;
+	border-color:#333;
+	cursor:hand;
+	cursor:pointer;
+}
+.generar_factura
+{
+	height:20px;
+	padding:2px;
+	width:70px;
+	font-size: 12px;
+	text-indent:16px;
+	background:#7d0063 url(../iconos/fileprint.png) no-repeat center left;
+	color:#ffffff;
+	border-style:solid;
+	border-width:1px;
+	border-color:#333;
+	cursor:hand;
+	cursor:pointer;
+}
+.boton_cerrar
+{
+	height:20px;
+	padding:2px;
+	width:70px;
+	font-size: 12px;
+	text-indent:16px;
+	background:#7d0063 url(../iconos/exit.png) no-repeat center left ;
+	color:#ffffff;
+	border-style:solid;
+	border-width:1px;
+	border-color:#333;
+	cursor:hand;
+	cursor:pointer;
+}
+.boton_actualizar
+{
+	height:20px;
+	padding:2px;
+	font-size: 12px;
+	text-indent:16px;
+	background: #7d0063 url(../iconos/reload.png) no-repeat center left ;
+	border-style:solid;
+	border-width:1px;
+	border-color:#333;
+	cursor:hand;
+	cursor:pointer;
+	color:#ffffff;
+}
+.boton_editar
+{
+	height:20px;
+	padding:2px;
+	font-size: 12px;
+	text-indent:16px;
+	background:#7d0063 url(../iconos/kate.png) no-repeat center center ;
+	color:#ffffff;
+	border-style:none;
+	cursor:hand;
+	cursor:pointer;
+}
+.boton_borrar
+{
+	height:20px;
+	padding:2px;
+	font-size: 12px;
+	text-indent:16px;
+	background:#7d0063 url(../iconos/edittrash.png) no-repeat center center ;
+	color:#ffffff;
+	cursor:hand;
+	cursor:pointer;
+	border-style:none;
+}
+.boton_editar_par
+{
+	height:20px;
+	padding:2px;
+	font-size: 12px;
+	text-indent:16px;
+	background:#eeeeee url(../iconos/kate.png) no-repeat center center ;
+	color:#ffffff;
+	border-style:none;
+	cursor:hand;
+	cursor:pointer;
+}
+.boton_borrar_par
+{
+	height:20px;
+	padding:2px;
+	font-size: 12px;
+	text-indent:16px;
+	background:#eeeeee url(../iconos/edittrash.png) no-repeat center center ;
+	color:#ffffff;
+	cursor:hand;
+	cursor:pointer;
+	border-style:none;
+}
+.boton_editar_impar
+{
+	height:20px;
+	padding:2px;
+	font-size: 12px;
+	text-indent:16px;
+	background:#dddddd url(../iconos/kate.png) no-repeat center center ;
+	color:#ffffff;
+	border-style:none;
+	cursor:hand;
+	cursor:pointer;
+}
+.boton_borrar_impar
+{
+	height:20px;
+	padding:2px;
+	font-size: 12px;
+	text-indent:16px;
+	background:#dddddd url(../iconos/edittrash.png) no-repeat center center ;
+	color:#ffffff;
+	cursor:hand;
+	cursor:pointer;
+	border-style:none;
+}
+.boton_borrar2
+{
+	height:20px;
+	padding:2px;
+	font-size: 12px;
+	text-indent:16px;
+	background:#7d0063 url(../iconos/edittrash.png) no-repeat center left ;
+	color:#ffffff;
+	border-style:solid;
+	border-width:1px;
+	border-color:#333;
+	cursor:hand;
+	cursor:pointer;
+}
+.calendario
+{
+	height:20px;
+	width:20px;
+	padding:2px;
+	font-size: 12px;
+	text-indent:20px;
+	background:#7d0063 url(../iconos/date.png) no-repeat center center ;
+	border-style:solid;
+	border-color:#333;
+	border-width:1px;
+	cursor:hand;
+	cursor:pointer;
+	
+}
+.boton_excel
+{
+	height:20px;
+	padding:2px;
+	width:100px;
+	font-size: 12px;
+	text-indent:16px;
+	background:#7d0063 url(../iconos/excel.png) no-repeat center left ;
+	border-style:solid;
+	border-width:1px;
+	border-color:#333;
+	cursor:hand;
+	cursor:pointer;
+}
+#cabezera_rapido th
+{
+	
+	font-size: 12px;
+	background:#e6e6fa;
+}
+#meses
+{
+	
+	font-size: 12px;
+}
+#servicios
+{
+	font-size: 12px;
+}
+#tabla_srv_fijos th
+{
+	background-color:#ffc;
+}
+
+.texto_cumple
+{
+	background:#0ff;
+}
+#tablon_telefonos
+{
+	
+	width:0px;
+	height:0px;
+	font-size:10px;
+	bottom:0px;
+	left:215px;
+	position:fixed;
+	z-index:1;
+	color:#000;
+	background:#FFF url('../imagenes/linphone.png') no-repeat top right;
+	border-style:solid;
+	border-width:1px;
+	border-color:#003399;
+	border-style:solid;
+	border-width:1px;
+	border-bottom-color:#333333;
+	border-right-color:#333333;
+	border-left-color:#CCCCCC;
+	border-top-color:#CCCCCC;
+	overflow:auto;
+}
+#parametros_factura
+{
+	position:absolute;
+	visibility:hidden;
+	display:none;
+	background:#ccc;
+	top:200px;
+	left:200px;
+	width:400px;
+	height:300px;
+	border-color:#003399;
+	border-style:solid;
+	border-width:1px;
+	border-bottom-color:#333333;
+	border-right-color:#333333;
+	border-left-color:#CCCCCC;
+	border-top-color:#CCCCCC;
+}
+#resultados_busqueda_avanzada
+{
+	overflow:auto;
+	height:300px;
+}
+#tabla_asignacion_telefonos
+{
+	border-color:#003399;
+	border-style:solid;
+	border-width:1px;
+	border-bottom-color:#333333;
+	border-right-color:#333333;
+	border-left-color:#CCCCCC;
+	border-top-color:#CCCCCC;
+}
+.listado_1
+{
+	color:#333;
+	background-color:#6699cc;
+	font-size:12px;
+	font-weight:bold;
+}
+.listado_2
+{
+	color:#333;
+	background-color:#ff9900;
+	font-size:12px;
+	font-weight:bold;
+}
+.listado_3
+{
+	color:#333;
+	background-color:#9999cc;
+	font-size:12px;
+	font-weight:bold;
+}
+.listado_4
+{
+	color:#333;
+	background-color:#dd99cc;
+	font-size:12px;
+	font-weight:bold;
+}
+.cabezeras_listado
+{
+	color:#ffffff;
+	background-color:#7d0063;
+	font-size:12px;
+}
+.despacho_telefonos
+{
+	text-align:left;
+	width:75%
+}
+/*AGENDA******************************/
+#agenda td
+{
+	border-style:solid;
+	border-width:1px;
+	border-color:#333333;
+	width:16%;
+	vertical-align:top;
+	font-size:10px;
+	padding:0px;
+	text-indent:5px;
+}
+#semana td
+{
+	border-style:solid;
+	border-width:1px;
+	border-color:#333333;
+	width:16%;
+	vertical-align:top;
+	font-size:10px;
+	padding:0px;
+	text-indent:5px;
+}
+#semana th
+{
+	border-style:solid;
+	border-color:#333333;
+	border-width:1px;
+	color:#FFD700;/*gold;*/
+	background:#333333;
+	font-size:10px;
+	font-weight:bold;
+}
+.cabezera_despacho
+{
+	background:#6B8E23;/*OliveDrab ;*/
+	color:white;
+	font-size:10px;
+	font-weight:bold;
+	text-indent:5px;
+	
+}
+.despacho_ocupado
+{
+	/*background:#666699;*/
+	background:#FFE4B5;/*Moccasin*/
+	color:#333333;
+	font-weight:bold;
+	padding:5px;
+	border-style:dashed;
+	border-color:#333333;
+	border-width:thin;
+}
+.despacho_parcial
+{
+	background:#ffffff;
+	color:#666699;
+	height:100%;
+	padding:5px;
+}
+.mini_boton
+{
+	font-weight:bold;
+	color:#8B4513;/*SaddleBrown*/
+	text-align:right;
+	cursor:pointer;
+}
+#formulario_agenda
+{
+	visibility:hidden;
+	display:none;
+	position:fixed;
+	border-style:solid;
+	border-color:#333333;
+	border-width:1px;
+	background:#708090;
+	color:#b0c4de;
+	font-size:10px;
+	right:1%;
+	top:6%;
+	width:200px;
+	height:600px;
+	text-indent:5px;
+	text-align:center;
+	overflow:auto;
+}
+#listado_clientes_agenda
+{
+	width:94%;
+	top:40px;
+	left:2%;
+	font-size:10px;
+	position:absolute;
+	z-index:1;
+	color:#333;
+	background:#FFFFFF;
+	opacity:0.80;
+	filter:alpha(opacity=80);
+	-moz-opacity:0.80;
+	border-style:solid;
+	border-width:1px;
+	border-color:#003399;
+	border-style:solid;
+	border-width:1px;
+	border-bottom-color:#333333;
+	border-right-color:#333333;
+	border-left-color:#CCCCCC;
+	border-top-color:#CCCCCC;
+	text-align:left;
+	text-indent:2px;
+}
+.calendario_agenda
+{
+	height:20px;
+	width:20px;
+	font-size: 10px;
+	background:#eeeeee url(../iconos/date.png) no-repeat center center ;
+	border-width:1px;
+	cursor:pointer;
+	color:#666699;
+	cursor:pointer;
+	border-style:solid;
+	border-width:thin;
+	border-color:#333333;
+	background-color: #eeeeee;
+	padding:2px;
+}
+#informacion_despacho
+{
+	visibility:hidden;
+	display:none;
+	/*position:absolute;
+	top:10%;
+	left:30%;*/
+	position:fixed;
+	right:1%;
+	top:6%;
+	background:#ccccff;
+	width:200px;
+	height:600px;
+	border-style:solid;
+	border-width:1px;
+	border-color:gold;
+	text-indent:16px;
+	color:#333333;
+}
+.boton_cerrar_nuevo
+{
+	background:#7d0063 url('../imagenes/color-picker-close.png') no-repeat;
+	width:32px;
+	height:32px;
+	position:absolute;
+	right:-20px;
+	top:-10px;
+	cursor:pointer;
+}
+.seccion_ficha
+{
+	background:#333333;
+	color:#FFD700;/*gold;*/
+	font-weight:bold;
+}
+#formulario_agenda table
+{
+	border-style:solid;
+	border-width:1px;
+	border-color:#333333;
+}
+#formulario_agenda th
+{
+	font-size:10px;
+	background:#333333;
+	color:#ffffff;
+}
+#formulario_agenda td
+{
+	font-size:10px;
+}
+/*Calendario despachos*/
+#semana th
+{
+	font-size:10px;
+	font-weight:bold;
+}
+#semana td
+{
+	border-style:solid;
+	border-width:1px;
+	border-color:#333333;
+	width:16%;
+	vertical-align:top;
+	font-size:10px;
+	padding:0px;
+	text-indent:5px;
+}
+.mini_boton_semana
+{
+	cursor:pointer;
+	background:#333333;
+	color:#FFD700;/*gold*/
+	font-weight:bold;
+	width:100%;
+}
+.las_horas
+{
+	background:#FFD700;/*gold;*/
+	width:100%;
+	color:#333333;
+	font-weight:bold;
+}
+.confirmado
+{
+	background:green;
+	color:white;
+}
+.no_confirmado
+{
+	background:red;
+	color:white;
+}
+/*
+ * Listados personalizados
+ * Ya tiene aplicado el nuevo estilo
+ */
+.listado_par
+{
+	background:#eeeeee;
+	padding:0.2em;
+	border-bottom-style:dotted;
+	border-bottom-width:thin;
+	border-bottom-color:#7d0063;
+	font-size:11px;
+	width:70%;
+	color:#333;
+	font-weight:bold;
+	text-align:left;
+	text-indent:16px;
+}
+.listado_impar
+{
+	background:#dddddd;
+	padding:0.2em;
+	border-bottom-style:dotted;
+	border-bottom-width:thin;
+	border-bottom-color:#7d0063;
+	font-size:11px;
+	width:70%;
+	color:#333;
+	font-weight:bold;
+	text-align:left;
+	text-indent:16px;
+}
+.direccion_esp
+{
+	position:absolute;
+	right:16%;
+}	
+/*Agenda INTERNA*/
+#tareas
+{
+	background-color:#ffffff;
+	border-style:solid;
+	border-color:#dddddd;
+	border-width:1px;
+	text-align:justify;
+	color:#708090;
+	-moz-border-radius:5px;
+}
+/*SECCION PDF*/
+.linea_checks a:hover
+{
+	text-decoration:underline;
+	background:#ffffff;
+	
+}
+/*Tabla de Facturas*/
+.listado_facturas
+{
+	background:#7d0063;
+	color:#ffffff;
+}
+/*Tabla del sublistado*/
+.sublistado
+{
+	border-style:dotted;
+	border-color:#7d0063;
+	border-width:1px;
+}
+.sublistado th
+{
+	background:#7d0063;
+	color:#ffffff;
+	border-right-style:solid;
+	border-right-color:#ffffff;
+	border-right-width:1px;
+	border-bottom-style:solid;
+	border-bottom-color:#ffffff;
+	border-bottom-width:1px;
+}
+.sublistado td
+{
+	border-right-style:dotted;
+	border-right-width:1px;
+	border-right-color:#7d0063;
+	border-bottom-style:dotted;
+	border-bottom-width:1px;
+	border-bottom-color:#7d0063;
+}
