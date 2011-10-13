@@ -19,7 +19,7 @@ class Sql
     
     function consulta ($sql)
     {
-        $this->_result = mysql_query($sql, $this->_conexion);
+    	$this->_result = mysql_query($sql, $this->_conexion);
     }
     
     function datos ()

@@ -1,4 +1,4 @@
-<?
+<?php
 
 if (isset($_POST[opcion]))
 {
@@ -539,7 +539,7 @@ function rarita()
 	$sql = "SELECT z.valor, c.Nombre, c.Categoria, f.observaciones FROM `facturacion` 
 	as f join clientes as c on c.id like f.idemp join z_sercont as z on z.idemp like 
 	c.id WHERE  Estado_de_cliente != 0 and 
-	(c.Categoria like '%domiciliac%' or c.Categoria like '%despacho%' or c.Categoria like 'Otros' or c.Categoria like '%Telefonica%') and
+	(c.Categoria like '%domiciliac%' or c.Categoria like '%despacho%' or c.Categoria like 'Otros' or c.Categoria like '%Telefonica%' or c.Categoria like '%oficina movil%') and
 	z.servicio like 'Codigo Negocio' order by z.valor asc";
 	$consulta = mysql_db_query($dbname,$sql,$con);
 	$cadena = "<input class='boton' value='[X] Cerrar' onclick='cierra_listado_copias()' ><input type='button' class='boton' onclick=window.open('inc/excel.php') value='Imprimir' />";
@@ -651,9 +651,9 @@ function listado_personalizado($vars)
 //***********************************************************************************************/
 function traduce($texto)
 {
-if(SISTEMA == "windows")
+/*if(SISTEMA == "windows")
 	$bien = utf8_encode($texto); //para windows
-else
+else*/
 	$bien = $texto;//para sistemas *nix
 return $bien;
 }

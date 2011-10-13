@@ -81,7 +81,7 @@ if (isset($_POST['datos'])) {
             $cont = 0;
         }
         $cont++;
-        $nombreEntrada = utf8_encode($entrada['Nombre']);
+        $nombreEntrada = $entrada['Nombre'];
         if ($datos[0] != "servicios")
             echo "<tr class='ui-widget-content'>
             <td>{$cont}</td>
@@ -122,7 +122,7 @@ if (isset($_POST['servicio'])) {
          <th class='datosacumulados'>Fecha</th>
         </tr>";
         foreach ($detalles as $detalle) {
-            $nombre = utf8_encode($detalle['Nombre']);
+            $nombre = $detalle['Nombre'];
             $fecha = $entradas->fecha->cambiaf($detalle['fecha']);
             $html .= "
             <tr class='celdadialog'>
@@ -154,7 +154,7 @@ if (isset($_POST['cliente'])) {
          <th>Salida</th>
         </tr>";
         foreach ($detalles as $detalle) {
-            $nombre = utf8_encode($detalle['Nombre']);
+            $nombre = $detalle['Nombre'];
             $fechaEntrada = $entradas->fecha->cambiaf($detalle['entrada']);
             $fechaSalida = $entradas->fecha->cambiaf($detalle['salida']);
             $html .= "
@@ -214,8 +214,8 @@ if (isset($_POST['ocupacion'])){
         </tr>";
         foreach ($detalles as $detalle) {
             
-            $nombre = utf8_encode($detalle['Nombre']);
-            $servicio = utf8_encode($detalle['Servicio']);
+            $nombre = $detalle['Nombre'];
+            $servicio = $detalle['Servicio'];
             $fecha = $entradas->fecha->cambiaf($detalle['fecha']);
             if($mes != $entradas->fecha->verMes($detalle["fecha"]))
             {

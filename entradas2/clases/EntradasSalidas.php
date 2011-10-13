@@ -166,13 +166,13 @@ class EntradasSalidas extends Sql
 	 */
     public function categorias ()
     {
-        $sql = "SELECT Nombre FROM `" . utf8_decode('categorías clientes') . "`";
+        $sql = "SELECT Nombre FROM `categorías clientes`";
         $this->_conn = new Sql();
         $this->_conn->consulta($sql);
         $this->_datos = $this->_conn->datos();
        
         foreach ($this->_datos as $key => $dato) {
-            if (array_search(utf8_encode($dato['Nombre']), $this->_categoriasBaneadas) === FALSE)
+            if (array_search($dato['Nombre'], $this->_categoriasBaneadas) === FALSE)
                 $datos[] = $dato;
         }
         $this->_conn->close();
@@ -184,8 +184,8 @@ class EntradasSalidas extends Sql
 	 */
     public function valoresCategoriasAnyoCero ($categoria, $tipo)
     {
-        $sql = "SELECT Id FROM `" . utf8_decode('categorías clientes') ."` ".
-               "WHERE Nombre LIKE '" . utf8_decode($categoria) . "'";
+        $sql = "SELECT Id FROM `categorías clientes` ".
+               "WHERE Nombre LIKE '" . $categoria . "'";
         $this->_conn = new Sql();
         $this->_conn->consulta($sql);
         $this->_datos = $this->_conn->datos();
@@ -208,7 +208,7 @@ class EntradasSalidas extends Sql
         $acumuladoEntradas = $this->entradasTotales(TRUE);
         $acumuladoSalidas = $this->salidasTotales(TRUE);
         foreach ($this->_categoriasClientes as $categorias) {
-            $finales[utf8_encode($categorias['Nombre'])] = array(
+            $finales[$categorias['Nombre']] = array(
                 'total' => 0, 
                 'entradas' => 0, 
                 'salidas' => 0, 
@@ -218,36 +218,36 @@ class EntradasSalidas extends Sql
             );
         }
         foreach ($totales as $total) {
-            if (array_key_exists(utf8_encode($total['categoria']), $finales)) {
-                $finales[utf8_encode($total['categoria'])]['total'] = $total['total'];
+            if (array_key_exists($total['categoria'], $finales)) {
+                $finales[$total['categoria']]['total'] = $total['total'];
             }
         }
         foreach ($entradas as $total) {
-            if (array_key_exists(utf8_encode($total['categoria']), $finales)) {
-                $finales[utf8_encode($total['categoria'])]['entradas'] = $total['total'];
+            if (array_key_exists($total['categoria'], $finales)) {
+                $finales[$total['categoria']]['entradas'] = $total['total'];
             }
         }
         foreach ($salidas as $total) {
-            if (array_key_exists(utf8_encode($total['categoria']), $finales)) {
-                $finales[utf8_encode($total['categoria'])]['salidas'] = $total['total'];
+            if (array_key_exists($total['categoria'], $finales)) {
+                $finales[$total['categoria']]['salidas'] = $total['total'];
             }
         }
         foreach ($acumuladoEntradas as $total) {
-            if (array_key_exists(utf8_encode($total['categoria']), $finales)) {
-                $finales[utf8_encode($total['categoria'])]['acentradas'] = $total['total'];
-                $finales[utf8_encode($total['categoria'])]['acentradas'] += 
-                $this->valoresCategoriasAnyoCero(utf8_encode($total['categoria']), 'entradas');
-                $finales[utf8_encode($total['categoria'])]['diferencia'] += 
-                $finales[utf8_encode($total['categoria'])]['acentradas'];
+            if (array_key_exists($total['categoria'], $finales)) {
+                $finales[$total['categoria']]['acentradas'] = $total['total'];
+                $finales[$total['categoria']]['acentradas'] += 
+                $this->valoresCategoriasAnyoCero($total['categoria'], 'entradas');
+                $finales[$total['categoria']]['diferencia'] += 
+                $finales[$total['categoria']]['acentradas'];
             }
         }
         foreach ($acumuladoSalidas as $total) {
-            if (array_key_exists(utf8_encode($total['categoria']), $finales)) {
-                $finales[utf8_encode($total['categoria'])]['acsalidas'] -= $total['total'];
-                $finales[utf8_encode($total['categoria'])]['acsalidas'] -= 
-                $this->valoresCategoriasAnyoCero(utf8_encode($total['categoria']), 'salidas');
-                $finales[utf8_encode($total['categoria'])]['diferencia'] += 
-                $finales[utf8_encode($total['categoria'])]['acsalidas'];
+            if (array_key_exists($total['categoria'], $finales)) {
+                $finales[$total['categoria']]['acsalidas'] -= $total['total'];
+                $finales[$total['categoria']]['acsalidas'] -= 
+                $this->valoresCategoriasAnyoCero($total['categoria'], 'salidas');
+                $finales[$total['categoria']]['diferencia'] += 
+                $finales[$total['categoria']]['acsalidas'];
             }
         }
         return $finales;
@@ -923,7 +923,7 @@ EOD;
 		</tr>
 EOD;
         foreach ($servicios as $key => $servicio) {
-            $tituloServicio = ucwords(strtolower(utf8_encode($key)));
+            $tituloServicio = ucwords(strtolower($key));
             $idServicio = 
             urlencode("servicios#{$key}#{$this->anyoInicial}#{$this->anyoFinal}");
             $html .= <<<EOD
@@ -966,8 +966,8 @@ EOD;
     {
         $html = "<div class='listaenlaces'>";
         foreach ($this->categorias() as $categoria) {
-            $enlaceCategoria = urlencode(utf8_encode($categoria['Nombre']));
-            $nombreCategoria = utf8_encode($categoria['Nombre']); 
+            $enlaceCategoria = urlencode($categoria['Nombre']);
+            $nombreCategoria = $categoria['Nombre']; 
             $html .=
             "<a class='enlacedetallada' href='#{$enlaceCategoria}'>{$nombreCategoria}</a>";
         }
@@ -988,7 +988,7 @@ EOD;
     {
         $html = $this->enlacesCategorias() . "<br/><br/>";
         foreach ($this->categorias() as $categoria) {
-            $nombreCategoria = urlencode(utf8_encode($categoria['Nombre']));
+            $nombreCategoria = urlencode($categoria['Nombre']);
             $url = urlencode("grafico#{$nombreCategoria}#{$this->anyoInicial}#{$this->anyoFinal}");
             $html .= "<a name='{$nombreCategoria}'>
             <img src = 'graph.php?datos={$url}' alt='Generando Grafica...' />
@@ -1019,7 +1019,7 @@ EOD;
         $html .= $this->enlacesCategorias();
         foreach ($this->categorias() as $categoria) {
             $diferencia = array();
-            $nombreCategoria = utf8_encode($categoria["Nombre"]);
+            $nombreCategoria = $categoria["Nombre"];
             $enlaceCategoria = urlencode($nombreCategoria);
             $idCategoria = ucfirst(strtolower($nombreCategoria));
             $movimiento = $movimientos[$nombreCategoria];
@@ -1155,13 +1155,13 @@ EOD;
     public function listadoDetalladoServicios ()
     {
         foreach ($this->serviciosExternos() as $servicio) {
-            $consumos[utf8_encode($servicio['Servicio'])] = 
+            $consumos[$servicio['Servicio']] = 
              array_fill(0, $this->diferencia(), 0);
-            $fechas[utf8_encode($servicio['Servicio'])] = 
+            $fechas[$servicio['Servicio']] = 
              array_fill(0, $this->diferencia(), 0);
         }
         foreach ($this->serviciosExternos() as $servicio) {
-            $nombreServicio = utf8_encode($servicio['Servicio']);
+            $nombreServicio = $servicio['Servicio'];
             $mesServicio = $this->fecha->verMes($servicio['fecha']);
             $anyoServicio = $this->fecha->verAnyo($servicio['fecha']);
             
@@ -1186,7 +1186,7 @@ EOD;
         
         foreach ($this->serviciosExternos(TRUE) as $servicio) {
             
-            $nombreServicio = utf8_encode($servicio['Servicio']);
+            $nombreServicio = $servicio['Servicio'];
             $tituloServicio = ucfirst(strtolower($nombreServicio));
             
             $html .= "<tr id='{$j}' class='ui-widget-content celda'>
