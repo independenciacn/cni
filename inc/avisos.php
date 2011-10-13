@@ -35,9 +35,9 @@ return $clase;
 //***********************************************************************************************/
 function codifica($texto)
 {
-if(SISTEMA == "windows")
+/*if(SISTEMA == "windows")
 	$bien = utf8_decode($texto); //para windows
-else
+else*/
 	$bien = $texto;//para sistemas *nix
 return $bien;
 }

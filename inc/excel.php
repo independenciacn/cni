@@ -1,6 +1,6 @@
 <? //rarita en excel Listado Despachos y Domiciliados:
 	header("Content-type: application/vnd.ms-excel");
-	header("Content-Disposition: attachment; filename=excel.xls");
+	header("Content-Disposition:inline; filename=excel.xls");
 	include("variables.php");
 	if(isset($_GET[tipo]))
 	{
@@ -10,7 +10,7 @@
 			if($_GET[tipo]=='conserje')
 				$sql = "Select * from clientes where (categoria like '%domicili%' or categoria like '%despachos%') and Estado_de_cliente like '-1' order by Nombre";
 			else
-				$sql = "Select * from clientes as c join `categorías clientes` as d on c.Categoria = d.Nombre where d.id like $_GET[tipo] and c.Estado_de_cliente like '-1' order by c.Nombre";
+				$sql = "Select * from clientes as c join `categorï¿½as clientes` as d on c.Categoria = d.Nombre where d.id like $_GET[tipo] and c.Estado_de_cliente like '-1' order by c.Nombre";
 		$consulta = mysql_db_query($dbname,$sql,$con);
 		$i=0;
 		$cadena.="<table>";

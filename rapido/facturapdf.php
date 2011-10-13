@@ -1,4 +1,4 @@
-<?
+<?php
 
 if((isset($_GET[factura])) || (isset($_POST[factura])))
 {
@@ -100,7 +100,7 @@ if((isset($_GET[factura])) || (isset($_POST[factura])))
 		while($resultado=mysql_fetch_array($consulta))
 		{
 			$importe_sin_iva = $resultado[cantidad]*$resultado[unitario];
-			$data[]=array("Servicio"=>ucfirst(utf8_decode($resultado[2]))." ".ucfirst(utf8_decode($resultado[6])),
+			$data[]=array("Servicio"=>ucfirst(utf8_encode($resultado[2]))." ".ucfirst(utf8_encode($resultado[6])),
 			"Cant."=>number_format($resultado[cantidad],2,',','.'),
 			"P/Unitario"=>number_format($resultado[unitario],2,',','.')."!",
 			"Importe"=>number_format($importe_sin_iva,2,',','.')."!",

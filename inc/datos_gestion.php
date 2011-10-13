@@ -536,7 +536,7 @@ function frm_agrega_telefono($vars)
 function rarita()
 {
 	include("variables.php");
-	$sql = "SELECT z.valor, c.Nombre, c.Categoria, f.observaciones FROM `facturacion` 
+	$sql = "SELECT DISTINCT(z.valor), c.Nombre, c.Categoria, f.observaciones FROM `facturacion` 
 	as f join clientes as c on c.id like f.idemp join z_sercont as z on z.idemp like 
 	c.id WHERE  Estado_de_cliente != 0 and 
 	(c.Categoria like '%domiciliac%' or c.Categoria like '%despacho%' or c.Categoria like 'Otros' or c.Categoria like '%Telefonica%' or c.Categoria like '%oficina movil%') and

@@ -82,7 +82,7 @@ class EntradasSalidas extends Sql
     private $_anyoCeroKeys = array(
         '2' => array('entradas' => '128', 'salidas' => '103'), 
         '3' => array('entradas' => '95', 'salidas' => '54'), 
-        '4' => array('entradas' => '62', 'salidas' => '40'), 
+        '4' => array('entradas' => '63', 'salidas' => '40'), 
         '6' => array('entradas' => '29', 'salidas' => '18'), 
         '7' => array('entradas' => '1', 'salidas' => '0')
     );

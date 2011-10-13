@@ -93,6 +93,7 @@ and c.Estado_de_cliente = '-1'";
 	FROM proveedores AS c
 	left JOIN pproveedores AS p ON c.id = p.idemp
 	WHERE c.Nombre LIKE '%$vars[texto]%'
+	OR p.nocor LIKE '%$vars[texto]%'
 	OR p.nombre LIKE '%$vars[texto]%'
 	OR p.apellidos LIKE '%$vars[texto]%'
 	OR concat( p.nombre, '', p.apellidos, '%' ) LIKE '%$vars[texto]%'";

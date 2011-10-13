@@ -8,9 +8,9 @@ setlocale(LC_ALL, 'es_ES');
 function traduce($texto)
 {
 //en algunos casos
-	if(SISTEMA == "windows")
+	/*if(SISTEMA == "windows")
 		$bien = utf8_encode($texto); //para windows
-	else
+	else*/
 		$bien = $texto;//para sistemas *nix
 	return $bien;
 }
