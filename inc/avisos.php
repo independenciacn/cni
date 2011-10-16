@@ -13,19 +13,22 @@
  * 			 Creative Commons Reconocimiento-NoComercial-SinObraDerivada 3.0 Unported
  * @link     https://github.com/independenciacn/cni
  */
-session_start();
 require_once 'variables.php';
 if ( isset( $_SESSION['usuario'] ) ) {
-    switch ( $_POST['opcion'] ) {
-        case 0:
-            $cadena = avisos();
-            break;
-        case 1:
-            $cadena = telefonos();
-            break;
-        default:
-            $cadena = avisos();
-            break;
+    if ( isset( $_POST['opcion'] ) ) {
+        switch ( $_POST['opcion'] ) {
+            case 0:
+                $cadena = avisos();
+                break;
+            case 1:
+                $cadena = telefonos();
+                break;
+            default:
+                $cadena = avisos();
+                break;
+        }
+    } else {
+        $cadena = avisos();
     }
     echo $cadena;
 }
@@ -44,7 +47,7 @@ function avisos()
     // tres tablas, empleados[FechNac],pcentral[cumple],pempresa[cumple]
     $k=0; // Contador
     $texto .= "<tr><td valign='top'>
-    <table width='100%'>
+    <table>
     <tr><th colspan='2'>Hoy hace los años</th></tr>";
     // Personas de la central
     $sql ="SELECT  
@@ -281,7 +284,7 @@ function avisos()
 		</td></tr>";
     }
     $texto .= "</table></td>";
-    $texto .= "<td valign='top'>" . avisosNew() . "</td></tr></table>";
+    $texto .= "<td valign='top'>" . contratos() . "</td></tr></table>";
     return $texto;
 }
 /**
@@ -299,7 +302,7 @@ function telefonos ()
 /**
  * Enter description here ...
  * 
- * @param unknown_type $servicio
+ * @param string $servicio
  */
 function listado( $servicio )
 {
@@ -324,123 +327,126 @@ function listado( $servicio )
     $i=0;
 	if ( mysql_numrows( $consulta ) != 0 ) {
 		while( true == ($resultado = mysql_fetch_array( $consulta ) ) ) {
-			if(ereg("despacho",$resultado[5]))
+			if ( preg_match( "/despacho/", $resultado[5] ) ) {
 				$color="#69C";
-			else
-			if (ereg("domicili",$resultado[5]))
+		    }
+			elseif ( preg_match( "/domicili/", $resultado[5] ) ) {
 				$color="#F90";
-			else
+			}
+			else {
 				$color="#ccc";
-			if($i%4==0)
-			$cadena .="</tr><tr>";
+			}
+			if ( $i%4 == 0 ) {
+			    $cadena .="</tr><tr>";
+			}
 			$cadena .= "<th bgcolor='".$color."' align='left'>
-			<a href='javascript:muestra($resultado[0])'>".$resultado[4]."-".traduce($resultado[1])."-
-			<u><b>".$resultado[2]."</b></u></a></th>";
+			<a href='javascript:muestra(" . $resultado[0] . ")'>
+			" . $resultado[4] . "-" . $resultado[1] . "-
+			<u><b>" . $resultado[2] . "</b></u></a></th>";
 			$i++;
 		}
 	}
 	$cadena .="</tr></table>";
-	
 	return $cadena;
 }
-/*
- * Parte de los contratos
+/**
+ * Funcion que devuelve los avisos de los contratos
  */
-function avisosNew()
+function contratos()
 {
-//que queremos avisar principalmente fin de contratos en el dia y en el mes tanto de clientes como
-//de proveedores. De donde se coge ese dato, de la tabla facturacion
-/*AUDITAREMOS campos finicio, duracion, valores de duracion dias-espacio es decir 1-H, 1-D, 1-S, 1-M, 1-A 
-Clientes (facturacion)
-1.- Fecha inicio + duracion
-2.- Dia de Pago - Si es hoy el dia del mes de pago
-Proveedores (z_facturacion)
-1.- Fecha inicio + duracion
-2.- Dia de Pago - Si es hoy el dia del mes de pago
-*/
-global $con;
-$k=0;
-$cadena ="<table width='100%'>";
-//$cadena .= "<tr><th><span class='boton' onclick='cierralo()' onkeypress='cierralo()'>[X] Cerrar</span></th></tr>";
-//$cadena .= "<tr><th colspan='2'>AVISOS</th></tr>";
-//Clientes FInalizan HOY
-$cadena .= "<tr><th Colspan='2'>Hoy finalizan contrato</th></tr>";
-$sql = "SELECT facturacion.id, 
-	facturacion.idemp, 
-	facturacion.finicio, 
-	facturacion.duracion, 
-	facturacion.renovacion, 
-	clientes.Nombre
-FROM facturacion INNER JOIN clientes ON facturacion.idemp = clientes.Id
-WHERE date_format(renovacion,'%d %c %y') LIKE date_format(curdate(),'%d %c %y') and clientes.Estado_de_cliente != 0";
-$consulta = mysql_db_query($dbname,$sql,$con);
-$total = mysql_numrows($consulta);
-	if ($total >= 1)
-	{
-		while($resultado = mysql_fetch_array($consulta))
-		{
-			$cadena .="<tr><td class='".clase($k++)."'><a href='javascript:muestra(".$resultado[1].")' >".traduce($resultado[5])."</a></td></tr>";
+    global $con;
+    $k = 0;
+    $hnocump = 0;
+    $cadena ="<table>";
+    // Clientes que finalizan contrato hoy
+    $cadena .= "<tr><th Colspan='2'>Hoy finalizan contrato</th></tr>";
+    $sql = "SELECT facturacion.id, 
+		facturacion.idemp, 
+		facturacion.finicio, 
+		facturacion.duracion, 
+		facturacion.renovacion, 
+		clientes.Nombre
+		FROM facturacion INNER JOIN clientes 
+		ON facturacion.idemp = clientes.Id
+		WHERE date_format(renovacion,'%d %c %y') 
+		LIKE date_format(curdate(),'%d %c %y') 
+		AND clientes.Estado_de_cliente != 0";
+    $consulta = mysql_query( $sql, $con );
+    $total = mysql_numrows( $consulta );
+	if ( $total >= 1) {
+		while ( true == ( $resultado = mysql_fetch_array( $consulta ) ) ) {
+			$cadena .="<tr><td class='" . clase( $k++ ) . "'>
+			<a href='javascript:muestra(" . $resultado[1] . ")' >
+			" . $resultado[5] . "</a></td></tr>";
 		}
-	}
-else{
+	} else {
 		$hnocump++;
-		$cadena.="<tr><td class='".clase($k++)."' colspan='2'>Nadie Finaliza contrato hoy</td></tr>";
+		$cadena.="<tr><td class='" . clase( $k++ ) . "' colspan='2'>
+		Nadie Finaliza contrato hoy</td></tr>";
 	}
-$cadena .= "</table>";
-//return $cadena;
-//Clientes que finalizan contrato este mes
-//Clientes FInalizan este mes
-$cadena .= "<table width='100%'>";
-$cadena .= "<tr><th>Dia</th><th>Finalizan contrato este mes</th></tr>";
-$sql = "SELECT facturacion.id, 
-	facturacion.idemp, 
-	facturacion.finicio, 
-	facturacion.duracion, 
-	facturacion.renovacion, 
-	clientes.Nombre
-FROM facturacion INNER JOIN clientes ON facturacion.idemp = clientes.Id
-WHERE month(renovacion) LIKE month(curdate()) and year(renovacion) like year(curdate()) and clientes.Estado_de_cliente != 0 order by renovacion asc";
-$consulta = mysql_db_query($dbname,$sql,$con);
-$total = mysql_numrows($consulta);
-	if ($total >= 1)
-	{
-		while($resultado = mysql_fetch_array($consulta))
-		{
-			$cadena .="<tr><td class='".clase($k)."'>".cambiaf($resultado[4])."</td><td class='".clase($k)."'><a href='javascript:muestra(".$resultado[1].")' >".traduce($resultado[5])."</a></td></tr>";
+    $cadena .= "</table>";
+    // Clientes que finalizan contrato este mes
+    $cadena .= "<table width='100%'>";
+    $cadena .= "<tr><th>Dia</th><th>Finalizan contrato este mes</th></tr>";
+    $sql = "SELECT facturacion.id, 
+		facturacion.idemp, 
+		facturacion.finicio, 
+		facturacion.duracion, 
+		facturacion.renovacion, 
+		clientes.Nombre
+		FROM facturacion INNER JOIN clientes ON facturacion.idemp = clientes.Id
+		WHERE month(renovacion) LIKE month(curdate()) and year(renovacion) 
+		like year(curdate()) and clientes.Estado_de_cliente != 0 
+		order by renovacion asc";
+    $consulta = mysql_query( $sql, $con );
+    $total = mysql_numrows( $consulta );
+	if ( $total >= 1 ) {
+		while ( true == ( $resultado = mysql_fetch_array( $consulta ) ) ) {
+			$cadena .="<tr><td class='" . clase( $k ) . "'>
+			" . cambiaf( $resultado[4] ) . "</td>
+			<td class='" . clase( $k ) . "'>
+			<a href='javascript:muestra(" . $resultado[1] . ")' >
+			" . $resultado[5] . "</a></td></tr>";
 			$k++;
 		}
+	} else {
+        $hnocump++;
+		$cadena.="<tr><td colspan='2' class='" . clase( $k++ ) ."'>
+		Nadie Finaliza contrato este mes
+		</td></tr>";
 	}
-else{
-		$hnocump++;
-		$cadena.="<tr><td colspan='2' class='".clase($k++)."'>Nadie Finaliza contrato este mes</td></tr>";
-	}
-$cadena .= "</table>";
-//Clientes que finalizan contrato dentro de los proximos 60 dias
-//Clientes FInalizan este mes
-$cadena .= "<table width='100%'>";
-$cadena .= "<tr><th>Dia</th><th>Finalizan contrato en los proximos 60 dias</th></tr>";
-$sql = "SELECT facturacion.id, 
-	facturacion.idemp, 
-	facturacion.finicio, 
-	facturacion.duracion, 
-	facturacion.renovacion, 
-	clientes.Nombre
-FROM facturacion INNER JOIN clientes ON facturacion.idemp = clientes.Id
-WHERE (CURDATE() <= renovacion) and (DATE_ADD(CURDATE(),INTERVAL 60 DAY)) >= renovacion and clientes.Estado_de_cliente != 0 order by Month(renovacion) asc, DAY(renovacion) asc";
-$consulta = mysql_db_query($dbname,$sql,$con);
-$total = mysql_numrows($consulta);
-	if ($total >= 1)
-	{
-		while($resultado = mysql_fetch_array($consulta))
-		{
-			$cadena .="<tr><td class='".clase($k)."'>".cambiaf($resultado[4])."</td><td class='".clase($k)."'><a href='javascript:muestra(".$resultado[1].")' >".traduce($resultado[5])."</a></td></tr>";
+    $cadena .= "</table>";
+    // Clientes que finalizan contrato dentro de los proximos 60 dias
+    $cadena .= "<table width='100%'>";
+    $cadena .= "<tr><th>Dia</th>
+    <th>Finalizan contrato en los proximos 60 dias</th></tr>";
+    $sql = "SELECT facturacion.id, 
+		facturacion.idemp, 
+		facturacion.finicio, 
+		facturacion.duracion, 
+		facturacion.renovacion, 
+		clientes.Nombre
+		FROM facturacion INNER JOIN clientes ON facturacion.idemp = clientes.Id
+		WHERE (CURDATE() <= renovacion) 
+		and (DATE_ADD(CURDATE(),INTERVAL 60 DAY)) >= renovacion 
+		and clientes.Estado_de_cliente != 0 
+		order by Month(renovacion) asc, DAY(renovacion) asc";
+    $consulta = mysql_query( $sql, $con );
+    $total = mysql_numrows( $consulta );
+	if ( $total >= 1 ) {
+		while ( true == ( $resultado = mysql_fetch_array( $consulta ) ) ) {
+			$cadena .="<tr><td class='" . clase( $k ) . "'>
+			" . cambiaf( $resultado[4] ) . "</td>
+			<td class='" . clase( $k ) . "'>
+			<a href='javascript:muestra(" . $resultado[1] . ")' >
+			" . $resultado[5] . "</a></td></tr>";
 			$k++;
 		}
-	}
-else{
+	} else {
 		$hnocump++;
-		$cadena.="<tr><td colspan='2' class='".clase($k++)."'>Nadie Finaliza contrato en los proximos 60 dias</td></tr>";
-	}
-$cadena .= "</table>";
-return $cadena;
+		$cadena .= "<tr><td colspan='2' class='" . clase( $k++ ) . "'>
+		Nadie Finaliza contrato en los proximos 60 dias</td></tr>";
+    }
+    $cadena .= "</table>";
+    return $cadena;
 }

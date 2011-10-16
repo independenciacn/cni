@@ -13,7 +13,7 @@
  * 			 Creative Commons Reconocimiento-NoComercial-SinObraDerivada 3.0 Unported
  * @link     https://github.com/independenciacn/cni
  */
-
+session_start();
 ini_set( 'mysql.default_host', 'localhost' );
 ini_set( 'mysql.default_user', 'cni' );
 ini_set( 'mysql.default_password', 'inc' );
@@ -50,7 +50,11 @@ function diaYmes( $stamp )
 function cambiaf( $stamp )
 {
     $fecha = explode( "-", $stamp );
-    return $fecha[2] . "-" . $fecha[1] . "-" . $fecha[0];
+    if ( count( $fecha ) == 3 ){
+        return $fecha[2] . "-" . $fecha[1] . "-" . $fecha[0];
+    } else {
+        return "--";
+    }
 }
 /**
  * Devuelve el dia y mes invertidos para la ordenacion
@@ -77,3 +81,13 @@ function clase( $k )
     }
     return $clase;
 }
+/**
+ * Trata el array de entrada
+ * 
+ * @param string $value
+ */
+function sanitize( &$value )
+{
+    global $con;
+    $value = mysql_real_escape_string( $value );
+}    

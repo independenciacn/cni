@@ -11,7 +11,7 @@ if (isset($_POST[opcion]))
 		case 4:$respuesta = revisa_tablas();break;
 		case 5:$respuesta = repara_tablas();break;
 		case 6:$respuesta = optimiza_tablas();break;
-		case 7:$respuesta = listado_categorias($_POST);break;
+		case 7:$respuesta = listadoCategorias($_POST);break;
 		case 8:$respuesta = detalles_categoria($_POST);break;
 		case 9:$respuesta = actualiza_categoria($_POST);break;
 		case 10:$respuesta = listado_telefonos();break;
@@ -138,7 +138,7 @@ function optimiza_tablas()
 	return $cadena;
 }
 /******************LISTADO CATEGORIAS*******************************************/
-function listado_categorias($vars)
+function listadoCategorias($vars)
 {
 	include("variables.php");
 	$tabla1=utf8_decode("categoría servicios");

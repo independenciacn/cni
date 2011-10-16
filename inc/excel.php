@@ -1,4 +1,4 @@
-<? //rarita en excel Listado Despachos y Domiciliados:
+<?php //rarita en excel Listado Despachos y Domiciliados:
 	header("Content-type: application/vnd.ms-excel");
 	header("Content-Disposition:inline; filename=excel.xls");
 	include("variables.php");
@@ -42,4 +42,3 @@
 	$cadena .= "</table>";
 	}
 	echo $cadena;
-?>

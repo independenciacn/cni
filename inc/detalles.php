@@ -1,4 +1,4 @@
-<? /* detalles.php fichero que visualiza los detalles de los estados de actividad y tambien la principal con los cumpleaños*/
+<?php /* detalles.php fichero que visualiza los detalles de los estados de actividad y tambien la principal con los cumpleaños*/
 switch($_POST[opcion])
 {
 	case 0:$cadena = frm_observaciones($_POST);break;
@@ -49,4 +49,3 @@ function accion($vars)
 	    $cadena = "No se ha realizado la accion".$sql;
 	return $cadena;
 }
-?>

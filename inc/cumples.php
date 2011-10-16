@@ -1,4 +1,10 @@
 <?php
+/**
+ * 
+ * Eliminar la clase o sustituirla
+ * @author ruben
+ *
+ */
 class Cumples
 {
     protected $db;
@@ -122,5 +128,3 @@ else
     $cadena.="<tr><td colspan='3'>Nadie cumple años este Mes</td></tr>";
 $cadena.="</table>";
 echo $cadena;
-
-?>

@@ -77,4 +77,3 @@ function mes_y_anyo($stamp)
 	}
 	return $fecha;
 }
-?>

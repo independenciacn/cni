@@ -1,4 +1,4 @@
-<? //fichero telecos.php generacion del formulario y gestion de datos de las telecomunicaciones
+<?php //fichero telecos.php generacion del formulario y gestion de datos de las telecomunicaciones
 switch($_POST['opcion'])
 {
 	case 0:$devuelve = campo_valores($_POST);break;
@@ -132,4 +132,3 @@ function chequea_valores($vars)
 		$tabla = "#ff0000";//.valor usado;
 	return $tabla;
 }
-?>

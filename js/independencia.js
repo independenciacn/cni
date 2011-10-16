@@ -3,24 +3,30 @@
 //VALIDACION DE USUARIO
 function validar()
 {
-	var usuario = $F('usuario')
-	var passwd = $F('passwd')
-	var url = "inc/validacion.php"
-	var pars = "opcion=0&usuario="+usuario+"&passwd="+passwd
+	var usuario = $F('usuario');
+	var passwd = $F('password');
+	var url = "inc/validacion.php";
+	var pars = "usuario="+usuario+"&password="+passwd;
 	var myAjax = new Ajax.Request(url,
 	 {
 			method:'post',
 			parameters: pars,
 			onComplete: function gen(t)
 			{
-				$('cuerpo').innerHTML = t.responseText
 				
+				var url = 'inc/principal.php';
+				var myAjax = new Ajax.Request(url,
+				{
+					method:'get',
+					onComplete: function gen(t)
+					{
+						$('cuerpo').innerHTML = t.responseText;
+					}
+				});
 			},
-			onCreate: $('cuerpo').innerHTML = "<center><p class='validacion'>Validando Usuario<br/><img src='imagenes/loader.gif' alt='Validando Usuario' /></p></center>"
-			
-				
-				
+			onCreate: $('cuerpo').innerHTML = "<center><p class='validacion'>Validando Usuario<br/><img src='imagenes/loader.gif' alt='Validando Usuario' /></p></center>"					
 	});
+	return false;
 }
 //***********************************************************************************************/
 function menu(codigo)
@@ -893,24 +899,17 @@ function cerrar_avisos()
  */
 function ver_avisos()
 {
-var url='inc/avisos.php'
-pars='opcion=0'
+var url='inc/avisos.php';
 var myAjax = new Ajax.Request(url,
 	{
-	method:'post',
-	parameters: pars,
-	onComplete: function gen(respuesta)
-	{
-		var estilo = $('avisos').style
-		estilo.visibility='visible'
-		estilo.display='block'
-		estilo.height='90%'
-		estilo.width='100%'
-		$('avisos').innerHTML = respuesta.responseText
+		method:'post',
+		onComplete: function gen(respuesta)
+		{
+			$('avisos').innerHTML = respuesta.responseText
 		
-	},
-	onSuccess: cerrar_tablon_telefonos
-});
+		},
+		onSuccess: cerrar_tablon_telefonos
+	});
 }
 
 //Parte del tablon de los telefonos del centro*******************************************************/

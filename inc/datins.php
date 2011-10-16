@@ -1,59 +1,30 @@
-<? 
+<?php
+require_once 'variables.php';
+$vars = $_POST; 
+array_walk( $vars, 'sanitize' ); 
 //datins.php Generacion de datos de interes para la aplicacion, avisos, cumplea�os, estadisticas, etc, lo vamos a controlar por opcion -> funcion si no es un kaos
 /*Indice de datos
 1 - Avisos
 2 - Cumplea�os
 */
 //GENERAL recibe - procesa - devuelve
-switch($_POST[dato])
-{
-	case 1:$datos = avisos();break;
-	case 2:$datos = cumples();break;
-	case 3:$datos = busqueda_avanzada();break; 
+switch ( $_POST['dato'] ) {
+	case 1:
+	    $datos = avisos();
+	break;
+	case 2:
+	    $datos = cumples();
+	break;
+	case 3:
+	    $datos = frmBusquedaAvanzada();
+	break; 
 }
 echo $datos;
 //backup base de datos
 //system("/usr/local/mysql/bin/mysqldump -u cni -p inc $destino > back.sql");
 //FUNCIONES
-function cambiaf($stamp) //funcion del cambio de fecha
-{
-	//formato en el que llega aaaa-mm-dd o al reves
-	$fdia = explode("-",$stamp);
-	$fecha = $fdia[2];//."-".$fdia[1]; //quito el a�o no interesa para el cumple."-".$fdia[0];
-	return $fecha;
-}
-function cambiaf2($stamp) //funcion del cambio de fecha
-{
-	//formato en el que llega aaaa-mm-dd o al reves
-	$fdia = explode("-",$stamp);
-	$fecha = $fdia[2]."-".$fdia[1]; //quito el a�o no interesa para el cumple."-".$fdia[0];
-	return $fecha;
-}
-//***********************************************************************************************/
-//traduce(texto): cuando algo no se muestra bien este lo decodifica
-//***********************************************************************************************/
-function traduce($texto)
-{
-	if(SISTEMA == "windows")
-		$bien = utf8_encode($texto); //para windows
-	else
-		$bien = $texto;//para sistemas *nix
-	return $bien;
-}
-
-//***********************************************************************************************/
-//codifica(texto): inversa a traduce
-//***********************************************************************************************/
-function codifica($texto)
-{
-	if(SISTEMA == "windows")
-		$bien = utf8_decode($texto); //para windows
-	else
-		$bien = $texto;//para sistemas *nix
-	return $bien;
-}
 /*********************************AQUI EMPIEZA LA FUNCION DE LOS AVISOS********************************/
-function avisos()
+/*function avisos()
 {
 //que queremos avisar principalmente fin de contratos en el dia y en el mes tanto de clientes como
 //de proveedores. De donde se coge ese dato, de la tabla facturacion
@@ -65,7 +36,7 @@ Proveedores (z_facturacion)
 1.- Fecha inicio + duracion
 2.- Dia de Pago - Si es hoy el dia del mes de pago
 */
-include("variables.php");
+/*include("variables.php");
 session_start();
 $ssid = session_id();
 $cadena .="<table class='tabla'>";
@@ -149,34 +120,38 @@ return $cadena;
 
 /*********************************AQUI EMPIEZA LA FUNCION DE LOS CUMPLEA�OS********************************/
 //esta ahora en el fichero cumples.php
-/*********************************FIN DE LA FUNCION DE LOS CUMPLEA�OS********************************/
-function busqueda_avanzada()
+/**
+ * Formulario busqueda avanzada
+ * 
+ * @return string
+ */
+function frmBusquedaAvanzada()
 {
-	$cadena ="";
-	$cadena .="<form id='busqueda_avanzada' onsubmit='busqueda_avanzada(); return false' >";
-	$cadena .="<table class='tabla'>";
-	$cadena .="<tr><th aling='left'><span class='boton' onclick='cierralo()' onkeypress='cierralo()'>[X] Cerrar</span></th><th>Busqueda Avanzada</td></tr>";
-	
-	//$cadena .="<p/>Por:<p/><hr>";
-	//$cadena .="Razon social:<input type='checkbox' name='razon' />";
-	//$cadena .="Nombre Comercial:<input type='checkbox' name='comercial' />";
-	//$cadena .="Nombre del Empleado:<input type='checkbox' name='empleado' /><p/>";
-	//$cadena .="Otros Nombres:<input type='checkbox' name='onombre' />";
-	//$cadena .="Telefono:<input type='checkbox' name='telefono' />";
-	//$cadena .="Email:<input type='checkbox' name='email' />";
-	$cadena .="<tr><th colspan='2'><input type='text' name='texto' size='40'/><input type='submit' name='Buscar' value='Buscar' /></th></tr>";
-	$cadena .="<tr><td colspan='2'><div id='resultados_busqueda_avanzada'></div></td></tr>";
-	$cadena .="</table>";
-	$cadena .= "</form>";
+	$cadena = "
+	<form id='busqueda_avanzada' onsubmit='busqueda_avanzada(); return false' >
+	<table class='tabla'>
+		<tr>
+			<th aling='left'>
+				<span class='boton' onclick='cierralo()' onkeypress='cierralo()'>
+				[X] Cerrar
+				</span>
+			</th>
+			<th>
+				Busqueda Avanzada
+			</th>
+		</tr>
+		<tr>
+			<th colspan='2'>
+				<input type='text' name='texto' size='40'/>
+				<input type='submit' name='Buscar' value='Buscar' />
+			</th>
+		</tr>
+		<tr>
+			<td colspan='2'>
+				<div id='resultados_busqueda_avanzada'></div>
+			</td>
+		</tr>
+	</table>
+	</form>";
 	return $cadena;
 }
-/*Para dar color a la tabla*/
-function clase($k)
-{
-	if($k%2==0)
-		$clase = "par";
-	else
-		$clase = "impar";
-return $clase;
-}
-?>
