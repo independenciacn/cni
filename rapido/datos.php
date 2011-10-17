@@ -1,4 +1,4 @@
-<? //datos.php  !!REVISION ENLACES ID PEDIDO E ID DE DETALLES
+<?php //datos.php  !!REVISION ENLACES ID PEDIDO E ID DE DETALLES
 //Fichero datos.php (muestra los datos del cliente el en mes actual). Realizado por Ruben Lacasa Mas ruben@ensenalia.com 2006-2007 
 setlocale(LC_NUMERIC, 'es_ES');
 switch($_POST[opcion])

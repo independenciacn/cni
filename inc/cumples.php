@@ -1,10 +1,19 @@
 <?php
 /**
+ * Cumples File Doc Comment
  * 
- * Eliminar la clase o sustituirla
- * @author ruben
- *
+ * Anulado - Borrar no sirve para nada ya
+ * 
+ * PHP Version 5.2.6
+ * 
+ * @category Cumples
+ * @package  cni/inc
+ * @author   Ruben Lacasa Mas <ruben@ensenalia.com> 
+ * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/ 
+ * 			 Creative Commons Reconocimiento-NoComercial-SinObraDerivada 3.0 Unported
+ * @link     https://github.com/independenciacn/cni
  */
+/*
 class Cumples
 {
     protected $db;
@@ -128,3 +137,4 @@ else
     $cadena.="<tr><td colspan='3'>Nadie cumple años este Mes</td></tr>";
 $cadena.="</table>";
 echo $cadena;
+*/

@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 </head>
 <body>
-<?
+<?php
 if(isset($_GET[mes]) && isset($_GET[cliente]))
 {
 include("datos.php");

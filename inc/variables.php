@@ -29,6 +29,15 @@ if ( !mysql_select_db( $dbname, $con ) ) {
 DEFINE( "OK", "imagenes/clean.png" ); //imagen en el mensaje de correcto
 DEFINE( "NOK", "imagenes/error.png" ); //imagen en el mensaje de fallo
 DEFINE( "SISTEMA", "*nix" );
+// Variables genericas
+// Meses
+$meses = array( 1 => "Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio",
+"Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+// Dias de la semana - Formato Largo
+$dias = array( 1 => "Lunes","Martes","Miercoles","Jueves","Viernes",
+"Sabado","Domingo");
+// Dias de la semana - Formato Corto
+$diasCortos=array( 1=> "L","M","X","J","V","S","D");
 // Funciones Genericas
 /**
  * Devuelve el dia y el mes en formato Español

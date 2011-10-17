@@ -1,4 +1,4 @@
-<?
+<?php
 /*
  * Chequeo de errores activado
  */

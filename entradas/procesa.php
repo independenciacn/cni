@@ -1,55 +1,63 @@
 <?php
-/*
- * Representacion del listado de los detallados cuando se hace 
- * clic en la vista de acumulados
- * TODO: Mejorar la presentacion de las tablas
+/**
+ * Procesa File Doc Comment
+ * 
+ * Representacion del listado de los detallados cuando se hace clic en la vista
+ * de acumulados
+ * 
+ * PHP Version 5.2.6
+ * 
+ * @category Index
+ * @package  cni/entradas/
+ * @author   Ruben Lacasa Mas <ruben@ensenalia.com> 
+ * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/ 
+ * Creative Commons Reconocimiento-NoComercial-SinObraDerivada 3.0 Unported
+ * @link     https://github.com/independenciacn/cni
  */
-if (isset($_POST['datos'])) {
+require_once "clases/EntradasSalidas.php";
+$entradas = new EntradasSalidas();
+if (isset( $_POST['datos'] )) {
     //parametros tipo,categoria,año inicial, añofinal
-    require_once ("clases/EntradasSalidas.php");
-    $entradas = new EntradasSalidas();
-    $datos = explode("#", urldecode($_POST['datos']));
+    $datos = explode( "#", urldecode( $_POST['datos'] ) );
     $entradas->anyoInicial = $datos[2];
     $entradas->anyoFinal = $datos[3];
     $entradas->setAnyos();
-    ($datos[0] != "servicios") ? 
-     $descripcion = $datos[0] . "s" : 
-     $descripcion = $datos[0];
-    if ($datos[0] != "servicios")
+    ($datos[0] != "servicios") ? $descripcion = $datos[0] . "s" : $descripcion = $datos[0];
+    if ($datos[0] != "servicios") {
         echo "<table class='listaacumulada'>";
-    else
+    } else {
         echo "<table class='listadetallada'>";
+    }
     $mes = 1;
     $inicio = 0;
     $acum = 0;
     $cont = 0;
     if ($datos[0] != "servicios") {
-        $listado = $entradas->detallesMovimientos($datos[0], $datos[1]);
+        $listado = $entradas->detallesMovimientos( $datos[0], $datos[1] );
         $columnas = 4;
-        
     } else {
-        $listado = $entradas->detallesServiciosExternos($datos[1]);
+        $listado = $entradas->detallesServiciosExternos( $datos[1] );
         $columnas = 3;
-        
     }
     foreach ($listado as $entrada) {
         if ($datos[0] != "servicios") {
-            $dia = $entradas->fecha->verDia($entrada[$datos[0]]);
-            $dmes = $entradas->fecha->verMes($entrada[$datos[0]]);
-            $anyo = $entradas->fecha->verAnyo($entrada[$datos[0]]);
+            $dia = $entradas->fecha->verDia( $entrada[$datos[0]] );
+            $dmes = $entradas->fecha->verMes( $entrada[$datos[0]] );
+            $anyo = $entradas->fecha->verAnyo( $entrada[$datos[0]] );
             if ($datos[0] == 'salida') {
                 if ($dia >= 16) {
                     if ($dmes == 12) {
                         $dmes = 1;
                         $anyo ++;
-                    } else
+                    } else {
                         $dmes ++;
+                    }
                 }
             }
         } else {
-            $dia = $entradas->fecha->verDia($entrada["fecha"]);
-            $dmes = $entradas->fecha->verMes($entrada["fecha"]);
-            $anyo = $entradas->fecha->verAnyo($entrada["fecha"]);
+            $dia = $entradas->fecha->verDia( $entrada["fecha"] );
+            $dmes = $entradas->fecha->verMes( $entrada["fecha"] );
+            $anyo = $entradas->fecha->verAnyo( $entrada["fecha"] );
         }
         if ($dmes != $mes || $inicio == 0) {
             if ($inicio != 0) {
@@ -62,60 +70,60 @@ if (isset($_POST['datos'])) {
             echo "<tr class=''>
              <th colspan='{$columnas}'>{$entradas->meses[$dmes]} {$anyo}</th>
              </tr>";
-            if ($datos[0] != "servicios")
+            if ($datos[0] != "servicios") {
                 echo "<tr class=''>
                  <th></th>
                  <th class='acumulada'>Empresa</th>
                  <th class='datosacumulados'>Entrada</th>
                  <th class='datosacumulados'>Salida</th>
                  </tr>";
-            else
+            } else {
                 echo "<tr class=''>
                  <th></th>
                  <th class='acumulada'>Empresa</th>
                  <th class='datosacumulados'>Dia Consumo</th>
                  </tr>";
+            }
             $inicio = 1;
             $mes = $dmes;
             $acum = $acum + $cont;
             $cont = 0;
         }
-        $cont++;
+        $cont ++;
         $nombreEntrada = $entrada['Nombre'];
-        if ($datos[0] != "servicios")
+        if ($datos[0] != "servicios") {
             echo "<tr class='ui-widget-content'>
             <td>{$cont}</td>
             <td>{$nombreEntrada}</td>
             <td>{$entradas->fecha->cambiaf($entrada["entrada"])}</td>
             <td>{$entradas->fecha->cambiaf($entrada["salida"])}</td>
             </tr>";
-        else
+        } else {
             echo "<tr class='ui-widget-content'>
             <td>{$cont}</td>
             <td>{$nombreEntrada}</td>
             <td>{$entradas->fecha->cambiaf($entrada["fecha"])}</td>
             </tr>";
+        }
     }
-    if ($mes != 1)
+    if ($mes != 1) {
         echo "<tr class='ui-widget-content'>
          <td colspan='{$columnas}'><strong>Total {$cont}</strong></td>
          </tr>";
-    $total = $acum + $cont;    
+    }
+    $total = $acum + $cont;
     echo "<tr class=''><th colspan='{$columnas}'>Total {$total}</th></tr>";
     echo "</table>";
     echo "<a href='#arriba' class='enlacedetallada'>Ir Arriba</a>";
 }
-
-if (isset($_POST['servicio'])) {
-    require_once 'clases/EntradasSalidas.php';
-    $entradas = new EntradasSalidas();
-    $dato = explode('#', $_POST['servicio']);
+if (isset( $_POST['servicio'] )) {
+    $dato = explode( '#', $_POST['servicio'] );
     $html = "<table class='listaacumulada'>";
-    if (! isset($dato[3])) {
+    if (! isset( $dato[3] )) {
         $html .= "<tr><td> No hay datos </td></tr>";
     } else {
-        $detalles = 
-        $entradas->detallesServiciosExternos(utf8_decode(urldecode($dato[1])), $dato[2], $dato[3]);
+        $detalles = $entradas->detallesServiciosExternos( 
+        utf8_decode( urldecode( $dato[1] ) ), $dato[2], $dato[3] );
         $html .= "
         <tr>
          <th class='acumulada'>Cliente</th>
@@ -123,7 +131,7 @@ if (isset($_POST['servicio'])) {
         </tr>";
         foreach ($detalles as $detalle) {
             $nombre = $detalle['Nombre'];
-            $fecha = $entradas->fecha->cambiaf($detalle['fecha']);
+            $fecha = $entradas->fecha->cambiaf( $detalle['fecha'] );
             $html .= "
             <tr class='celdadialog'>
              <td>{$nombre}</td>
@@ -137,16 +145,12 @@ if (isset($_POST['servicio'])) {
 /*
  * FIXME!: no salen los datos de las categorias con acento 
  */
-if (isset($_POST['cliente'])) {
-	
-    require_once 'clases/EntradasSalidas.php';
-    $entradas = new EntradasSalidas();
-    $dato = explode('#', urldecode($_POST['cliente']));
-    
+if (isset( $_POST['cliente'] )) {
+    $dato = explode( '#', urldecode( $_POST['cliente'] ) );
     $html = "<table class='listaacumulada'>";
-    $detalles = 
-    $entradas->detalleClienteMes($dato[0], $dato[1], $dato[2], $dato[3]);
-    if (count($detalles) > 0) {
+    $detalles = $entradas->detalleClienteMes( $dato[0], $dato[1], $dato[2], 
+    $dato[3] );
+    if (count( $detalles ) > 0) {
         $html .= "
         <tr>
          <th class='acumulada'>Cliente</th>
@@ -155,8 +159,8 @@ if (isset($_POST['cliente'])) {
         </tr>";
         foreach ($detalles as $detalle) {
             $nombre = $detalle['Nombre'];
-            $fechaEntrada = $entradas->fecha->cambiaf($detalle['entrada']);
-            $fechaSalida = $entradas->fecha->cambiaf($detalle['salida']);
+            $fechaEntrada = $entradas->fecha->cambiaf( $detalle['entrada'] );
+            $fechaSalida = $entradas->fecha->cambiaf( $detalle['salida'] );
             $html .= "
             <tr class='celdadialog'>
              <td>{$nombre}</td>
@@ -164,43 +168,36 @@ if (isset($_POST['cliente'])) {
              <td>{$fechaSalida}</td>
             </tr>";
         }
-    } else
+    } else {
         $html .= "
         <tr>
          <td> No hay datos</td>
         </tr>";
-    
+    }
     $html .= "</table>";
     echo $html;
 }
-if (isset($_POST['ocupacion'])){
-    
-    require_once 'clases/EntradasSalidas.php';
-    
-    $entradas = new EntradasSalidas();
-    $anyoFinal = NULL;
-    $dato = explode('#',urldecode($_POST['ocupacion']));
+if (isset( $_POST['ocupacion'] )) {
+    $anyoFinal = null;
+    $dato = explode( '#', urldecode( $_POST['ocupacion'] ) );
     $class = "celdadialog";
-    if($dato[2]!=100){
-        if( $dato[2]> '11' ){
+    if ($dato[2] != 100) {
+        if ($dato[2] > '11') {
             $mes = $dato[2] - 11;
             $anyo = $_POST['fin'];
-        }
-        else {
+        } else {
             $mes = $dato[2] + 1;
             $anyo = $_POST['inicial'];
-        } 
-    }
-    else{
-            $mes = $dato[2];
-            $anyo = $_POST['inicial'];
-            $anyoFinal = $_POST['fin'];
-            $class = "ui-widget-content";
         }
-    
-        
-    $detalles = $entradas->DetallesOcupacionHoras($mes,$anyo,$dato[0],$dato[1],$anyoFinal);
-    $i=0;
+    } else {
+        $mes = $dato[2];
+        $anyo = $_POST['inicial'];
+        $anyoFinal = $_POST['fin'];
+        $class = "ui-widget-content";
+    }
+    $detalles = $entradas->detallesOcupacionHoras( $mes, $anyo, $dato[0], 
+    $dato[1], $anyoFinal );
+    $i = 0;
     $mes = 0;
     $inicio = 0;
     $total = 0;
@@ -212,38 +209,36 @@ if (isset($_POST['ocupacion'])){
          <th class='acumulada'>Servicio</th>
          <th class='datosacumulados'>Fecha</th>
         </tr>";
-        foreach ($detalles as $detalle) {
-            
-            $nombre = $detalle['Nombre'];
-            $servicio = $detalle['Servicio'];
-            $fecha = $entradas->fecha->cambiaf($detalle['fecha']);
-            if($mes != $entradas->fecha->verMes($detalle["fecha"]))
-            {
-                if($inicio!=0){
-                    $html .= "<tr class='ui-widget-content'>
+    foreach ($detalles as $detalle) {
+        $nombre = $detalle['Nombre'];
+        $servicio = $detalle['Servicio'];
+        $fecha = $entradas->fecha->cambiaf( $detalle['fecha'] );
+        if ($mes != $entradas->fecha->verMes( $detalle["fecha"] )) {
+            if ($inicio != 0) {
+                $html .= "<tr class='ui-widget-content'>
                  <td colspan='4'>
                  <strong>Total {$i}</strong>
                  </td>
                  </tr>";
-                    $total += $i;
-                    $i=0;
-                }
-                $mes = $entradas->fecha->verMes($detalle["fecha"]);
-                $anyo = $entradas->fecha->verAnyo($detalle["fecha"]);
-                $html .="<tr class=''>
+                $total += $i;
+                $i = 0;
+            }
+            $mes = $entradas->fecha->verMes( $detalle["fecha"] );
+            $anyo = $entradas->fecha->verAnyo( $detalle["fecha"] );
+            $html .= "<tr class=''>
                  <th colspan='4'>{$entradas->meses[$mes]} {$anyo}</th>
                  </tr>";
-                $inicio = 1;
-            }
-            ++$i;
-            $html .= "
+            $inicio = 1;
+        }
+        ++ $i;
+        $html .= "
             <tr class='{$class}'>
              <td>{$i}</td>
              <td>{$nombre}</td>
              <td>{$servicio}</td>
              <td>{$fecha}</td>
             </tr>";
-        }
+    }
     $html .= "<tr class='ui-widget-content'>
                  <td colspan='4'>
                  <strong>Total {$i}</strong>
@@ -255,4 +250,3 @@ if (isset($_POST['ocupacion'])){
     $html .= "<a href='#arriba' class='enlacedetallada'>Ir Arriba</a>";
     echo $html;
 }
-

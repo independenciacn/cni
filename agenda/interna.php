@@ -1,4 +1,4 @@
-<? session_start();
+<?php session_start();
 /*
  * Inicializamos la fecha que se definiria como hoy que 
  * sera el punto de partida de 
@@ -30,10 +30,10 @@ include("../inc/variables.php");
 <label>Seleccionar Fecha: </label><input type='text' id='semana' name='semana' size ='10'  value='<? echo $hoy; ?>' onchange='cambia_fecha()' />
 <button type='button' class='boton' id='f_trigger_semana' >...</button>
 <input type='hidden' id='seccion' value='1' />
-<? echo $mes." de ".$anyo.". Semana: ". $semana;?>
+<?php echo $mes." de ".$anyo.". Semana: ". $semana;?>
 </form>
 <table width='100%' id='semana'>
-<?
+<?php
 /*
  * Calculamos las semanas totales del año actual
  * Dibujo la tabla luego la lleno

@@ -1,15 +1,33 @@
 <?php
+/**
+ * Datins File Doc Comment
+ * 
+ * Ahora mismo solo genera el formulario de busqueda avanzada
+ * 
+ * PHP Version 5.2.6
+ * 
+ * @category Datins
+ * @package  cni/inc
+ * @author   Ruben Lacasa Mas <ruben@ensenalia.com> 
+ * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/ 
+ * 			 Creative Commons Reconocimiento-NoComercial-SinObraDerivada 3.0 Unported
+ * @link     https://github.com/independenciacn/cni
+ */
 require_once 'variables.php';
 $vars = $_POST; 
-array_walk( $vars, 'sanitize' ); 
+array_walk( $vars, 'sanitize' ); // Saneamos todos los datos
+if ( isset( $vars['dato'] ) ) {
+    echo frmBusquedaAvanzada();
+}
 //datins.php Generacion de datos de interes para la aplicacion, avisos, cumplea�os, estadisticas, etc, lo vamos a controlar por opcion -> funcion si no es un kaos
 /*Indice de datos
 1 - Avisos
 2 - Cumplea�os
 */
 //GENERAL recibe - procesa - devuelve
+/*
 switch ( $_POST['dato'] ) {
-	case 1:
+	/*case 1:
 	    $datos = avisos();
 	break;
 	case 2:
@@ -127,7 +145,7 @@ return $cadena;
  */
 function frmBusquedaAvanzada()
 {
-	$cadena = "
+    $cadena = "
 	<form id='busqueda_avanzada' onsubmit='busqueda_avanzada(); return false' >
 	<table class='tabla'>
 		<tr>
@@ -153,5 +171,5 @@ function frmBusquedaAvanzada()
 		</tr>
 	</table>
 	</form>";
-	return $cadena;
+    return $cadena;
 }

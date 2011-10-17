@@ -1,4 +1,4 @@
-<?
+<?php
 /*
  * Inicializamos la fecha que se definiria como hoy que sera el
  * punto de partida de todas las operaciones del calendario
@@ -28,11 +28,11 @@ include("../inc/variables.php");
 <label>Seleccionar Fecha: </label><input type='text' id='semana'  name='semana' size ='10'  value='<? echo $hoy; ?>' onchange=cambia_fecha() />
 <button type='button' class='boton' id='f_trigger_semana' >...</button>
 <input type='hidden' id='seccion' value='0' />
-<? echo $mes." de ".$anyo.". Semana: ". $semana;?>
+<?php echo $mes." de ".$anyo.". Semana: ". $semana;?>
 </form>
 
 <table id='semana'  width='100%'>
-<?
+<?php
 /*
  * Calculamos las semanas totales del año actual
  * Dibujo la tabla luego la lleno

@@ -13,7 +13,6 @@
  * 			 Creative Commons Reconocimiento-NoComercial-SinObraDerivada 3.0 Unported
  * @link     https://github.com/independenciacn/cni
  */
-
 ?>
 <div id='menu_general'>
     <?php echo menu(); ?>
@@ -27,17 +26,21 @@ function menu()
     global $con;
     $sql = "Select * from menus";
     $consulta = mysql_query( $sql, $con );
+    $menuAntiguo = "";
     $tabla = "<table width='100%'><tr>";
     while ( true == ($resultado = mysql_fetch_array( $consulta ) )) {
         switch ($resultado[0]) {
+            // Quito los menus 7 y 8 por que no los considero necesarios
+            // Los dejo por si acaso
             case 7:
-                $tabla .= "<th><a href='javascript:datos(1)'>
+                $menuAntiguo .= "<th><a href='javascript:datos(1)'>
 							<img src='" .
                  $resultado[3] . "' alt='" . $resultado[1] . "' width='32'/>
 							<p />" . $resultado[1] . "</a></th>";
-                break;
+                
+                 break;
             case 8:
-                $tabla .= "<th><a href='javascript:datos(2)'>
+                $menuAntiguo .= "<th><a href='javascript:datos(2)'>
 							<img src='" .
                  $resultado[3] . "' alt='" . $resultado[1] . "' width='32'/>
 							<p />" . $resultado[1] . "</a></th>";
