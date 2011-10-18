@@ -83,7 +83,7 @@ function cambiaf($stamp)
 /*
  * Devuelve el nombre del cliente
  */
-function nombre_cliente($id)
+function nombreCliente($id)
 {
 	include("../inc/variables.php");
 	$sql="Select Nombre from clientes where id like $id";
@@ -169,7 +169,7 @@ function datos_ocupacion($despacho,$fecha)
 			//!!CASO RESERVAS A NO CLIENTES
 				if($resultado[id_cliente]!="")
 				{
-					$cadena.="<div class='las_horas'>".$hinc."-".$hfin."</div>".utf8_encode(nombre_cliente($resultado[1]));
+					$cadena.="<div class='las_horas'>".$hinc."-".$hfin."</div>".utf8_encode(nombreCliente($resultado[1]));
 					$cadena.="<br/><span class='mini_boton' onclick='informacion_cliente($resultado[1],0,$resultado[0])'>&nbsp;Observaciones&nbsp;</span><input type='hidden' id='cliente_despacho_$resultado[1]' value='$resultado[1]' /><p/>";
 					$cadena.=confirmado($resultado[conformidad]);
 					$cadena.="<p/>";

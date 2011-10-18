@@ -12,7 +12,7 @@ if(isset($_POST[opcion]))
 	{
 		case 0:$respuesta=formulario_despacho($_POST);break;
 		case 1:$respuesta=cuca($_POST);break;
-		case 2:$respuesta=dame_nombre_cliente($_POST);break;
+		case 2:$respuesta=dameNombreCliente($_POST);break;
 		case 3:$respuesta=informacion_despacho($_POST);break;
 		case 4:$respuesta=guarda_despacho($_POST);break;
 		case 5:$respuesta=detalles_ocupacion($_POST);break;
@@ -185,7 +185,7 @@ function cuca($vars)
 /*
  * DEVUELVE EL NOMBRE DEL CLIENTE
  */
-function dame_nombre_cliente($vars)
+function dameNombreCliente($vars)
 {
 	include("../inc/variables.php");
 	$sql = "Select * from `clientes` where id like $vars[cliente] ";
@@ -235,7 +235,7 @@ function cambiaf($stamp)
 /*
  * Funcion auxiliar, muestra el nombre del cliente
  */
-function nombre_cliente($id)
+function nombreCliente($id)
 {
 	include("../inc/variables.php");
 	$sql="Select Nombre from clientes where id like $id";
@@ -288,7 +288,7 @@ function informacion_despacho($vars)
 	if($vars[tipo]==0)
 	{
 		$cliente[cliente]=$vars[despacho];
-		$datos_cliente = explode(";",dame_nombre_cliente($cliente));
+		$datos_cliente = explode(";",dameNombreCliente($cliente));
 		$cadena.="<form id='ficha_cliente' method='post' action=''>";
 		$cadena.="<div class='seccion'>Cliente:</div><p>".$datos_cliente[1]."</p>";
 	//Codigo Negocio
@@ -536,7 +536,7 @@ function detalles_ocupacion($vars)
 		if($resultado[otro]!="")
 			$respuesta.="<tr><td colspan='2'>".traduce($resultado[otro])."</td></tr>";
 		else
-			$respuesta.="<tr><td colspan='2'>".traduce(nombre_cliente($resultado[id_cliente]))."</td></tr>";
+			$respuesta.="<tr><td colspan='2'>".traduce(nombreCliente($resultado[id_cliente]))."</td></tr>";
 		$respuesta.="<tr><th align='left'>Fecha Inicio</th><th align='left'>Fecha Fin</th></tr>";
 	$respuesta.="<tr><td>".cambiaf($resultado[finc])."</td><td>".cambiaf($resultado[ffin])."</td></tr>";
 		$respuesta.="<tr><th align='left'>Hora Inicio</th><th align='left'>Hora Fin</th></tr>";
@@ -632,7 +632,7 @@ function datos_despacho($despacho) //!!!FUNCION REPETIDA
 		while($resultado=@mysql_fetch_array($consulta))
 		{
 			$i++;
-			$cadena.=utf8_encode(nombre_cliente($resultado[id_cliente]))."<br/>";
+			$cadena.=utf8_encode(nombreCliente($resultado[id_cliente]))."<br/>";
 			$cadena.=cambiaf($resultado[finc])." - ".cambiaf($resultado[ffin])."<p/>";
 			$cadena.="<span class='mini_boton' style='background:#666699;' onclick='informacion_cliente($resultado[id_cliente])'>[+Info]</span><p/>";
 		}

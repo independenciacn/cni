@@ -49,7 +49,7 @@ function observaciones_especiales($cliente,$factura)
 	return $obser;
 }
 /*******************************************************************************************************************/
-function dame_el_mes($mes)
+function dameElMes($mes)
 {
 	switch($mes)
 	{
@@ -177,7 +177,7 @@ function cabezera_factura($nombre_fichero,$fecha_factura,$codigo,$cliente)
 {
 	include("../inc/variables.php");
 	$fecha_factura = explode("-",$fecha_factura);
-	$fecha_de_factura = $fecha_factura[0]." de ".dame_el_mes($fecha_factura[1])." de ".$fecha_factura[2];
+	$fecha_de_factura = $fecha_factura[0]." de ".dameElMes($fecha_factura[1])." de ".$fecha_factura[2];
 	$sql = "Select * from clientes where id like $cliente";
 	$consulta = mysql_db_query($dbname,$sql,$con);
 	$resultado = mysql_fetch_array($consulta);

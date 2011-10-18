@@ -14,10 +14,10 @@ include("../inc/variables.php");
 //header("Content-type: application/vnd.ms-excel");
 //header("Content-Disposition: attachment; filename=excel.xls");
 $vars = array("mes"=>$_GET[mes],"cliente"=>$_GET[cliente]);
-$mes_servicios = dame_el_mes($vars[mes]);
+$mes_servicios = dameElMes($vars[mes]);
 $mes2 = $_GET[mes]-1;
-$mes_fijos = dame_el_mes($mes2);
-$cliente_servicios = explode(";",dame_nombre_cliente($vars));
+$mes_fijos = dameElMes($mes2);
+$cliente_servicios = explode(";",dameNombreCliente($vars));
 //echo ver_servicios_contratados($vars);<= Version Rapida OK
 //Version retocada estilo
 if($_GET[mes] <= 9)

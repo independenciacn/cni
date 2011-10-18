@@ -14,6 +14,7 @@
  * @link     https://github.com/independenciacn/cni
  */
 session_start();
+setlocale( LC_NUMERIC, 'es_ES' );
 ini_set( 'mysql.default_host', 'localhost' );
 ini_set( 'mysql.default_user', 'cni' );
 ini_set( 'mysql.default_password', 'inc' );

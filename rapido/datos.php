@@ -1,93 +1,58 @@
 <?php //datos.php  !!REVISION ENLACES ID PEDIDO E ID DE DETALLES
 //Fichero datos.php (muestra los datos del cliente el en mes actual). Realizado por Ruben Lacasa Mas ruben@ensenalia.com 2006-2007 
-setlocale(LC_NUMERIC, 'es_ES');
-switch($_POST[opcion])
+require_once '../inc/variables.php';
+$vars = $_POST;
+array_walk( $vars, 'sanitize' );
+
+switch($vars['opcion'])
 {
-	case 1:$cadena = cuca($_POST);break;
-	case 2:$cadena = dame_nombre_cliente($_POST);break;
-	case 3:$cadena = ver_servicios_contratados($_POST);break;
-	case 4:$cadena = borra_servicio_contratado($_POST);break;
-	case 5:$cadena = frm_modificacion_servicio($_POST);break;
-	case 6:$cadena = modificacion_servicio($_POST);break;
-	case 7:$cadena = frm_alta_servicio($_POST);break;
-	case 8:$cadena = valor_del_servicio($_POST);break;
-	case 9:$cadena = agrega_el_servicio($_POST);break;
-	case 10:$cadena = ventana_observaciones($_POST);break;
-	case 11:$cadena = listado_facturas($_POST);break;
-	case 13:$cadena = borrar_factura($_POST);break;
-	case 14:$cadena = filtros($_POST);break;
-	case 15:$cadena = casos($_POST);break;
+	case 1:$cadena = cuca($vars);break;
+	case 2:$cadena = dameNombreCliente($vars);break;
+	case 3:$cadena = verServiciosContratados($vars);break;
+	case 4:$cadena = borraServicioContratado($vars);break;
+	case 5:$cadena = frmModificacionServicio($vars);break;
+	case 6:$cadena = modificacionServicio($vars);break;
+	case 7:$cadena = frmAltaServicio($vars);break;
+	case 8:$cadena = valorDelServicio($vars);break;
+	case 9:$cadena = agregaElServicio($vars);break;
+	case 10:$cadena = ventanaObservaciones($vars);break;
+	case 11:$cadena = listadoFacturas($vars);break;
+	case 13:$cadena = borrarFactura($vars);break;
+	case 14:$cadena = filtros($vars);break;
+	case 15:$cadena = casos($vars);break;
 }
 echo $cadena;
 
 //FUNCIONES AUXILIARES********************************************************************************
 //Funcion que muestra el importe total a pagar de almacenaje si el cliente tiene algo almacenado
-function traduce($texto)
+/**
+ * Devuelve el nombre del mes
+ * 
+ * @param integer $mes
+ * @return string 
+ */
+function dameElMes( $mes )
 {
-//en algunos casos
-	if(SISTEMA == "windows")
-		$bien = utf8_encode($texto); //para windows
-	else
-		$bien = $texto;//para sistemas *nix
-	return $bien;
-}
-//***********************************************************************************************/
-//a la hora de agregarlo lo codifica
-function codifica($texto)
-{
-	if(SISTEMA == "windows")
-		$bien = utf8_decode($texto); //para windows
-	else
-		$bien = $texto;//para sistemas *nix
-	return $bien;
-}
-//***********************************************************************************************/
-//Cambia la fecha a formato sql
-function cambiaf($stamp) //funcion del cambio de fecha
-{
-	//formato en el que llega aaaa-mm-dd o al reves
-	$fdia = explode("-",$stamp);
-	$fecha = $fdia[2]."-".$fdia[1]."-".$fdia[0];
-	if($fecha == "--")
-	$fecha = "0000-00-00";
-	return $fecha;
-}
-function dame_el_mes($mes)
-{
-	switch($mes)
-	{
-		case 1: $marcado = "Enero";breaK;
-		case 2: $marcado = "Febrero";breaK;
-		case 3: $marcado = "Marzo";breaK;
-		case 4: $marcado = "Abril";breaK;
-		case 5: $marcado = "Mayo";breaK;
-		case 6: $marcado = "Junio";breaK;
-		case 7: $marcado = "Julio";breaK;
-		case 8: $marcado = "Agosto";breaK;
-		case 9: $marcado = "Septiembre";breaK;
-		case 10: $marcado = "Octubre";breaK;
-		case 11: $marcado = "Noviembre";breaK;
-		case 12: $marcado = "Diciembre";breaK;
-	}
-	return $marcado;
+    global $meses;
+    return $meses[$mes];
 }
 /**************************************************************************************************/
 //calculoa lo que hay en el almacen y si hay que cobrarlo !!!!CAMBIAR MES ACTUAL POR MES SELLECCIONADO
-function almacenaje($cliente,$mes,$anyo) //No creo que sea necesaria
+function almacenaje( $cliente, $mes, $anyo ) //No creo que sea necesaria
 {
-	include("../inc/variables.php");
+    global $con;
     $sql = "Select datediff('$anyo-$mes-01','2010-07-01')";
-    $consulta = mysql_db_query($dbname,$sql,$con);
-    $diff = $resultado = mysql_fetch_array($consulta);
+    $consulta = mysql_query( $sql, $con );
+    $diff = $resultado = mysql_fetch_array( $consulta );
     if($diff[0]>=0)
     {
         $sql = "select PrecioEuro, iva from servicios2 where nombre like '%Almacenaje%'";
-        $consulta = mysql_db_query($dbname,$sql,$con);
-        $par_almacenaje = mysql_fetch_array($consulta);
+        $consulta = mysql_query( $sql, $con );
+        $par_almacenaje = mysql_fetch_array( $consulta );
     }
-    else
+    else {
         $par_almacenaje = array('PrecioEuro'=>'0.70','iva'=>'16');
-
+    }
     //Fin del calculo de los parametros del almacenaje dependiendo del valor que tiene en servicios
 	$sql = "Select bultos, datediff(fin,inicio) from z_almacen where cliente like $cliente and month(fin) like $mes and year(fin) like $anyo";
 	$consulta = mysql_db_query($dbname,$sql,$con);
@@ -155,7 +120,7 @@ function cuca($vars)
 }
 
 //Funcion que devuelve el nombre de cliente y lo pone en el campo de texto*********************************/
-function dame_nombre_cliente($vars)
+function dameNombreCliente($vars)
 {
 	include("../inc/variables.php");
 	$sql = "Select * from `clientes` where id like $vars[cliente] ";
@@ -166,7 +131,7 @@ function dame_nombre_cliente($vars)
 }
 
 //Funcion que muestra los datos de los servicios contratados del cliente en el mes seleccionado***************/
-function ver_servicios_contratados($vars)
+function verServiciosContratados($vars)
 {
 	include("../inc/variables.php");
 	
@@ -223,7 +188,7 @@ return $cadena;
 }
 
 //Borrado del servicio contratado***************************************************************************
-function borra_servicio_contratado($vars)
+function borraServicioContratado($vars)
 {
 	include("../inc/variables.php");
 	$sql = "Select `Id Pedido` from `detalles consumo de servicios` where `Id` like $vars[servicio]";
@@ -241,7 +206,7 @@ function borra_servicio_contratado($vars)
 }
 
 //formulario de modificacion de servicios*******************************************************************
-function frm_modificacion_servicio($vars)
+function frmModificacionServicio($vars)
 {
 	include("../inc/variables.php");
 	$sql = "Select * from `detalles consumo de servicios` where `Id` like $vars[servicio]";
@@ -289,7 +254,7 @@ function frm_modificacion_servicio($vars)
 	return $cadena;
 }
 //PASA LOS DATOS PARA MODIFICAR EN LA BASE*****************************************************************/
-function modificacion_servicio($vars)
+function modificacionServicio($vars)
 {
 	include("../inc/variables.php");
 	$subtotal = $vars[cantidad] * $vars[precio];
@@ -305,7 +270,7 @@ function modificacion_servicio($vars)
 		return "<img src='".NOK."' alt='ERROR' width='64'/> ERROR&nbsp;&nbsp;<p/>".$sql;
 }
 //Formulario de Agregar servicio al cliente****************************************************************/
-function frm_alta_servicio($vars)
+function frmAltaServicio($vars)
 {
 	include("../inc/variables.php");
 	$cadena ="<br/><form id='frm_alta' class='formulario'  method='post' onSubmit='agrega_servicio(); return false'>
@@ -331,7 +296,7 @@ function frm_alta_servicio($vars)
 	return $cadena;
 }
 //Funcion que devuelve el precio y el iva del servicio seleccionado****************************************/
-function valor_del_servicio($vars)
+function valorDelServicio($vars)
 {
 	include("../inc/variables.php");
 	$sql = "Select PrecioEuro,iva from servicios2 where id like $vars[servicio]";
@@ -340,7 +305,7 @@ function valor_del_servicio($vars)
 	return round($resultado[0],2).";".$resultado[1];
 }
 //AGREGAMOS EL SERVICIO AGAIN*****************************************/
-function agrega_el_servicio($vars)
+function agregaElServicio($vars)
 {
 	include("../inc/variables.php");
 	//parametros que llegan, cliente,fecha,servicio,precio,cantidad,iva,observaciones
@@ -365,7 +330,7 @@ function agrega_el_servicio($vars)
 			return "<img src='".NOK."' alt='ERROR' width='64'/> ERROR&nbsp;&nbsp;<p/>".$sql;
 }
 //Visualizacion de la ventana de observaciones*******************************************************************/
-function ventana_observaciones($vars)
+function ventanaObservaciones($vars)
 {
 	include("../inc/variables.php");
 	$sql = "Select observaciones from `detalles consumo de servicios` where `Id Pedido` like $vars[servicio]";
@@ -376,7 +341,7 @@ function ventana_observaciones($vars)
 	return $cadena;
 }
 //Para borrar una factura seleccionada**********************************************/
-function borrar_factura($vars)
+function borrarFactura($vars)
 {
 	include("../inc/variables.php");
 	$sql = "Select codigo from regfacturas where id like $vars[factura]";
@@ -392,14 +357,14 @@ function borrar_factura($vars)
 	}
 	else
 	$cadena = "No se ha borrado la factura<p/>";
-	$cadena .= listado_facturas($vars);
+	$cadena .= listadoFacturas($vars);
 return $cadena;
 }
 //DESDE AQUI ESTA TODO EMPANTANADO CASI NA************************************************/
 //Funciones, La cabezera con los cuadros de texto son fijos
 //Cambia el listado
 //Funcion principal,solocabezera
-function listado_facturas($vars)
+function listadoFacturas($vars)
 {
 	//Las vars marcaran que hay ordenado y que no
 	$cadena =cabezera_pantalla(0,0,0,0,1);//Version de Evaluacion
@@ -618,13 +583,5 @@ $cadena .= "</table>
 </div>
 </div><div id='linea_generacion'></div>";
 return $cadena;
-}
- function clase($k)
-{
-	if($k%2==0)
-		$clase = "par";
-	else
-		$clase = "impar";
-return $clase;
 }
 ?>

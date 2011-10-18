@@ -20,8 +20,8 @@ require_once 'inc/variables.php';
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link href="estilo/blueprint/screen.css" rel="stylesheet" type="text/css"></link>
-<!--  <link href="estilo/cni.css" rel="stylesheet" type="text/css"></link>-->
+<!--  <link href="estilo/blueprint/screen.css" rel="stylesheet" type="text/css"></link>-->
+<link href="estilo/cni.css" rel="stylesheet" type="text/css"></link>
 <link href="estilo/calendario.css" rel="stylesheet" type="text/css"></link>
 <script type="text/javascript" src='js/prototype17.js'></script>
 <script type="text/javascript" src="js/calendar.js"></script>

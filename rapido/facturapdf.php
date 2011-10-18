@@ -1,5 +1,4 @@
 <?php
-
 if((isset($_GET[factura])) || (isset($_POST[factura])))
 {
 	//calculo del total con iva
@@ -9,7 +8,7 @@ if((isset($_GET[factura])) || (isset($_POST[factura])))
 		return $total;
 	}
 /*******************************************************************************************************************/
-	function dame_el_mes($mes)
+	function dameElMes($mes)
 	{
 		switch($mes)
 		{
@@ -33,12 +32,12 @@ if((isset($_GET[factura])) || (isset($_POST[factura])))
 	{
 		//formato en el que llega aaaa-mm-dd o al reves
 		$fdia = explode("-",$stamp);
-		$fecha = $fdia[2]." de ".dame_el_mes($fdia[1])." de ".$fdia[0];
+		$fecha = $fdia[2]." de ".dameElMes($fdia[1])." de ".$fdia[0];
 		return $fecha;
 	}
 /*******************************************************************************************************************/
 	include("../inc/variables.php");
-	require_once('class.ezpdf.php');
+	require_once('clases/class.ezpdf.php');
 	if(isset($_POST[factura]))
 	{
 		$factura = $_POST[factura];
@@ -100,7 +99,7 @@ if((isset($_GET[factura])) || (isset($_POST[factura])))
 		while($resultado=mysql_fetch_array($consulta))
 		{
 			$importe_sin_iva = $resultado[cantidad]*$resultado[unitario];
-			$data[]=array("Servicio"=>ucfirst(utf8_encode($resultado[2]))." ".ucfirst(utf8_encode($resultado[6])),
+			$data[]=array("Servicio"=>ucfirst($resultado[2])." ".ucfirst($resultado[6]),
 			"Cant."=>number_format($resultado[cantidad],2,',','.'),
 			"P/Unitario"=>number_format($resultado[unitario],2,',','.')."!",
 			"Importe"=>number_format($importe_sin_iva,2,',','.')."!",
