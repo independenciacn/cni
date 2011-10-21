@@ -25,9 +25,9 @@ echo $cadena;
 function traduce($texto)
 {
 //en algunos casos
-	if(SISTEMA == "windows")
+	/*if(SISTEMA == "windows")
 		$bien = utf8_encode($texto); //para windows
-	else
+	else*/
 		$bien = $texto;//para sistemas *nix
 	return $bien;
 }
@@ -35,9 +35,9 @@ function traduce($texto)
 //a la hora de agregarlo lo codifica
 function codifica($texto)
 {
-	if(SISTEMA == "windows")
+	/*if(SISTEMA == "windows")
 		$bien = utf8_decode($texto); //para windows
-	else
+	else*/
 		$bien = $texto;//para sistemas *nix
 	return $bien;
 }

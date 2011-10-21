@@ -15,7 +15,7 @@ if(isset($_POST))
 function cabezera($valor,$vars)
 {
 	$cadena .= "<table width='100%' class='tabla'>";
-	$cadena .= "<tr><th>Facturaci&oacute;n ".$valor." de ".utf8_encode(nombre_cliente($vars))."</th></tr>";
+	$cadena .= "<tr><th>Facturaci&oacute;n ".$valor." de ".nombre_cliente($vars)."</th></tr>";
 	return $cadena;
 	
 }

@@ -1,5 +1,4 @@
 <?php
-
 if((isset($_GET[factura])) || (isset($_POST[factura])))
 {
 	//calculo del total con iva
@@ -9,7 +8,7 @@ if((isset($_GET[factura])) || (isset($_POST[factura])))
 		return $total;
 	}
 /*******************************************************************************************************************/
-	function dame_el_mes($mes)
+	function dameElMes($mes)
 	{
 		switch($mes)
 		{
@@ -33,12 +32,13 @@ if((isset($_GET[factura])) || (isset($_POST[factura])))
 	{
 		//formato en el que llega aaaa-mm-dd o al reves
 		$fdia = explode("-",$stamp);
-		$fecha = $fdia[2]." de ".dame_el_mes($fdia[1])." de ".$fdia[0];
+		$fecha = $fdia[2]." de ".dameElMes($fdia[1])." de ".$fdia[0];
 		return $fecha;
 	}
 /*******************************************************************************************************************/
 	include("../inc/variables.php");
 	require_once('class.ezpdf.php');
+	
 	if(isset($_POST[factura]))
 	{
 		$factura = $_POST[factura];
@@ -72,7 +72,10 @@ if((isset($_GET[factura])) || (isset($_POST[factura])))
 		$pdf->addObject( $all, 'all' );
 
 //Cabezera de la factura
-		$sql ="Select c.Nombre,c.Direccion,c.CP,c.Ciudad,c.NIF,r.fecha,c.id from clientes as c join regfacturas as r on r.id_cliente = c.id where r.codigo like $factura";
+		$sql ="Select c.Nombre,c.Direccion,c.CP,c.Ciudad,
+		c.NIF,r.fecha, r.pedidoCliente, c.id from clientes as c 
+		join regfacturas as r on r.id_cliente = c.id 
+		where r.codigo like $factura";
 		$consulta = mysql_db_query($dbname,$sql,$con);
 		$resultado = mysql_fetch_array($consulta);
 		if((isset($_GET[dup]))||(isset($_POST[dup])))
@@ -87,9 +90,9 @@ if((isset($_GET[factura])) || (isset($_POST[factura])))
 		$texto="Num. FACTURA:".$factura;
 		$pdf->addText(50,685,12,$texto);
 /*Datos cliente*/
-		$pdf->addText(265,698,10,"<b>".$resultado[0]."</b>");
-		$pdf->addText(265,687,10,"<b>".$resultado[1]."</b>");
-		$pdf->addText(265,676,10,"<b>".$resultado[2]."-".$resultado[3]."</b>");
+		$pdf->addText(265,698,10,"<b>".utf8_decode($resultado[0])."</b>");
+		$pdf->addText(265,687,10,"<b>".utf8_decode($resultado[1])."</b>");
+		$pdf->addText(265,676,10,"<b>".utf8_decode($resultado[2])."-".utf8_decode($resultado[3])."</b>");
 		$pdf->addText(265,665,10,"<b>NIF:".$resultado[4]."</b>");
 //Asi se pone el fondo en todas
      
@@ -100,7 +103,7 @@ if((isset($_GET[factura])) || (isset($_POST[factura])))
 		while($resultado=mysql_fetch_array($consulta))
 		{
 			$importe_sin_iva = $resultado[cantidad]*$resultado[unitario];
-			$data[]=array("Servicio"=>ucfirst(utf8_encode($resultado[2]))." ".ucfirst(utf8_encode($resultado[6])),
+			$data[]=array("Servicio"=>ucfirst(utf8_decode($resultado[2]))." ".ucfirst(utf8_decode($resultado[6])),
 			"Cant."=>number_format($resultado[cantidad],2,',','.'),
 			"P/Unitario"=>number_format($resultado[unitario],2,',','.')."!",
 			"Importe"=>number_format($importe_sin_iva,2,',','.')."!",
@@ -150,15 +153,19 @@ from historico where factura like '$factura' group by factura";
 				'TOTAL'=>array('justification'=>'center'))));
 
 		/*Modificar para sacar de regfacturas*/
-		$sql = "Select fpago,obs_fpago,obs_alt from regfacturas where codigo like $factura";
+		$sql = "Select fpago,obs_fpago,obs_alt, pedidoCliente from regfacturas where codigo like $factura";
 		$consulta = mysql_db_query($dbname,$sql,$con);
 		$resultado = mysql_fetch_array($consulta);
 //$pdf->ezText("");
-		$pdf->ezSetY(90);
-		$pdf->ezText("Forma de Pago:".$resultado[0]);
+		$pdf->ezSetY( 115 );
+		$pdf->ezText("Forma de Pago:" .$resultado[0]);
 		//if(($resultado[fpago] != "Cheque") && ($resultado[fpago] != "Contado") && ($resultado[fpago] != "Tarjeta credito")&& ($resultado[fpago] != utf8_decode("Liquidación")))
 		//$pdf->ezText("CC:".$resultado[1]);
 		$pdf->ezText($resultado[1]." ".$resultado[2]);
+		// Agregamos si existe en Pedido de Cliente
+		if ( !is_null( $resultado['pedidoCliente'] ) ) {
+			$pdf->ezText( $resultado['pedidoCliente'] );
+		}
 
 //Si se ha mandado a guardar escribimos en el fichero
 		if(isset($_POST[factura]))

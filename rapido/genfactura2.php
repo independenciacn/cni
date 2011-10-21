@@ -11,18 +11,18 @@ setlocale(LC_ALL, 'es_ES');
 function traduce($texto)
 {
 //en algunos casos
-if(SISTEMA == "windows")
-	$bien = utf8_encode($texto); //para windows
-else
+//if(SISTEMA == "windows")
+//	$bien = utf8_encode($texto); //para windows
+//else
 	$bien = $texto;//para sistemas *nix
 return $bien;
 }
 function codifica($texto)
 {
 //en algunos casos
-if(SISTEMA == "windows")
-	$bien = utf8_decode($texto); //para windows
-else
+//if(SISTEMA == "windows")
+	//$bien = utf8_decode($texto); //para windows
+//else
 	$bien = $texto;//para sistemas *nix
 return $bien;
 }
@@ -56,7 +56,7 @@ function dame_el_mes($mes)
 }
 function genera_codigo_factura($cliente,$mes)
 {
-	//añadimos al final el mes y año
+	//aï¿½adimos al final el mes y aï¿½o
 	include("../inc/variables.php");
 	$sql = "Select valor from z_sercont where idemp like $cliente and servicio like 'negocio'";
 	$consulta = mysql_db_query($dbname,$sql,$con);

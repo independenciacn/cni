@@ -18,9 +18,9 @@ function traduce($texto)
 function codifica($texto)
 {
 //en algunos casos
-	if(SISTEMA == "windows")
+	/*if(SISTEMA == "windows")
 		$bien = utf8_decode($texto); //para windows
-	else
+	else*/
 		$bien = $texto;//para sistemas *nix
 	return $bien;
 }
@@ -32,10 +32,10 @@ function iva($importe,$iva)
 	return $total;
 }
 /*******************************************************************************************************************/
-//observaciones especiales y ya de paso que consulte la forma de pago
+//observaciones especiales 
 function observaciones_especiales($cliente,$factura)
 {
-	include("../inc/variables.php");
+	global $con, $dbname;
 	$sql = "Select obs_alt from regfacturas where codigo like $factura and obs_alt is not null";
 	//$sql = "Select obs_alt, fpago, obs_fpago from regfacturas where codigo like $factura";
 	$consulta = @mysql_db_query($dbname,$sql,$con);
@@ -43,12 +43,20 @@ function observaciones_especiales($cliente,$factura)
 	{
 		$resultado = @mysql_fetch_array($consulta);
 		$obser = $resultado[0];
+		$pedidoCliente = "<br/>" . $resultado['pedidoCliente'];
 	}
-	else
+	else {
 		$obser = "";
-	return $obser;
+		$pedidoCliente = "";
+	}
+	return $obser . $pedidoCliente ;
 }
-/*******************************************************************************************************************/
+/**
+ * Pasando el numero nos devuelve el nombre del mes
+ * 
+ * @param string $mes
+ * @return string $marcado
+ */
 function dame_el_mes($mes)
 {
 	switch($mes)
@@ -68,16 +76,28 @@ function dame_el_mes($mes)
 	}
 	return $marcado;
 }
-/*******************************************************************************************************************/
-function cambiaf($stamp) //funcion del cambio de fecha
+/**
+ * Cambia el formato de la fecha en un sentido u otro
+ * 
+ * @param string $stamp
+ * @return string $fecha
+ */
+function cambiaf($stamp)
 {
 	//formato en el que llega aaaa-mm-dd o al reves
 	$fdia = explode("-",$stamp);
 	$fecha = $fdia[2]."-".$fdia[1]."-".$fdia[0];
 	return $fecha;
 }
-/******************************************************************************************************************/
-//Para distintas fechas de facturacion
+/**
+ * Para distintas fechas de facturacion
+ * 
+ * @param string $cliente
+ * @param string $mes
+ * @param string $inicial
+ * @param string $final
+ * @return string $cadena
+ */
 function consulta_fecha($cliente,$mes,$inicial,$final) //consulta los rangos de la fecha
 {
 	$check1=$inicial{4};
@@ -122,11 +142,14 @@ function consulta_fecha($cliente,$mes,$inicial,$final) //consulta los rangos de 
 	//echo "Punto de control consulta_fecha valor cadena:".$cadena;
 return $cadena;
 }
-/******************************************************************************************************************************/
-//Generacion de los no agrupados
+/**
+ * Generacion de los no agrupados
+ * 
+ * @param string $cliente
+ */
 function consulta_no_agrupado($cliente)
 {
-		include("../inc/variables.php");
+		global $con, $dbname;
 		$pila = array("Franqueo","Consumo Tel%fono","Material de oficina","Secretariado","Ajuste");
 		$i=5;
 		$sql = "Select s.Nombre,a.valor from agrupa_factura as a join servicios2 as s on a.valor = s.id where a.idemp like $cliente and a.concepto like 'servicio'";
@@ -173,26 +196,37 @@ function consulta_agrupado($cliente)
 		return $cadena;
 }
 /**************************************************************************************************************************/
-function cabezera_factura($nombre_fichero,$fecha_factura,$codigo,$cliente)
+/**
+ * Generamos la cabezera de la factura
+ * 
+ * @param string $nombre_fichero
+ * @param string $fecha_factura
+ * @param string $codigo
+ * @param string $cliente
+ * @return string $cabezera
+ */
+function cabezera_factura( $nombre_fichero, $fecha_factura, $codigo, $cliente )
 {
-	include("../inc/variables.php");
+	global $con, $dbname;
 	$fecha_factura = explode("-",$fecha_factura);
-	$fecha_de_factura = $fecha_factura[0]." de ".dame_el_mes($fecha_factura[1])." de ".$fecha_factura[2];
-	$sql = "Select * from clientes where id like $cliente";
+	$fecha_de_factura = $fecha_factura[0]." de ".dame_el_mes( $fecha_factura[1] )
+	." de ". $fecha_factura[2];
+	$sql = "Select * from clientes where id like " .$cliente;
 	$consulta = mysql_db_query($dbname,$sql,$con);
 	$resultado = mysql_fetch_array($consulta);
 	$cabezera = "
-	<br/><br/><br/><div class='titulo'>".strtoupper($nombre_fichero)."</div><br/>
+	<br/><br/><br/>
+	<div class='titulo'>".strtoupper($nombre_fichero)."</div><br/>
 	<div class='cabezera'>
 	<table width='100%'>
 	<tr>
 		<td  align='left' class='celdilla_sec'>
-		<br/>FECHA:".$fecha_de_factura."
+		<br/>FECHA:". $fecha_de_factura . "
 		<br/>";
 	if($nombre_fichero =='PROFORMA')
-		$cabezera .= "<br/>".$nombre_fichero;	
+		$cabezera .= "<br/>" . $nombre_fichero;	
 	else
-		$cabezera .= "<br/>N&deg;".$nombre_fichero.":".$codigo;
+		$cabezera .= "<br/>N&deg;" . $nombre_fichero.":".$codigo;
 	$cabezera .= "</td>
 		<td  class='celdilla_imp'>
 				".strtoupper($resultado[1])."<br>
@@ -203,28 +237,104 @@ function cabezera_factura($nombre_fichero,$fecha_factura,$codigo,$cliente)
 		return $cabezera;
 }
 /******************PIE DE LA FACTURA ***********************************************************************************/
-function pie_factura($cliente,$observaciones,$codigo)
+/**
+ * Genera el Pie de la factura
+ * 
+ * @param string $cliente
+ * @param string $observaciones
+ * @param string $codigo
+ * @return string $pie_factura;
+ */
+function pie_factura( $cliente, $observaciones, $codigo )
 {
-		include("../inc/variables.php");
+		global $dbname, $con;
+		$pie_factura = "";
+		$pagoCC = array("Cheque","Contado","Tarjeta credito","Liquidación");
+		$pagoNCC = array("Cheque");
 		/* 
 		 * Comprobamos si esta metido dentro de regfacturas,
 		 * si no lo consultamos, lo metemos y lo mostramos
 		 */
-		$sql="Select * from regfacturas where codigo like '$codigo'";
+		$sql="Select * from regfacturas where codigo like '" . $codigo ."'";
 		$consulta = @mysql_db_query($dbname,$sql,$con);
 		$resultado = @mysql_fetch_array($consulta);
-		if($resultado[fpago]!="")
+		$camposPie = array( 0=>'fpago', 1=>'obs_fpago', 2=>'obs', 3=>'pedidoCliente');
+		//$camposPieFac = array( 0=>'fpago', 1=>'cc', 2=>'obs', 3=>'dpago');
+		// Si es 1 la factura esta dada de alta
+		if ( mysql_num_rows( $consulta )!= 0 ) {
+			foreach( $resultado as $key =>$row ) {
+				if ( in_array( $key, $camposPie ) ) {
+					if ( !is_null($row) && $row != "" ) {
+						$valoresPie[$key] = $row;
+					}
+				}
+			}
+			if (is_null($resultado['fpago']) || is_null($resultado['obs_fpago']) || is_null($resultado['pedidoCliente'])) {
+			// Si no esta dada de alta consultamos los datos de facturacion
+			$sql = "SELECT fpago, cc as obs_fpago, dpago as pedidoCliente  from facturacion where idemp like " . $cliente;
+			$consulta = mysql_db_query( $dbname, $sql, $con );
+			$resultado = mysql_fetch_array( $consulta );
+			if ( mysql_num_rows( $consulta ) != 0  ) {
+				foreach( $resultado as $key => $row ) {
+					if ( in_array( $key, $camposPie ) ) {
+						if ( !is_null($row) && $row != "" ) {
+						$valoresPie[$key] = $row;
+						}
+					}
+				}
+				if ( in_array($valoresPie['fpago'], $pagoCC ) ) {
+					$valoresPie['obs_fpago']="Cuenta: ". $valoresPie['obs_fpago'];
+				} elseif ( in_array( $valoresPie['fpago'], $pagoNCC ) || $valoresPie['fpago']!= "" ) {
+					$valoresPie['obs_fpago']="Vencimiento: ". $valoresPie['obs_fpago'];
+				}
+				// Actualizamos regfacturas
+				$sql = "Update regfacturas set 
+				fpago ='" . $valoresPie['fpago'] . "', 
+				obs_fpago ='" . $valoresPie['obs_fpago'] . "',
+				pedidoCliente ='". $valoresPie['pedidoCliente'] ." '   
+				where codigo like " . $codigo;
+				mysql_db_query( $dbname, $sql , $con );
+			}
+		}
+		$pie_factura = "<br/>
+		<div class='celdia_sec'>
+		Forma de pago: ". $valoresPie['fpago'] ."<br/>" .
+		$valoresPie['obs_fpago']."<br/>" .
+		$valoresPie['pedidoCliente'] . 
+		observaciones_especiales($cliente,$codigo) .
+		"</div>";
+		}
+		return $pie_factura;
+		
+		
+		//var_dump ( $valoresPie );
+		// Si la forma de pago esta establecida en el registro de facturas
+		/*if ( !is_null( $resultado['fpago'] ) && $resultado['fpago'] != "" ) {
+			$formaPago = $resultado['fpago'];
+			$obsFormaPago = $resultado['obs_fpago'];
+			$observaciones = $resultad['obs'];	
+		}
+		// Lo mismo
+		if ( !is_null( $resultado['pedidoCliente'] ) ) {
+			$pedidoCliente = $resultado['pedidoCliente'];
+		}*/
+		
+		
+		/*if($resultado[fpago]!="")
 		{
 			$pie_factura = "
 			<br/>
 			<div class='celdilla_sec'>
 			Forma de pago: ".$resultado[fpago]."
 			<br/><br/>
-			".$resultado[obs_fpago]." ".$resultado[obs];
-		}
-		else
-		{
-		$sql = "SELECT * from facturacion where idemp like $cliente";
+			".$resultado[obs_fpago]." ".$resultado[obs];	
+			if ( !is_null( $resultado['pedidoCliente']) && strlen( $resultado['pedidoCliente']) > 0 ) {
+				$pie_factura .= "<br/>". $resultado['pedidoCliente'];
+				$pedidoCliente = $resultado['pedidoCliente'];
+			} 
+		}*/
+		
+		/*$sql = "SELECT * from facturacion where idemp like $cliente";
 			if ($consulta = mysql_db_query($dbname,$sql,$con))
 			{	
 				$resultado = mysql_fetch_array($consulta);
@@ -234,7 +344,7 @@ function pie_factura($cliente,$observaciones,$codigo)
 				Forma de pago: ".$resultado[fpago]."
 				<br/><br/>";
 				$fpago = $resultado[fpago];
-				if(($resultado[fpago] != "Cheque") && ($resultado[fpago] != "Contado") && ($resultado[fpago] != "Tarjeta credito") && ($resultado[fpago] != utf8_decode("Liquidación"))) 
+				if(($resultado[fpago] != "Cheque") && ($resultado[fpago] != "Contado") && ($resultado[fpago] != "Tarjeta credito") && ($resultado[fpago] != "Liquidación")) 
 					{
 						$pie_factura .= "Cuenta: ".$resultado[cc];
 						$obs_fpago="Cuenta: ".$resultado[cc];
@@ -244,19 +354,28 @@ function pie_factura($cliente,$observaciones,$codigo)
 						$pie_factura .= "Vencimiento: ".$resultado[cc];
 						$obs_fpago= "Vencimiento: ".$resultado[cc];
 					}
+				//Si tenemos la opcion de pedido de cliente
+				$consultaPedido = "";	
+				if ( !is_null( $resultado['dpago']) && strlen( $resultado['dpago']) > 0 ) {
+					$pie_factura .= $resultado['dpago'];
+					$pedidoCliente = $resultado['dpago'];
+					$consultaPedido = ", pedidoCliente = '" . $pedidoCliente . "'";
+				} 
 			/*Agregamos a regfacturas*/
-			$sql = "Update regfacturas set fpago='$fpago', obs_fpago='$obs_fpago' where codigo like $codigo";
-			$consulta = @mysql_db_query($dbname,$sql,$con);
-			$pie_factura .= " ".observaciones_especiales($cliente,$codigo);
+			/*$sql = "Update regfacturas set fpago='$fpago', obs_fpago='$obs_fpago'  
+			" . $consultaPedido . " where codigo like $codigo";
+			
+			$consulta = @mysql_db_query($dbname,$sql,$con);*/
+			/*$pie_factura .= " a".observaciones_especiales($cliente,$codigo);
 			$pie_factura .= "</div>";
-			}
-		}
-	return $pie_factura; //$pie_factura;
+			}*/
+		
+	 //$pie_factura;
 }
 //GENERA LA CONSULTA DEL ALMACENAJE DEPENDIENDO DE LOS PARAMETROS DE AGRUPA_FACTURA***********************************/
 function consulta_almacenaje($cliente,$mes,$inicial,$final)
 {
-	include("../inc/variables.php");
+	global $con, $dbname;
 	$check1=$inicial{4};
 	$check2=$final{4};
 	if($check1!='-')
@@ -290,24 +409,39 @@ function consulta_almacenaje($cliente,$mes,$inicial,$final)
 	}
 return $sql;
 }
-//Consulta si la factura esta en el historico
+/**
+ * Consulta si la factura esta en el historico devuelve ok o ko
+ * 
+ * @param string $factura
+ * @return string 
+ */
 function historico($factura)
 {
-	include("../inc/variables.php");
-	$sql = "Select * from historico where factura like $factura";
-	
-	$consulta = mysql_db_query($dbname,$sql,$con);
-	if(mysql_numrows($consulta)!=0)
-	$cadena = "ok";
-	else
-	$cadena = "ko";
-	return $cadena;
+	global $con, $dbname;
+	$sql = "Select * from historico where factura like " . $factura;
+	$consulta = mysql_db_query( $dbname, $sql, $con);
+	if ( mysql_numrows( $consulta )!=0 ) {
+		return "ok";
+	} else {
+		return "ko";
+	}
 }
-function agrega_historico($factura,$servicio,$cantidad,$unitario,$iva,$obs)
+/**
+ * Agrega los datos al historico
+ * 
+ * @param string $factura
+ * @param string $servicio
+ * @param string $cantidad
+ * @param string $unitario
+ * @param string $iva
+ * @param string $obs
+ */
+function agrega_historico( $factura, $servicio, $cantidad, $unitario, $iva, $obs )
 {
-	$servicio = trim(utf8_encode($servicio));//Eliminamos espacios en blanco al principio y final
-	include("../inc/variables.php");
-	$sql = "Insert into historico (factura,servicio,cantidad,unitario,iva,obs) values
+	global $con, $dbname;
+	$servicio = trim($servicio);//Eliminamos espacios en blanco al principio y final
+	$sql = "Insert into historico (factura,servicio,cantidad,unitario,iva,obs) 
+	values
 	('$factura','$servicio','$cantidad','$unitario','$iva','$obs')";
 	$consulta = mysql_db_query($dbname,$sql,$con);
 	//echo $sql;
@@ -319,73 +453,64 @@ function agrega_historico($factura,$servicio,$cantidad,$unitario,$iva,$obs)
 //En puntual: fecha_inicial_factura, fecha_final_factura para filtrado
 //Proforma: prueba = 1
 
-if(isset($_GET[cliente]))
-{
+if( isset( $_GET['cliente'] ) ) {
 	//$ano_domini=date(Y);
-	$ano_factura = explode("-",$_GET[fecha_factura]);
-	$cliente = $_GET[cliente];
-	$mes = $_GET[mes];
-	$ano=$ano_factura[0];
-	$codigo = $_GET[codigo];
-	$historico = historico($codigo);
-	$fecha_factura = $_GET[fecha_factura];
-	$fecha_inicial_factura = $_GET[fecha_inicial_factura];
-	$fecha_final_factura = $_GET[fecha_final_factura];
-	$observaciones = $_GET[observaciones];
+	$ano_factura = explode( "-", $_GET['fecha_factura'] );
+	$cliente = $_GET['cliente'];
+	$mes = $_GET['mes'];
+	$ano = $ano_factura[0];
+	$codigo = $_GET['codigo'];
+	$historico = historico($codigo); // llamamos a la funcion historico
+	$fecha_factura = $_GET['fecha_factura'];
+	$fecha_inicial_factura = $_GET['fecha_inicial_factura'];
+	$fecha_final_factura = $_GET['fecha_final_factura'];
+	$observaciones = $_GET['observaciones'];
+	
 	//Filtro 1, clic en proforma
-	if(isset($_GET[prueba]))
-	{
+	if ( isset( $_GET['prueba'] ) ) {
 		$fichero = "PROFORMA";
 		$titulo = "FACTURA<BR/>PROFORMA";//Guardamos datos en profroma
-	}
-	else
-	{
+	} else {
 		$fichero = "FACTURA";
 		$titulo = $fichero;
 		//Guardamos datos en factura
 	}
 }
 //CASOS DE Imprimir factura generada o ver el duplicado
-if((isset($_GET[factura])) || (isset($_GET[duplicado])))
-{
-	if(isset($_GET[factura]))
-	{
-		$datos = "Select * from regfacturas where id like $_GET[factura]";
-		
+if( isset( $_GET['factura'] ) || isset( $_GET['duplicado'] ) ) {
+	if(isset($_GET['factura'])) {
+		$datos = "Select * from regfacturas where id like " . $_GET['factura'];		
+	} else {
+		$datos = "Select * from regfacturas where id like " . $_GET['duplicado'];
 	}
-	else
-	{
-		$datos = "Select * from regfacturas where id like $_GET[duplicado]";
-		
-	}
-	$consulta = mysql_db_query($dbname,$datos,$con);
-	$resultado = mysql_fetch_array($consulta);
-	$cliente = $resultado[id_cliente];
-	$fecha_factura = cambiaf($resultado[fecha]);
-	$ano_factura = explode("-",$fecha_factura);
-	$mes = intval($resultado[mes]);
-	$codigo = $resultado[codigo];
-	$historico = historico($codigo);
-	$fecha_inicial_factura = $resultado[fecha_inicial];
-	$fecha_final_factura = $resultado[fecha_final];
-	$observaciones = $resultado[obs_alt];
-	if(isset($_GET[duplicado]))
-	{
+	$consulta = mysql_db_query( $dbname, $datos, $con);
+	$resultado = mysql_fetch_array( $consulta ); // resultado de la consulta
+	$cliente = $resultado['id_cliente'];
+	$fecha_factura = cambiaf( $resultado['fecha'] );
+	$ano_factura = explode( "-", $fecha_factura );
+	$mes = intval( $resultado['mes'] );
+	$codigo = $resultado['codigo'];
+	$historico = historico($codigo); // devuelve ok o ko
+	$fecha_inicial_factura = $resultado['fecha_inicial'];
+	$fecha_final_factura = $resultado['fecha_final'];
+	$observaciones = $resultado['obs_alt'];
+	$pedidoCliente = $resultado['pedidoCliente'];
+	
+	// Si establecemos que la factura es duplicado
+	if( isset( $_GET['duplicado'] ) ) {
 		$fichero = "FACTURA (DUPLICADO)";
 		$titulo = "FACTURA<BR/>DUPLICADO";//Guardamos datos en profroma
-	}
-	else
-	{
+	} else {
 		$fichero = "FACTURA";
 		$titulo = $fichero;
 		//Guardamos datos en factura
 	}
 }
 
-$nombre_fichero = "<span style='font-size:16.0pt'>".$titulo."</span>";
+$nombre_fichero = "<span style='font-size:16.0pt'>" . $titulo . "</span>";
 
 //CABEZERA***************************************************************************/	
-	$cabezera_factura = cabezera_factura($fichero,$fecha_factura,$codigo,$cliente);
+$cabezera_factura = cabezera_factura($fichero,$fecha_factura,$codigo,$cliente);
 //PRESENTACION************************************************************************/
 //CASOS POSIBLES, MENSUAL y PUNTUAL en puntual hay que pasar los limites
 //fecha_inicial_factura y fecha_final_factura
@@ -400,17 +525,20 @@ else
 	$inicio = "0000-00-00";
 	$final = "0000-00-00";
 }
+
+
+$tituloPagina = ( $inicio!= "0000-00-00") ? "ocupacion puntual" : dame_el_mes( "m" );
 ?>
 <html>
 <head>
-<title><? echo $fichero; if($inicio != "0000-00-00") echo " ocupacion puntual "; else dame_el_mes("m"); ?></title>
+<title><?php echo $fichero . " " . $tituloPagina ?></title>
 <link rel="stylesheet" type='text/css' href="estilo.css" />
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
-<?
+<?php
 	echo $cabezera_factura;
-	print("
+	echo "
 	<table cellpadding='2px' cellspacing='0px' width='100%' id='tabloide'>
 	<tr>
 	<th align='center' width='48%' >Servicio</th>
@@ -419,27 +547,26 @@ else
 	<th align='center' width='12%' >IMPORTE</th>
 	<th align='center' width='8%' >IVA</th>
 	<th align='center' width='12%' >TOTAL</th>
-	</tr>");
+	</tr>";
 //PARTE DEL CONTRATO Y DEL ALMACENAJE SI PROCEDE cuidado con el mes
 //la primera linea tiene que ser el importe del mes del tipo de cliente
 //VALIDO DESDE MAYO DEL 07
 //DATOS SERVICIOS FIJOS**********************************************************/
 //solo se cargan los fijos si no son ocupacion puntual
 /*CHEQUEO DE HISTORICO, si no esta en el historico se agrega*/
-if($historico == "ok")
-{
+if($historico == "ok") {
 	$sql = "Select * from historico where factura like $codigo";
 	$consulta = mysql_db_query($dbname,$sql,$con);
 	while($resultado=mysql_fetch_array($consulta))
 	{
-		$importe_sin_iva = $resultado[cantidad]*$resultado[unitario];
+		$importe_sin_iva = $resultado['cantidad']*$resultado['unitario'];
 		echo "<tr>
-		<td><p class='texto'>".ucfirst(utf8_decode($resultado[2]))." ".ucfirst(utf8_decode($resultado[6]))."</td>
-		<td align='right'>".number_format($resultado[cantidad],2,',','.')."&nbsp;</td>
-		<td align='right'>".number_format($resultado[unitario],2,',','.')."&euro;&nbsp;</td>
+		<td><p class='texto'>".ucfirst($resultado[2])." ".ucfirst($resultado[6])."</td>
+		<td align='right'>".number_format($resultado['cantidad'],2,',','.')."&nbsp;</td>
+		<td align='right'>".number_format($resultado['unitario'],2,',','.')."&euro;&nbsp;</td>
 		<td align='right'>".number_format($importe_sin_iva,2,',','.')."&euro;&nbsp;</td>
 		<td align='right'>".$resultado[iva]."%&nbsp;</td>
-		<td align='right'>".number_format(iva($importe_sin_iva,$resultado[iva]),2,',','.')."&euro;&nbsp;</td></tr>";
+		<td align='right'>".number_format(iva($importe_sin_iva,$resultado['iva']),2,',','.')."&euro;&nbsp;</td></tr>";
 		$total = $total + iva($importe_sin_iva,$resultado[5]);
 		$bruto = $bruto + $importe_sin_iva;
 		$celdas++;
@@ -447,9 +574,7 @@ if($historico == "ok")
 	}
 	//echo  consulta_almacenaje($cliente,$mes,$inicio,$final);
 		
-}
-else
-{
+} else {
 	/*echo $ano_factura[2];
 	echo $inicio;
 	echo $final;*/
@@ -475,10 +600,10 @@ else
 			/*ALERTA LINEA A MODIFICAR EN EL CAMBIO*/
 			$servicio_desc = ucfirst($resultado[2]);//." ".ucfirst(codifica($resultado[6]));
 		
-		if(($historico == "ko")&& (!isset($_GET[prueba]))) 
-		//Agregamos al historico
-			agrega_historico($codigo,codifica($servicio_desc),$resultado[7],$resultado[4],$resultado[5],ucfirst(codifica($resultado[6])));
-			
+			if(($historico == "ko")&& (!isset($_GET['prueba']))) {
+			//Agregamos al historico
+				agrega_historico($codigo,codifica($servicio_desc),$resultado[7],$resultado[4],$resultado[5],ucfirst(codifica($resultado[6])));
+			}
 		}
 	}
 /************************************************************************************/
