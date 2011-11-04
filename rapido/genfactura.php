@@ -236,7 +236,6 @@ function cabezera_factura( $nombre_fichero, $fecha_factura, $codigo, $cliente )
 		</td></tr></table></div><br/>";
 		return $cabezera;
 }
-/******************PIE DE LA FACTURA ***********************************************************************************/
 /**
  * Genera el Pie de la factura
  * 
@@ -247,64 +246,67 @@ function cabezera_factura( $nombre_fichero, $fecha_factura, $codigo, $cliente )
  */
 function pie_factura( $cliente, $observaciones, $codigo )
 {
-		global $dbname, $con;
-		$pie_factura = "";
-		$pagoCC = array("Cheque","Contado","Tarjeta credito","Liquidación");
-		$pagoNCC = array("Cheque");
-		/* 
-		 * Comprobamos si esta metido dentro de regfacturas,
-		 * si no lo consultamos, lo metemos y lo mostramos
-		 */
-		$sql="Select * from regfacturas where codigo like '" . $codigo ."'";
-		$consulta = @mysql_db_query($dbname,$sql,$con);
-		$resultado = @mysql_fetch_array($consulta);
-		$camposPie = array( 0=>'fpago', 1=>'obs_fpago', 2=>'obs', 3=>'pedidoCliente');
-		//$camposPieFac = array( 0=>'fpago', 1=>'cc', 2=>'obs', 3=>'dpago');
-		// Si es 1 la factura esta dada de alta
-		if ( mysql_num_rows( $consulta )!= 0 ) {
-			foreach( $resultado as $key =>$row ) {
-				if ( in_array( $key, $camposPie ) ) {
-					if ( !is_null($row) && $row != "" ) {
-						$valoresPie[$key] = $row;
-					}
+	global $dbname, $con;
+	$pie_factura = "";
+	// Con estos tipos de formas de pago aparecera
+	$pagoCC = array("Cheque","Contado","Tarjeta credito","Liquidación");
+	$pagoNCC = array("Cheque");
+	/* 
+	 * Comprobamos si esta metido dentro de regfacturas,
+	 * si no lo consultamos, lo metemos y lo mostramos
+	 */
+	$sql="Select * from regfacturas where codigo like '" . $codigo ."'";
+	$consulta = @mysql_db_query( $dbname, $sql, $con );
+	$resultado = @mysql_fetch_array( $consulta );
+	$camposPie = array( 0=>'fpago', 1=>'obs_fpago', 2=>'obs', 3=>'pedidoCliente');
+	//$camposPieFac = array( 0=>'fpago', 1=>'cc', 2=>'obs', 3=>'dpago');
+	// Si es 1 la factura esta dada de alta
+	if ( mysql_num_rows( $consulta )!= 0 ) {
+		foreach( $resultado as $key => $row ) {
+			if ( in_array( $key, $camposPie ) ) {
+				if ( !is_null( $row ) && $row != "" ) {
+					$valoresPie[$key] = $row;
 				}
 			}
-			if (is_null($resultado['fpago']) || is_null($resultado['obs_fpago']) || is_null($resultado['pedidoCliente'])) {
-			// Si no esta dada de alta consultamos los datos de facturacion
-			$sql = "SELECT fpago, cc as obs_fpago, dpago as pedidoCliente  from facturacion where idemp like " . $cliente;
-			$consulta = mysql_db_query( $dbname, $sql, $con );
-			$resultado = mysql_fetch_array( $consulta );
-			if ( mysql_num_rows( $consulta ) != 0  ) {
-				foreach( $resultado as $key => $row ) {
-					if ( in_array( $key, $camposPie ) ) {
-						if ( !is_null($row) && $row != "" ) {
-						$valoresPie[$key] = $row;
-						}
-					}
-				}
-				if ( in_array($valoresPie['fpago'], $pagoCC ) ) {
-					$valoresPie['obs_fpago']="Cuenta: ". $valoresPie['obs_fpago'];
-				} elseif ( in_array( $valoresPie['fpago'], $pagoNCC ) || $valoresPie['fpago']!= "" ) {
-					$valoresPie['obs_fpago']="Vencimiento: ". $valoresPie['obs_fpago'];
-				}
-				// Actualizamos regfacturas
-				$sql = "Update regfacturas set 
+		}
+		if ( is_null( $resultado['fpago'] ) || is_null( $resultado['obs_fpago'] )
+		 || is_null( $resultado['pedidoCliente'] ) ) {
+		    // Si no esta dada de alta consultamos los datos de facturacion
+		    $sql = "SELECT fpago, cc as obs_fpago, dpago as pedidoCliente 
+		    from facturacion where idemp like " . $cliente;
+		    $consulta = mysql_db_query( $dbname, $sql, $con );
+		    $resultado = mysql_fetch_array( $consulta );
+		    if ( mysql_num_rows( $consulta ) != 0  ) {
+			    foreach( $resultado as $key => $row ) {
+				    if ( in_array( $key, $camposPie ) ) {
+					    if ( !is_null( $row ) && $row != "" ) {
+					        $valoresPie[$key] = $row;
+					    }
+				    }
+			    }
+			    if ( !in_array( $valoresPie['fpago'], $pagoCC ) ) {
+				    $valoresPie['obs_fpago']="Cuenta: ". $valoresPie['obs_fpago'];
+			    } elseif ( in_array( $valoresPie['fpago'], $pagoNCC ) && $valoresPie['cc']!="" ) {
+				    $valoresPie['obs_fpago']="Vencimiento: ". $valoresPie['obs_fpago'];
+			    }
+			    // Actualizamos regfacturas
+			    $sql = "Update regfacturas set 
 				fpago ='" . $valoresPie['fpago'] . "', 
 				obs_fpago ='" . $valoresPie['obs_fpago'] . "',
 				pedidoCliente ='". $valoresPie['pedidoCliente'] ." '   
 				where codigo like " . $codigo;
-				mysql_db_query( $dbname, $sql , $con );
-			}
-		}
-		$pie_factura = "<br/>
+			    mysql_db_query( $dbname, $sql , $con );
+		    }
+	    }
+	    $pie_factura = "<br/>
 		<div class='celdia_sec'>
 		Forma de pago: ". $valoresPie['fpago'] ."<br/>" .
-		$valoresPie['obs_fpago']."<br/>" .
-		$valoresPie['pedidoCliente'] . 
-		observaciones_especiales($cliente,$codigo) .
+	    $valoresPie['obs_fpago']."<br/>" .
+	    $valoresPie['pedidoCliente'] . 
+	    observaciones_especiales( $cliente, $codigo ) .
 		"</div>";
-		}
-		return $pie_factura;
+	}
+	return $pie_factura;
 		
 		
 		//var_dump ( $valoresPie );

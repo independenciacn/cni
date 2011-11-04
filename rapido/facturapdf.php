@@ -1,5 +1,5 @@
 <?php
-if((isset($_GET[factura])) || (isset($_POST[factura])))
+if((isset($_GET['factura'])) || (isset($_POST['factura'])))
 {
 	//calculo del total con iva
 	function iva($importe,$iva)
@@ -39,13 +39,13 @@ if((isset($_GET[factura])) || (isset($_POST[factura])))
 	include("../inc/variables.php");
 	require_once('class.ezpdf.php');
 	
-	if(isset($_POST[factura]))
+	if(isset($_POST['factura']))
 	{
-		$factura = $_POST[factura];
+		$factura = $_POST['factura'];
 	}
 	else
 	{
-		$factura= $_GET[factura];
+		$factura= $_GET['factura'];
 	}
 		
 		$pdf =& new Cezpdf('a4');
@@ -78,7 +78,7 @@ if((isset($_GET[factura])) || (isset($_POST[factura])))
 		where r.codigo like $factura";
 		$consulta = mysql_db_query($dbname,$sql,$con);
 		$resultado = mysql_fetch_array($consulta);
-		if((isset($_GET[dup]))||(isset($_POST[dup])))
+		if((isset($_GET['dup']))||(isset($_POST['dup'])))
 			$pdf->addText(363,730,16,"<b>FACTURA (DUPLICADO)<b>");
 		else
 			$pdf->addText(463,730,16,"<b>FACTURA<b>");
@@ -99,21 +99,26 @@ if((isset($_GET[factura])) || (isset($_POST[factura])))
 //Paso de datos de historico
 	$sql = "Select * from historico where factura like '$factura'";
 	$consulta = mysql_db_query($dbname,$sql,$con);
+	$total = 0;
+	$bruto = 0;
+	$celdas = 0;
+	$cantidad = 0;
+	$j = 0;
 	for($i=0;$i<=3;$i++)
 		while($resultado=mysql_fetch_array($consulta))
 		{
-			$importe_sin_iva = $resultado[cantidad]*$resultado[unitario];
+			$importe_sin_iva = $resultado['cantidad']*$resultado['unitario'];
 			$data[]=array("Servicio"=>ucfirst(utf8_decode($resultado[2]))." ".ucfirst(utf8_decode($resultado[6])),
-			"Cant."=>number_format($resultado[cantidad],2,',','.'),
-			"P/Unitario"=>number_format($resultado[unitario],2,',','.')."!",
+			"Cant."=>number_format($resultado['cantidad'],2,',','.'),
+			"P/Unitario"=>number_format($resultado['unitario'],2,',','.')."!",
 			"Importe"=>number_format($importe_sin_iva,2,',','.')."!",
-			"IVA"=>$resultado[iva]."%",
-			"TOTAL"=>number_format(iva($importe_sin_iva,$resultado[iva]),2,',','.')."!");
+			"IVA"=>$resultado['iva']."%",
+			"TOTAL"=>number_format(iva($importe_sin_iva,$resultado['iva']),2,',','.')."!");
 			$total = $total + iva($importe_sin_iva,$resultado[5]);
 			$bruto = $bruto + $importe_sin_iva;
 			$celdas++;
 			//$cantidad++;
-			$cantidad = $cantidad + number_format($resultado[cantidad],2,',','.');
+			$cantidad = $cantidad + number_format($resultado['cantidad'],2,',','.');
 			$j++;
 		}
 		for($k=$j;$k<=30;$k++)
@@ -161,35 +166,39 @@ from historico where factura like '$factura' group by factura";
 		$pdf->ezText("Forma de Pago:" .$resultado[0]);
 		//if(($resultado[fpago] != "Cheque") && ($resultado[fpago] != "Contado") && ($resultado[fpago] != "Tarjeta credito")&& ($resultado[fpago] != utf8_decode("Liquidación")))
 		//$pdf->ezText("CC:".$resultado[1]);
-		$pdf->ezText($resultado[1]." ".$resultado[2]);
+		$observacion = preg_replace('|<br\/>|', "\n\r", $resultado[1]);
+		$observacion = preg_replace('|\(|' ,"\n\r(", $observacion );
+		$observacion = preg_replace('|Vto|',"\n\rVto", $observacion );
+		$observacion = preg_replace('|Vencimien|',"\n\rVencimien", $observacion );
+		$pdf->ezText(utf8_decode($observacion)." ".utf8_decode($resultado[2]));
 		// Agregamos si existe en Pedido de Cliente
 		if ( !is_null( $resultado['pedidoCliente'] ) ) {
 			$pdf->ezText( $resultado['pedidoCliente'] );
 		}
 
 //Si se ha mandado a guardar escribimos en el fichero
-		if(isset($_POST[factura]))
+		if(isset($_POST['factura']))
 		{
 			$pdfcode = $pdf->output();
 			$nombre_factura = "factura_".$factura.".pdf";
-			$ruta_osx = "/Users/ruben/Desktop/facturas/";
-			$ruta_wxp = "\\\\172.26.0.131\RED\PLANTILLAS\facturas\\";
-			if(isset($_POST[envio]))
+			$ruta_wxp = "\\\\172.26.0.131\RED\PLANTILLAS\\facturas\\";
+			if(isset($_POST['envio'])) {
 				$ruta = "tmp/".$nombre_factura;
-			else
+			} else {
 				$ruta = $ruta_wxp.$nombre_factura;
+			}
 			//$ruta_wxp = "C:\RED\PLANTILLAS\facturas\\";
 			$fp=fopen($ruta,'wb');
 			fwrite($fp,$pdfcode);
 			fclose($fp);
 			unset($pdfcode);
 			
-			if(isset($_POST[envio]))
-			{
+			if ( isset( $_POST['envio'] ) ) {
 				include("envio.php");
 			}
 		}
-		else
+		else {
 			$pdf->ezStream();
+		}
 }
 ?>

@@ -10,7 +10,7 @@
 <script src='js/prototype.js' type="text/javascript"></script>
 <meta http-equiv="cache-control" content="no-cache">
 <meta http-equiv="pragma" content="no-cache">
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <?php 
 //fichero rapido, para añadir rapidamente servicios a clientes 

@@ -6,7 +6,7 @@ function cambiafecha($stamp)
 {
 	//formato en el que llega aaaa-mm-dd o al reves
 	$fdia = explode("-",$stamp);
-	$fecha = $fdia[2]." de ".dame_el_mes($fdia[1])." de ".$fdia[0];
+	$fecha = $fdia[2]." de ".dameElMes($fdia[1])." de ".$fdia[0];
 	return $fecha;
 }
 /*
@@ -28,7 +28,7 @@ $nombre_factura = "factura_".$factura.".pdf";
 $ruta_osx = "/Users/ruben/Desktop/facturas/";
 $ruta_wxp = "tmp/";
 $ruta = $ruta_wxp.$nombre_factura;
-if(isset($_POST[dup]))
+if(isset($_POST['dup']))
 {
 	$duplicado = "duplicado de ";
 	$dupli = "Duplicado ";
