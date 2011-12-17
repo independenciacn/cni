@@ -1,0 +1,20 @@
+PHP Version 5.2.6
+PDO
+PDO support	enabled
+PDO drivers 	mysql, sqlite, sqlite2
+pdo_mysql
+PDO Driver for MySQL, client library version	5.0.51a
+Esta es la version de produccion
+
+Agregar ZendFramework y Pear
+/*INSTALACION*/
+Establecer los parametros en el fichero inc/configuracion.php del entorno
+de trabajo de la aplicacion
+
+Parametros:
+$conf['zonaHoraria'] = 'Europe/Madrid'; // Zona horaria por defecto
+$conf['sistema'] = 'debian'; // Sistema Operativo Usado debian | otro | windows
+$conf['estado'] = 'DEVEL'; // Estado en el que esta la aplicacion DEVEL | PROD
+$conf['system'] = 'cloud'; // Donde estamos desarrollando local o cloud
+$conf['version'] = '2.1'; // Version de la aplicacion
+$conf['root'] = "http://sbarrat.my.phpcloud.com/cni";//Direccion Raiz de la aplicacion

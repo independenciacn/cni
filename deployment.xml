@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<package xmlns="http://www.zend.com/server/deployment-descriptor/1.0" version="1.0">
+    <name>cni</name>
+    <description>Aplicación de Gestion del Centro de Negocios</description>
+    <version>
+        <release>2.1.0</release>
+    </version>
+    <eula>LICENSE</eula>
+    <appdir>cni</appdir>
+    <dependencies>
+    <required>
+      <php>
+        <min>5.2.10</min>
+      </php>
+    </required>
+  </dependencies>
+</package>

@@ -1,0 +1,93 @@
+@CHARSET "UTF-8";
+/**
+ * Parte de la firma
+ */
+.signature, .signature a
+{
+    font-size: 1em;
+    font-family: 'Reenie Beanie', arial, serif;
+    color:#888888;
+    text-align: right;
+    text-decoration: none;
+    font-style: italic;
+}
+.signature img {
+    vertical-align: middle;
+}
+
+/**
+ * Alineacion de tabla
+ */
+table td {
+    vertical-align: top;
+}
+/**
+ * Estilos para destacar el dia de hoy y el de mañana en avisos
+ */
+#avisos {
+    background:white;
+    border:solid thin #7d0063;
+    position:absolute;
+    z-index:99;
+}
+#avisos thead th{
+    background-color: #7d0063;
+    color:white;
+    font-size:1.2em;
+}
+.today{
+    background:#fbe3e4;color:#8a1f11;
+    font-weight:bold;
+}
+.tomorrow{
+   background:#e6efc2;color:#264409;
+   font-weight:bold;
+}
+/**
+ * Cuando se encuentra una palabra
+ */
+.found{
+	color:#264409;
+    font-weight:bold;
+}
+/**
+ * Establecemos el cursor cuando establecemos una accion en algun sitio
+ */
+.accion{
+	cursor:pointer;
+}
+.accion:hover{
+    background: #ccc;
+}
+/**
+ * Almacenaje
+ * Marcamos cuando algo esta en el almacen
+ */
+.almacen {
+	background:#F0E68C;color:#FF4500;
+    font-weight:bold;
+}
+/**
+ * Agenda
+ */
+#tablaAgenda {
+	 
+}
+#tablaAgenda td {
+	width:150px;
+    height:100px;
+    border-right: thin solid #ddd;
+}
+#tablaAgenda .despachoOcupado {
+	color:#264409;
+    font-weight:bold;
+}
+/**
+ * Ocupaciones
+ */
+.parcial {
+	background-color: red;
+}
+.total {
+	background-color: blue;
+}

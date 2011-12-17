@@ -1,0 +1,140 @@
+/* CSS Document Hoja de estilos de la factura. Realizado por Ruben Lacasa Mas ruben@ensenalia.com 2006-2007*/
+/*body
+{
+	background:url("fondo.jpg") no-repeat top left;
+	width:794px;
+	height:1123px;
+}*/
+#servicios td
+{
+	border: thin solid black;
+	font-style:normal;
+	
+	font-size:smaller;
+	
+}
+#servicios th
+{
+	border-style:solid;
+	border-width:1px;
+	font-weight:bold;
+	
+	font-size:10px;
+	border-color:#000000;
+}
+.titulo
+{
+	
+	font-style:normal;
+	font-size:16px;
+	font-weight:bold;
+	
+	text-align:right;
+}
+.cabezera
+{
+	font-style:normal;
+	font-weight:bold;
+	font-size:12px;
+	
+	text-align:left;
+}
+.texto
+{
+	font-size:12px;
+	text-indent:16px;
+	
+}
+.pago
+{
+	font-style:normal;
+	font-weight:bold;
+	font-size:14px;
+	
+	text-align:left;
+}
+#tabloide 
+{
+			border-top-style:solid;
+			border-top-width:1px;
+			border-top-color:#000;
+			border-left-style:solid;
+			border-left-width:1px;
+			border-left-color:#000;
+}
+#tabloide td
+		{
+			border-right-style:solid;
+			border-right-width:1px;
+			border-right-color:#000;
+			border-bottom-style:solid;
+			border-bottom-width:1px;
+			border-bottom-color:#000;
+			font-family: Tahoma, Verdana, Arial, Georgia;
+			font-style: normal;
+			font-size:12px;
+		}
+		#tabloide th
+		{
+			border-right-style:solid;
+			border-right-width:1px;
+			border-right-color:#000;
+			border-bottom-style:solid;
+			border-bottom-width:1px;
+			border-bottom-color:#000;
+			background:#aaa;
+			color:#fff;
+			font-family: Tahoma, Verdana, Arial, Georgia;
+			font-style: normal;
+			font-weight:bold;
+			font-size:12px;
+		}
+		
+.celdilla_imp
+{
+			border-style:solid;
+			border-width:1px;
+			border-color:#000;
+			background:#aaa;
+			color:#fff;
+			font-family: Tahoma, Verdana, Arial, Georgia;
+			font-style: normal;
+			font-weight:bold;
+			font-size:12px;
+			text-align:left;
+			
+}
+.celdilla_tot
+{
+			border-style:solid;
+			border-width:1px;
+			border-color:#000;
+			background:#aaa;
+			color:#fff;
+			font-family: Tahoma, Verdana, Arial, Georgia;
+			font-style: normal;
+			font-weight:bold;
+			font-size:12px;
+			text-align:right;
+			text-indent:16px;
+			
+}
+.celdilla_sec
+{
+			font-family: Tahoma, Verdana, Arial, Georgia;
+			font-style: normal;
+			font-size:14px;
+			text-align:left;
+}
+.titulo
+{
+			font-family: Tahoma, Verdana, Arial, Georgia;
+			font-style: normal;
+			font-weight:bold;
+			font-size:16px;
+			text-align:right;
+}
+.tabla_resultados td
+{
+	color:#333;
+}

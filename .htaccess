@@ -1,0 +1,4 @@
+ErrorDocument 404 /cni/404.php
+php_flag zend_codetracing.trace_enable on
+php_flag zend_codetracing.always_dump on
+
