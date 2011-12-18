@@ -99,6 +99,24 @@ $page->drawLine(300, 680, 300, 60)
 	->drawLine(400, 680, 400, 60)
 	->drawLine(450, 680, 450, 60)
 	->drawLine(500, 680, 500, 60);
+
+$sql = "Select * from historico where factura like " . $resultado['codigo'];
+$resultados = consultaGenerica($sql,MYSQL_ASSOC);
+foreach( $resultados as $resultado ) {
+	$importe_sin_iva = $resultado['cantidad']*$resultado['unitario'];
+	$data[]=array("Servicio"=>ucfirst($resultado[2])." ".ucfirst($resultado[6]),
+			"Cant."=>number_format($resultado[cantidad],2,',','.'),
+					"P/Unitario"=>number_format($resultado[unitario],2,',','.')."!",
+					"Importe"=>number_format($importe_sin_iva,2,',','.')."!",
+							"IVA"=>$resultado[iva]."%",
+							"TOTAL"=>number_format(iva($importe_sin_iva,$resultado[iva]),2,',','.')."!");
+							$total = $total + iva($importe_sin_iva,$resultado[5]);
+							$bruto = $bruto + $importe_sin_iva;
+							$celdas++;
+	//$cantidad++;
+	$cantidad = $cantidad + number_format($resultado[cantidad],2,',','.');
+			$j++;
+		}
 /*
  * //ID CLIENTE
 		$cliente = $resultado[6];
