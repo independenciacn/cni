@@ -11,6 +11,7 @@ if ( isset( $_POST['idCliente'] ) ) {
 ?>
 <table id='lstFacturas'></table>
 <div id='pager'></div>
+<div id='resultado'></div>
 <script>
 datePick = function(elem){
 	$(elem).datepicker({
@@ -61,17 +62,28 @@ $("#lstFacturas").jqGrid('navButtonAdd',"#pager",{caption:"Ver Todo",title:"Limp
 	} 
 });
 $("#lstFacturas").jqGrid('navButtonAdd',"#pager",{caption:"Imprimir",title:"Imprimir Factura en PDF",buttonicon :'ui-icon-print',
-	onClickButton:imprimir 
+	onClickButton:imprimir
 });
 $("#lstFacturas").jqGrid('navButtonAdd',"#pager",{caption:"Enviar",title:"Enviar Facturar por Email",buttonicon :'ui-icon-mail-closed',
-	onClickButton:enviar 
+	onClickButton:enviar
 });
 $("#lstFacturas").jqGrid('filterToolbar');
 
-function imprimir() {
-	alert('imprimir');
+function imprimir(elem) {
+	var gsr = jQuery("#lstFacturas").jqGrid('getGridParam','selrow');
+	//alert(gsr);
+	if ( gsr ) {
+		var url = "facturasPDF.php";
+		var pars = "codigo="+gsr;
+		//var div = "resultado";
+		//procesaAjax(url, pars, div, 'Generando Factura', false, false)
+		window.open( url + "?" + pars);
+		
+	} else {
+		alert("Please select Row");
+	}
 }
-function enviar() {
+function enviar(elem) {
 	alert('enviamos');
 }
 
