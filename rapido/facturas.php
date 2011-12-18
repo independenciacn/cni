@@ -60,13 +60,19 @@ $("#lstFacturas").jqGrid('navButtonAdd',"#pager",{caption:"Ver Todo",title:"Limp
 		$("#lstFacturas")[0].clearToolbar();
 	} 
 });
-$("#lstFacturas").jqGrid('navButtonAdd',"#pager",{caption:"Imprimir",title:"Limpiar Busqueda",buttonicon :'ui-icon-print',
+$("#lstFacturas").jqGrid('navButtonAdd',"#pager",{caption:"Imprimir",title:"Imprimir Factura en PDF",buttonicon :'ui-icon-print',
 	onClickButton:imprimir 
+});
+$("#lstFacturas").jqGrid('navButtonAdd',"#pager",{caption:"Enviar",title:"Enviar Facturar por Email",buttonicon :'ui-icon-mail-closed',
+	onClickButton:enviar 
 });
 $("#lstFacturas").jqGrid('filterToolbar');
 
 function imprimir() {
 	alert('imprimir');
+}
+function enviar() {
+	alert('enviamos');
 }
 
 </script>
