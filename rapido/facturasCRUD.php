@@ -9,7 +9,7 @@ if ( isset( $_POST['oper'] ) && ( $_POST['oper'] =='del' ) ) {
 		$sql = "DELETE FROM r, h
 		USING `historico` h,
 		`regfacturas` r
-		WHERE h.`factura` = d.`codigo`
+		WHERE h.`factura` = r.`codigo`
 		AND r.id = ".$_POST['id'];
 }
 /**

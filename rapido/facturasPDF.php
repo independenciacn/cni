@@ -1,4 +1,18 @@
 <?php
+/**
+ * facturasPDF File Doc Comment
+ *
+ * Pagina que genera el PDF y si procede lo envia
+ *
+ * PHP Version 5.2.6
+ *
+ * @category Servicios
+ * @package  cni/rapido
+ * @author   Ruben Lacasa Mas <ruben@ensenalia.com>
+ * @license  http://creativecommons.org/licenses/by-nd/3.0/
+ * 			 Creative Commons Reconocimiento-SinObraDerivada 3.0 Unported.
+ * @link     https://github.com/independenciacn/cni
+ */
 require_once '../inc/configuracion.php';
 if ( !isset($_SESSION['usuario']) ) {
 	notFound();

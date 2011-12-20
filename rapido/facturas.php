@@ -1,4 +1,18 @@
 <?php
+/**
+ * Facturas File Doc Comment
+ *
+ * Pagina Principal de la seccion de Facturacion
+ *
+ * PHP Version 5.2.6
+ *
+ * @category Facturas
+ * @package  cni/rapido
+ * @author   Ruben Lacasa Mas <ruben@ensenalia.com>
+ * @license  http://creativecommons.org/licenses/by-nd/3.0/
+ * 			 Creative Commons Reconocimiento-SinObraDerivada 3.0 Unported.
+ * @link     https://github.com/independenciacn/cni
+ */
 require_once '../inc/configuracion.php';
 if ( !isset($_SESSION['usuario']) ) {
     notFound();
@@ -62,13 +76,13 @@ $("#lstFacturas").jqGrid('navButtonAdd',"#pager",{caption:"Ver Todo",title:"Limp
 		$("#lstFacturas")[0].clearToolbar();
 	} 
 });
-$("#lstFacturas").jqGrid('navButtonAdd',"#pager",{caption:"Factura",title:"Ver Factura",buttonicon :'ui-icon-print',
+$("#lstFacturas").jqGrid('navButtonAdd',"#pager",{caption:"Factura",title:"Ver Factura",buttonicon :'ui-icon-newwin',
 	onClickButton:factura
 });
-$("#lstFacturas").jqGrid('navButtonAdd',"#pager",{caption:"Duplicado",title:"Ver Duplicado",buttonicon :'ui-icon-print',
+$("#lstFacturas").jqGrid('navButtonAdd',"#pager",{caption:"Duplicado",title:"Ver Duplicado",buttonicon :'ui-icon-newwin',
 	onClickButton:duplicado
 });
-$("#lstFacturas").jqGrid('navButtonAdd',"#pager",{caption:"Recibo",title:"Ver Recibo",buttonicon :'ui-icon-print',
+$("#lstFacturas").jqGrid('navButtonAdd',"#pager",{caption:"Recibo",title:"Ver Recibo",buttonicon :'ui-icon-newwin',
 	onClickButton:recibo
 });
 $("#lstFacturas").jqGrid('navButtonAdd',"#pager",{caption:"Imprimir",title:"Imprimir Factura en PDF",buttonicon :'ui-icon-print',
@@ -126,13 +140,31 @@ function enviardup(elem) {
 	}
 }
 function factura(elem){
-	alert('factura');
+	var gsr = jQuery("#lstFacturas").jqGrid('getGridParam','selrow');
+	if ( gsr ) {
+		var url = "genfactura.php";
+		window.open( url + "?codigo="+ encodeURI(gsr));
+	} else {
+		alert("Debes seleccionar al menos una factura");
+	}
 }
 function recibo(elem){
-	alert('elem');
+	var gsr = jQuery("#lstFacturas").jqGrid('getGridParam','selrow');
+	if ( gsr ) {
+		var url = "genrecibo.php";
+		window.open( url + "?codigo="+ encodeURI(gsr));
+	} else {
+		alert("Debes seleccionar al menos una factura");
+	}
 }
 function duplicado(elem) {
-	alert('duplicado');
+	var gsr = jQuery("#lstFacturas").jqGrid('getGridParam','selrow');
+	if ( gsr ) {
+		var url = "genfactura.php";
+		window.open( url + "?duplicado=true&codigo="+ encodeURI(gsr));
+	} else {
+		alert("Debes seleccionar al menos una factura");
+	}
 }
 
 </script>

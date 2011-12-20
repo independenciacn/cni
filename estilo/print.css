@@ -9,48 +9,40 @@
 {
 	border: thin solid black;
 	font-style:normal;
-	
 	font-size:smaller;
-	
 }
 #servicios th
 {
 	border-style:solid;
 	border-width:1px;
-	font-weight:bold;
-	
+	font-weight:bold;	
 	font-size:10px;
 	border-color:#000000;
 }
 .titulo
-{
-	
+{	
 	font-style:normal;
 	font-size:16px;
-	font-weight:bold;
-	
+	font-weight:bold;	
 	text-align:right;
 }
 .cabezera
 {
 	font-style:normal;
 	font-weight:bold;
-	font-size:12px;
-	
+	font-size:12px;	
 	text-align:left;
 }
 .texto
 {
 	font-size:12px;
 	text-indent:16px;
-	
 }
 .pago
 {
 	font-style:normal;
 	font-weight:bold;
 	font-size:14px;
-	
 	text-align:left;
 }
 #tabloide 

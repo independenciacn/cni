@@ -1,4 +1,5 @@
 <?php
+// OBSOLETA BORRAR
 require_once '../inc/configuracion.php';
 require_once 'funcionesRapido.php';
 require_once 'tcpdf/config/lang/spa.php';

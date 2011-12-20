@@ -1,60 +1,75 @@
 <? 
 //genrecibo.php. Fichero que genera el Recibo para el cliente. Realizado por Ruben Lacasa Mas ruben@ensenalia.com 2006-2007
-if (isset($_GET[id]))
-{
-	function cambiaf($stamp) //funcion del cambio de fecha
-	{
-		//formato en el que llega aaaa-mm-dd o al reves
-		$fdia = explode("-",$stamp);
-		$fecha = $fdia[2]."-".$fdia[1]."-".$fdia[0];
-		return $fecha;
-	}
-	function ficha_cliente($cliente)
-	{
-		include("../inc/variables.php");
-		$sql = "Select * from clientes where id like $cliente";
-		$consulta = mysql_query( $sql, $con );
-		$resultado = mysql_fetch_array($consulta);
-		$cadena = strtoupper($resultado[1])."<br>
-				".$resultado[6]."<br>
-				".$resultado[8]."&nbsp;&nbsp;-&nbsp;&nbsp;".$resultado[7]."<br>
-				NIF:".$resultado[5];
-		return $cadena;
-	}
-	function forma_pago($cliente)
-	{
-		include("../inc/variables.php");
-		$sql = "SELECT fpago from facturacion where idemp like $cliente";
-		$consulta = mysql_query( $sql, $con );
-		$resultado = mysql_fetch_array($consulta);
-		return $resultado[fpago];
-	}
-include("../inc/variables.php");
-$sql = "Select * from regfacturas where id like $_GET[id]";
-$consulta = mysql_query( $sql, $con );
-$resultado = mysql_fetch_array($consulta);
+require_once '../inc/configuracion.php';
+if ( !isset($_SESSION['usuario']) ) {
+	notFound();
+}
+sanitize( $_GET );
+if (isset($_GET['codigo'])) {
+	$sql = "Select date_format(r.fecha,'%d-%m-%Y') as fecha, 
+	r.obs_alt, r.codigo, r.importe, 
+	c.Nombre, c.Direccion, c.Ciudad, c.CP, c.NIF, 
+	f.fpago as fpago 
+	FROM regfacturas as r
+	INNER JOIN clientes as c on r.id_cliente = c.Id 
+	INNER JOIN facturacion as f on c.Id = f.idemp
+	WHERE r.id like " . $_GET['codigo'];
+	$resultado = consultaUnica($sql, MYSQL_ASSOC);
 /* Analisis de las observaciones para fijar vencimiento*/
-$vto = strtok($resultado[obs_alt],"VTO ");
-if(isset($vto[1]))
-	$vencimiento = $vto;
-else
-$vencimiento = cambiaf($resultado[fecha]);
+	$vto = strtok($resultado['obs_alt'],"VTO ");
+	if( isset( $vto[1] ) ) {
+		$vencimiento = $vto;
+	} else {
+		$vencimiento = $resultado['fecha'];
+	}
 ?>
 <html>
 <head>
 <title>RECIBO</title>
-<link rel="stylesheet" type='text/css' href="estilo.css" />
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<link rel="stylesheet" type='text/css' href="../estilo/print.css" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
-<table cellpadding='2px' cellspacing='0px' width='100%' id='tabloide'>
-<tr><th align='left'>NUMERO FACTURA</th><th align='left'>FORMA PAGO</th><th align='left'>IMPORTE</th></tr>
-<tr><td><? echo $resultado[codigo]; ?></td><td><? echo forma_pago($resultado[id_cliente]);?></td><td><? echo number_format($resultado[importe],2,',','.'); ?></td></tr>
-<tr><th align='left'>FECHA FACTURA</th><th align='left'>VENCIMIENTO</th><th>&nbsp;</th></tr>
-<tr><td><? echo cambiaf($resultado[fecha]); ?></td><td><? echo $vencimiento; ?></td><td>&nbsp;</td></tr>
-<tr><th colspan='3' align='left'>CONCEPTO:</th></tr>
-<tr><td colspan='3' height='100px'>&nbsp;</td></tr>
-<tr><th colspan='2' align='left'>CLIENTE</th><th align='left'>FIRMA</th></tr>
-<tr><td colspan='2'><? echo ficha_cliente($resultado[id_cliente]); ?></td><td>&nbsp;</td></tr>
-</body></html>
-<? } echo $valors;?>
+	<table cellpadding='2px' cellspacing='0px' width='100%' id='tabloide'>
+	<tr>
+		<th align='left'>NUMERO FACTURA</th>
+		<th align='left'>FORMA PAGO</th>
+		<th align='left'>IMPORTE</th>
+	</tr>
+	<tr>
+		<td><?php echo $resultado['codigo']; ?></td>
+		<td><?php echo $resultado['fpago']; ?></td>
+		<td><?php echo precioFormateado( $resultado['importe'] ); ?></td>
+	</tr>
+	<tr>
+		<th align='left'>FECHA FACTURA</th>
+		<th align='left'>VENCIMIENTO</th>
+		<th>&nbsp;</th>
+	</tr>
+	<tr>
+		<td><?php echo $resultado['fecha']; ?></td>
+		<td><?php echo $vencimiento; ?></td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<th colspan='3' align='left'>CONCEPTO:</th>
+	</tr>
+	<tr>
+		<td colspan='3' height='100px'>&nbsp;</td>
+	</tr>
+	<tr>
+		<th colspan='2' align='left'>CLIENTE</th>
+		<th align='left'>FIRMA</th>
+	</tr>
+	<tr>
+		<td colspan='2'><?php 
+				echo strtoupper($resultado['Nombre'])."<br>
+				".$resultado['Direccion']."<br>
+				".$resultado['CP']." - ".$resultado['Ciudad']."<br>
+				NIF:".$resultado['NIF']; ?></td>
+		<td>&nbsp;</td>
+	</tr>
+</table>
+</body>
+</html>
+<?php } ?>

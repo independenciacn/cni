@@ -28,6 +28,10 @@ echo $cabezeraHtml;
         value='Ver Facturas Cliente' />
         <input id='listadoFacturas' type='button' 
         value='Ver Todas las Facturas' />
+        <input id='facturaMensual' type='button'
+        value='Generar Factura Mensual'/>
+        <input id='facturaPuntual' type='button'
+        value='Generar Factura Puntual'/>
         <!--  <input type='button' onclick='cliente_rango(0)' 
                 value='>Facturacion Mensual' />
 	           <input type='button' onclick='cliente_rango(1)' 
@@ -91,7 +95,7 @@ echo $cabezeraHtml;
         </tr>
         </table>
     </form>-->
-    <div id='parametros_facturacion'></div>
+    <div id='facturacion'><!-- Autogenera el formulario --></div>
     <div id='listado_clientes'></div>
     <div id='tabla'><!-- Autogenera la tabla --></div>
     <div id='observa'></div>
@@ -100,6 +104,26 @@ echo $cabezeraHtml;
     </div>
     <?php echo $firmaAplicacion; ?>
 <script>
+$("#facturaMensual").click(function(){
+	if ($("#idCliente").val()!='') {
+		var url='formularioFacturas.php';
+	    var pars = "factura=mensual&" + $("#frmDatos").serialize();
+	    var div = "facturacion";
+	    procesaAjax(url, pars, div, 'Cargando Datos', false, false);
+	} else {
+	    alert('Debe Introducir un Cliente');
+	}
+});
+$("#facturaPuntual").click(function(){
+	if ($("#idCliente").val()!='') {
+		var url='formularioFacturas.php';
+	    var pars = "factura=puntual&" + $("#frmDatos").serialize();
+	    var div = "facturacion";
+	    procesaAjax(url, pars, div, 'Cargando Datos', false, false);
+	} else {
+	    alert('Debe Introducir un Cliente');
+	}
+});
 $("#cliente").autocomplete({
 		source: function( request, response ) {
 			$.ajax({
