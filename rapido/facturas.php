@@ -49,8 +49,9 @@ $('#lstFacturas').jqGrid({
 	rowTotal: 2000,
 	rowList : [20,30,50],
 	scroll:1,
+	multiselect: true,
 	autowidth: true 
-}).navGrid('#pager',{edit:true,add:true,del:true,save:true,search:false,refresh:false},{width:600});
+}).navGrid('#pager',{edit:false,add:false,del:true,save:false,search:false,refresh:true},{width:600});
 $("#lstFacturas").jqGrid('navButtonAdd',"#pager",{caption:"Ver/Ocultar",title:"Ver/Ocultar Barra Busqueda", buttonicon :'ui-icon-pin-s',
 	onClickButton:function(){
 		$("#lstFacturas")[0].toggleToolbar();
@@ -61,30 +62,77 @@ $("#lstFacturas").jqGrid('navButtonAdd',"#pager",{caption:"Ver Todo",title:"Limp
 		$("#lstFacturas")[0].clearToolbar();
 	} 
 });
+$("#lstFacturas").jqGrid('navButtonAdd',"#pager",{caption:"Factura",title:"Ver Factura",buttonicon :'ui-icon-print',
+	onClickButton:factura
+});
+$("#lstFacturas").jqGrid('navButtonAdd',"#pager",{caption:"Duplicado",title:"Ver Duplicado",buttonicon :'ui-icon-print',
+	onClickButton:duplicado
+});
+$("#lstFacturas").jqGrid('navButtonAdd',"#pager",{caption:"Recibo",title:"Ver Recibo",buttonicon :'ui-icon-print',
+	onClickButton:recibo
+});
 $("#lstFacturas").jqGrid('navButtonAdd',"#pager",{caption:"Imprimir",title:"Imprimir Factura en PDF",buttonicon :'ui-icon-print',
 	onClickButton:imprimir
 });
 $("#lstFacturas").jqGrid('navButtonAdd',"#pager",{caption:"Enviar",title:"Enviar Facturar por Email",buttonicon :'ui-icon-mail-closed',
 	onClickButton:enviar
 });
+$("#lstFacturas").jqGrid('navButtonAdd',"#pager",{caption:"Imprimir Duplicado",title:"Imprimir Factura Duplicada en PDF",buttonicon :'ui-icon-print',
+	onClickButton:imprimirdup
+});
+$("#lstFacturas").jqGrid('navButtonAdd',"#pager",{caption:"Enviar Duplicado",title:"Enviar Facturar Duplicada por Email",buttonicon :'ui-icon-mail-closed',
+	onClickButton:enviardup
+});
 $("#lstFacturas").jqGrid('filterToolbar');
 
 function imprimir(elem) {
-	var gsr = jQuery("#lstFacturas").jqGrid('getGridParam','selrow');
-	//alert(gsr);
+	var gsr = jQuery("#lstFacturas").jqGrid('getGridParam','selarrrow');
 	if ( gsr ) {
 		var url = "facturasPDF.php";
-		var pars = "codigo="+gsr;
-		//var div = "resultado";
-		//procesaAjax(url, pars, div, 'Generando Factura', false, false)
-		window.open( url + "?" + pars);
-		
+		window.open( url + "?codigo="+ encodeURI(gsr));
 	} else {
-		alert("Please select Row");
+		alert("Debes seleccionar al menos una factura");
 	}
 }
 function enviar(elem) {
-	alert('enviamos');
+	var gsr = jQuery("#lstFacturas").jqGrid('getGridParam','selarrrow');
+	if ( gsr ) {
+		var url = "facturasPDF.php";
+		var pars = "codigo=" + encodeURI(gsr) + "&envio=true";
+		var div = "resultado";
+		procesaAjax(url, pars, div, "Enviando Facturas por Email", true, true);
+	} else {
+		alert("Debes seleccionar al menos una factura");
+	}
+}
+function imprimirdup(elem) {
+	var gsr = jQuery("#lstFacturas").jqGrid('getGridParam','selarrrow');
+	if ( gsr ) {
+		var url = "facturasPDF.php";
+		window.open( url + "?dup=true&codigo="+ encodeURI(gsr));
+	} else {
+		alert("Debes seleccionar al menos una factura");
+	}
+}
+function enviardup(elem) {
+	var gsr = jQuery("#lstFacturas").jqGrid('getGridParam','selarrrow');
+	if ( gsr ) {
+		var url = "facturasPDF.php";
+		var pars = "dup=true&codigo=" + encodeURI(gsr) + "&envio=true";
+		var div = "resultado";
+		procesaAjax(url, pars, div, "Enviando Facturas por Email", true, true);
+	} else {
+		alert("Debes seleccionar al menos una factura");
+	}
+}
+function factura(elem){
+	alert('factura');
+}
+function recibo(elem){
+	alert('elem');
+}
+function duplicado(elem) {
+	alert('duplicado');
 }
 
 </script>
