@@ -396,8 +396,8 @@ if(($fichero!="PROFORMA") && (!isset($_GET[duplicado])))
 //echo $pie_factura;
 */
 if ( isset( $_GET['duplicado'] ) ) {
-	$datosFactura = datosFactura($_GET['codigo']);
-	$datos = datosHistorico($_GET['codigo']);
+	$datosFactura = datosFactura( $_GET['codigo'], 'id' );
+	$datos = datosHistorico( $_GET['codigo'], 'id' );
 	if ( $_GET['duplicado'] == "true" ) {
 		$fichero = "FACTURA (DUPLICADO)";
 		$titulo = "FACTURA<BR/>DUPLICADO";
@@ -407,6 +407,9 @@ if ( isset( $_GET['duplicado'] ) ) {
 	}
 }
 if( isset($_GET['proforma'] ) ) {
+	//Sitios donde coger los datos
+	// De tarifa de cliente
+	
 	if( $_GET['proforma'] == 'true') {
 		$fichero = "PROFORMA";
 		$titulo = "FACTURA<BR/>PROFORMA";
@@ -414,6 +417,20 @@ if( isset($_GET['proforma'] ) ) {
 		$fichero = "FACTURA";
 		$titulo = $fichero;
 	}
+	$historico = historico( $_GET['codigo'] );
+	if ( $historico == "ok" ) {
+		//La factura existe en el historico se muestra
+		$datosFactura = datosFactura($_GET['codigo'],'codigo');
+		$datos = datosHistorico($_GET['codigo'],'codigo');
+	} else {
+		//Datos fijos de cliente
+		$datos = fijosMensuales($_GET['idCliente']);
+		//var_dump( consultaAlmacenaje($_GET));
+		$datos = array_merge($datos, consultaAlmacenaje( $_GET ));
+		// La factura no exise en el historico se tienen que cargar los
+		// datos agregarlos al historico y luego mostramos
+	}
+	
 }
 ?>
 <html>
@@ -424,6 +441,7 @@ if( isset($_GET['proforma'] ) ) {
 </head>
 <body>
 	<pre>
+	<?php echo $historico; ?>
 	<?php var_dump($_GET); ?>
 	</pre>
 	<?php echo cabezeraFactura(

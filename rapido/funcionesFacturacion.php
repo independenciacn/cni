@@ -244,50 +244,77 @@ function pie_factura( $cliente, $observaciones, $codigo )
 }
 //GENERA LA CONSULTA DEL ALMACENAJE DEPENDIENDO DE 
 //LOS PARAMETROS DE AGRUPA_FACTURA
-function consultaAlmacenaje($cliente,$mes,$inicial,$final)
+function consultaAlmacenaje( $vars )
 {
-	$check1 = $inicial{4};
-	$check2 = $final{4};
-	if($check1!='-') { $inicial=cambiaf($inicial); }
-	if($check2!='-') { $final=cambiaf($final); }
+	//$cliente, $mes, $inicial, $final
+	$datos = array();
+	$sql = "Select iva, PrecioEuro from servicios2 
+	WHERE nombre like 'Almacenaje'";
+	$valor = consultaUnica($sql);
 	
+	if( isset($vars['fecha_inicial_factura']) && isset($vars['fecha_final_factura'])) {
+		if ( strlen($vars['fecha_inicial_factura'] == 10 ) ) {
+			$inicial = cambiaf( $vars['fecha_inicial_factura'] );
+		} else {
+			$inicial = "0000-00-00";
+		}
+		if ( strlen($vars['fecha_final_factura'] == 10 ) ) {
+			$final = cambiaf( $vars['fecha_final_factura'] );
+		} else {
+			$final = "0000-00-00";
+		}
+	} else {
+		$inicial = "0000-00-00";
+		$final = "0000-00-00";
+	}
+	$sql = "Select bultos, datediff(fin,inicio),
+	date_format(inicio,'%d-%m-%Y'),
+	date_format(fin,'%d-%m-%Y')
+	FROM z_almacen where cliente like ".$vars['idCliente']." ";
 	if(($inicial == '0000-00-00') && ($final == '0000-00-00')) {
-		$sql = "Select * from agrupa_factura where concepto like 'dia' 
-		and idemp like ".$cliente." and valor not like ''" ;
-		if ( totalCeldas( $sql ) !=0 ) {
-			$resultado = consultaUnica($sql);
-			$sql = "Select bultos, datediff(fin,inicio), inicio, fin  
-			from z_almacen where cliente like ".$cliente." 
-			and (month(inicio) like (".$mes."-1) 
-			and month(fin) like ".$mes." 
+		$agrupado = "Select * from agrupa_factura where concepto like 'dia' 
+		and idemp like ".$vars['idCliente']." and valor not like ''" ;
+		if ( totalCeldas( $agrupado ) !=0 ) {
+			$resultado = consultaUnica($agrupado);
+			$sql .= " 
+			and (month(inicio) like (".$vars['mes']."-1) 
+			and month(fin) like ".$vars['mes']." 
 			and day(inicio) >= ". $resultado['valor']."  
 			and  day(fin) <= ". $resultado['valor'] ." 
 			and year(inicio) like year(curdate()) 
 			and year(fin) like year(curdate()))";
 		} else {
-			$sql = "Select bultos, datediff(fin,inicio), inicio, fin  
-			from z_almacen where cliente like ".$cliente." 
-			and month(fin) like ".$mes." and year(fin) like year(curdate())";
+			$sql .= "
+			and month(fin) like ".$vars['mes']." and year(fin) like year(curdate())";
 		}
 	} else {
-		/*$check1=$inicial{4};
-		$check2=$final{4};
-		if($check1!='-')
-			$inicial=cambiaf($inicial);
-		if($check2!='-')
-			$final=cambiaf($final);*/
 		if(($inicial != "" ) && ($final != "")){
-			$sql = "Select bultos, datediff(fin,inicio), inicio, fin 
-			from z_almacen where cliente like ".$cliente." 
-			and month(fin) like month('".$final."') 
+			$sql .= " and month(fin) like month('".$final."') 
 			and year(fin) like year('".$final."')";
 		} else {
-			$sql = "Select bultos, datediff(fin,inicio), inicio, fin 
-			from z_almacen where cliente like ".$cliente." 
-			and fin <= '".$final."'";
+			$sql .= " and fin <= '".$final."'";
 		}
 	}
-	return $sql;
+	$resultados = consultaGenerica($sql);
+	echo $sql;
+	/*
+	 * <td>$dato['servicio']." ". $dato['obs']."</td>
+	   <td>".$dato['cantidad']."</td>
+	   <td>".precioFormateado( $dato['unitario'] )."</td>
+			<td>".precioFormateado( $importe )."</td>
+			<td>".$dato['iva']."%</td>
+			<td>".precioFormateado( $subtotal )."</td>
+	 */
+	foreach( $resultados as $resultado ){
+		$datos[] = array(
+				'servicio' => "Bultos Almacenados del  ".$resultado[2] . " al ".$resultado[3],
+				'cantidad' => $resultado[0],
+				'unitario' => $valor['PrecioEuro'] * $resultado[1],
+				'iva'	=> $valor['iva'],
+				'obs'	=> ''
+		);
+	}
+	return $datos;
 }
 /**
  * Consulta si la factura esta en el historico devuelve ok o ko
@@ -299,7 +326,7 @@ function historico( $factura )
 {
 	$sql = "Select * from historico where factura like " . $factura;
 	$resultado = totalCeldas($sql);
-	if ( resultado !=0 ) {
+	if ( $resultado !=0 ) {
 		return "ok";
 	} else {
 		return "ko";
@@ -359,10 +386,10 @@ function compruebaFactura( $cliente,$codigo,$fecha,$total_iva,$total )
  * de registro de facturas
  * @param unknown_type $codigo
  */
-function datosHistorico( $codigo ) {
+function datosHistorico( $codigo, $campo ) {
 	$sql = "Select h.* from historico as h 
 	INNER JOIN regfacturas r on r.codigo = h.factura AND
-	r.id = ".$codigo;
+	r.".$campo." = ".$codigo;
 	return consultaGenerica( $sql, MYSQL_ASSOC );
 }
 /**
@@ -370,7 +397,7 @@ function datosHistorico( $codigo ) {
  * @param unknown_type $codigo
  * @return Ambigous <multitype:, boolean>
  */
-function datosCliente( $codigo ) {
+function datosCliente( $codigo, $campo ) {
 	$sql = "Select c.* from clientes as c
 	INNER JOIN regfacturas r on r.id_cliente = c.id AND
 	r.id = ".$codigo;
@@ -380,7 +407,18 @@ function datosCliente( $codigo ) {
  * Devuelve los datos de la factura
  * @param unknown_type $codigo
  */
-function datosFactura( $codigo ) {
-	$sql = "Select * from regfacturas WHERE id like ".$codigo;
+function datosFactura( $codigo, $campo ) {
+	$sql = "Select * from regfacturas WHERE ".$campo." like ".$codigo;
 	return consultaUnica( $sql, MYSQL_ASSOC );
+}
+/**
+ * Devuelve los servicios que tiene fijos mensualmente el cliente
+ * @param unknown_type $cliente
+ * @return Ambigous <multitype:, multitype:multitype: >
+ */
+function fijosMensuales( $cliente ) {
+	$sql = "Select Servicio as servicio, Imp_Euro as unitario, iva, 
+	unidades as cantidad, observaciones as obs
+	FROM tarifa_cliente WHERE ID_Cliente like ".$cliente;
+	return consultaGenerica($sql);
 }

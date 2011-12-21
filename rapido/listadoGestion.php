@@ -36,7 +36,7 @@ $cadena = "
 //la primera linea tiene que ser el importe del mes del tipo de cliente
 	$sql = "Select * from tarifa_cliente 
 	where ID_Cliente like " . $_GET['idCliente'] ." order by Servicio";
-	$resultados = consultaGenerica($sql);
+	$resultados = consultaGenerica( $sql );
 	$cantidad = 0;
 	$j = 0;
 	foreach ($resultados as $resultado) {
