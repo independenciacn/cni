@@ -7,7 +7,6 @@ if ( !isset($_SESSION['usuario']) ) {
 	notFound();
 }
 sanitize( $_GET );
-
 ?>
 <html>
 <head><title>Vista Impresion Listado</title>

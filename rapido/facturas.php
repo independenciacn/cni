@@ -142,8 +142,8 @@ function enviardup(elem) {
 function factura(elem){
 	var gsr = jQuery("#lstFacturas").jqGrid('getGridParam','selrow');
 	if ( gsr ) {
-		var url = "genfactura.php";
-		window.open( url + "?codigo="+ encodeURI(gsr));
+		var url = "generaFactura.php";
+		window.open( url + "?duplicado=false&codigo="+ encodeURI(gsr));
 	} else {
 		alert("Debes seleccionar al menos una factura");
 	}
@@ -160,7 +160,7 @@ function recibo(elem){
 function duplicado(elem) {
 	var gsr = jQuery("#lstFacturas").jqGrid('getGridParam','selrow');
 	if ( gsr ) {
-		var url = "genfactura.php";
+		var url = "generaFactura.php";
 		window.open( url + "?duplicado=true&codigo="+ encodeURI(gsr));
 	} else {
 		alert("Debes seleccionar al menos una factura");

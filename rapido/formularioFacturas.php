@@ -16,7 +16,7 @@ if ( isset( $_POST['factura'] ) ) {
 	<input type='text' class='fecha'
 	id='fecha_factura' name='fecha_factura' size = '10' value='".date('d-m-Y')."'/>
 	<label for='codigo'>Numero Factura:</label>
-	<input type='text' id='codigo' value='".ultimo_codigo()."'  size='6'/>
+	<input type='text' id='codigo' name='codigo' value='".ultimo_codigo()."'  size='6'/>
 	<label for='observaciones'>Observaciones:</label>
 	<input type='text' id='observaciones' name='observaciones' size='60' />";
 	if( $_POST['factura'] == 'puntual') {

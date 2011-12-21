@@ -117,20 +117,270 @@ function consultaAgrupado( $cliente )
 	$sql = "Select s.Nombre,a.valor from agrupa_factura as a 
 	join servicios2 as s on a.valor = s.id where a.idemp 
 	like ".$cliente." and a.concepto like 'servicio'";
-	$consulta = mysql_query( $sql, $con );
-	if(mysql_numrows($consulta)!=0)
-		while($resultado = mysql_fetch_array($consulta))
-		{
-			$pila[]=$resultado[0];
+	$resultados = consultaGenerica($sql);
+	if ( count($resultados)!=0)
+		foreach ( $resultados as $resultado ) {
+			$pila[ ]= $resultado[0];
 			$i++;
 		}
 		$cadena = "and (";
-		for($j=0;$j<=count($pila)-1;$j++)
-		{
-		$cadena .= " d.Servicio not like '$pila[$j]' ";
-		if ($j!=count($pila)-1)
-			$cadena .= " and ";
+		for ($j=0;$j<=count($pila)-1;$j++) {
+			$cadena .= " d.Servicio not like '".$pila[$j]."' ";
+			if ($j!=count($pila)-1) { $cadena .= " and "; }
 		}
-		$cadena .=") group by d.Servicio order by d.ImporteEuro desc , d.Servicio asc";
+		$cadena .=") group by d.Servicio 
+		order by d.ImporteEuro desc , d.Servicio asc";
 		return $cadena;
+}
+/**
+ * Generamos la cabezera de la factura
+ *
+ * @param string $nombre_fichero
+ * @param string $fecha_factura
+ * @param string $codigo
+ * @param string $cliente
+ * @return string $cabezera
+ */
+function cabezeraFactura( $nombre_fichero, $fecha_factura, $codigo, $cliente )
+{
+	global $meses;
+	$fecha_factura = explode("-",$fecha_factura);
+	$fecha_de_factura = $fecha_factura[2] 
+			. " de ". $meses[ intval($fecha_factura[1]) ]
+			." de ". $fecha_factura[0];
+	$sql = "Select * from clientes where id like " .$cliente;
+	$resultado = consultaUnica($sql);
+	$cabezera = "
+	<br/><br/><br/>
+	<div class='titulo'>".strtoupper($nombre_fichero)."</div><br/>
+	<div class='cabezera'>
+	<table width='100%'>
+	<tr>
+	<td  align='left' class='celdilla_sec'>
+	<br/>FECHA:". $fecha_de_factura . "
+	<br/>";
+	if($nombre_fichero =='PROFORMA') {
+		$cabezera .= "<br/>" . $nombre_fichero;
+	} else {
+		$cabezera .= "<br/>N&deg;" . $nombre_fichero.":".$codigo;
+	}
+	$cabezera .= "</td>
+	<td  class='celdilla_imp'>
+	".strtoupper($resultado[1])."<br>
+	".$resultado[6]."<br>
+	".$resultado[8]."&nbsp;&nbsp;-&nbsp;&nbsp;".$resultado[7]."<br>
+	NIF:".$resultado[5]."
+	</td></tr></table></div><br/>";
+	return $cabezera;
+}
+/**
+ * Genera el Pie de la factura
+ *
+ * @param string $cliente
+ * @param string $observaciones
+ * @param string $codigo
+ * @return string $pie_factura;
+ */
+function pie_factura( $cliente, $observaciones, $codigo )
+{
+	$pie_factura = "";
+	// Con estos tipos de formas de pago aparecera
+	$pagoCC = array("Cheque","Contado","Tarjeta credito","Liquidación");
+	$pagoNCC = array("Cheque");
+	/*
+	 * Comprobamos si esta metido dentro de regfacturas,
+	* si no lo consultamos, lo metemos y lo mostramos
+	*/
+	$sql="Select * from regfacturas where codigo like '" . $codigo ."'";
+	$resultado = consultaGenerica($sql);
+	$camposPie = array( 0=>'fpago', 1=>'obs_fpago', 2=>'obs', 3=>'pedidoCliente');
+	//$camposPieFac = array( 0=>'fpago', 1=>'cc', 2=>'obs', 3=>'dpago');
+	// Si es 1 la factura esta dada de alta
+	if ( count( $resultado )!= 0 ) {
+		foreach( $resultado as $key => $row ) {
+			if ( in_array( $key, $camposPie ) ) {
+				if ( !is_null( $row ) && $row != "" ) {
+					$valoresPie[$key] = $row;
+				}
+			}
+		}
+		if ( is_null( $resultado['fpago'] ) || is_null( $resultado['obs_fpago'] )
+				|| is_null( $resultado['pedidoCliente'] ) ) {
+			// Si no esta dada de alta consultamos los datos de facturacion
+			$sql = "SELECT fpago, cc as obs_fpago, dpago as pedidoCliente
+			from facturacion where idemp like " . $cliente;
+			$resultado = consultaGenerica($sql);
+			if ( count( $resultado ) != 0  ) {
+				foreach( $resultado as $key => $row ) {
+					if ( in_array( $key, $camposPie ) ) {
+						if ( !is_null( $row ) && $row != "" ) {
+							$valoresPie[$key] = $row;
+						}
+					}
+				}
+				if ( !in_array( $valoresPie['fpago'], $pagoCC ) ) {
+					$valoresPie['obs_fpago']="Cuenta: ". $valoresPie['obs_fpago'];
+				} elseif ( in_array( $valoresPie['fpago'], $pagoNCC ) && $valoresPie['cc']!="" ) {
+					$valoresPie['obs_fpago']="Vencimiento: ". $valoresPie['obs_fpago'];
+				}
+				// Actualizamos regfacturas
+				$sql = "Update regfacturas set
+				fpago ='" . $valoresPie['fpago'] . "',
+				obs_fpago ='" . $valoresPie['obs_fpago'] . "',
+				pedidoCliente ='". $valoresPie['pedidoCliente'] ." '
+				where codigo like " . $codigo;
+				ejecutaConsulta($sql);
+			}
+		}
+		$pie_factura = "<br/>
+		<div class='celdia_sec'>
+		Forma de pago: ". $valoresPie['fpago'] ."<br/>" .
+		$valoresPie['obs_fpago']."<br/>" .
+		$valoresPie['pedidoCliente'] .
+		observacionesEspeciales( $cliente, $codigo ) .
+		"</div>";
+	}
+	return $pie_factura;
+}
+//GENERA LA CONSULTA DEL ALMACENAJE DEPENDIENDO DE 
+//LOS PARAMETROS DE AGRUPA_FACTURA
+function consultaAlmacenaje($cliente,$mes,$inicial,$final)
+{
+	$check1 = $inicial{4};
+	$check2 = $final{4};
+	if($check1!='-') { $inicial=cambiaf($inicial); }
+	if($check2!='-') { $final=cambiaf($final); }
+	
+	if(($inicial == '0000-00-00') && ($final == '0000-00-00')) {
+		$sql = "Select * from agrupa_factura where concepto like 'dia' 
+		and idemp like ".$cliente." and valor not like ''" ;
+		if ( totalCeldas( $sql ) !=0 ) {
+			$resultado = consultaUnica($sql);
+			$sql = "Select bultos, datediff(fin,inicio), inicio, fin  
+			from z_almacen where cliente like ".$cliente." 
+			and (month(inicio) like (".$mes."-1) 
+			and month(fin) like ".$mes." 
+			and day(inicio) >= ". $resultado['valor']."  
+			and  day(fin) <= ". $resultado['valor'] ." 
+			and year(inicio) like year(curdate()) 
+			and year(fin) like year(curdate()))";
+		} else {
+			$sql = "Select bultos, datediff(fin,inicio), inicio, fin  
+			from z_almacen where cliente like ".$cliente." 
+			and month(fin) like ".$mes." and year(fin) like year(curdate())";
+		}
+	} else {
+		/*$check1=$inicial{4};
+		$check2=$final{4};
+		if($check1!='-')
+			$inicial=cambiaf($inicial);
+		if($check2!='-')
+			$final=cambiaf($final);*/
+		if(($inicial != "" ) && ($final != "")){
+			$sql = "Select bultos, datediff(fin,inicio), inicio, fin 
+			from z_almacen where cliente like ".$cliente." 
+			and month(fin) like month('".$final."') 
+			and year(fin) like year('".$final."')";
+		} else {
+			$sql = "Select bultos, datediff(fin,inicio), inicio, fin 
+			from z_almacen where cliente like ".$cliente." 
+			and fin <= '".$final."'";
+		}
+	}
+	return $sql;
+}
+/**
+ * Consulta si la factura esta en el historico devuelve ok o ko
+ *
+ * @param string $factura
+ * @return string
+ */
+function historico( $factura )
+{
+	$sql = "Select * from historico where factura like " . $factura;
+	$resultado = totalCeldas($sql);
+	if ( resultado !=0 ) {
+		return "ok";
+	} else {
+		return "ko";
+	}
+}
+/**
+ * Agrega los datos al historico
+ *
+ * @param string $factura
+ * @param string $servicio
+ * @param string $cantidad
+ * @param string $unitario
+ * @param string $iva
+ * @param string $obs
+ */
+function agregaHistorico( $factura, $servicio, $cantidad, $unitario, $iva, $obs )
+{
+	$servicio = trim( $servicio );//Eliminamos espacios en blanco al principio y final
+	$sql = "Insert into historico 
+	(factura,servicio,cantidad,unitario,iva,obs)
+	values
+	('".$factura."','".$servicio."','".$cantidad."',
+	'".$unitario."','".$iva."','".$obs."')";
+	ejecutaConsulta($sql);
+}
+/**
+ * Comprueba la factura
+ * @param unknown_type $cliente
+ * @param unknown_type $codigo
+ * @param unknown_type $fecha
+ * @param unknown_type $total_iva
+ * @param unknown_type $total
+ */
+function compruebaFactura( $cliente,$codigo,$fecha,$total_iva,$total )
+{
+	$sql = "Select * from regfacturas 
+	where id_cliente like ".$cliente." 
+	and codigo like ".$codigo." 
+	and fecha like '".$fecha."'";
+	if ( totalCeldas( $sql ) == 0 ) {
+		return true;
+	} else {
+		$resultado = consultaUnica( $sql );
+		if (($resultado['iva']!=$total_iva) && ($resultado['importe']!=$total)) {
+			$sql = "Update regfacturas 
+			set iva='".$total_iva."',importe='".$total."' 
+			where id_cliente like '".$cliente."' 
+			and codigo like '".$codigo."' and fecha like '".$fecha."'";
+			ejecutaConsulta($sql);
+		}
+		return false;
+	}
+}
+//FUNCIONES NUEVAS
+/**
+ * Devuelve los datos de la factura del fichero historico en base al id
+ * de registro de facturas
+ * @param unknown_type $codigo
+ */
+function datosHistorico( $codigo ) {
+	$sql = "Select h.* from historico as h 
+	INNER JOIN regfacturas r on r.codigo = h.factura AND
+	r.id = ".$codigo;
+	return consultaGenerica( $sql, MYSQL_ASSOC );
+}
+/**
+ * Devuelve los datos del cliente en base al id del registro de facturas
+ * @param unknown_type $codigo
+ * @return Ambigous <multitype:, boolean>
+ */
+function datosCliente( $codigo ) {
+	$sql = "Select c.* from clientes as c
+	INNER JOIN regfacturas r on r.id_cliente = c.id AND
+	r.id = ".$codigo;
+	return consultaUnica( $sql, MYSQL_ASSOC );
+}
+/**
+ * Devuelve los datos de la factura
+ * @param unknown_type $codigo
+ */
+function datosFactura( $codigo ) {
+	$sql = "Select * from regfacturas WHERE id like ".$codigo;
+	return consultaUnica( $sql, MYSQL_ASSOC );
 }
