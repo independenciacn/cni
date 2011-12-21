@@ -302,7 +302,7 @@ function respuesta($vars)
  function consulta($vars)
  {
  	
-	$confecha=consulta_fecha($vars); //Lo paso directamente a una funcion para que saque las fechas
+	$confecha=consultaFecha($vars); //Lo paso directamente a una funcion para que saque las fechas
 	if($confecha != "" && $vars[formu]!= 5)
 		$con_fecha = " and ".$confecha;
 	else
@@ -671,7 +671,7 @@ function genera_consultas($inicio,$fin)
  /*
   * Generacion de la consulta con las fechas
   */
- function consulta_fecha($vars)
+ function consultaFecha($vars)
  {
  	if($vars[diaf]==0 && $vars[mesf]==0 && $vars[anof]==0) //sin limite
 	{

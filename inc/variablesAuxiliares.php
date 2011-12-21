@@ -127,3 +127,13 @@ $whiteTables = array (
     'proveedores',
     'listin'        
 );
+/**
+ * Array de servicios agrupados
+ */
+$agrupados = array(
+		"Franqueo",
+		"Consumo Tel%fono",
+		"Material de oficina",
+		"Secretariado",
+		"Ajuste"
+);

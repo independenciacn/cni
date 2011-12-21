@@ -30,7 +30,7 @@ if (isset($_GET['codigo'])) {
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
-	<table cellpadding='2px' cellspacing='0px' width='100%' id='tabloide'>
+	<table id='tabloide'>
 	<tr>
 		<th align='left'>NUMERO FACTURA</th>
 		<th align='left'>FORMA PAGO</th>

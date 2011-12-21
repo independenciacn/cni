@@ -151,7 +151,7 @@ function factura(elem){
 function recibo(elem){
 	var gsr = jQuery("#lstFacturas").jqGrid('getGridParam','selrow');
 	if ( gsr ) {
-		var url = "genrecibo.php";
+		var url = "generaRecibo.php";
 		window.open( url + "?codigo="+ encodeURI(gsr));
 	} else {
 		alert("Debes seleccionar al menos una factura");

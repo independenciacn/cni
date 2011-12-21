@@ -138,7 +138,7 @@ foreach ( $idFacturas as $idFactura ) {
 			->drawText(round($resultado['cantidad'],2), 325, $line, $charEncoding)
 			->drawText(precioFormateado($resultado['unitario']), 375, $line, $charEncoding)
 			->drawText(precioFormateado($resultado['importe']), 425, $line, $charEncoding)
-			->drawText($resultado['iva'], 475, $line, $charEncoding)
+			->drawText($resultado['iva']."%", 475, $line, $charEncoding)
 			->drawText(precioFormateado($resultado['total']), 525, $line, $charEncoding);
 		$line-=20;
 	}
@@ -151,7 +151,7 @@ foreach ( $idFacturas as $idFactura ) {
 	$page->drawLine(33, 80, 562, 80)
 		->drawText(round($resultados['cantidad'],2), 325, 70, $charEncoding)
 		->drawText(precioFormateado($resultados['unitario']), 375, 70, $charEncoding)
-		->drawText(precioFormateado($resultados['iva']),425,70, $charEncoding)
+		->drawText(precioFormateado($resultados['iva']),475,70, $charEncoding)
 		->drawText(precioFormateado($resultados['total']), 525, 70, $charEncoding);
 	// Escribimos y mostramos
 	

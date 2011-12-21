@@ -1,35 +1,18 @@
 <?php
+//REESCRIBIR - GENERA LA FACTURA, LA ESCRIBE Y LA MUESTRA POR PANTALLA, SI ES PROFORMA NO GUARDA
 //Fichero genfactura.php (Genera la factura dependiendo de lo que se pida). Realizado por Ruben Lacasa Mas ruben@ensenalia.com 2006-2007 
 //error_reporting(E_ALL);//fichero genfactura.php le llegan el mes y el cliente y genera un word.
-require_once '../inc/variables.php';
-include_once 'telecos.php';
-/********************************************************************************************************************/
-//calculo del total con iva
-function iva($importe,$iva)
-{
-	$total = round($importe + ($importe * $iva)/100,2);
-	return $total;
+require_once '../inc/configuracion.php';
+require_once 'funcionesFacturacion.php';
+if ( !isset($_SESSION['usuario']) ) {
+	notFound();
 }
+sanitize( $_GET );
+/********************************************************************************************************************/
+
 /*******************************************************************************************************************/
 //observaciones especiales 
-function observaciones_especiales($cliente,$factura)
-{
-	global $con, $dbname;
-	$sql = "Select obs_alt from regfacturas where codigo like $factura and obs_alt is not null";
-	//$sql = "Select obs_alt, fpago, obs_fpago from regfacturas where codigo like $factura";
-	$consulta = @mysql_query( $sql, $con );
-	if (mysql_numrows($consulta)!=0)
-	{
-		$resultado = @mysql_fetch_array($consulta);
-		$obser = $resultado[0];
-		$pedidoCliente = "<br/>" . $resultado['pedidoCliente'];
-	}
-	else {
-		$obser = "";
-		$pedidoCliente = "";
-	}
-	return $obser . $pedidoCliente ;
-}
+
 /**
  * Pasando el numero nos devuelve el nombre del mes
  * 
@@ -55,125 +38,11 @@ function dame_el_mes($mes)
 	}
 	return $marcado;
 }
-/**
- * Cambia el formato de la fecha en un sentido u otro
- * 
- * @param string $stamp
- * @return string $fecha
- */
-function cambiaf($stamp)
-{
-	//formato en el que llega aaaa-mm-dd o al reves
-	$fdia = explode("-",$stamp);
-	$fecha = $fdia[2]."-".$fdia[1]."-".$fdia[0];
-	return $fecha;
-}
-/**
- * Para distintas fechas de facturacion
- * 
- * @param string $cliente
- * @param string $mes
- * @param string $inicial
- * @param string $final
- * @return string $cadena
- */
-function consulta_fecha($cliente,$mes,$inicial,$final) //consulta los rangos de la fecha
-{
-	$check1=$inicial{4};
-	$check2=$final{4};
-	if($check1!='-')
-	$inicial=cambiaf($inicial);
-	if($check2!='-')
-	$final=cambiaf($final);
-	if($inicial!='0000-00-00')
-	{
-		if(($final!="0000-00-00") && ($final!="--") && ($final!=""))
-		{
-			$cadena .= " and datediff(c.fecha,'$inicial') >= 0 and datediff(c.fecha,'$final') <=0 ";
-		}
-		else
-			$cadena = " and c.fecha like '$inicial' ";
-	}
-	else
-	{
-	include("../inc/variables.php");
-	$sql = "Select valor from agrupa_factura where idemp like $cliente and concepto like 'dia'";
-	$consulta = mysql_query( $sql, $con );
-		if(mysql_numrows($consulta)!=0)
-		{
-			$resultado = mysql_fetch_array($consulta);
-			if($resultado[0]!="")
-			{
-				$mes_ant = $mes - 1;
-				$fecha_inicial = date(Y)."-".$mes_ant."-".$resultado[0];
-				$fecha_final = date(Y)."-".$mes."-".$resultado[0];
-				$cadena =" and (c.fecha > '$fecha_inicial' and c.fecha <= '$fecha_final')";
-			}
-			else
-				$cadena =" and (date_format(curdate(),'%Y') 
-		like date_format(c.fecha,'%Y') and '$mes' like date_format(c.fecha,'%c')) ";
-		}
-		else
-		$cadena=" and (date_format(curdate(),'%Y') 
-	like date_format(c.fecha,'%Y') and '$mes' like date_format(c.fecha,'%c')) ";
-	}
-	
-	//echo "Punto de control consulta_fecha valor cadena:".$cadena;
-return $cadena;
-}
-/**
- * Generacion de los no agrupados
- * 
- * @param string $cliente
- */
-function consulta_no_agrupado($cliente)
-{
-		global $con, $dbname;
-		$pila = array("Franqueo","Consumo Tel%fono","Material de oficina","Secretariado","Ajuste");
-		$i=5;
-		$sql = "Select s.Nombre,a.valor from agrupa_factura as a join servicios2 as s on a.valor = s.id where a.idemp like $cliente and a.concepto like 'servicio'";
-		$consulta = mysql_query( $sql, $con );
-		if(mysql_numrows($consulta)!=0)
-			while($resultado = mysql_fetch_array($consulta))
-			{
-				$pila[]=$resultado[0];
-				$i++;
-			}
-		$cadena = "and (";
-		for($j=0;$j<=count($pila)-1;$j++)
-		{
-			$cadena .= " d.Servicio like '$pila[$j]' ";
-			if ($j!=count($pila)-1)
-				$cadena .= " or ";
-		}
-		$cadena .=") order by d.ImporteEuro desc , d.Servicio asc";
-		return $cadena;
-}
+
+
+
 /****************************************************************************************************************************/
-//Genaracion de consulta de los agrupamientos
-function consulta_agrupado($cliente)
-{
-		include("../inc/variables.php");
-		$pila = array("Franqueo","Consumo Tel%fono","Material de oficina","Secretariado","Ajuste");
-		$i=5;
-		$sql = "Select s.Nombre,a.valor from agrupa_factura as a join servicios2 as s on a.valor = s.id where a.idemp like $cliente and a.concepto like 'servicio'";
-		$consulta = mysql_query( $sql, $con );
-		if(mysql_numrows($consulta)!=0)
-			while($resultado = mysql_fetch_array($consulta))
-			{
-				$pila[]=$resultado[0];
-				$i++;
-			}
-			$cadena = "and (";
-			for($j=0;$j<=count($pila)-1;$j++)
-			{
-				$cadena .= " d.Servicio not like '$pila[$j]' ";
-				if ($j!=count($pila)-1)
-					$cadena .= " and ";
-			}
-		$cadena .=") group by d.Servicio order by d.ImporteEuro desc , d.Servicio asc";
-		return $cadena;
-}
+
 /**************************************************************************************************************************/
 /**
  * Generamos la cabezera de la factura
@@ -282,7 +151,7 @@ function pie_factura( $cliente, $observaciones, $codigo )
 		Forma de pago: ". $valoresPie['fpago'] ."<br/>" .
 	    $valoresPie['obs_fpago']."<br/>" .
 	    $valoresPie['pedidoCliente'] . 
-	    observaciones_especiales( $cliente, $codigo ) .
+	    observacionesEspeciales( $cliente, $codigo ) .
 		"</div>";
 	}
 	return $pie_factura;
@@ -640,8 +509,8 @@ if($historico == "ok") {
 	d.observaciones from `detalles consumo de servicios` as d join `consumo de servicios` as c 
 	on c.`Id Pedido` = d.`Id Pedido` where c.Cliente like $cliente ";
 //consulta de fecha
-	$sql .= consulta_fecha($cliente,$mes,$inicio,$final); //con esta miramos los rangos de la factura
-	$sql .= consulta_no_agrupado($cliente);
+	$sql .= consultaFecha($cliente,$mes,$inicio,$final); //con esta miramos los rangos de la factura
+	$sql .= consultaNoAgrupado($cliente);
 	//echo $sql;/*PUNTO DE CONTROL*/
 	$consulta = mysql_query( $sql, $con );
 	while ($resultado=mysql_fetch_array($consulta))
@@ -671,8 +540,8 @@ if($historico == "ok") {
 	d.PrecioUnidadEuros, sum(d.ImporteEuro), d.iva, c.`Id Pedido` ,
 	d.observaciones from `detalles consumo de servicios` as d join `consumo de servicios` as c 
 	on c.`Id Pedido` = d.`Id Pedido` where c.Cliente like $cliente";
-	$sql .= consulta_fecha($cliente,$mes,$inicio,$final);
-	$sql .= consulta_agrupado($cliente);
+	$sql .= consultaFecha($cliente,$mes,$inicio,$final);
+	$sql .= consultaAgrupado($cliente);
 	//echo $sql;//<- Punto de Control
 	//echo $cliente.",".$mes.",".$inicio.",".$final;
 	$consulta = mysql_query( $sql, $con );
@@ -825,6 +694,7 @@ function comprueba_la_factura($cliente,$codigo,$fecha,$total_iva,$total)
 
 //echo $pie_factura;
 ?>
-</body></html>
+</body>
+</html>
 
 

@@ -4,7 +4,6 @@ if ( !isset( $_SESSION['usuario'] ) && !isset( $_POST ) ) {
 	notFound();
 }
 sanitize($_POST);
-var_dump($_POST);
 $respuesta = "";
 if ( isset( $_POST['factura'] ) ) {
 	$respuesta = "
@@ -33,12 +32,24 @@ if ( isset( $_POST['factura'] ) ) {
 }
 $respuesta .= <<<EON
 	<br/>
-	<input type='button' onclick='generar_excel()' value='>Informe Gestion'/>
-	<input type='button' onclick='genera_factura_prueba()' value='>Generar Proforma' />
-	<input type='button'  onclick='genera_factura()' value='>Generar Factura' />
+	<input type='button' id='listadoGestion' onclick='generar_excel()' value='>Informe Gestion'/>
+	<input type='button' id='generaProforma' onclick='genera_factura_prueba()' value='>Generar Proforma' />
+	<input type='button' id='generaFactura' onclick='genera_factura()' value='>Generar Factura' />
 	</fieldset></form>
 	<script>
 	$('.fecha').datepicker({dateFormat:"dd-mm-yy"});
+	$('#listadoGestion').click(function(){
+		var pars = $('#frmDatos').serialize() + '&' + $('#parametrosFactura').serialize();
+		window.open('listadoGestion.php?'+ pars );
+	});
+	$('#generaProforma').click(function(){
+		var pars = $('#frmDatos').serialize() + '&' + $('#parametrosFactura').serialize();
+		window.open('generaFactura.php?proforma=true&'+ pars );
+	});
+	$('#generaFactura').click(function(){
+		var pars = $('#frmDatos').serialize() + '&' + $('#parametrosFactura').serialize();
+		window.open('generaFactura.php?proforma=false&'+ pars );
+	});
 	</script>
 EON;
 echo $respuesta;

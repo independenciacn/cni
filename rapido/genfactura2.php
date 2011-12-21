@@ -1,4 +1,5 @@
 <?php //fichero genfactura.php le llegan el mes y el cliente y genera un word.
+//OBSOLETA - BORRAR
 /*Que tiene que salir en la factura.
 1.- Los servicios fijos contratados, o sea el tipo que esta en tarifa_cliente
 2.- Los servicios variables consumidos este mes
