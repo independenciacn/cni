@@ -296,15 +296,6 @@ function consultaAlmacenaje( $vars )
 		}
 	}
 	$resultados = consultaGenerica($sql);
-	echo $sql;
-	/*
-	 * <td>$dato['servicio']." ". $dato['obs']."</td>
-	   <td>".$dato['cantidad']."</td>
-	   <td>".precioFormateado( $dato['unitario'] )."</td>
-			<td>".precioFormateado( $importe )."</td>
-			<td>".$dato['iva']."%</td>
-			<td>".precioFormateado( $subtotal )."</td>
-	 */
 	foreach( $resultados as $resultado ){
 		$datos[] = array(
 				'servicio' => "Bultos Almacenados del  ".$resultado[2] . " al ".$resultado[3],
@@ -421,4 +412,131 @@ function fijosMensuales( $cliente ) {
 	unidades as cantidad, observaciones as obs
 	FROM tarifa_cliente WHERE ID_Cliente like ".$cliente;
 	return consultaGenerica($sql);
+}
+/**
+ * Devuelve los servicios no agrupados que tiene el cliente
+ * @param array $vars
+ * @return array $resultados
+ */
+function serviciosNoAgrupados( $vars ) {
+    $fecha = fechaInicioFin($vars);
+    $sql = "Select d.Servicio as servicio, 
+    d.Cantidad as cantidad, date_format(c.fecha,'%d-%m-%Y') as fecha,
+    d.PrecioUnidadEuros as unitario, d.ImporteEuro as importe, 
+    d.iva as iva,
+    d.observaciones as obs 
+    FROM `detalles consumo de servicios` as d 
+    INNER JOIN `consumo de servicios` as c
+    on c.`Id Pedido` = d.`Id Pedido` 
+    WHERE c.Cliente like ".$vars['idCliente']." ";
+    $sql .= consultaFecha(
+        $vars['idCliente'],
+        $vars['mes'],
+        $fecha['inicio'],
+        $fecha['final']
+    );
+    $sql .= consultaNoAgrupado( $vars['idCliente'] );
+    $resultados = consultaGenerica($sql);
+    return $resultados;
+}
+/**
+ * Devuelve los servicios agrupados que tiene el cliente
+ * @param array $vars
+ * @return array $resultados
+ */
+function serviciosAgrupados( $vars ) {
+    $fecha = fechaInicioFin( $vars );
+    $sql = "Select d.Servicio as servicio, 
+    sum(d.Cantidad) as cantidad, date_format(c.fecha,'%d-%m-%Y') as fecha,
+    d.PrecioUnidadEuros as unitario, sum(d.ImporteEuro) as importe, 
+    d.iva as iva, d.observaciones as obs
+    FROM `detalles consumo de servicios` as d 
+    INNER JOIN `consumo de servicios` as c
+    on c.`Id Pedido` = d.`Id Pedido` 
+    WHERE c.Cliente like ".$vars['idCliente']." ";
+    $sql .= consultaFecha(
+        $vars['idCliente'],
+        $vars['mes'],
+        $fecha['inicio'],
+        $fecha['final']
+    );
+    $sql .= consultaAgrupado( $vars['idCliente'] );
+    $resultados = consultaGenerica($sql);
+    return $resultados;
+}
+/**
+ * Devuelve la fecha inicial y la final del rango
+ * @param array $vars
+ * @return array $vars
+ */
+function fechaInicioFin( $vars ) {
+    if ( !isset( $vars['fecha_inicial_factura'] ) && !isset($vars['fecha_final_factura'])) {
+        $fecha['inicio'] = "0000-00-00";
+        $fecha['final'] = "0000-00-00";
+    } else {
+        $fecha['inicio'] = $vars['fecha_inicial_factura'];
+        $fecha['final'] = $vars['fecha_final_factura'];
+    }
+    return $fecha;
+}
+
+function descuento( $cliente ) {
+    $sql = "Select razon as descuento from clientes where id like ".$cliente;
+    if ( totalCeldas($sql) == 1 ){
+        $resultado = consultaUnica($sql, MYSQL_ASSOC);
+        $porcentaje = explode("%",$resultado['descuento']);
+        return $porcentaje[0];
+    } else {
+        return false;
+    }
+    
+}
+/**
+ * Si estamos generando la factura, procesa los datos y los ingresa en la
+ * base de datos, si no solo los muestra por pantalla (proforma)
+ * @param unknown_type $factura
+ * @param unknown_type $datos
+ * @param unknown_type $porcentaje
+ * @param unknown_type $fichero
+ * @return multitype:string unknown number |Ambigous <multitype:, multitype:multitype: >
+ */
+function procesaHistorico( $factura, $datos, $porcentaje, $fichero ) {
+    $bruto = 0;
+    foreach( $datos as $dato ) {
+        if( $fichero == 'false' ) {
+            agregaHistorico( $factura, 
+                $dato['servicio'], 
+                $dato['cantidad'], 
+                $dato['unitario'], 
+                $dato['iva'],
+                $dato['obs']
+            );
+           $bruto = $bruto + $dato['cantidad'] * $dato['unitario']; 
+        }
+    }
+    if ( $porcentaje ) {
+        $descuento = $bruto * $porcentaje/100;
+        if ( $fichero == 'false' ) {
+            agregaHistorico( $factura,
+                "Descuento",
+                "1",
+                ($descuento*-1),
+                $conf['iva'],
+                "del ".$porcentaje 
+            );
+        } else {
+           $datos[] = array(
+               "Descuento",
+               "1",
+               ($descuento*-1),
+               $conf['iva'],
+               "del ".$porcentaje
+           ); 
+        }
+    }
+    if ( $fichero == 'true') {
+        return $datos;
+    } else {
+        return datosHistorico($factura,'codigo');
+    }
 }

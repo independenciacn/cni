@@ -292,7 +292,7 @@ $tituloPagina = ( $inicio!= "0000-00-00") ? "ocupacion puntual" : dame_el_mes( "
 		{
 			$porcentaje = explode("%",$resultado[0]);
 			$descuento = ($bruto * $porcentaje[0])/100;
-			$descuento_con_iva = $descuento * 1.16;
+			$descuento_con_iva = $descuento * 1.18;
 			echo "<tr>
 			<td ><p class='texto'>Descuento del ".$porcentaje[0]."%</p></td>
 			<td align='right'>1&nbsp;</td>
@@ -302,7 +302,7 @@ $tituloPagina = ( $inicio!= "0000-00-00") ? "ocupacion puntual" : dame_el_mes( "
 			<td align='right'>-".number_format($descuento_con_iva,2,',','.')."&euro;&nbsp;</td></tr>";
 		$descuento_historico = "-".$descuento;
 		if(($historico == "ko")&& (!isset($_GET[prueba]))) //Agregamos al historico
-			agregaHistorico($codigo,"Descuento","1",$descuento_historico,"16", "del ".$porcentaje[0]);
+			agregaHistorico($codigo,"Descuento","1",$descuento_historico,"18", "del ".$porcentaje[0]);
 		
 		}
 		else
@@ -424,13 +424,21 @@ if( isset($_GET['proforma'] ) ) {
 		$datos = datosHistorico($_GET['codigo'],'codigo');
 	} else {
 		//Datos fijos de cliente
-		$datos = fijosMensuales($_GET['idCliente']);
+		$datos = fijosMensuales( $_GET['idCliente'] );
 		//var_dump( consultaAlmacenaje($_GET));
-		$datos = array_merge($datos, consultaAlmacenaje( $_GET ));
+		$datos = array_merge($datos, consultaAlmacenaje( $_GET ) );
+		$datos = array_merge($datos, serviciosNoAgrupados( $_GET ) );
+		$datos = array_merge($datos, serviciosAgrupados( $_GET ) );
+		$descuento = descuento($_GET['idCliente']);
+		$datos = procesaHistorico(
+		    $_GET['codigo'], 
+		    $datos, 
+		    $descuento, 
+		    $_GET['proforma'] 
+		);
 		// La factura no exise en el historico se tienen que cargar los
 		// datos agregarlos al historico y luego mostramos
 	}
-	
 }
 ?>
 <html>
@@ -440,10 +448,6 @@ if( isset($_GET['proforma'] ) ) {
 	<title><?php echo $fichero; ?></title>
 </head>
 <body>
-	<pre>
-	<?php echo $historico; ?>
-	<?php var_dump($_GET); ?>
-	</pre>
 	<?php echo cabezeraFactura(
 			$fichero, 
 			$datosFactura['fecha'], 
@@ -464,7 +468,7 @@ if( isset($_GET['proforma'] ) ) {
 	$total = 0;
 	$cantidades = 0; 
 	foreach( $datos as $dato ) {
-		$importe = $dato['cantidad']* $dato['unitario'];
+		$importe = $dato['cantidad'] * $dato['unitario'];
 		$subtotal = $importe * ( 1 + $dato['iva'] / 100);
 		$importeTotal = $importeTotal + $importe;
 		$total = $total + $subtotal;

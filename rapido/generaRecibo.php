@@ -1,4 +1,4 @@
-<? 
+<?php 
 //genrecibo.php. Fichero que genera el Recibo para el cliente. Realizado por Ruben Lacasa Mas ruben@ensenalia.com 2006-2007
 require_once '../inc/configuracion.php';
 if ( !isset($_SESSION['usuario']) ) {
