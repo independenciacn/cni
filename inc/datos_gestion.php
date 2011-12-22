@@ -22,6 +22,8 @@ if (isset($_POST[opcion]))
 		case 15:$respuesta = borra_telefono_asignado($_POST);break;
 		case 16:$respuesta = edita_telefono_asignado($_POST);break;
 		case 17:$respuesta = actualiza_telefono_asignado($_POST);break;
+		case 18:$respuesta = frmNuevaPass();break;
+		case 19:$respuesta = actNuevaPass($_POST);break;
 	}
 	echo $respuesta;
 }
@@ -714,5 +716,45 @@ function borra_telefono_asignado($vars)
 	else
 		$clase = "impar";
 return $clase;
+}
+
+/**
+ * Formulario para establecer una nueva contraseña
+ */
+function frmNuevaPass() 
+{
+	$html = "
+	<form name='nuevaPass' id='nuevaPass' method='post' action=''>
+	<label for='vieja'>Contraseña Anterior:</label>
+	<input id='vieja' name='vieja' type='password' /><br/>
+	<label for='nueva'>Contraseña Nueva:</label>
+	<input id='nueva' name='nueva' type='password' /><br/>
+	<input type='button' onclick='estableceNuevaPass()' value='Establecer Nueva Contraseña' />
+	</form>
+	<div id='resultadoNuevaPass'></div>
+	";
+	return $html;	
+}
+function actNuevaPass( $vars )
+{
+	global $dbname, $con;
+	$vars['vieja'] = sha1($vars['vieja']);
+	$vars['nueva'] = sha1($vars['nueva']);
+	$sql = "Select 1 
+	from usuarios where nick like 'usuario' 
+	and contra like ". $vars['vieja'];
+	$consulta = mysql_db_query($dbname, $sql, $con);
+	if ( mysql_numrows($consulta) == 0) {
+		return "Contraseña Incorrecta";
+	} else {
+		$sql = "Update usuarios 
+		set contra = ". $vars['nueva'] ." 
+		where nick like 'usuario'";
+	 	if (mysql_db_query($dbname, $sql, $con)) {
+	 		return "Contraseña modificada";
+	 	} else {
+	 		return "No se ha modificado la contraseña";
+	 	}
+	}
 }
 ?>

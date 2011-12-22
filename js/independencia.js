@@ -508,6 +508,32 @@ var url ="inc/generator.php"
 //***********************************************************************************************/
 //PARTE DE LAS COPIAS DE SEGURIDAD
 //***********************************************************************************************/
+function nuevaPass(){
+	var url="inc/datos_gestion.php";
+	var pars="opcion=18";
+	var myAjax = new Ajax.Request(url,
+			{
+				method: 'post',
+				parameters: pars,
+				onComplete: function gen(respuesta)
+				{
+					$('listado_copias').innerHTML = respuesta.responseText
+				}
+	});
+}
+function estableceNuevaPass(){
+	var url='inc/datos_gestion.php';
+	var pars="opcion=19&"+Form.serialize($('nuevaPass'));
+	var myAjax = new Ajax.Request(url,
+			{
+				method: 'post',
+				parameters: pars,
+				onComplete: function gen(respuesta)
+				{
+					$('resultadoNuevaPass').innerHTML = respuesta.responseText
+				}
+			});
+}
 function lista_backup()
 {
 	var url="inc/datos_gestion.php"

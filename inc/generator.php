@@ -62,7 +62,8 @@ include("variables.php");
 		<div class='gestion_app'>
 		Gesti&oacute;n de Base de Datos:
 		<span class='boton' onclick='hacer_backup()'>&nbsp;&nbsp;[H]Hacer copia&nbsp;&nbsp;</span>
-		<span class='boton' onclick='lista_backup()'>&nbsp;&nbsp;[L]Listado de Copias 		realizadas&nbsp;&nbsp;</span>";
+		<span class='boton' onclick='lista_backup()'>&nbsp;&nbsp;[L]Listado de Copias 		realizadas&nbsp;&nbsp;</span>
+		<span class='boton' onclick='nuevaPass()'>Nueva Contraseña de Acceso</span>";
 		/*<span class='boton' onclick='revisar_tablas()'>&nbsp;&nbsp;[V]Revisar Tablas&nbsp;&nbsp;</span>
 		<span class='boton' onclick='reparar_tablas()'>&nbsp;&nbsp;[R]Reparar Tablas&nbsp;&nbsp;</span>
 		<span class='boton' onclick='optimizar_tablas()'>&nbsp;&nbsp;[O]Optimizar Tablas&nbsp;&nbsp;</span>*/
