@@ -17,11 +17,16 @@
  * Parametros de configuracion de la aplicacion MODIFICABLES SEGUN ENTORNO
  */
 $conf['zonaHoraria'] = 'Europe/Madrid'; // Zona horaria por defecto
-$conf['sistema'] = 'debian'; // Sistema Operativo Usado debian | otro | windows
-$conf['estado'] = 'DEVEL'; // Estado en el que esta la aplicacion DEVEL | PROD
-$conf['system'] = 'cloud'; // Donde estamos desarrollando local o cloud
-$conf['version'] = '2.1'; // Version de la aplicacion
-$conf['root'] = "http://sbarrat.my.phpcloud.com/cni";//Direccion Raiz de la aplicacion
+$ini = parse_ini_file("sample.ini");
+$conf['sistema'] = $ini['sistema']; // Sistema Operativo Usado debian | otro | windows
+$conf['estado'] = $ini['estado'];
+$conf['system'] = $ini['system'];
+$conf['version'] = $ini['version'];
+$conf['root'] = $ini['root'];
+//$conf['estado'] = 'DEVEL'; // Estado en el que esta la aplicacion DEVEL | PROD
+//$conf['system'] = 'cloud'; // Donde estamos desarrollando local o cloud
+//$conf['version'] = '2.1'; // Version de la aplicacion
+//$conf['root'] = "http://sbarrat.my.phpcloud.com/cni";// Direccion Raiz de la aplicacion
 // Cloud Configuration
 if ( $conf['system'] == 'cloud' ) {
     $conf['dbHost'] = 'sbarrat-db.my.phpcloud.com'; // Servidor base de datos
