@@ -12,7 +12,8 @@
 <meta http-equiv="pragma" content="no-cache">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
-<?php 
+<?php
+date_default_timezone_set('Europe/Madrid'); 
 //fichero rapido, para añadir rapidamente servicios a clientes 
 //en el mes actual
 //funciones
@@ -34,15 +35,15 @@ function clientes($cliente)
 //funcion para mostrar las facturas por meses, ser marca por defecto el mes en el que estamos
 
 //Funcion de la seleccion de meses para ver los servicios asignados ese mes
-function seleccion_meses($mes)
+function seleccion_meses($mes = null)
 {
-if(isset($mes))
-$mes = $mes;
+if( $mes != null )
+	$mes = $mes;
 else
-$mes = date("m");
+	$mes = date("m");
 
 $meses = Array("","Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
-	$cadena .= "<select name='meses' id='meses'>";
+	$cadena = "<select name='meses' id='meses'>";
 	$cadena .= "<option value='0'>--Mes--</option>";
 	for($i=1;$i<=12;$i++)
 	{
@@ -72,11 +73,11 @@ echo $cadena;
 <input type='hidden' id='id_cliente' name='id_cliente' />
 <img src='../iconos/personal.png' alt='cliente' />&nbsp;Cliente:</th>
 <td><input type='text' name='cliente' id='cliente' autocomplete='off' onkeyup='busca_cliente()' size='60'/></td>
-<th><img src='../iconos/date.png' alt='Mes' />&nbsp;Mes:</th><td><? echo seleccion_meses($mes); ?></td>
+<th><img src='../iconos/date.png' alt='Mes' />&nbsp;Mes:</th><td><? echo seleccion_meses(); ?></td>
 <td><select id='anyo'>
-<? for ($i=2007;$i<=date(Y)+2;$i++)
+<? for ($i=2007;$i<=date('Y')+2;$i++)
 {
-	if(date(Y)==$i)
+	if(date('Y')==$i)
     echo "<option selected value='".$i."'>".$i."</option>";
     else
     echo "<option value='".$i."'>".$i."</option>";

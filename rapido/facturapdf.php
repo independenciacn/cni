@@ -61,7 +61,7 @@ if((isset($_GET['factura'])) || (isset($_POST['factura'])))
 		$pdf->addImage($im,33,740,200);
         //10 aniversario
         $gif = imagecreatefromgif("image001.gif");
-        $pdf->addImage(&$gif, 470, 750, 90);
+		$pdf->addImage(&$gif, 470, 750, 90);
 		//fin 10 aniversario
         $im = imagecreatefromjpeg("pie_n.jpg");
 		$pdf->addImage($im,0,0,600);
@@ -78,10 +78,14 @@ if((isset($_GET['factura'])) || (isset($_POST['factura'])))
 		where r.codigo like $factura";
 		$consulta = mysql_db_query($dbname,$sql,$con);
 		$resultado = mysql_fetch_array($consulta);
-		if((isset($_GET['dup']))||(isset($_POST['dup'])))
+		if((isset($_GET['dup']))||(isset($_POST['dup']))){
 			$pdf->addText(363,730,16,"<b>FACTURA (DUPLICADO)<b>");
-		else
+			$dup = true;
+		}
+		else {
 			$pdf->addText(463,730,16,"<b>FACTURA<b>");
+			$dup = false;
+		}
 		$pdf->rectangle(263,660,280,50);
 //ID CLIENTE
 		$cliente = $resultado[6];
@@ -183,18 +187,15 @@ from historico where factura like '$factura' group by factura";
 			$nombre_factura = "factura_".$factura.".pdf";
 			$ruta_wxp = "\\\\172.26.0.131\RED\PLANTILLAS\\facturas\\";
 			if(isset($_POST['envio'])) {
-				$ruta = "tmp/".$nombre_factura;
+				include_once 'envia.php';
+				set_time_limit(120);	
+				envia($pdfcode, $factura, $dup);
 			} else {
 				$ruta = $ruta_wxp.$nombre_factura;
-			}
-			//$ruta_wxp = "C:\RED\PLANTILLAS\facturas\\";
-			$fp=fopen($ruta,'wb');
-			fwrite($fp,$pdfcode);
-			fclose($fp);
-			unset($pdfcode);
-			
-			if ( isset( $_POST['envio'] ) ) {
-				include("envio.php");
+				$fp=fopen($ruta,'wb');
+				fwrite($fp,$pdfcode);
+				fclose($fp);
+				unset($pdfcode);
 			}
 		}
 		else {

@@ -1,4 +1,5 @@
 <?php
+//Funcion antigua de envio - BORRAR YA NO USADA
 /*
  * Funcion de cambio de fecha
  */

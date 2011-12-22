@@ -603,10 +603,9 @@ function envia_la_factura(numero,dup)
 		var adic = "&dup=1"
 	else
 		var adic = ""
-	alert("Enviada factura "+numero)
 	var url='facturapdf.php'
 	var linea = ""
-	linea = linea + "<br />Enviada Factura " +numero
+	linea = linea + "<br /><b>Enviada Factura " +numero+" - Envio Completado</b>";
 	var myAjax = new Ajax.Request(url,
 	{
 		method: 'post',
