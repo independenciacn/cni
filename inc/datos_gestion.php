@@ -1,5 +1,6 @@
 <?php
-
+require_once 'variables.php';
+checkSession();
 if (isset($_POST[opcion]))
 {
 	switch($_POST[opcion])
@@ -99,8 +100,8 @@ function revisa_tablas()
 {
 	include("variables.php");
 	$sql = "show tables";
-	$consulta = mysql_db_query($dbname,$sql,$con);
-	while($resultado = mysql_fetch_array($consulta))
+	$consulta = mysql_query($sql,$con);
+	while(true == ($resultado = mysql_fetch_array($consulta)))
 	{
 		$sql2 = "check table `$resultado[0]`";
 		$consulta2 = mysql_db_query($dbname,$sql2,$con);
@@ -114,8 +115,8 @@ function repara_tablas()
 {
 	include("variables.php");
 	$sql = "show tables";
-	$consulta = mysql_db_query($dbname,$sql,$con);
-	while($resultado = mysql_fetch_array($consulta))
+	$consulta = mysql_query($sql,$con);
+	while(true == ($resultado = mysql_fetch_array($consulta)))
 	{
 		$sql2 = "repair table `$resultado[0]`";
 		$consulta2 = mysql_db_query($dbname,$sql2,$con);
@@ -129,8 +130,8 @@ function optimiza_tablas()
 {
 	include("variables.php");
 	$sql = "show tables";
-	$consulta = mysql_db_query($dbname,$sql,$con);
-	while($resultado = mysql_fetch_array($consulta))
+	$consulta = mysql_query($sql,$con);
+	while(true == ($resultado = mysql_fetch_array($consulta)))
 	{
 		$sql2 = "optimize table `$resultado[0]`";
 		$consulta2 = mysql_db_query($dbname,$sql2,$con);
@@ -150,13 +151,13 @@ function listado_categorias($vars)
 		case 1: $listado=$tabla1;$sql = "SELECT * FROM `".$tabla1."` ";break;
 		case 2: $listado=$tabla2;$sql = "SELECT * FROM `".$tabla2."` ";break;
 	}
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$cadena .= "<input type='hidden' id='categoria' value='".$vars[categoria]."' />";
 	
 	$cadena .= "<table class='tabla'>";
 	$cadena .= "<tr><th colspan='3'>Listado de ".utf8_encode(ucfirst($listado))."</th></tr>";
 	$i=0;
-	while($resultado = mysql_fetch_array($consulta))
+	while(true == ($resultado = mysql_fetch_array($consulta)))
 	{
 		$i++;
 		if($i%2==0)
@@ -182,7 +183,7 @@ function detalles_categoria($vars)
 		case 2: $sql = "SELECT * FROM `".$tabla2."` where Id like $vars[registro]";break; 
 	}
         
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$resultado = mysql_fetch_array($consulta);
 	$cadena .= "<form id='formulario_categorias' onsubmit='actualiza_categoria(); return false'>";
 	$cadena .= "<input type='hidden' id='categoria' name='categoria' value='".$vars[categoria]."' />";
@@ -232,14 +233,14 @@ function listado_telefonos()
 	include("variables.php");
 	$sql = "Select c.Nombre, z.valor from clientes as c join z_sercont as z on c.id like z.idemp where servicio like 'Telefono' order by c.Nombre";
 	
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$cadena ="<input class='boton' value='[X] Cerrar' onclick='cierra_listado_copias()' ><table><tr>";
 	$columnas='4';
 	for($i=1;$i<=$columnas;$i++)
 	$cadena .="<th class='impar'>Cliente</th><th class='par'>Telefono</th>";
 	$cadena .="</tr><tr>";
 	$i=0;
-	while($resultado = mysql_fetch_array($consulta))
+	while(true == ($resultado = mysql_fetch_array($consulta)))
 	{
 		if($i%$columnas == 0)
 		$cadena .= "</tr><tr>";
@@ -255,14 +256,14 @@ function listado_ip()
 {
 	include("variables.php");
 	$sql = "Select c.Nombre, z.valor from clientes as c join z_sercont as z on c.id like z.idemp where servicio like 'Direccion IP' order by c.Nombre";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$cadena ="<table><tr>";
 	$columnas='4';
 	for($i=1;$i<=$columnas;$i++)
 	$cadena .="<th class='impar'>Cliente</th><th class='par'>Direccion IP</th>";
 	$cadena .="</tr><tr>";
 	$i=0;
-	while($resultado = mysql_fetch_array($consulta))
+	while(true == ($resultado = mysql_fetch_array($consulta)))
 	{
 		if($i%$columnas == 0)
 		$cadena .= "</tr><tr>";
@@ -302,10 +303,10 @@ function listado_telefonos_centro()
 	$asignados_fax=array();
 	$no_asignados=array();
 	$sql = "select DISTINCT direccion from telipext where tipo like 'telefono'";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$asignados=array();
 	$no_asignados=array();
-	while($resultado = mysql_fetch_array($consulta))
+	while(true == ($resultado = mysql_fetch_array($consulta)))
 	{
 		//Aqui comparo las de la base con las que tengo asignadas
 		//el telefono en telipext esta siempre 976 12 34 56
@@ -368,7 +369,7 @@ function listado_telefonos_centro()
 		$clase = "par";
 		else
 		$clase = "impar";
-		$cadena .="<div class='".$clase."'>".$asignacion[0]."&nbsp;&nbsp;&nbsp;&nbsp;".utf8_encode(nombre_cliente($asignacion[1]))."</div>";
+		$cadena .="<div class='".$clase."'>".$asignacion[0]."&nbsp;&nbsp;&nbsp;&nbsp;".nombre_cliente($asignacion[1])."</div>";
 		
 	}
 	$cadena .="</div>";
@@ -384,7 +385,7 @@ function listado_telefonos_centro()
 		$clase = "par";
 		else
 		$clase = "impar";
-		$cadena .="<div class='".$clase."'>".$asignacion[0]."&nbsp;&nbsp;&nbsp;&nbsp;".utf8_encode(nombre_cliente($asignacion[1]))."</div>";
+		$cadena .="<div class='".$clase."'>".$asignacion[0]."&nbsp;&nbsp;&nbsp;&nbsp;".nombre_cliente($asignacion[1])."</div>";
 	}
 	$cadena .="</div>";
 	//Fin telefonos Domiciliados
@@ -440,7 +441,7 @@ function listado_telefonos_centro()
 			$clase ="par";
 		else
 			$clase = "impar";
-		$cadena .="<div class='".$clase."'>".$asignacion[0]."&nbsp;&nbsp;&nbsp;&nbsp;".utf8_encode(nombre_cliente($asignacion[1]))."</div>";
+		$cadena .="<div class='".$clase."'>".$asignacion[0]."&nbsp;&nbsp;&nbsp;&nbsp;". nombre_cliente($asignacion[1]) ."</div>";
 	}
 	$cadena .="</div>";
 	//Fin telefonos despachos
@@ -455,7 +456,7 @@ function listado_telefonos_centro()
 			$clase ="par";
 		else
 			$clase = "impar";
-		$cadena .="<div class='".$clase."'>".$asignacion[0]."&nbsp;&nbsp;&nbsp;&nbsp;".utf8_encode(nombre_cliente($asignacion[1]))."</div>";
+		$cadena .="<div class='".$clase."'>".$asignacion[0]."&nbsp;&nbsp;&nbsp;&nbsp;". nombre_cliente($asignacion[1]) ."</div>";
 	}
 	$cadena .="</div>";
 	//Adsl de Despachos
@@ -469,7 +470,7 @@ function listado_telefonos_centro()
 			$clase ="par";
 		else
 			$clase = "impar";
-		$cadena .="<div class='".$clase."'>".$asignacion[0]."&nbsp;&nbsp;&nbsp;&nbsp;".utf8_encode(nombre_cliente($asignacion[1]))."</div>";
+		$cadena .="<div class='".$clase."'>".$asignacion[0]."&nbsp;&nbsp;&nbsp;&nbsp;".nombre_cliente($asignacion[1])."</div>";
 	}
 	$cadena .="</div>";
 	//Fin adsl despachos
@@ -484,7 +485,7 @@ function listado_telefonos_centro()
 			$clase ="par";
 		else
 			$clase = "impar";
-		$cadena .="<div class='".$clase."'>".$asignacion[0]."&nbsp;&nbsp;&nbsp;&nbsp;".utf8_encode(nombre_cliente($asignacion[1]))."</div>";
+		$cadena .="<div class='".$clase."'>".$asignacion[0]."&nbsp;&nbsp;&nbsp;&nbsp;".nombre_cliente($asignacion[1])."</div>";
 	}
 	$cadena .="</div>";
 	$cadena .="<div class='tabla'><div class='listado_2'>Listado de IP's</div>";
@@ -496,7 +497,7 @@ function nombre_cliente($id)
 {
 	include("variables.php");
 	$sql = "Select Nombre from clientes where id like $id";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$resultado = mysql_fetch_array($consulta);
 	return $resultado[0];
 }
@@ -504,7 +505,7 @@ function categoria_del_cliente($id)
 {
 	include("variables.php");
 	$sql = "Select Categoria from clientes where id like $id";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$resultado = mysql_fetch_array($consulta);
 	switch($resultado[0])
 	{
@@ -518,7 +519,7 @@ function descripcion_telefono($telefono)
 	include("variables.php");
 	$sql = "Select descripcion from telipext where direccion like '$telefono'";
 	//echo $sql;
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$resultado = mysql_fetch_array($consulta);
 	return $resultado[0];
 }
@@ -543,7 +544,7 @@ function rarita()
 	c.id WHERE  Estado_de_cliente != 0 and 
 	(c.Categoria like '%domiciliac%' or c.Categoria like '%despacho%' or c.Categoria like 'Otros' or c.Categoria like '%Telefonica%' or c.Categoria like '%oficina movil%') and
 	z.servicio like 'Codigo Negocio' order by z.valor asc";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$cadena = "<input class='boton' value='[X] Cerrar' onclick='cierra_listado_copias()' ><input type='button' class='boton' onclick=window.open('inc/excel.php') value='Imprimir' />";
 	$k=0;
 	$cadena .= "<table width='100%' class='tabla'>";
@@ -568,7 +569,7 @@ function consulta_de_ips()
 {
 	include("variables.php");
 	$sql = "Select c.Nombre,z.valor from z_sercont as z join clientes as c on z.idemp like c.id where z.servicio like 'Direccion IP' order by z.valor";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	while($resultado=mysql_fetch_array($consulta))
 	{
 		$ipes=explode(".",$resultado[valor]);
@@ -642,7 +643,7 @@ function listado_personalizado($vars)
 		else
 			$clase='listado_impar';
 		$i++;
-		$cadena.="<div class='".$clase."'>".$i." ".traduce($resultado[1])."<span class='direccion_esp'> ".traduce($resultado[Direccion])."</span></div>";
+		$cadena.="<div class='".$clase."'>".$i." ".$resultado[1]."<span class='direccion_esp'> ".$resultado['Direccion']."</span></div>";
 		//$i++;
 	}
 	$cadena .= "<div><input type='button' class='boton' onclick=window.open('inc/excel.php?tipo=$vars[tipo]') value='Imprimir' /></div>";
@@ -720,41 +721,59 @@ return $clase;
 
 /**
  * Formulario para establecer una nueva contraseña
+ * 
+ * @return string $html
  */
 function frmNuevaPass() 
 {
-	$html = "
-	<form name='nuevaPass' id='nuevaPass' method='post' action=''>
+	$html = <<<EON
+	<form class='frmGestion' name='nuevaPass' id='nuevaPass' 
+	method='post' action=''>
+	<fieldset>
+	<legend>Modificacion Contraseña Acceso</legend>
 	<label for='vieja'>Contraseña Anterior:</label>
-	<input id='vieja' name='vieja' type='password' /><br/>
+	<input id='vieja' name='vieja' type='password' 
+	title='Escriba la contraseña Actual' /><br/>
 	<label for='nueva'>Contraseña Nueva:</label>
-	<input id='nueva' name='nueva' type='password' /><br/>
-	<input type='button' onclick='estableceNuevaPass()' value='Establecer Nueva Contraseña' />
+	<input id='nueva' name='nueva' type='password' 
+	title='Escriba la Nueva Contraseña' /><br/>
+	<input type='button' onclick='estableceNuevaPass()' 
+	value='Establecer Nueva Contraseña' 
+	title='Haga clic para establecer la Nueva Contraseña' />
+	<div id='resultadoNuevaPass' class='reset'></div>
+	</legend>
 	</form>
-	<div id='resultadoNuevaPass'></div>
-	";
+EON;
 	return $html;	
 }
+/**
+ * Actualiza la constraseña de acceso a la aplicacion
+ * 
+ * @param array $vars
+ * @return string $mensaje
+ */
 function actNuevaPass( $vars )
 {
-	global $dbname, $con;
-	$vars['vieja'] = sha1($vars['vieja']);
-	$vars['nueva'] = sha1($vars['nueva']);
+	global $con;
+	$mensaje = "";
+	$vars['vieja'] = mysql_real_escape_string($vars['vieja'], $con);
+	$vars['nueva'] = mysql_real_escape_string($vars['nueva'], $con);
 	$sql = "Select 1 
 	from usuarios where nick like 'usuario' 
-	and contra like ". $vars['vieja'];
-	$consulta = mysql_db_query($dbname, $sql, $con);
+	and contra like sha1('". $vars['vieja']."')";
+	$consulta = mysql_query($sql, $con);
 	if ( mysql_numrows($consulta) == 0) {
-		return "Contraseña Incorrecta";
+		$mensaje = "<div class='error'>Contraseña Incorrecta</div>";
 	} else {
 		$sql = "Update usuarios 
-		set contra = ". $vars['nueva'] ." 
+		set contra = sha1('". $vars['nueva'] ."') 
 		where nick like 'usuario'";
-	 	if (mysql_db_query($dbname, $sql, $con)) {
-	 		return "Contraseña modificada";
+	 	if (mysql_query( $sql, $con ) ) {
+	 		$mensaje = "<div class='success'>Contraseña modificada</div>";
 	 	} else {
-	 		return "No se ha modificado la contraseña";
+	 		$mensaje = "<div class='error'>No se ha modificado la contraseña</div>";
 	 	}
 	}
+	return $mensaje;
 }
 ?>

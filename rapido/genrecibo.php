@@ -13,7 +13,7 @@ if (isset($_GET[id]))
 	{
 		include("../inc/variables.php");
 		$sql = "Select * from clientes where id like $cliente";
-		$consulta = mysql_db_query($dbname,$sql,$con);
+		$consulta = mysql_query($sql,$con);
 		$resultado = mysql_fetch_array($consulta);
 		$cadena = strtoupper($resultado[1])."<br>
 				".$resultado[6]."<br>
@@ -25,13 +25,13 @@ if (isset($_GET[id]))
 	{
 		include("../inc/variables.php");
 		$sql = "SELECT fpago from facturacion where idemp like $cliente";
-		$consulta = mysql_db_query($dbname,$sql,$con);
+		$consulta = mysql_query($sql,$con);
 		$resultado = mysql_fetch_array($consulta);
 		return $resultado[fpago];
 	}
 include("../inc/variables.php");
 $sql = "Select * from regfacturas where id like $_GET[id]";
-$consulta = mysql_db_query($dbname,$sql,$con);
+$consulta = mysql_query($sql,$con);
 $resultado = mysql_fetch_array($consulta);
 /* Analisis de las observaciones para fijar vencimiento*/
 $vto = strtok($resultado[obs_alt],"VTO ");

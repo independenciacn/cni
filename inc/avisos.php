@@ -1,54 +1,29 @@
-<?
-session_start();
-if(isset($_SESSION[usuario]))
+<?php
+require_once 'variables.php';
+checkSession();
+$cadena = "";
+if(isset($_SESSION['usuario']))
 {
-	switch($_POST[opcion])
-	{
-		case 0:$cadena = avisos();break;
-		case 1:$cadena = telefonos();break;
-		default:$cadena= avisos();break;
+	if ( isset($_POST['opcion'] ) ) {
+        switch($_POST['opcion'])
+	    {
+		    case 0:$cadena = avisos();break;
+		    case 1:$cadena = telefonos();break;
+		    default:$cadena= avisos();break;
+	    }
+	} else {
+	    $cadena = avisos();
 	}
 echo $cadena;
 }
-//***********************************************************************************************/
-//traduce(texto): cuando algo no se muestra bien este lo decodifica
-//***********************************************************************************************/
-function traduce($texto)
-{
-/*if(SISTEMA == "windows")
-	$bien = utf8_encode($texto); //para windows
-else*/
-	$bien = $texto;//para sistemas *nix
-return $bien;
-}
-/*Para poner color a la tabla*/
-function clase($k)
-{
-	if($k%2==0)
-		$clase = "par";
-	else
-		$clase = "impar";
-return $clase;
-}
-//***********************************************************************************************/
-//codifica(texto): inversa a traduce
-//***********************************************************************************************/
-function codifica($texto)
-{
-/*if(SISTEMA == "windows")
-	$bien = utf8_decode($texto); //para windows
-else*/
-	$bien = $texto;//para sistemas *nix
-return $bien;
-}
-
 /*
  * Muestra los avisos
  */
 function avisos()
 {
-	include("variables.php");
-	$texto.="<input type='button' class='boton' value='[<]Ocultar Avisos' onclick='cerrar_avisos()'/>
+	global $con;
+	$texto="<input type='button' class='boton' value='[<]Ocultar Avisos' 
+	onclick='cerrar_avisos()'/>
 	<table class='tabla'><tr><th colspan='2'>Cartel de Avisos</th></tr>
 	<tr><th>Cumplea&ntilde;os</th><th>Contratos</th></tr>";
 	
@@ -65,14 +40,14 @@ function avisos()
 		pcentral.cumple,
 	clientes.id
 	FROM clientes INNER JOIN pcentral ON clientes.Id = pcentral.idemp where date_format(pcentral.cumple,'%d %c') like date_format(curdate(),'%d %c') and clientes.Estado_de_cliente != 0";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query( $sql, $con );
 	$nocump=0;
 	if(mysql_numrows($consulta)!=0)
 	{
 		$nocump=1;
-		while($resultado = mysql_fetch_array($consulta))
+		while(true == ($resultado = mysql_fetch_array($consulta)))
 		{
-		$texto .= "<tr><td class='".clase($k++)."' colspan='2'>".traduce($resultado[1])." de <a href='javascript:muestra($resultado[3])'>".traduce($resultado[0])."</a></td></tr>";
+		$texto .= "<tr><td class='".clase($k++)."' colspan='2'>".$resultado[1]." de <a href='javascript:muestra($resultado[3])'>".traduce($resultado[0])."</a></td></tr>";
 		//$k++;
 		}
 	}
@@ -85,26 +60,26 @@ function avisos()
 		pempresa.cumple,
 	clientes.id
 	FROM clientes INNER JOIN pempresa ON clientes.Id = pempresa.idemp where date_format(pempresa.cumple,'%d %c') like date_format(curdate(),'%d %c') and clientes.Estado_de_cliente != 0";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	if(mysql_numrows($consulta)!=0)
 	{
 		$nocump=1;
-		while($resultado = mysql_fetch_array($consulta))
+		while( true == ($resultado = mysql_fetch_array($consulta)))
 		{
-			$texto .="<tr><td class='".clase($k++)."' colspan='2'>". traduce($resultado[1])." ".traduce($resultado[2])." de <a href='javascript:muestra($resultado[4])'>".traduce($resultado[0])."</a></td></tr>";
+			$texto .="<tr><td class='".clase($k++)."' colspan='2'>". $resultado[1]." ".traduce($resultado[2])." de <a href='javascript:muestra($resultado[4])'>".traduce($resultado[0])."</a></td></tr>";
 			//$k++;
 		}
 	}
 	
 	//empleados********************************************************************************/
 	$sql = "Select * from empleados where date_format(FechNac,'%d %c') like date_format(curdate(),'%d %c')";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query( $sql,$con);
 	if(mysql_numrows($consulta)!=0)
 	{
 		$nocump=1;
-		while($resultado = mysql_fetch_array($consulta))
+		while(true == ($resultado = mysql_fetch_array($consulta)))
 		{
-			$texto .="<tr><td class='".clase($k++)."' colspan='2'>". traduce($resultado[3])." ".traduce($resultado[1])." ".traduce($resultado[2])."</td></tr>";
+			$texto .="<tr><td class='".clase($k++)."' colspan='2'>". $resultado[3]." ".traduce($resultado[1])." ".traduce($resultado[2])."</td></tr>";
 			//$k++;
 		}
 	}
@@ -123,12 +98,12 @@ function avisos()
 		pcentral.cumple,
 	clientes.id
 	FROM clientes INNER JOIN pcentral ON clientes.Id = pcentral.idemp where date_format(pcentral.cumple,'%d %c' ) like date_format(adddate(curdate(),1),'%d %c') and clientes.Estado_de_cliente != 0";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	if(mysql_numrows($consulta)!=0)
 	{
 		$nocump=1;
-		while($resultado = mysql_fetch_array($consulta))
-		$texto .="<tr><td class='".clase($k++)."' colspan='2' >". traduce($resultado[1])." de <a href='javascript:muestra($resultado[3])'>".traduce($resultado[0])."</a></td></tr>";
+		while(true == ($resultado = mysql_fetch_array($consulta)))
+		$texto .="<tr><td class='".clase($k++)."' colspan='2' >". $resultado[1]." de <a href='javascript:muestra($resultado[3])'>".traduce($resultado[0])."</a></td></tr>";
 	}
 	//personas de la empresa********************
 	$sql ="SELECT  
@@ -138,21 +113,21 @@ function avisos()
 		pempresa.cumple,
 	clientes.id
 	FROM clientes INNER JOIN pempresa ON clientes.Id = pempresa.idemp where date_format(pempresa.cumple,'%d %c' ) like date_format(adddate(curdate(),1),'%d %c') and clientes.Estado_de_cliente != 0";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	if(mysql_numrows($consulta)!=0)
 	{
 		$nocump=1;
-		while($resultado = mysql_fetch_array($consulta))
-		$texto .="<tr><td class='".clase($k++)."' colspan='2'>". traduce($resultado[1])." ".traduce($resultado[2])." de <a href='javascript:muestra($resultado[4])'>".traduce($resultado[0])."</a></td></tr>";
+		while(true == ($resultado = mysql_fetch_array($consulta)))
+		$texto .="<tr><td class='".clase($k++)."' colspan='2'>". $resultado[1]." ".traduce($resultado[2])." de <a href='javascript:muestra($resultado[4])'>".traduce($resultado[0])."</a></td></tr>";
 	}
 	//empleados*********************************
 	$sql = "Select * from empleados where date_format(FechNac,'%d %c' ) like date_format(adddate(curdate(),1),'%d %c')";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	if(mysql_numrows($consulta)!=0)
 	{
 		$nocump=1;
-		while($resultado = mysql_fetch_array($consulta))
-		$texto .="<tr><td class='".clase($k++)."' colspan='2'>". traduce($resultado[3])." ".traduce($resultado[1])." ".traduce($resultado[2])."</td></tr>";
+		while(true == ($resultado = mysql_fetch_array($consulta)))
+		$texto .="<tr><td class='".clase($k++)."' colspan='2'>". $resultado[3]." ".traduce($resultado[1])." ".traduce($resultado[2])."</td></tr>";
 	}
 	if($nocump==0)
 		$texto.="<tr><td class='".clase($k++)."' colspan='2'>Nadie cumple los a&ntilde;os ma&ntilde;ana</td></tr>";
@@ -164,7 +139,7 @@ function avisos()
     $nocump=0;
 	$texto.= "<tr><th colspan='2'>En los siguientes dias:</th></tr>";
 	//personas de la central********************
-	if(date(m)==12)
+	if(date('m')==12)
 		$orden = " desc ";
 	else
 		$orden = " ";
@@ -181,11 +156,11 @@ function avisos()
  month(pcentral.cumple) like month(date_add(curdate(), interval 1 month))
 ) and clientes.`Estado_de_cliente` != 0
  order by month(pcentral.cumple)".$orden.", day(pcentral.cumple) ";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	if(mysql_numrows($consulta)!=0)
 	{
 		$nocump=1;
-		while($resultado = mysql_fetch_array($consulta))
+		while(true == ($resultado = mysql_fetch_array($consulta)))
 		{
 		//$texto .="<tr><td class='".clase($k)."'>".dia_y_mes($resultado[2])."</td><td class='".clase($k)."'>". traduce($resultado[1])." de <a href='javascript:muestra($resultado[3])'>".traduce($resultado[0])."</a></td></tr>";
 		
@@ -194,7 +169,7 @@ function avisos()
 		}
 	}
 	//personas de la empresa********************
-	if(date(m)==12)
+	if(date('m')==12)
 		$orden = " desc ";
 	else
 		$orden = " ";
@@ -212,14 +187,14 @@ function avisos()
  month(pempresa.cumple) like month(date_add(curdate(), interval 1 month))
 ) and clientes.`Estado_de_cliente` != 0
  order by month(pempresa.cumple)".$orden.", day(pempresa.cumple) ";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	if(mysql_numrows($consulta)!=0)
 	{
 		$nocump=1;
-		while($resultado = mysql_fetch_array($consulta))
+		while(true == ($resultado = mysql_fetch_array($consulta)))
 		{
 		//$texto .="<tr><td class='".clase($k)."'>".dia_y_mes($resultado[3])."</td><td class='".clase($k)."'>". traduce($resultado[1])." ".traduce($resultado[2])." de <a href='javascript:muestra($resultado[4])'>".traduce($resultado[0])."</a></td></tr>";
-		$cumplesmil[]=array(invierte(dia_y_mes($resultado[3])),dia_y_mes($resultado[3]),traduce($resultado[1])." ".traduce($resultado[2]),$resultado[4],traduce($resultado[0]));
+		$cumplesmil[]=array(invierte(dia_y_mes($resultado[3])),dia_y_mes($resultado[3]),$resultado[1]." ".$resultado[2],$resultado[4],$resultado[0]);
 
         //$k++;
 		}
@@ -228,14 +203,14 @@ function avisos()
 	$sql = "Select * from empleados where (datediff(date_format(DATE_ADD(CURDATE(),INTERVAL 40 DAY),'0000-%m-%d'),date_format(FechNac,'0000-%m-%d' )) <= 39
 	and
 	datediff(date_format(DATE_ADD(CURDATE(),INTERVAL 40 DAY),'0000-%m-%d'),date_format(FechNac,'0000-%m-%d' )) >= 0)";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	if(mysql_numrows($consulta)!=0)
 	{
 		$nocump=1;
-		while($resultado = mysql_fetch_array($consulta))
+		while(true == ($resultado = mysql_fetch_array($consulta)))
 		{
 			//$texto .="<tr><td class='".clase($k)."'>".cambiaf($resultado[FechNac])."</td><td class='".clase($k)."'>". traduce($resultado[3])." ".traduce($resultado[1])." ".traduce($resultado[2])."</td></tr>";
-			$cumplesmil[]=array(invierte(cambiaf($resultado[FechNac])),cambiaf($resultado[FechNac]),traduce($resultado[3])." ".traduce($resultado[1]),NULL,NULL);
+			$cumplesmil[]=array(invierte(cambiaf($resultado['FechNac'])),cambiaf($resultado['FechNac']),$resultado[3]." ".$resultado[1],NULL,NULL);
 
             //$k++;
 		}
@@ -298,11 +273,11 @@ function listado($servicio)
 	INNER JOIN z_sercont AS z ON c.Id = z.idemp
 	WHERE z.servicio LIKE '$servicio'
 	ORDER BY Despacho";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$cadena .="<table><tr>";
 	$i=0;
 	if (mysql_numrows($consulta)!=0)
-		while($resultado = mysql_fetch_array($consulta))
+		while(true == ($resultado = mysql_fetch_array($consulta)))
 		{
 			if(ereg("despacho",$resultado[5]))
 				$color="#69C";
@@ -337,9 +312,10 @@ Proveedores (z_facturacion)
 1.- Fecha inicio + duracion
 2.- Dia de Pago - Si es hoy el dia del mes de pago
 */
-include("variables.php");
+global $dbname, $con;
+$hnocump = 0;
 $k=0;
-$cadena .="<table width='100%'>";
+$cadena ="<table width='100%'>";
 //$cadena .= "<tr><th><span class='boton' onclick='cierralo()' onkeypress='cierralo()'>[X] Cerrar</span></th></tr>";
 //$cadena .= "<tr><th colspan='2'>AVISOS</th></tr>";
 //Clientes FInalizan HOY
@@ -352,11 +328,11 @@ $sql = "SELECT facturacion.id,
 	clientes.Nombre
 FROM facturacion INNER JOIN clientes ON facturacion.idemp = clientes.Id
 WHERE date_format(renovacion,'%d %c %y') LIKE date_format(curdate(),'%d %c %y') and clientes.Estado_de_cliente != 0";
-$consulta = mysql_db_query($dbname,$sql,$con);
+$consulta = mysql_query($sql,$con);
 $total = mysql_numrows($consulta);
 	if ($total >= 1)
 	{
-		while($resultado = mysql_fetch_array($consulta))
+		while(true == ($resultado = mysql_fetch_array($consulta)))
 		{
 			$cadena .="<tr><td class='".clase($k++)."'><a href='javascript:muestra(".$resultado[1].")' >".traduce($resultado[5])."</a></td></tr>";
 		}
@@ -379,11 +355,11 @@ $sql = "SELECT facturacion.id,
 	clientes.Nombre
 FROM facturacion INNER JOIN clientes ON facturacion.idemp = clientes.Id
 WHERE month(renovacion) LIKE month(curdate()) and year(renovacion) like year(curdate()) and clientes.Estado_de_cliente != 0 order by renovacion asc";
-$consulta = mysql_db_query($dbname,$sql,$con);
+$consulta = mysql_query($sql,$con);
 $total = mysql_numrows($consulta);
 	if ($total >= 1)
 	{
-		while($resultado = mysql_fetch_array($consulta))
+		while(true == ($resultado = mysql_fetch_array($consulta)))
 		{
 			$cadena .="<tr><td class='".clase($k)."'>".cambiaf($resultado[4])."</td><td class='".clase($k)."'><a href='javascript:muestra(".$resultado[1].")' >".traduce($resultado[5])."</a></td></tr>";
 			$k++;
@@ -406,11 +382,11 @@ $sql = "SELECT facturacion.id,
 	clientes.Nombre
 FROM facturacion INNER JOIN clientes ON facturacion.idemp = clientes.Id
 WHERE (CURDATE() <= renovacion) and (DATE_ADD(CURDATE(),INTERVAL 60 DAY)) >= renovacion and clientes.Estado_de_cliente != 0 order by Month(renovacion) asc, DAY(renovacion) asc";
-$consulta = mysql_db_query($dbname,$sql,$con);
+$consulta = mysql_query($sql,$con);
 $total = mysql_numrows($consulta);
 	if ($total >= 1)
 	{
-		while($resultado = mysql_fetch_array($consulta))
+		while(true == ($resultado = mysql_fetch_array($consulta)))
 		{
 			$cadena .="<tr><td class='".clase($k)."'>".cambiaf($resultado[4])."</td><td class='".clase($k)."'><a href='javascript:muestra(".$resultado[1].")' >".traduce($resultado[5])."</a></td></tr>";
 			$k++;

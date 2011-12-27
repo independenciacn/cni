@@ -334,7 +334,7 @@ function generaformulario($nombretabla,$categoria,$sel,$ssid)
 	$nombrea[$i]=$rnomcamp[2];//nombre original en la tabla
 	$nombrec[$i]=$rnomcamp[3];//nombres de los campos
 	$nombret[$i]=$rnomcamp[4];//carga el tipo de campo
-	$nombretam[$i]=$rnomcamp[5];//carga el tama–o de campo
+	$nombretam[$i]=$rnomcamp[5];//carga el tamaï¿½o de campo
 	$nombretipo[$i]=$rnomcamp[7];//carga el tipo de enlace de campo
 	$nombrevar[$i]=$rnomcamp[8];//carga el nombre de la variable para el post
 	$nombredepende[$i]=$rnomcamp[9];
@@ -345,7 +345,7 @@ function generaformulario($nombretabla,$categoria,$sel,$ssid)
 	$campovar[$i] = $rnomcamp[14];//carga el valor de la variable
 	$i++;
 	}
-	//dise–o del formulario, el name sera el nombre del campo
+	//diseï¿½o del formulario, el name sera el nombre del campo
 	if ($sel != "")
 	{
 		$sql = "Select ";
@@ -369,7 +369,7 @@ function generaformulario($nombretabla,$categoria,$sel,$ssid)
 		else
 		$sql .= " from `$nombretabla` where id like $sel";
 		//echo $sql;//depuracion
-		$consulta = mysql_db_query($dbname,$sql,$con);
+		$consulta = mysql_query($sql,$con);
 		$resultado = mysql_fetch_array($consulta);
 	}
 	
@@ -447,12 +447,12 @@ function generaformulario($nombretabla,$categoria,$sel,$ssid)
 	$muestra .= "<center><form name='formgen' method='post' action=principal.php?id=".$ssid."&cat=".$categoria."&emp=".$_GET['emp']."".$completa .">";//formulario generico nombre campo nombre valor
 	$muestra .="<table>";
 	
-//dise–o 3 columnas cada 3 salto
+//diseï¿½o 3 columnas cada 3 salto
 $numcol = 2;
 $cuentacol = 0;	
 	for ($a=0;$a<=$totcamp-1;$a++)
 	{
-		//segun el tipo de campo lo dise–amos de una manera u otra
+		//segun el tipo de campo lo diseï¿½amos de una manera u otra
 		//variable $nombret, $nombretam, $nombretipo
 		switch($nombret[$a])//damos formato al campo de introduccion de datos
 		{
@@ -542,7 +542,7 @@ WHERE c.id LIKE $_GET[emp] ";
 			case "web":$formato .="<a href='http://".$resultado[$a]."' target='_blank'><img src='color/apps/browser.png' width='12' alt='Abrir Web'/></a>";break;
 			case "mail":$formato .="<a href='mailto:".$resultado[$a]."'><img src='color/apps/email.png' width='12' alt='Enviar Correo'/></a>";break;
 		}
-		//parte del dise–o
+		//parte del diseï¿½o
 		if($cuentacol == $numcol)
 		{
 		$muestra.="</tr>";
@@ -673,7 +673,7 @@ function desvio($empresa) //funcion que dice si hay desvio o no
 {
 	include("conexion.php");
 	$sql = "Select Desvio from clientes where id like $empresa";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$resultado = mysql_fetch_array($consulta);
 	return $resultado[0];
 }

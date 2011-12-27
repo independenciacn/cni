@@ -3,7 +3,9 @@
 //switch(opcion) Recoge la opcion pasada por la funcion ajax y la redirecciona a la funcion asiganda php
 //despues recoge el valor de la funcion en respuesta y la muestra por pantalla
 //***********************************************************************************************/
-switch($_POST[opcion])
+require_once 'variables.php';
+checkSession();
+switch($_POST['opcion'])
 {
 	case 0:$respuesta = generador($_POST);break;
 	case 1:$respuesta = cuca($_POST);break;
@@ -21,29 +23,6 @@ switch($_POST[opcion])
 }
 echo $respuesta;
 
-//***********************************************************************************************/
-//traduce(texto): cuando algo no se muestra bien este lo decodifica
-//***********************************************************************************************/
-function traduce($texto)
-{
-/*if(SISTEMA == "windows")
-	$bien = utf8_encode($texto); //para windows
-else*/
-	$bien = $texto;//para sistemas *nix
-return $bien;
-}
-
-//***********************************************************************************************/
-//codifica(texto): inversa a traduce
-//***********************************************************************************************/
-function codifica($texto)
-{
-/*if(SISTEMA == "windows")
-	$bien = utf8_decode($texto); //para windows
-else*/
-	$bien = $texto;//para sistemas *nix
-return $bien;
-}
 
 //***********************************************************************************************/
 //OPCION:0 GENERADOR de la pagina principal de gestion
@@ -54,9 +33,10 @@ return $bien;
 //***********************************************************************************************/
 function generador($vars)
 {
-include("variables.php");
+    global $dbname, $con;
+    $tabla = "";
 	//caso del generator
-	if($vars[codigo] == 6)
+	if($vars['codigo'] == 6)
 	{
 		$tabla .= "
 		<div class='gestion_app'>
@@ -93,16 +73,16 @@ include("variables.php");
 	else
 	{
 		$sql = "Select pagina from menus where id like $vars[codigo]";
-		$consulta = mysql_db_query($dbname,$sql,$con);
+		$consulta = mysql_query($sql,$con);
 		$resultado = mysql_fetch_array($consulta);
 		$tabla .= "<div id='botoneria'>";
 		$tabla = "&nbsp;&nbsp;<span class='titulo_categoria'>Seleccione ".ucfirst($resultado[0]).":</span>";
 		$tabla .= "<input type='hidden' id='tabla' value='".$resultado[0]."' />";
-		$tabla .= "<input type='hidden' id='nuevo' value='".$vars[codigo]."' />";
+		$tabla .= "<input type='hidden' id='nuevo' value='".$vars['codigo']."' />";
 		$tabla .= "<input type='text' id='texto' autocomplete='off' onkeyup='busca()'/>&nbsp;<input class='boton' type='submit' onclick='busca()' value='[M]Mostrar Busqueda'>";
 		//Y los nuevos donde van matarile rile ron
-		$tabla .= "&nbsp;<input class='boton' type='submit' onclick='nuevo($vars[codigo])' value='[+] Nuevo ".ucfirst($resultado[0])."'>";
-		if($vars[codigo] == 1)//!!PEGOTEEEEEEEEEE
+		$tabla .= "&nbsp;<input class='boton' type='submit' onclick='nuevo(".$vars['codigo'].")' value='[+] Nuevo ".ucfirst($resultado[0])."'>";
+		if($vars['codigo'] == 1)//!!PEGOTEEEEEEEEEE
 		{
 				
 			$tabla.="&nbsp;<input class='boton' type=submit onclick=popUp('servicont/index.php') value = 'Estadisticas Servicios' />";
@@ -124,7 +104,7 @@ include("variables.php");
 //***********************************************************************************************/
 function cuca($vars)
 {
-	include("variables.php");
+	global $dbname, $con;
 	if($vars[texto] == "")
 	
 		$muestra = "";
@@ -135,9 +115,9 @@ function cuca($vars)
 		$sql = "Select * from `$vars[tabla]` where Nombre like '%$vars[texto]%' or Contacto like '%$vars[texto]%' order by Nombre";
 		else
 		$sql = "Select * from `$vars[tabla]` where Nombre like '%$vars[texto]%' order by Nombre";
-		$consulta = mysql_db_query($dbname,$sql,$con);
+		$consulta = mysql_query($sql,$con);
 		$muestra .= "<input class='boton' type='button' onclick='cierra_frm_busca()' value='[X]Cerrar'>";
-		while($resultado = mysql_fetch_array($consulta))
+		while(true == ($resultado = mysql_fetch_array($consulta)))
 		{
 			$i++;
 			if($i%2 == 0)
@@ -169,11 +149,11 @@ function color_cabezera($tabla,$vars)
 //Devuelve el codigo de negocio
 function codigo_negocio($idemp)
 {
-	include("variables.php");
+	global $dbname, $con;
 	if(isset($idemp)&& $idemp!=NULL)
     {
     $sql = "Select * from z_sercont where idemp like $idemp and servicio like 'Codigo Negocio'";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	//echo $sql; //Linea de test
 	if (mysql_numrows($consulta)>= 0)
 	{
@@ -192,9 +172,9 @@ function codigo_negocio($idemp)
 //***********************************************************************************************/
 function formulario($vars)
 {
-	include("variables.php");
+	global $dbname, $con;
 	$sql = "Select * from `$vars[tabla]` where id like $vars[registro]";//raiz
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$numero_campos = mysql_num_fields($consulta); 
 	$resultado = mysql_fetch_array($consulta);
 	$cadena .= "
@@ -246,9 +226,9 @@ function formulario($vars)
 //***********************************************************************************************/
 function nombre_campo($campo,$tabla)
 {
-	include("variables.php");
+	global $dbname, $con;
 	$sql = "Select campof from alias where tabla like '$tabla' and `campoo` like '$campo'";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$resultado = mysql_fetch_array($consulta);
 	return $resultado[0];
 }
@@ -258,9 +238,9 @@ function nombre_campo($campo,$tabla)
 //***********************************************************************************************/
 function tipo_campo($campo,$tabla,$valor,$opcion,$orden)
 {
-	include("variables.php");
+	global $dbname, $con;
 	$sql = "Select * from alias where tabla like '$tabla' and `campoo` like '$campo'";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$resultado = mysql_fetch_array($consulta);
 	switch($resultado[tipo])
 	{
@@ -286,7 +266,7 @@ function tipo_campo($campo,$tabla,$valor,$opcion,$orden)
 		case "select": 
 							{//hay que hacer una consulta a la tabla dependiente de los valores
 							$sql = "Select * from `$resultado[depende]` order by 2";
-							$consulta = mysql_db_query($dbname,$sql,$con);
+							$consulta = mysql_query($sql,$con);
 							if ($tabla =='z_sercont') //caso del z_sercont
 								$cadena ="<select id='".$resultado[variable]."' name='".$resultado[campoo]."' tabindex='".$i."' onchange='muestra_campo()'>";
 							else
@@ -356,10 +336,10 @@ function submenus($tabla)
 {
 	include("variables.php");
 	$sql = "Select id from menus where pagina like '$tabla[tabla]'";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$resultado = mysql_fetch_array($consulta);
 	$sql = "Select * from submenus where menu like $resultado[0]";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$cadena = "<tr><th colspan='4' width='100%'height='26px'><table><tr>";
 	while ($resultado = mysql_fetch_array($consulta))
 	{
@@ -382,7 +362,7 @@ function listado($vars)
 
 	include("variables.php");
 	$sql = "Select * from `$vars[tabla]` where idemp like $vars[registro]";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$totdatos = mysql_num_rows($consulta);
 	$tot_columnas = mysql_num_fields($consulta);
 	$cadena .= "<table class='listado'><tr>";
@@ -392,7 +372,7 @@ function listado($vars)
 	if ($totdatos == 0)
 		$cadena .= "<tr><td colspan = '".$tot_columnas."' align='center'>No hay registros</td></tr>";
 	else
-		while($resultado = mysql_fetch_array($consulta))
+		while(true == ($resultado = mysql_fetch_array($consulta)))
 			{
 			$cadena .= "<tr>";
 			for ($i=2;$i<=$tot_columnas-1;$i++)
@@ -408,10 +388,10 @@ function listado($vars)
 //***********************************************************************************************/
 function comprueba_check($tabla,$campo,$valor)
 {
-	include("variables.php");
+	global $dbname, $con;
 	$sql = "Select tipo from alias where tabla like '$tabla' and campoo like '$campo'";
 	//echo $campo.":".$valor."<br/>";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$resultado = mysql_fetch_array($consulta);
 	switch($resultado[0])
 	{
@@ -421,7 +401,6 @@ function comprueba_check($tabla,$campo,$valor)
 					else
 						$valor = 0;}break;
 	case "date":$valor = cambiaf($valor);break;
-	default:$valor=$valor;
 	}
 	//echo $campo.":".$valor;
 	return $valor;
@@ -432,9 +411,9 @@ function actualiza($vars)
 {
 	//todos los valores estan serializados en el formulario 2 nos importan el nombre_tabla y el numero_registro
 	//el resto pueden entrar en el bucle
-	include("variables.php");
+	global $dbname, $con;
 	$sql = "Select * from `$vars[nombre_tabla]`";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$totcamp = mysql_numfields($consulta); //total de campos
 	$sql = "Update `$vars[nombre_tabla]` set ";
 	for($i=1;$i<=$totcamp-1;$i++) //empezamos desde 1 para saltarnos el id
@@ -488,14 +467,14 @@ function actualiza($vars)
 //formulario de registro nuevo, aqui boton de agregar	
 function nuevo($vars)
 {
-	include("variables.php");
+	global $dbname, $con;
 	//pasamos el codigo necesito el nombre de tabla
 	$sql = "Select pagina from menus where id like $vars[tabla]";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$resultado = mysql_fetch_array($consulta);
 	//consulta vacia para nombre de las cabezeras de la tabla
 	$sql = "Select * from `$resultado[0]`";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$numero_campos = mysql_num_fields($consulta);
 	
 	//se queda aqui es lo necesario para los nombres de campo
@@ -532,7 +511,7 @@ function nuevo($vars)
  */
 function agrega_registro($vars)
 {
-	 include("variables.php");
+	 global $dbname, $con;
 	 $sql = "Select * from `$vars[nombre_tabla]`";
 	 $campos = mysql_db_query($dbname,$sql,$con);
 	 $total = mysql_num_fields($campos);
@@ -595,7 +574,7 @@ function agrega_registro($vars)
 //***********************************************************************************************/
 function borra_registro($vars)
 {
-	include("variables.php");
+	global $dbname, $con;
 	$sql = "Delete from `$vars[tabla]` where id like $vars[registro]";
 	if($consulta = mysql_db_query($dbname,$sql,$con))
 		return "<img src='".OK."' alt='Registro Borrado' width='24'/> Registro Borrado&nbsp;&nbsp;<p/>";
@@ -608,10 +587,10 @@ function borra_registro($vars)
 //***********************************************************************************************/
 function subformulario($vars) //opcion,codigo,registro, codigo = codigo de submenu, registro = cliente 
 {
-	include("variables.php");
+	global $dbname, $con;
 	$sql = "Select s.pagina, m.pagina, s.listado,s.nombre from submenus as s join menus as m on s.menu = m.id where s.id like $vars[codigo]";
 	//echo $sql;
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$resultado = mysql_fetch_array($consulta);
 	$tabla = Array("tabla"=>$resultado[1],"registro"=>$vars[registro]);
 //2 casos de subformularios, proveedores y clientes
@@ -640,7 +619,7 @@ function subformulario($vars) //opcion,codigo,registro, codigo = codigo de subme
             break;
 	}
 	//$cadena .= $sql; Para depurar
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$resultado2 = mysql_fetch_array($consulta);
 	$cadena .= "<form id='formulario_alta' action='#' onsubmit='agrega_registro(); return false'>
 <table cellpadding='0px' cellspacing='1px' class='formulario' ><tr>";
@@ -673,8 +652,8 @@ function subform($sql,$tabla,$registro,$marcado)
 	//$cadena = $sql;
 	//if(isset($marcado))
 	//$cadena .= "marcado";
-	include("variables.php");
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	global $dbname, $con;
+	$consulta = mysql_query($sql,$con);
 	$resultado = mysql_fetch_array($consulta);
 	$numero_campos = mysql_numfields($consulta);
 	$numero_resultados = mysql_numrows($consulta);
@@ -720,9 +699,9 @@ function subform($sql,$tabla,$registro,$marcado)
 //***********************************************************************************************/
 function chequea_estado_tabla($tabla,$registro)
 {
-	include("variables.php");
+	global $dbname, $con;
 	$sql = "Select * from `$tabla` where idemp like $registro";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$total = mysql_numrows($consulta);
 	if ($total == 0)
 	$tipo = "nuevo";
@@ -736,7 +715,7 @@ function chequea_estado_tabla($tabla,$registro)
 //***********************************************************************************************/
 function sublist($sql,$tabla)
 {
-	include("variables.php");
+	global $dbname, $con;
 	//$cadena = $sql;
 	//opcion en la que estamos
 	$esecuele = "Select id from submenus where pagina like '$tabla'";
@@ -744,7 +723,7 @@ function sublist($sql,$tabla)
 	$elresultado = mysql_fetch_array($laconsulta);
 	$cadena .= "<tr><td colspan='2'><input type='hidden' id='opcion' value='".$elresultado[0]."' />";
 	//echo $sql;
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$totcampos = mysql_num_fields($consulta);
 	$cadena .= "<table width='100%' class='sublistado' cellspacing='0'><tr><th align='center' bgcolor='#7d0063'></th><th align='center' bgcolor='#7d0063'></th>";
 	for($i=2;$i<=$totcampos-1;$i++)
@@ -776,7 +755,7 @@ function sublist($sql,$tabla)
 //***********************************************************************************************/
 function servicios_fijos($cliente)
 {
-	include("variables.php");
+	global $dbname, $con;
 	$sql = "Select Id,ID_Cliente,Servicio,Imp_Euro,unidades,iva,observaciones from `tarifa_cliente` where `ID_Cliente` like $cliente";
 	$consulta = @mysql_db_query($dbname,$sql,$con);
 	$totcampos = @mysql_num_fields($consulta);
@@ -816,7 +795,7 @@ function servicios_fijos($cliente)
 //***********************************************************************************************/
 function frm_srv_fijos($vars)
 {
-	include("variables.php");
+	global $dbname, $con;
 	//Listado de servicios disponibles
 	///AGTUNG, ALERTA, ATENCION !!!!TOMO COMO SERVICIOS A SERVICIOS2
 	
@@ -873,7 +852,7 @@ function frm_srv_fijos($vars)
 //***********************************************************************************************/
 function cambia_los_otros($vars)
 {
-	include("variables.php");
+	global $dbname, $con;
 	$servicio = codifica($vars[servicio]);
 	$sql = "Select PrecioEuro, iva from servicios2 where Nombre like '$servicio'";
 	$consulta = @mysql_db_query($dbname,$sql,$con);
@@ -884,7 +863,7 @@ function cambia_los_otros($vars)
 //***********************************************************************************************/
 function agrega_srv_fijo($vars)
 {
-	include("variables.php");
+	global $dbname, $con;
 	//recogida de variables y agregamos
 	$sql = "Insert into tarifa_cliente (`ID_Cliente`,`Servicio`,`Imp_Euro`,`iva`,`unidades`,`observaciones`) values ('$vars[id_Cliente]','$vars[servicio]','$vars[importe]','$vars[iva]','$vars[unidades]','$vars[observaciones]')";
 	if($consulta = @mysql_db_query($dbname,$sql,$con))
@@ -896,7 +875,7 @@ function agrega_srv_fijo($vars)
 //***********************************************************************************************/
 function borra_srv_fijo($vars)
 {
-	include("variables.php");
+	global $dbname, $con;
 	$sql = "Delete from tarifa_cliente where id like $vars[id]";
 	if($consulta = @mysql_db_query($dbname,$sql,$con))
 		return "<img src='".OK."' alt='Servicio Borrado' width='64'/> Servicio Borrado&nbsp;&nbsp;<p/>";
@@ -906,7 +885,7 @@ function borra_srv_fijo($vars)
 //***********************************************************************************************/
 function actualiza_srv_fijo($vars)
 {
-	include("variables.php");
+	global $dbname, $con;
 	$sql = "Update `tarifa_cliente` set `Servicio`='$vars[servicio]', `Imp_Euro`='$vars[importe]', `iva`='$vars[iva]', `unidades`='$vars[unidades]',`observaciones`='$vars[observaciones]' where id like $vars[id]";
 	if($consulta = @mysql_db_query($dbname,$sql,$con))
 		return "<img src='".OK."' alt='Servicio Actualizado' width='64'/> Servicio Actualizado&nbsp;&nbsp;<p/>";
@@ -917,15 +896,14 @@ function actualiza_srv_fijo($vars)
 //Genera el listado de categorias de clientes para el select
 function listado_categorias()
 {
-	include("variables.php");
-	$tabla = utf8_decode("categorías clientes");
-	$sql = "SELECT * FROM `$tabla`";
-	$consulta = @mysql_db_query($dbname,$sql,$con);
-	$cadena.="<select id='tipo_cliente' onchange='filtra_listado()'>
+	global $con;
+	$tabla = "categorías clientes";
+	$sql = "SELECT * FROM `".$tabla."`";
+	$consulta = mysql_query( $sql, $con );
+	$cadena ="<select id='tipo_cliente' onchange='filtra_listado()'>
 	<option value='0'>--Selecciona Tipo--</option>";
-	while($resultado=@mysql_fetch_array($consulta))
-	{
-		$cadena.="<option value='$resultado[0]'>".traduce($resultado[1])."</option>";
+	while ( true == ($resultado = mysql_fetch_array($consulta))) {
+		$cadena.="<option value='$resultado[0]'>".$resultado[1]."</option>";
 	}
 	$cadena.="<option value='social'>Con direccion Facturaci&oacute;n</option>";
 	$cadena.="<option value='comercial'>Con direccion Contrato</option>";
@@ -934,4 +912,3 @@ function listado_categorias()
 	$cadena.="</select>";
 	return $cadena;
 }
-?>

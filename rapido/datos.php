@@ -77,12 +77,12 @@ function almacenaje($cliente,$mes,$anyo) //No creo que sea necesaria
 {
 	include("../inc/variables.php");
     $sql = "Select datediff('$anyo-$mes-01','2010-07-01')";
-    $consulta = mysql_db_query($dbname,$sql,$con);
+    $consulta = mysql_query($sql,$con);
     $diff = $resultado = mysql_fetch_array($consulta);
     if($diff[0]>=0)
     {
         $sql = "select PrecioEuro, iva from servicios2 where nombre like '%Almacenaje%'";
-        $consulta = mysql_db_query($dbname,$sql,$con);
+        $consulta = mysql_query($sql,$con);
         $par_almacenaje = mysql_fetch_array($consulta);
     }
     else
@@ -90,7 +90,7 @@ function almacenaje($cliente,$mes,$anyo) //No creo que sea necesaria
 
     //Fin del calculo de los parametros del almacenaje dependiendo del valor que tiene en servicios
 	$sql = "Select bultos, datediff(fin,inicio) from z_almacen where cliente like $cliente and month(fin) like $mes and year(fin) like $anyo";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	while ($resultado = mysql_fetch_array($consulta))
 	{
 		$j++;
@@ -123,10 +123,10 @@ function servicios()
 {
 	include("../inc/variables.php");
 	$sql = "Select id,Nombre from servicios2 where `Estado_de_servicio` like '-1' or `Estado_de_servicio` like 'on' order by Nombre";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$texto = "<select name='servicios' id='servicios' onchange='dame_el_valor()'>";
 	$texto.="<option value=0>--Seleccione Servicio--</option>";
-	while($resultado = mysql_fetch_array($consulta))
+	while(true == ($resultado = mysql_fetch_array($consulta)))
 		$texto .= "<option value='".$resultado[0]."'>".traduce($resultado[1])."</option>";
 	$texto .= "</select>";
 	return $texto;
@@ -143,9 +143,9 @@ function cuca($vars)
 	{
 		$vars[texto] = codifica($vars[texto]);
 		$sql = "Select * from `clientes` where (Nombre like '%$vars[texto]%' or Contacto like '%$vars[texto]%') and `Estado_de_cliente` like '-1' order by Nombre ";
-		$consulta = mysql_db_query($dbname,$sql,$con);
+		$consulta = mysql_query($sql,$con);
 		$muestra .="<ul>";
-		while($resultado = mysql_fetch_array($consulta))
+		while(true == ($resultado = mysql_fetch_array($consulta)))
 		{
 			$muestra .="<li><span class='lbl_clientes' onclick='marca(".$resultado[0].")' onmouseout='quitar_color(".$resultado[0].")' onmouseover='cambia_color(".$resultado[0].")'><p id='linea_".$resultado[0]."'>".traduce(eregi_replace($vars[texto],"<b><u>".strtoupper($vars[texto])."</u></b>",$resultado[1]))."</p></span></li>";
 		}
@@ -159,7 +159,7 @@ function dame_nombre_cliente($vars)
 {
 	include("../inc/variables.php");
 	$sql = "Select * from `clientes` where id like $vars[cliente] ";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$resultado = mysql_fetch_array($consulta);
 	$cadena = $resultado[0].";".traduce($resultado[1]);
 	return $cadena;
@@ -180,7 +180,7 @@ function ver_servicios_contratados($vars)
 	where c.Cliente like $vars[cliente] and ($vars[anyo] 
 	like date_format(c.fecha,'%Y') and '$mes_buscado' like date_format(c.fecha,'%m')) order by c.fecha asc"; 
 	//echo $sql;
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$cadena .= "<span class='agregar' onclick='ver_frm_agregar_servicio($vars[cliente])'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Agregar Servicio</span><div id='form_agregar'></div>";
 	$cadena .= "<table class='tabla' width='100%'>";
 	$cadena .= "<tr><th colspan=9>";
@@ -227,13 +227,13 @@ function borra_servicio_contratado($vars)
 {
 	include("../inc/variables.php");
 	$sql = "Select `Id Pedido` from `detalles consumo de servicios` where `Id` like $vars[servicio]";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$resultado  = mysql_fetch_array($consulta);
 	$sql = "Delete from `consumo de servicios` where `Id Pedido` like $resultado[0]";
 	if($consulta = mysql_db_query($dbname,$sql,$con))
 	{
 		$sql = "Delete from `detalles consumo de servicios` where `Id` like $vars[servicio]";
-		$consulta = mysql_db_query($dbname,$sql,$con);
+		$consulta = mysql_query($sql,$con);
 		return true;
 	}
 	else
@@ -245,7 +245,7 @@ function frm_modificacion_servicio($vars)
 {
 	include("../inc/variables.php");
 	$sql = "Select * from `detalles consumo de servicios` where `Id` like $vars[servicio]";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$resultado = mysql_fetch_array($consulta);
 	$cliente = $_GET[cmodi];
 	$modi[0] = $_GET[modi];//Id Pedido
@@ -335,7 +335,7 @@ function valor_del_servicio($vars)
 {
 	include("../inc/variables.php");
 	$sql = "Select PrecioEuro,iva from servicios2 where id like $vars[servicio]";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$resultado = mysql_fetch_array($consulta);
 	return round($resultado[0],2).";".$resultado[1];
 }
@@ -346,7 +346,7 @@ function agrega_el_servicio($vars)
 	//parametros que llegan, cliente,fecha,servicio,precio,cantidad,iva,observaciones
 	//el servicio DEBE almacenarse como su valor en texto
 	$sql = "Select Nombre from servicios2 where id like $vars[servicios]";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$resultado = mysql_fetch_array($consulta);
 	$servicio = $resultado[0];
 	$fecha = cambiaf($vars[fecha]);
@@ -369,7 +369,7 @@ function ventana_observaciones($vars)
 {
 	include("../inc/variables.php");
 	$sql = "Select observaciones from `detalles consumo de servicios` where `Id Pedido` like $vars[servicio]";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$resultado = mysql_fetch_array($consulta);
 	$cadena = "<input type='button' class='boton_cerrar' onclick='cierra_ventana_observaciones()' value='Cerrar' /><br/>
 	".$resultado[0];
@@ -380,14 +380,14 @@ function borrar_factura($vars)
 {
 	include("../inc/variables.php");
 	$sql = "Select codigo from regfacturas where id like $vars[factura]";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$resultado = mysql_fetch_array($consulta);
 	$codigo = $resultado[0];
 	$sql = "Delete from regfacturas where id like $vars[factura]";
 	if($consulta = mysql_db_query($dbname,$sql,$con))
 	{
 		$sql = "Delete from historico where factura like $codigo";
-		$consulta = mysql_db_query($dbname,$sql,$con);
+		$consulta = mysql_query($sql,$con);
 		$cadena = "Factura Borrada<p/>";
 	}
 	else
@@ -573,7 +573,7 @@ function dibuja_pantalla($sql,$marca_cliente,$marca_factura,$marca_fecha,$marca_
 	<input type='hidden' id='marca_importe' value='".$marca_importe."' />";
 	
 	$cadena .="<table width='100%' class='tabla'>";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	if (mysql_numrows($consulta)!=0)
 	{
 		$k=0;

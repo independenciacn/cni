@@ -16,8 +16,8 @@
 		echo tabla($sql);
 	}
 $sql = "select Servicio from tarifa_cliente where ID_Cliente like 28 group by Servicio";
-$consulta = mysql_db_query($dbname,$sql,$con);
-while($resultado = mysql_fetch_array($consulta))
+$consulta = mysql_query($sql,$con);
+while(true == ($resultado = mysql_fetch_array($consulta)))
 {
 	//$resultado[0]=utf8_encode($resultado[0]);
 	$sql2 = "select h.servicio, h.cantidad, h.unitario, h.iva, r.id_cliente, r.fecha from historico h inner join regfacturas r on h.factura like r.codigo where r.id_cliente like 28 and servicio like '$resultado[0]%'";
@@ -33,13 +33,13 @@ function nombre_raiz_servicio($servicio)
 function tabla($sql)
 {
 	include("../inc/variables.php");
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$cadena.="<table class='tabla' width='100%'>";
 	$cadena.= "<tr>";
 		for($i=0;$i<=mysql_num_fields($consulta)-1;$i++)
 			$cadena.="<th>".ucfirst(mysql_field_name($consulta,$i))."</th>";
 		$cadena.="</tr>";
-		while($resultado = mysql_fetch_array($consulta))
+		while(true == ($resultado = mysql_fetch_array($consulta)))
 		{
 			$j++;
 			if($j%2==0)

@@ -1,8 +1,8 @@
 <?php
-session_start(); 
-error_reporting(0);
+require_once 'inc/variables.php';
+checkSession();
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -22,15 +22,12 @@ error_reporting(0);
  * TODO: Que se pueda modificar la contraseña de acceso
  * TODO: Agregar un nuevo campo a la factura: Nº Pedido
  */
-if(isset($_SESSION['usuario']))
-{
-	include("inc/validacion.php");
+if(isset($_SESSION['usuario'])) {
+	include_once 'inc/validacion.php';
 	echo "<div id='menu_general'>";
 	echo menu();
 	echo "</div>";
-}
-else 
-{
+} else {
 ?>
 <div id='registro'>
 <center>
@@ -38,25 +35,25 @@ else
 </center>
 <p />
 <center>
-	<?php
+<?php
 	if(isset($_GET["exit"]))
 		echo "<span class='ok'>Sesion Cerrada</span>";
 	if(isset($_GET["error"]))
 		echo "<span class='ko'>Usuario o Contrase&ntilde;a Incorrecta</span>";
-	?>
-	<form name='login_usuario' onsubmit='validar();return false' method='post' >
+?>
+	<form id='login_usuario' method='post' action='inc/valida.php'>
 	<table width='30%' class="login">
   	<tr>
   	<td align='right'>
 	Usuario:
 	</td><td>
-	<input type='text' id="usuario" accesskey="u" tabindex="1" />
+	<input type='text' id="usuario" name="usuario" accesskey="u" tabindex="1" />
 	</td></tr>
 	<tr>
 	<td align='right'>
 	Contrase&ntilde;a:
 	</td><td>
-	<input type='password' id="passwd" accesskey="c" tabindex="2" />
+	<input type='password' id="passwd" name="passwd" accesskey="c" tabindex="2" />
 	</td></tr>
 	<tr>
 	<td align='center' colspan="2">
@@ -82,7 +79,7 @@ else
 <div id='datos_interesantes'></div>
 <div id='debug'></div>
 <?php 
-if(isset($_SESSION[usuario]))
+if(isset($_SESSION['usuario']))
 {
 	echo "<div id='avisos'>";
 	include("inc/avisos.php");//Se muestran los avisos solo con el include

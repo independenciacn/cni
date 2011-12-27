@@ -1,4 +1,4 @@
-<?
+<?php
 session_start();
 if(session_id() == $_GET[id])
 {
@@ -7,7 +7,7 @@ function dame_nombre_cliente($cliente)
 {
 	include("../inc/variables.php");
 	$sql = "Select * from `clientes` where id like $cliente";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$resultado = mysql_fetch_array($consulta);
 	$cadena =$resultado[1];
 	return $cadena;
@@ -29,7 +29,7 @@ function cambiaf($stamp) //funcion del cambio de fecha
 }
 // Creamos la tabla
 		
-		$consulta = mysql_db_query($dbname,$sql,$con);
+		$consulta = mysql_query($sql,$con);
 		//dise�o de la tabla con el boton de eliminar
 		echo "<style>
 		#tabloide td

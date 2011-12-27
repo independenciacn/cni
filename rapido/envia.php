@@ -13,19 +13,18 @@
 * Creative Commons Reconocimiento-SinObraDerivada 3.0 Unported.
 * @link https://github.com/independenciacn/cni
 */
-//require_once '../inc/configuracion.php';
 require_once 'Zend/Loader/Autoloader.php';
 Zend_Loader_Autoloader::getInstance();
 
 function envia( $fichero, $numeroFactura, $dup ) {
-	global $dbname, $con;
+	global $con;
 	$sql = "Select date_format(r.fecha,'%d-%m-%Y') as fecha,
 	c.Nombre as cliente,f.direccion as direccion
 	from regfacturas as r
 	inner join clientes as c on r.id_cliente = c.id
 	inner join facturacion as f
 	on r.id_cliente = f.idemp where r.codigo like '".$numeroFactura."'";
-	$consulta = mysql_db_query( $dbname, $sql, $con);
+	$consulta = mysql_query( $sql, $con);
 	$resultado = mysql_fetch_array( $consulta, MYSQL_ASSOC);
 	$direcciones = explode(";",$resultado['direccion']);
 	foreach( $direcciones as $direccion ) {

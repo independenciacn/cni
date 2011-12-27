@@ -1,14 +1,16 @@
 <?php /*Sencillo genera tablas pasandole el sql*/
+require_once 'variables.php';
+checkSession();
 function tabla($sql)
 {
-	include("variables.php");
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	global $dbname, $con;
+	$consulta = mysql_query($sql,$con);
 	$cadena.="<table class='tabla' width='100%'>";
 	$cadena.= "<tr>";
 		for($i=0;$i<=mysql_num_fields($consulta)-1;$i++)
 			$cadena.="<th>".ucfirst(mysql_field_name($consulta,$i))."</th>";
 		$cadena.="</tr>";
-		while($resultado = mysql_fetch_array($consulta))
+		while(true == ($resultado = mysql_fetch_array($consulta)))
 		{
 			$j++;
 			if($j%2==0)

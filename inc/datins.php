@@ -81,11 +81,11 @@ $sql = "SELECT facturacion.id,
 	clientes.Nombre
 FROM facturacion INNER JOIN clientes ON facturacion.idemp = clientes.Id
 WHERE date_format(renovacion,'%d %c %y') LIKE date_format(curdate(),'%d %c %y')";
-$consulta = mysql_db_query($dbname,$sql,$con);
+$consulta = mysql_query($sql,$con);
 $total = mysql_numrows($consulta);
 	if ($total >= 1)
 	{
-		while($resultado = mysql_fetch_array($consulta))
+		while(true == ($resultado = mysql_fetch_array($consulta)))
 		{
 			$cadena .="<tr><td><a href='javascript:muestra(".$resultado[1].")'>".traduce($resultado[5])."</a></td></tr>";
 		}
@@ -106,11 +106,11 @@ $sql = "SELECT facturacion.id,
 	clientes.Nombre
 FROM facturacion INNER JOIN clientes ON facturacion.idemp = clientes.Id
 WHERE month(renovacion) LIKE month(curdate()) and year(renovacion) like year(curdate()) order by renovacion asc";
-$consulta = mysql_db_query($dbname,$sql,$con);
+$consulta = mysql_query($sql,$con);
 $total = mysql_numrows($consulta);
 	if ($total >= 1)
 	{
-		while($resultado = mysql_fetch_array($consulta))
+		while(true == ($resultado = mysql_fetch_array($consulta)))
 		{
 			$cadena .="<tr><td>".cambiaf($resultado[4])."</td><td><a href='javascript:muestra(".$resultado[1].")'>".traduce($resultado[5])."</a></td></tr>";
 		}
@@ -130,11 +130,11 @@ $sql = "SELECT facturacion.id,
 	clientes.Nombre
 FROM facturacion INNER JOIN clientes ON facturacion.idemp = clientes.Id
 WHERE (CURDATE() <= renovacion) and (DATE_ADD(CURDATE(),INTERVAL 60 DAY)) >= renovacion order by Month(renovacion) asc, DAY(renovacion) asc";
-$consulta = mysql_db_query($dbname,$sql,$con);
+$consulta = mysql_query($sql,$con);
 $total = mysql_numrows($consulta);
 	if ($total >= 1)
 	{
-		while($resultado = mysql_fetch_array($consulta))
+		while(true == ($resultado = mysql_fetch_array($consulta)))
 		{
 			$cadena .="<tr><td>".cambiaf2($resultado[4])."</td><td><a href='javascript:muestra(".$resultado[1].")'>".traduce($resultado[5])."</a></td></tr>";
 		}

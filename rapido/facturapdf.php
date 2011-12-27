@@ -76,7 +76,7 @@ if((isset($_GET['factura'])) || (isset($_POST['factura'])))
 		c.NIF,r.fecha, r.pedidoCliente, c.id from clientes as c 
 		join regfacturas as r on r.id_cliente = c.id 
 		where r.codigo like $factura";
-		$consulta = mysql_db_query($dbname,$sql,$con);
+		$consulta = mysql_query($sql,$con);
 		$resultado = mysql_fetch_array($consulta);
 		if((isset($_GET['dup']))||(isset($_POST['dup']))){
 			$pdf->addText(363,730,16,"<b>FACTURA (DUPLICADO)<b>");
@@ -102,7 +102,7 @@ if((isset($_GET['factura'])) || (isset($_POST['factura'])))
      
 //Paso de datos de historico
 	$sql = "Select * from historico where factura like '$factura'";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$total = 0;
 	$bruto = 0;
 	$celdas = 0;
@@ -163,7 +163,7 @@ from historico where factura like '$factura' group by factura";
 
 		/*Modificar para sacar de regfacturas*/
 		$sql = "Select fpago,obs_fpago,obs_alt, pedidoCliente from regfacturas where codigo like $factura";
-		$consulta = mysql_db_query($dbname,$sql,$con);
+		$consulta = mysql_query($sql,$con);
 		$resultado = mysql_fetch_array($consulta);
 //$pdf->ezText("");
 		$pdf->ezSetY( 115 );

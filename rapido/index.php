@@ -12,8 +12,7 @@
 <meta http-equiv="pragma" content="no-cache">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
-<?php
-date_default_timezone_set('Europe/Madrid'); 
+<?php 
 //fichero rapido, para añadir rapidamente servicios a clientes 
 //en el mes actual
 //funciones
@@ -21,8 +20,8 @@ function clientes($cliente)
 {
 	include("../inc/variables.php");
 	$sql = "Select Id,Nombre from clientes where `Estado_de_cliente` like '-1' or `Estado_de_cliente` like 'on' order by Nombre";
-	$consulta = mysql_db_query($dbname,$sql,$con);
-	while($resultado = mysql_fetch_array($consulta))
+	$consulta = mysql_query($sql,$con);
+	while(true == ($resultado = mysql_fetch_array($consulta)))
 	{
 		if($cliente == $resultado[0])
 		$seleccionado = "selected";
@@ -37,10 +36,10 @@ function clientes($cliente)
 //Funcion de la seleccion de meses para ver los servicios asignados ese mes
 function seleccion_meses($mes = null)
 {
-if( $mes != null )
-	$mes = $mes;
-else
-	$mes = date("m");
+    if( $mes == null ) {
+	    $mes = date("m");
+    }
+
 
 $meses = Array("","Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
 	$cadena = "<select name='meses' id='meses'>";

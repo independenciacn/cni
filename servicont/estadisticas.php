@@ -736,7 +736,7 @@ function genera_consultas($inicio,$fin)
  function genera_la_tabla($sql,$vars,$subtitulo)
  {
  	include("../inc/variables.php");
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 
 $cadena.="<table id='tabla' width='100%'><tr>";
 $cadena.="<tr><th></th><th colspan='".mysql_num_fields($consulta)."'>".$vars[titulo]." - ".utf8_encode($subtitulo)."</th></tr>";
@@ -756,7 +756,7 @@ $cadena.="</tr>";
 $j=0;
 $aux = " ";
 $minitot = 0;
-while($resultado = mysql_fetch_array($consulta))
+while(true == ($resultado = mysql_fetch_array($consulta)))
 {
 	$j++;
 	if($j%2==0)

@@ -14,7 +14,7 @@ function frm_observaciones($vars)
 		case 0: $sql = "Select * from desvios where id_cliente like $vars[cliente] ";$tipo="Desvios";break;//desvios
 		case 1:$sql = "Select * from extranet where id_cliente like $vars[cliente]";$tipo="Extranet";break;
 	}
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	if(mysql_numrows($consulta)!=0) //hay entradas actualizamos
 		{$boton ="<input type='button' class='boton_actualizar' onclick='ver_detalles(1,1,$vars[tipo],$vars[cliente])' value='Actualizar'/>";
 		$resultado = mysql_fetch_array($consulta);

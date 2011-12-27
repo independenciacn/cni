@@ -1324,3 +1324,48 @@ textarea
 	border-bottom-width:1px;
 	border-bottom-color:#7d0063;
 }
+/*Nuevos formularios Gestion*/
+.frmGestion {
+	margin:1em;
+    font-size:1.125em;
+    width: 300px;
+}
+.frmGestion legend {
+	color:#7d0063;
+    margin-bottom: 1em;
+    font-size:1.5em;
+}
+.frmGestion label {
+    color:#7d0063;
+    margin-bottom: 1em;
+    margin-right: 1em;
+    float:left;
+    font-weight:bold;
+}
+.frmGestion input {
+	margin-bottom: 1em;
+    float: right;
+}
+.frmGestion input[type=button] {
+	font-size:1.125em;
+    font-weight:bold;
+    color:#7d0063;
+    cursor:pointer;
+    border-style:solid;
+    border-width:1px;
+    border-color:#7d0063;
+    background-color:#eeeeee;
+}
+.reset {
+	clear:both;
+}
+/*Nuevos mensajes de Avisos*/
+.error, .alert, .notice, .success, .info {padding:0.8em;margin-bottom:1em;border:2px solid #ddd;}
+.error, .alert {background:#fbe3e4;color:#8a1f11;border-color:#fbc2c4;}
+.notice {background:#fff6bf;color:#514721;border-color:#ffd324;}
+.success {background:#e6efc2;color:#264409;border-color:#c6d880;}
+.info {background:#d5edf8;color:#205791;border-color:#92cae4;}
+.error a, .alert a {color:#8a1f11;}
+.notice a {color:#514721;}
+.success a {color:#264409;}
+.info a {color:#205791;}

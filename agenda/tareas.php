@@ -1,4 +1,4 @@
-<? 
+<?php 
 include("../inc/variables.php");
 if (isset($_POST[tarea])) 
 {
@@ -37,12 +37,12 @@ echo $seleccion_asignada;
 </select>
 <label>Prioridad:</label>
 <select name='prioridad'>
-	<option <? if ($resultado[prioridad]==0) echo "selected"; ?> value='0'>Normal</option>
-	<option <? if ($resultado[prioridad]==1) echo "selected"; ?> value='1'>Media</option>
-	<option <? if ($resultado[prioridad]==2) echo "selected"; ?> value='2'>Alta</option>
-	<option <? if ($resultado[prioridad]==3) echo "selected"; ?> value='3'>Urgente</option>
+	<option <?php if ($resultado[prioridad]==0) echo "selected"; ?> value='0'>Normal</option>
+	<option <?php if ($resultado[prioridad]==1) echo "selected"; ?> value='1'>Media</option>
+	<option <?php if ($resultado[prioridad]==2) echo "selected"; ?> value='2'>Alta</option>
+	<option <?php if ($resultado[prioridad]==3) echo "selected"; ?> value='3'>Urgente</option>
 </select>
-<? 
+<?php 
 if(isset($resultado[id]))
 	echo "<input type='submit' value='Actualizar Tarea' /><input type='button' value='Limpiar' onclick='cambia_vista()'/>";
 else 
@@ -50,7 +50,7 @@ else
 ?>
 </form>
 <div id='estado_tarea'></div>	
-<?
+<?php
 /*
  * Cambia la fecha a sql y a la inversa
  */

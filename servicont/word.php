@@ -1,4 +1,4 @@
-<?
+<?php
 // Enviamos los encabezados de hoja de calculo
 //session_cache_limiter("public");
 session_start();
@@ -22,7 +22,7 @@ function cambiaf($stamp) //funcion del cambio de fecha
 
 // Creamos la tabla
 		
-		$consulta = mysql_db_query($dbname,$sql,$con);
+		$consulta = mysql_query($sql,$con);
 		//dise�o de la tabla con el boton de eliminar
 		print("<table width=100% cellpadding=0 cellspacing=0>");
 		print("<tr><th colspan=7>Servicios contratados por $empresa - Periodo $mostrada - Servicio: $sersel</th></tr>");

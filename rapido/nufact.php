@@ -71,7 +71,7 @@ function ultimo_codigo()
 {
 	include('../inc/variables.php');
 	$sql = "select codigo from regfacturas where codigo != 0 order by codigo desc limit 1 offset 0";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	if(mysql_numrows($consulta)!=0)
 		{
 		$resultado = mysql_fetch_array($consulta);

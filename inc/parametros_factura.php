@@ -32,7 +32,7 @@ function listado_servicios()
 {
 	include("variables.php");
 	$sql = "Select id,Nombre from servicios2 order by Nombre";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$cadena = "<select name='servicio' id='servicio'>";
 	$cadena .= "<option value='0'>--Servicio--</option>";
 	while($resultado=mysql_fetch_array($consulta))
@@ -46,7 +46,7 @@ function fecha_factura($cliente)
 {
 	include("variables.php");
 	$sql = "Select * from agrupa_factura where concepto like 'dia' and idemp like $cliente";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	if (mysql_numrows($consulta)!=0)
 	{
 		$resultado = mysql_fetch_array($consulta);
@@ -63,12 +63,12 @@ function servicios_agrupados($cliente)
 {
 	include("variables.php");
 	$sql ="Select a.id ,s.Nombre from agrupa_factura as a join servicios2 as s on a.valor = s.id where a.concepto like 'servicio' and a.idemp like $cliente";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	if(mysql_numrows($consulta)==0)
 		$cadena ="<b>No hay servicios</b>";
 	else
 		{
-			while($resultado = mysql_fetch_array($consulta))
+			while(true == ($resultado = mysql_fetch_array($consulta)))
 			$cadena .= "<p/><b>".utf8_encode($resultado[1])."</b>-<a href='javascript:quitar_agrupado(".$resultado[0].",$cliente)'>[X] Quitar</a>";
 		}
 	return $cadena;
@@ -78,7 +78,7 @@ function establecer_fecha($vars)
 {
 	include("variables.php");
 	$sql = "Select * from agrupa_factura where concepto like 'dia' and idemp like $vars[cliente]";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	if (mysql_numrows($consulta)==0)
 		$sql = "insert into agrupa_factura (idemp,concepto,valor) values ($vars[cliente],'dia','$vars[dia]')";
 	else

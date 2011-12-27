@@ -119,7 +119,7 @@ function consulta_fecha($cliente,$mes,$inicial,$final) //consulta los rangos de 
 	{
 	include("../inc/variables.php");
 	$sql = "Select valor from agrupa_factura where idemp like $cliente and concepto like 'dia'";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 		if(mysql_numrows($consulta)!=0)
 		{
 			$resultado = mysql_fetch_array($consulta);
@@ -153,9 +153,9 @@ function consulta_no_agrupado($cliente)
 		$pila = array("Franqueo","Consumo Tel%fono","Material de oficina","Secretariado","Ajuste");
 		$i=5;
 		$sql = "Select s.Nombre,a.valor from agrupa_factura as a join servicios2 as s on a.valor = s.id where a.idemp like $cliente and a.concepto like 'servicio'";
-		$consulta = mysql_db_query($dbname,$sql,$con);
+		$consulta = mysql_query($sql,$con);
 		if(mysql_numrows($consulta)!=0)
-			while($resultado = mysql_fetch_array($consulta))
+			while(true == ($resultado = mysql_fetch_array($consulta)))
 			{
 				$pila[]=$resultado[0];
 				$i++;
@@ -178,9 +178,9 @@ function consulta_agrupado($cliente)
 		$pila = array("Franqueo","Consumo Tel%fono","Material de oficina","Secretariado","Ajuste");
 		$i=5;
 		$sql = "Select s.Nombre,a.valor from agrupa_factura as a join servicios2 as s on a.valor = s.id where a.idemp like $cliente and a.concepto like 'servicio'";
-		$consulta = mysql_db_query($dbname,$sql,$con);
+		$consulta = mysql_query($sql,$con);
 		if(mysql_numrows($consulta)!=0)
-			while($resultado = mysql_fetch_array($consulta))
+			while(true == ($resultado = mysql_fetch_array($consulta)))
 			{
 				$pila[]=$resultado[0];
 				$i++;
@@ -212,7 +212,7 @@ function cabezera_factura( $nombre_fichero, $fecha_factura, $codigo, $cliente )
 	$fecha_de_factura = $fecha_factura[0]." de ".dame_el_mes( $fecha_factura[1] )
 	." de ". $fecha_factura[2];
 	$sql = "Select * from clientes where id like " .$cliente;
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$resultado = mysql_fetch_array($consulta);
 	$cabezera = "
 	<br/><br/><br/>
@@ -387,7 +387,7 @@ function consulta_almacenaje($cliente,$mes,$inicial,$final)
 	if(($inicial == '0000-00-00') && ($final == '0000-00-00'))
 	{
 		$sql = "Select * from agrupa_factura where concepto like 'dia' and idemp like $cliente and valor not like ''" ;
-		$consulta = mysql_db_query($dbname,$sql,$con);
+		$consulta = mysql_query($sql,$con);
 		if(mysql_numrows($consulta)!=0) //existe
 		{
 			$resultado = mysql_fetch_array($consulta);
@@ -445,7 +445,7 @@ function agrega_historico( $factura, $servicio, $cantidad, $unitario, $iva, $obs
 	$sql = "Insert into historico (factura,servicio,cantidad,unitario,iva,obs) 
 	values
 	('$factura','$servicio','$cantidad','$unitario','$iva','$obs')";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	//echo $sql;
 }
 /***********************************************************************************************/
@@ -558,7 +558,7 @@ $tituloPagina = ( $inicio!= "0000-00-00") ? "ocupacion puntual" : dame_el_mes( "
 /*CHEQUEO DE HISTORICO, si no esta en el historico se agrega*/
 if($historico == "ok") {
 	$sql = "Select * from historico where factura like $codigo";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	while($resultado=mysql_fetch_array($consulta))
 	{
 		$importe_sin_iva = $resultado['cantidad']*$resultado['unitario'];
@@ -584,7 +584,7 @@ if($historico == "ok") {
 	{
 		$sql = "Select * from tarifa_cliente where ID_Cliente like $cliente order by Imp_Euro desc";
 		//echo $sql;/*PUNTO DE CONTROL*/
-		$consulta = mysql_db_query($dbname,$sql,$con);
+		$consulta = mysql_query($sql,$con);
 		while ($resultado = mysql_fetch_array($consulta))
 		{
 			$importe_sin_iva = $resultado[7]*$resultado[4];
@@ -614,12 +614,12 @@ if($historico == "ok") {
     /*Buscamos los datos de importe e iva de almacenaje*/
     $sql = "Select datediff('".cambiaf($fecha_factura)."','2010-07-01')";
     //echo $sql;
-    $consulta = mysql_db_query($dbname,$sql,$con);
+    $consulta = mysql_query($sql,$con);
     $diff = mysql_fetch_array($consulta);
     if($diff[0]>=0)
     {
         $sql = "select PrecioEuro, iva from servicios2 where nombre like '%Almacenaje%'";
-        $consulta = mysql_db_query($dbname,$sql,$con);
+        $consulta = mysql_query($sql,$con);
         $par_almacenaje = mysql_fetch_array($consulta);
     }
     else
@@ -664,7 +664,7 @@ if($historico == "ok") {
 	$sql .= consulta_fecha($cliente,$mes,$inicio,$final); //con esta miramos los rangos de la factura
 	$sql .= consulta_no_agrupado($cliente);
 	//echo $sql;/*PUNTO DE CONTROL*/
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	while ($resultado=mysql_fetch_array($consulta))
 	{
 		$subtotal = $resultado[4] + ($resultado[4]*$resultado[5])/100;
@@ -696,7 +696,7 @@ if($historico == "ok") {
 	$sql .= consulta_agrupado($cliente);
 	//echo $sql;//<- Punto de Control
 	//echo $cliente.",".$mes.",".$inicio.",".$final;
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	while ($resultado=mysql_fetch_array($consulta))
 	{
 		$subtotal = $resultado[4]+ ($resultado[4]*$resultado[5])/100;
@@ -826,7 +826,7 @@ function comprueba_la_factura($cliente,$codigo,$fecha,$total_iva,$total)
 {
 		include("../inc/variables.php");
 		$sql = "Select * from regfacturas where id_cliente like $cliente and codigo like $codigo and fecha like '$fecha'";
-		$consulta = mysql_db_query($dbname,$sql,$con);
+		$consulta = mysql_query($sql,$con);
 		if (mysql_numrows($consulta)==0)
 			return true;
 		else //existe
@@ -834,7 +834,7 @@ function comprueba_la_factura($cliente,$codigo,$fecha,$total_iva,$total)
 			if(($resultado[iva]!=$total_iva) && ($resultado[importe]!=$total))
 			{
 				$sql = "Update regfacturas set iva='$total_iva',importe='$total' where id_cliente like '$cliente' and codigo like '$codigo' and fecha like '$fecha'";
-				$consulta = mysql_db_query($dbname,$sql,$con);
+				$consulta = mysql_query($sql,$con);
 			}
 			return false;
 		}

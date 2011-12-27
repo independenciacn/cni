@@ -11,7 +11,7 @@
 				$sql = "Select * from clientes where (categoria like '%domicili%' or categoria like '%despachos%') and Estado_de_cliente like '-1' order by Nombre";
 			else
 				$sql = "Select * from clientes as c join `categor�as clientes` as d on c.Categoria = d.Nombre where d.id like $_GET[tipo] and c.Estado_de_cliente like '-1' order by c.Nombre";
-		$consulta = mysql_db_query($dbname,$sql,$con);
+		$consulta = mysql_query($sql,$con);
 		$i=0;
 		$cadena.="<table>";
 		$res1=mysql_fetch_array($consulta);
@@ -23,7 +23,7 @@
 		else
 			
 			$cadena.="<tr><th>Domicilio social Independencia 8 Dpo</th></tr>";
-		while($resultado = mysql_fetch_array($consulta))
+		while(true == ($resultado = mysql_fetch_array($consulta)))
 			$cadena.="<tr><td>".$resultado[1]."</td></tr>";
 		$cadena.="</table>";	
 	}
@@ -34,7 +34,7 @@
 	c.id WHERE  Estado_de_cliente != 0 and 
 	(c.Categoria like '%domiciliac%' or c.Categoria like '%despacho%') and 
 	z.servicio like 'Codigo Negocio' order by z.valor asc";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$cadena = "<table width='100%' cellpadding='1px' cellspacing='1px' style={border-style:solid;border-width:1px;}>";
 	$cadena .= "<tr><th>Codigo</th><th>Cliente</th><th>Categoria</th><th>Observaciones</th></tr>";
 	while ($resultado = mysql_fetch_array($consulta))

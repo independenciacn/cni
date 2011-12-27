@@ -132,7 +132,7 @@ function calcula_totales($tit,$mes,$anyo)
 	where servicio like '$tit'
 	and month(r.fecha) like $mes
 	and year(r.fecha) like $anyo group by r.id_cliente";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$cadena .= mysql_num_rows($consulta);
 	}
 	else
@@ -150,8 +150,8 @@ function lista_entradas($tit,$mes,$anyo)
 	where servicio like '$tit'
 	and month(r.fecha) like $mes
 	and year(r.fecha) like $anyo group by r.id_cliente";
-	$consulta = mysql_db_query($dbname,$sql,$con);
-	while($resultado = mysql_fetch_array($consulta))
+	$consulta = mysql_query($sql,$con);
+	while(true == ($resultado = mysql_fetch_array($consulta)))
 		$cadena[]= $resultado;
 	return $cadena;
 	}

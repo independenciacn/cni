@@ -61,7 +61,7 @@ else
 //la primera linea tiene que ser el importe del mes del tipo de cliente
 	$sql = "Select * from tarifa_cliente where ID_Cliente like $vars[cliente] order by Servicio";
 	
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	while ($resultado = mysql_fetch_array($consulta))
 	{
 		//parciales
@@ -91,7 +91,7 @@ else
 	//echo $sql;
 	//$cadena .= almacenaje($vars[cliente],$mes_buscado);
 	$sql = "Select bultos, datediff(fin,inicio) ,inicio, fin from z_almacen where cliente like $cliente and month(fin) like $mes and year(fin) like $_GET[anyo]";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	
     while ($resultado = mysql_fetch_array($consulta))
 	{
@@ -136,7 +136,7 @@ else
 	where c.Cliente like $vars[cliente] and '$_GET[anyo]' like year(c.fecha)
 	and '$_GET[mes]' like month(c.fecha) order by c.fecha asc";
    
-    $consulta = mysql_db_query($dbname,$sql,$con);
+    $consulta = mysql_query($sql,$con);
 	while ($resultado=mysql_fetch_array($consulta))
 	{
 		$parcial = $parcial + $resultado[4];

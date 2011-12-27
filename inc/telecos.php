@@ -32,10 +32,10 @@ function genera_ips()
 //1.- Consultamos cuales estan libre y despues mostramos las ocupadas
 	include("../inc/variables.php");
 	$sql = "Select valor from z_sercont where servicio like 'Direccion IP'";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$totaloc = mysql_numrows($consulta);
 	$i=0;
-	while($resultado = mysql_fetch_array($consulta))
+	while(true == ($resultado = mysql_fetch_array($consulta)))
 	{
 		$ocupadas[$i++] = $resultado[0];
 	}
@@ -87,11 +87,11 @@ function genera_extensiones($vars)
 			$despacho = $vars[despacho];
 		include("../inc/variables.php");
 	$sql = "Select valor from z_sercont where servicio like 'Extension' and valor like '$despacho%'";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$totaloc = mysql_numrows($consulta);
 	$i=0;
 	if(mysql_numrows($consulta)!=0)
-		while($resultado = mysql_fetch_array($consulta))
+		while(true == ($resultado = mysql_fetch_array($consulta)))
 		{
 			$ocupadas[$i++] = $resultado[0];
 		}
@@ -124,7 +124,7 @@ function chequea_valores($vars)
 {
 	include("../inc/variables.php");
 	$sql = "Select * from z_sercont where servicio like '$vars[campo]' and valor like '$vars[valor]'";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$total = mysql_numrows($consulta);
 	if ($total == 0)
 		$tabla = "#00ff00";//.valor correcto;

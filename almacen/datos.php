@@ -46,7 +46,7 @@ if (isset($_POST[cliente]))
 	if(isset($_POST[item]))
 	{
 		$sql = "Select * from z_almacen where id like $_POST[item]";
-		$consulta = mysql_db_query($dbname,$sql,$con);
+		$consulta = mysql_query($sql,$con);
 		$resultado = mysql_fetch_array($consulta);
 		$s_bulto = $resultado[2];
 		$s_finicio = cambiaf($resultado[3]);
@@ -65,7 +65,7 @@ if (isset($_POST[cliente]))
 	//consultamos el nombre del cliente
         importeAlmacen();
 	$sql = "Select * from z_almacen where cliente like $_POST[cliente] and (Year( now( ) ) - Year( inicio )) <=1";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$sql2 = "Select Id, Nombre from clientes where id like $_POST[cliente]";
 	$consulta2 = mysql_db_query($dbname,$sql2,$con);
 	$previo = mysql_fetch_array($consulta2);
@@ -133,13 +133,13 @@ if(isset($_POST[bcliente]))
 	$sql = "Insert into z_almacen (`cliente`,`bultos`,`inicio`,`fin`) values ('$cliente','$bultos',STR_TO_DATE('$finicio','%d/%m/%Y'),STR_TO_DATE('$ffinal','%d/%m/%Y'))";
 	else
 	$sql = "Update z_almacen set `bultos` = '$bultos',`inicio` = STR_TO_DATE('$finicio','%d/%m/%Y') ,`fin` = STR_TO_DATE('$ffinal','%d/%m/%Y') where id like $_POST[op]";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	
 }
 /****************************************************************************************/
 if(isset($_POST[borra]))
 {
 	$sql = "Delete from z_almacen where id like $_POST[borra]";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 }
 ?>

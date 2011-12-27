@@ -61,10 +61,10 @@ function genera_ips()
 //1.- Consultamos cuales estan libre y despues mostramos las ocupadas
 	include("../inc/variables.php");
 	$sql = "Select valor from z_sercont where servicio like 'ip'";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$totaloc = mysql_numrows($consulta);
 	$i=0;
-	while($resultado = mysql_fetch_array($consulta))
+	while(true == ($resultado = mysql_fetch_array($consulta)))
 	{
 		$ocupadas[$i++] = $resultado[0];
 	}
@@ -136,7 +136,7 @@ function check_telefono($telefono)
 {
 	include("../inc/variables.php");
 	$sql = "Select * from z_sercont where servicio like 'telefono' and valor like '$telefono'";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$total = mysql_numrows($consulta);
 	if ($total == 0)
 		$tabla = "#00ff00";//.$telefono;
@@ -167,7 +167,7 @@ function check_adsl($adsl)
 {
 	include("../inc/variables.php");
 	$sql = "Select * from z_sercont where servicio like 'adsl' and valor like '$adsl'";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$total = mysql_numrows($consulta);
 	if ($total == 0)
 		$tabla = "#00ff00";//.$telefono;
@@ -198,7 +198,7 @@ function check_fax($fax)
 {
 	include("../inc/variables.php");
 	$sql = "Select * from z_sercont where servicio like 'fax' and valor like '$fax'";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$total = mysql_numrows($consulta);
 	if ($total == 0)
 		$tabla = "#00ff00";//.$telefono;
@@ -230,7 +230,7 @@ function check_fotocopias($fotocopias)
 {
 	include("../inc/variables.php");
 	$sql = "Select * from z_sercont where servicio like 'fotocopias' and valor like '$fotocopias'";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$total = mysql_numrows($consulta);
 	if ($total == 0)
 		$tabla = "#00ff00";
@@ -261,7 +261,7 @@ function check_afotocopias($afotocopias)
 {
 	include("../inc/variables.php");
 	$sql = "Select * from z_sercont where servicio like 'afotocopias' and valor like '$afotocopias'";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$total = mysql_numrows($consulta);
 	if ($total == 0)
 		$tabla = "#00ff00";
@@ -292,7 +292,7 @@ function check_negocio($negocio)
 {
 	include("../inc/variables.php");
 	$sql = "Select * from z_sercont where servicio like 'negocio' and valor like '$negocio'";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$total = mysql_numrows($consulta);
 	if ($total == 0)
 		$tabla = "#00ff00";//.$telefono;
@@ -336,7 +336,7 @@ include("../inc/variables.php");
 	$tabla .= "</tr>";
 //Direcciones IP******************************************************************************************/
 	$sql = "Select * from z_sercont where servicio like 'ip' and idemp like $cliente";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$lista_ips = "<table class='listado_telecos' width='100%' cellpadding='2px' cellspacing='2px'>";	
 	if(mysql_numrows($consulta) >= 1)
 		while ($resultado = mysql_fetch_array($consulta))
@@ -346,7 +346,7 @@ include("../inc/variables.php");
 	$lista_ips .= "</table>";
 //Telefonos******************************************************************************************/
 	$sql = "Select * from z_sercont where servicio like 'telefono' and idemp like $cliente";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$lista_telefonos = "<table class='listado_telecos' width='100%' cellpadding='2px' cellspacing='2px'>";	
 	if(mysql_numrows($consulta) >= 1)
 		while ($resultado = mysql_fetch_array($consulta))
@@ -356,7 +356,7 @@ include("../inc/variables.php");
 	$lista_telefonos .= "</table>";
 //Adsl******************************************************************************************/
 	$sql = "Select * from z_sercont where servicio like 'adsl' and idemp like $cliente";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$lista_adsl = "<table class='listado_telecos' width='100%' cellpadding='2px' cellspacing='2px'>";	
 	if(mysql_numrows($consulta) >= 1)
 		while ($resultado = mysql_fetch_array($consulta))
@@ -366,7 +366,7 @@ include("../inc/variables.php");
 	$lista_adsl .= "</table>";
 //Fax******************************************************************************************/
 	$sql = "Select * from z_sercont where servicio like 'fax' and idemp like $cliente";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$lista_fax = "<table class='listado_telecos' width='100%' cellpadding='2px' cellspacing='2px'>";	
 	if(mysql_numrows($consulta) >= 1)
 		while ($resultado = mysql_fetch_array($consulta))
@@ -376,7 +376,7 @@ include("../inc/variables.php");
 	$lista_fax .= "</table>";
 //Codigos de fotocopias******************************************************************************************/
 	$sql = "Select * from z_sercont where servicio like 'fotocopias' and idemp like $cliente";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$lista_fotocopias = "<table class='listado_telecos' width='100%' cellpadding='2px' cellspacing='2px'>";	
 	if(mysql_numrows($consulta) >= 1)
 		while ($resultado = mysql_fetch_array($consulta))
@@ -386,7 +386,7 @@ include("../inc/variables.php");
 	$lista_fotocopias .= "</table>";
 //Codigos de fotocopias autoservicio******************************************************************************************/
 	$sql = "Select * from z_sercont where servicio like 'afotocopias' and idemp like $cliente";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$lista_afotocopias = "<table class='listado_telecos' width='100%' cellpadding='2px' cellspacing='2px'>";	
 	if(mysql_numrows($consulta) >= 1)
 		while ($resultado = mysql_fetch_array($consulta))
@@ -396,7 +396,7 @@ include("../inc/variables.php");
 	$lista_afotocopias .= "</table>";
 //Codigos de negocio******************************************************************************************/
 	$sql = "Select * from z_sercont where servicio like 'negocio' and idemp like $cliente";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$lista_negocios ="<table class='listado_telecos' width='100%' cellpadding='2px' cellspacing='2px'>";	
 	if(mysql_numrows($consulta) >= 1)
 		while ($resultado = mysql_fetch_array($consulta))

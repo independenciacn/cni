@@ -1,10 +1,11 @@
-<? 
-session_start();
+<?php 
+require_once 'variables.php';
+checkSession();
 //validacion.php solo se encarga de validar el usuario y iniciar la session
 //parte principal de mis funciones
 //require_once("variables.php");
 //public include("variables.php");
-switch ($_POST[opcion])
+/*switch ($_POST['opcion'])
 {
 	case 0: $respuesta = valida($_POST);break;
 }
@@ -13,40 +14,41 @@ echo $respuesta;
 //aqui las funciones
 function valida($vars)
 {
-	include("variables.php");
-	$contra = sha1($vars[passwd]); 
-	$sql = "Select nick,contra from usuarios where nick like '$vars[usuario]' and contra like '$contra'";
-	$consulta = mysql_db_query($dbname,$sql,$con);
-	if (mysql_numrows($consulta) != 1)
-		{
+	global $dbname, $con;
+	$contra = sha1($vars['passwd']); 
+	$sql = "Select nick,contra from usuarios where 
+	nick like '".$vars['usuario']."' and contra like '".$contra."'";
+	$consulta = mysql_query($sql,$con);
+	if (mysql_numrows($consulta) != 1) {
 			header("Location:../index.php?error=1");
-			
-		}
-	else
-		{
+			exit(0);
+	} else {
 			$resultado = mysql_fetch_array($consulta);
 			$usuariod = $resultado[0];
 			$passwdd = $resultado[1];//encriptada
-			if(($vars[usuario] == $usuariod) && ($contra == $passwdd))
-			{
+			
+			if(($vars['usuario'] == $usuariod) && ($contra == $passwdd)) {
 				
-				$_SESSION[usuario] = $vars[usuario];
+				$_SESSION['usuario'] = $vars['usuario'];
 				header("Location:../index.php");
+				exit(0);
 			}
-			else
+			else {
 				header("Location:../index.php?error=1");
+				exit(0);
+			}
 		}
 	
-}
+}*/
 //generamos el menu de usuarios
 function menu()
 {
-	include("variables.php");
+	global $con;
 	$sql = "Select * from menus";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	//$consulta = mysql_query($sql,$con);
+	$consulta = mysql_query($sql, $con);
 	$tabla = "<table width='100%'><tr>";
-	while($resultado = mysql_fetch_array($consulta))
-	{
+	while (true == ( $resultado = mysql_fetch_array( $consulta ) ) ) {
 		switch ($resultado[0])
 		{
 		case 7:	$tabla .="<th><a href='javascript:datos(1)'>
@@ -68,5 +70,3 @@ function menu()
 	return $tabla;
 	
 }
-
-?>

@@ -43,9 +43,9 @@ function busca_valores($vars)
 
 	//echo $sql; //Punto de control
 	$cadena.="<p><b><u>Resultados busqueda en Clientes</u></b></p>";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	if(mysql_numrows($consulta)!=0)
-	while($resultado = mysql_fetch_array($consulta))
+	while(true == ($resultado = mysql_fetch_array($consulta)))
 		$cadena .= "<p class='".clase($k++)."'><a href='javascript:muestra(".$resultado[0].")'>
 		".utf8_encode($resultado[1])." - ".utf8_encode($resultado[2])."-".utf8_encode($resultado[3])." ".utf8_encode($resultado[4])." </a></p>";
 	else
@@ -57,11 +57,11 @@ function busca_valores($vars)
 	replace(Tfno2, ' ', '') LIKE '%$vars[texto]%' or
 	replace(Tfno3, ' ', '') LIKE '%$vars[texto]%')
     and Estado_de_cliente = '-1'";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	
 	if(mysql_numrows($consulta)!=0)
 	{
-		while($resultado = mysql_fetch_array($consulta))
+		while(true == ($resultado = mysql_fetch_array($consulta)))
 			$cadena.="<p class='".clase($k++)."'><a href='javascript:muestra(".$resultado[0].")'>".utf8_encode($resultado[1])."</a></p>";
 	}
 	//Consultamos telefonos de empleados
@@ -69,10 +69,10 @@ function busca_valores($vars)
 	JOIN clientes as c on c.id = p.idemp
 where  replace(p.telefono, ' ', '') like '%$vars[texto]%'
 and c.Estado_de_cliente = '-1'";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	if(mysql_numrows($consulta)!=0)
 	{
-		while($resultado = mysql_fetch_array($consulta))
+		while(true == ($resultado = mysql_fetch_array($consulta)))
 			$cadena.="<p class='".clase($k++)."'><a href='javascript:muestra(".$resultado[0].")'>".utf8_encode($resultado[1])." ".utf8_encode($resultado[2])." de ".utf8_encode($resultado[3])."</a></p>";
 	}
 	//consultamos telefonos de pcentral
@@ -80,10 +80,10 @@ and c.Estado_de_cliente = '-1'";
 	JOIN clientes as c on c.id = p.idemp 
     where replace(p.telefono, ' ', '') like '%$vars[texto]%'
     and c.Estado_de_cliente = '-1'";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	if(mysql_numrows($consulta)!=0)
 	{
-	while($resultado = mysql_fetch_array($consulta))
+	while(true == ($resultado = mysql_fetch_array($consulta)))
 	$cadena.="<p class='".clase($k++)."'><a href='javascript:muestra(".$resultado[0].")'>".utf8_encode($resultado[1])." de ".utf8_encode($resultado[2])."</a></p>";
 	}
 	//Consultamos datos de proveedores
@@ -97,12 +97,12 @@ and c.Estado_de_cliente = '-1'";
 	OR p.nombre LIKE '%$vars[texto]%'
 	OR p.apellidos LIKE '%$vars[texto]%'
 	OR concat( p.nombre, '', p.apellidos, '%' ) LIKE '%$vars[texto]%'";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$prov = 0;
 	if(mysql_numrows($consulta)!=0)
 	{
 		$prov = 1;
-		while($resultado = mysql_fetch_array($consulta))
+		while(true == ($resultado = mysql_fetch_array($consulta)))
 		$cadena.="<p class='".clase($k++)."'><a href='javascript:muestra(".$resultado[0].")'>".utf8_encode($resultado[1])." - ".utf8_encode($resultado[2])." ".utf8_encode($resultado[3])."</a></p>";
 	}
 		
@@ -114,7 +114,7 @@ and c.Estado_de_cliente = '-1'";
 	if(mysql_numrows($consulta)!=0)
 	{
 		$prov = 1;
-		while($resultado = mysql_fetch_array($consulta))
+		while(true == ($resultado = mysql_fetch_array($consulta)))
 		$cadena.="<p/><a href='javascript:muestra(".$resultado[1].")'>
 		".utf8_encode($resultado[2])." ".utf8_encode($resultado[3])."
 		</a>";

@@ -3,30 +3,28 @@
 //VALIDACION DE USUARIO
 function validar()
 {
-	var usuario = $F('usuario')
-	var passwd = $F('passwd')
-	var url = "inc/validacion.php"
-	var pars = "opcion=0&usuario="+usuario+"&passwd="+passwd
+	var usuario = $F('usuario');
+	var passwd = $F('passwd');
+	var url = "inc/validacion.php";
+	var pars = "opcion=0&usuario="+usuario+"&passwd="+passwd;
 	var myAjax = new Ajax.Request(url,
-	 {
-			method:'post',
-			parameters: pars,
-			onComplete: function gen(t)
-			{
-				$('cuerpo').innerHTML = t.responseText
+	{
+		method:'post',
+		parameters: pars,
+		onComplete: function gen(t)
+		{
+			$('cuerpo').innerHTML = t.responseText;
 				
-			},
-			onCreate: $('cuerpo').innerHTML = "<center><p class='validacion'>Validando Usuario<br/><img src='imagenes/loader.gif' alt='Validando Usuario' /></p></center>"
-			
-				
-				
+		},
+		onCreate: $('cuerpo').innerHTML = "<center><p class='validacion'>Validando Usuario<br/><img src='imagenes/loader.gif' alt='Validando Usuario' /></p></center>"	
 	});
+	return false;
 }
 //***********************************************************************************************/
 function menu(codigo)
 {
-	var url = "inc/generator.php"
-	var pars = "opcion=0&codigo="+codigo
+	var url = "inc/generator.php";
+	var pars = "opcion=0&codigo="+codigo;
 	var myAjax = new Ajax.Request(url,
 	 {
 			method:'post',
@@ -508,7 +506,10 @@ var url ="inc/generator.php"
 //***********************************************************************************************/
 //PARTE DE LAS COPIAS DE SEGURIDAD
 //***********************************************************************************************/
-function nuevaPass(){
+/**
+ * Muestra el formulario de Modificación de Contraseña de acceso
+ */
+function nuevaPass() {
 	var url="inc/datos_gestion.php";
 	var pars="opcion=18";
 	var myAjax = new Ajax.Request(url,
@@ -517,10 +518,13 @@ function nuevaPass(){
 				parameters: pars,
 				onComplete: function gen(respuesta)
 				{
-					$('listado_copias').innerHTML = respuesta.responseText
+					$('listado_copias').innerHTML = respuesta.responseText;
 				}
 	});
 }
+/**
+ * Manda el valor de la nueva pass y si todo es correcto actualiza
+ */
 function estableceNuevaPass(){
 	var url='inc/datos_gestion.php';
 	var pars="opcion=19&"+Form.serialize($('nuevaPass'));
@@ -534,6 +538,7 @@ function estableceNuevaPass(){
 				}
 			});
 }
+
 function lista_backup()
 {
 	var url="inc/datos_gestion.php"

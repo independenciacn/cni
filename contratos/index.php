@@ -13,8 +13,8 @@ function clientes($cliente)
 {
 	include("../conexion.php");
 	$sql = "Select Id,Nombre from clientes where `Estado_de_cliente` like '-1' or `Estado_de_cliente` like 'on' order by Nombre";
-	$consulta = mysql_db_query($dbname,$sql,$con);
-	while($resultado = mysql_fetch_array($consulta))
+	$consulta = mysql_query($sql,$con);
+	while(true == ($resultado = mysql_fetch_array($consulta)))
 	{
 		if($cliente == $resultado[0])
 		$seleccionado = "selected";
@@ -28,8 +28,8 @@ function contratos($cliente)
 {
 	include("../conexion.php");
 	$sql = "Select * from z_contratos";
-	$consulta = mysql_db_query($dbname,$sql,$con);
-	while($resultado = mysql_fetch_array($consulta))
+	$consulta = mysql_query($sql,$con);
+	while(true == ($resultado = mysql_fetch_array($consulta)))
 	{
 		$texto .= "<option ".$seleccionado." value='".$resultado[0]."'>".$resultado[1]."</option>";	
 	}
