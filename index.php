@@ -22,7 +22,7 @@ error_reporting(0);
  * TODO: Que se pueda modificar la contraseña de acceso
  * TODO: Agregar un nuevo campo a la factura: Nº Pedido
  */
-if(isset($_SESSION[usuario]))
+if(isset($_SESSION['usuario']))
 {
 	include("inc/validacion.php");
 	echo "<div id='menu_general'>";
