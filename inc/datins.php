@@ -1,4 +1,4 @@
-<? 
+<?php 
 //datins.php Generacion de datos de interes para la aplicacion, avisos, cumplea�os, estadisticas, etc, lo vamos a controlar por opcion -> funcion si no es un kaos
 /*Indice de datos
 1 - Avisos
@@ -29,29 +29,7 @@ function cambiaf2($stamp) //funcion del cambio de fecha
 	$fecha = $fdia[2]."-".$fdia[1]; //quito el a�o no interesa para el cumple."-".$fdia[0];
 	return $fecha;
 }
-//***********************************************************************************************/
-//traduce(texto): cuando algo no se muestra bien este lo decodifica
-//***********************************************************************************************/
-function traduce($texto)
-{
-	if(SISTEMA == "windows")
-		$bien = utf8_encode($texto); //para windows
-	else
-		$bien = $texto;//para sistemas *nix
-	return $bien;
-}
 
-//***********************************************************************************************/
-//codifica(texto): inversa a traduce
-//***********************************************************************************************/
-function codifica($texto)
-{
-	if(SISTEMA == "windows")
-		$bien = utf8_decode($texto); //para windows
-	else
-		$bien = $texto;//para sistemas *nix
-	return $bien;
-}
 /*********************************AQUI EMPIEZA LA FUNCION DE LOS AVISOS********************************/
 function avisos()
 {
@@ -170,13 +148,5 @@ function busqueda_avanzada()
 	$cadena .= "</form>";
 	return $cadena;
 }
-/*Para dar color a la tabla*/
-function clase($k)
-{
-	if($k%2==0)
-		$clase = "par";
-	else
-		$clase = "impar";
-return $clase;
-}
+
 ?>

@@ -1342,11 +1342,11 @@ textarea
     float:left;
     font-weight:bold;
 }
-.frmGestion input {
+.frmGestion input, .frmGestion textarea {
 	margin-bottom: 1em;
     float: right;
 }
-.frmGestion input[type=button] {
+.frmGestion input[type=button], .frmGestion input[type=submit] {
 	font-size:1.125em;
     font-weight:bold;
     color:#7d0063;

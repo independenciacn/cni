@@ -1,7 +1,9 @@
 <?php //aqui pondremos las diferencias de variables entre windows mac y linux
 //nombre de la base de datos
 // Establecemos el nivel de error de la aplicacion
-error_reporting(E_ALL);
+/*error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('html_errors', 1);*/
 // Establecemos la zona horaria 
 date_default_timezone_set('Europe/Madrid'); 
 // Base de datos
@@ -40,7 +42,7 @@ function clase($k)
         $clase = "impar";
     return $clase;
 }
-/* Por compatibilidad */
+/* Funciones Por compatibilidad */
 function traduce($texto)
 {
     return $texto;

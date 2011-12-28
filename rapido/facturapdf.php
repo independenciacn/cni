@@ -36,8 +36,8 @@ if((isset($_GET['factura'])) || (isset($_POST['factura'])))
 		return $fecha;
 	}
 /*******************************************************************************************************************/
-	include("../inc/variables.php");
-	require_once('class.ezpdf.php');
+	require_once '../inc/variables.php';
+	require_once '../inc/ezpdf/class.ezpdf.php';
 	
 	if(isset($_POST['factura']))
 	{
@@ -52,7 +52,7 @@ if((isset($_GET['factura'])) || (isset($_POST['factura'])))
 		$all = $pdf->openObject();
 		$pdf->saveState();
 		$euro_diff = array(33=>'Euro'); 
-		$pdf->selectFont('fonts/Helvetica.afm', 
+		$pdf->selectFont('../inc/ezpdf/fonts/Helvetica.afm', 
         array('encoding'=>'WinAnsiEncoding','differences'=>$euro_diff));
 		$pdf->addInfo('Title','Factura');
 		$pdf->addInfo('Author','Independencia Centro de Negocios');
