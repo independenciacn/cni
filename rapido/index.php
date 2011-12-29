@@ -1,6 +1,9 @@
 <!-- Pagina principal de asigacion de servicios. Realizado por Ruben Lacasa Mas ruben@ensenalia.com 2006-2007-2008-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-<head><title>Servicios</title>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Servicios</title>
 <link REL="stylesheet" TYPE="text/css" href="../estilo/cni.css">
 <link href="../estilo/calendario.css" rel="stylesheet" type="text/css"></link>
 <script src="js/ajax.js" type="text/javascript"></script>
@@ -10,7 +13,6 @@
 <script src='js/prototype.js' type="text/javascript"></script>
 <meta http-equiv="cache-control" content="no-cache">
 <meta http-equiv="pragma" content="no-cache">
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <?php 
 //fichero rapido, para añadir rapidamente servicios a clientes 

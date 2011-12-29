@@ -1,12 +1,15 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-<head><title>Contratos</title></head>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Contratos</title></head>
 <link REL="stylesheet" TYPE="text/css" href="../cni.css">
 <script src="prototype.js" type="text/javascript"></script>
 <script src="contratos.js" type="text/javascript"></script>
 <meta http-equiv="cache-control" content="no-cache">
 <meta http-equiv="pragma" content="no-cache">
 <body>
-<? require_once("../conexion.php");
+<?php require_once("../conexion.php");
 //header("Content-type:  application/msword");
 //header("Content-Disposition: attachment; filename=contrato.doc");
 function clientes($cliente)

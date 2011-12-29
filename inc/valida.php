@@ -12,6 +12,7 @@
  * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/
  * 			 Creative Commons Reconocimiento-NoComercial-SinObraDerivada 3.0 Unported
  * @link     https://github.com/independenciacn/cni
+ * @version  2.0e Estable
  */
 require_once 'variables.php';
 checkSession();

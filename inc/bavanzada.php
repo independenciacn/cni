@@ -1,4 +1,4 @@
-<?
+<?php
 if(isset($_POST[opcion]))
 {
 	switch($_POST[opcion])

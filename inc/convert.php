@@ -1,4 +1,7 @@
 <?php
+/**
+ * Funcion deshabilitada para convertir los caracteres de un mapa a otro
+ */
 /*require_once 'variables.php';
 set_time_limit( 60000 );
 $sql = "Select * from historico2";

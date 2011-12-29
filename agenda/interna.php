@@ -1,4 +1,4 @@
-<? session_start();
+<?php session_start();
 /*
  * Inicializamos la fecha que se definiria como hoy que 
  * sera el punto de partida de 

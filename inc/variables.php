@@ -1,30 +1,57 @@
-<?php //aqui pondremos las diferencias de variables entre windows mac y linux
-//nombre de la base de datos
-// Establecemos el nivel de error de la aplicacion
-/*error_reporting(E_ALL);
-ini_set('display_errors', 1);
-ini_set('html_errors', 1);*/
-// Establecemos la zona horaria 
+<?php 
+/**
+ * Variables File Doc Comment
+ *
+ * Funciones y variables requeridas por las funciones de la aplicacion
+ *
+ * PHP Version 5.2.6
+ *
+ * @category Valida
+ * @package  cni/inc
+ * @author   Ruben Lacasa Mas <ruben@ensenalia.com>
+ * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/
+ * 			 Creative Commons Reconocimiento-NoComercial-SinObraDerivada 3.0 Unported
+ * @link     https://github.com/independenciacn/cni
+ * @version  2.0e Estable
+ */
+/**
+ * Establecemos la zona horaria 
+ */ 
 date_default_timezone_set('Europe/Madrid'); 
-// Base de datos
+/**
+ * Conexion a la base de datos
+ * @var
+ */
 $con = mysql_connect ("localhost","cni","inc") or die (mysql_error());
 mysql_set_charset('utf8', $con);
-//mara mac y linux -- DEPRECATED - Por compatibilidad
+/**
+ * Nombre de la tabla
+ * 
+ * @deprecated - establecerlo dentro de la funcion mysql_select_db
+ * @var string
+ */
 $dbname = "centro"; 
-//Establecemos la base de datos por defecto -- FINAL
 mysql_select_db($dbname, $con);
-// Constantes
-define("OK", "imagenes/clean.png");//imagen en el mensaje de correcto
-define("NOK","imagenes/error.png"); //imagen en el mensaje de fallo
+/**
+ * Imagen en el mensaje de correcto
+ * 
+ * @deprecated - Estan siendo retiradas de donde aparecian
+ * @var unknown_type
+ */
+define("OK", "imagenes/clean.png");
+/**
+ * Imagen en el mensaje de error
+ * @deprecated - Estan siendo retiradas de donde aparecian
+ * @var unknown_type
+ */
+define("NOK","imagenes/error.png");
 //define("SISTEMA","*nix");
+/**
+ * Define el sistema operativo donde va a trabajar la aplicacion
+ * @deprecated - Sustituir por rutas
+ * @var unknown_type
+ */
 define("SISTEMA","windows");
-//$sql = "SET NAMES 'utf8'";
-//$sql = "SET NAMES 'latin1'";
-//$consulta = mysql_query($sql,$con);
-//Funciones Auxiliares
-//Funcion para poner en la cabezera de los fichero para evitar el 
-//headers already sent
-
 function checkSession(){
     if ( session_id() != null ){
         session_regenerate_id();
@@ -32,21 +59,51 @@ function checkSession(){
         session_start();
     }
 }
-/* Funciones Auxiliares */
-
+/**
+ * Devuelve el tipo de clase css que sera el campo
+ * 
+ * @param integer $k
+ * @return string
+ */
 function clase($k)
 {
-    if($k%2==0)
-        $clase = "par";
-    else
-        $clase = "impar";
+    $clase = ( $k%2 == 0)? 'par': 'impar';
     return $clase;
 }
-/* Funciones Por compatibilidad */
+/**
+ * Se le puede pasar como parametro un array o una string y la sanea
+ *
+ * @param mixed $vars
+ *
+ */
+function sanitize( &$vars ) {
+    global $con;
+    if ( is_array( $vars ) ) {
+        foreach ( $vars as &$var ) {
+            mysql_real_escape_string( $var, $con );
+        }
+    } elseif( is_string( $vars ) ) {
+        mysql_real_escape_string( $vars, $con );
+    }
+}
+/**
+ * Convierte el texto a utf8
+ * 
+ * @deprecated
+ * @param string $texto
+ * @return string $texto
+ */
 function traduce($texto)
 {
     return $texto;
 }
+/**
+ * Traduce el texto de utf8
+ * 
+ * @deprecated
+ * @param string $texto
+ * @return string $texto
+ */
 function codifica($texto)
 {
     return $texto;

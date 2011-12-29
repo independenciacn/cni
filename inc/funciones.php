@@ -1,4 +1,4 @@
-<?
+<?php
 //Este codigo ha sido desarrollado en su totalidad por Ruben Lacasa Mas ruben@sbarrat.org 2006
 
 if ($ssid == session_id())//comprobacion de seguridad

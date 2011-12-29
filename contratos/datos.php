@@ -1,4 +1,4 @@
-<? //generador de datos
+<?php //generador de datos
 include("../conexion.php");
 if (isset($_POST[contrato]))
 {
@@ -29,6 +29,6 @@ for ($i=0;$i<=$totcamp-1;$i++)
 ?>
 </table>
 <span  class='boton' id='genera' onclick = 'generalo()' />Generar Contrato</span>
-<? 
+<?php 
 } 
 ?>

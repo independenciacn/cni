@@ -1,4 +1,4 @@
-<?
+<?php
 /*
  * Generacion de consultas de estadisticas nuevas Julio 2008-Agosto 2008 DEBUG
  */

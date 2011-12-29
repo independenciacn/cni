@@ -1,45 +1,78 @@
-<? //rarita en excel Listado Despachos y Domiciliados:
-	header("Content-type: application/vnd.ms-excel");
-	header("Content-Disposition:inline; filename=excel.xls");
-	include("variables.php");
-	if(isset($_GET[tipo]))
-	{
-		if($_GET[tipo]=='social')
-			$sql ="Select * from clientes where direccion like '%Independencia 8%' and Estado_de_cliente like '-1' order by Nombre";
-		else
-			if($_GET[tipo]=='conserje')
-				$sql = "Select * from clientes where (categoria like '%domicili%' or categoria like '%despachos%') and Estado_de_cliente like '-1' order by Nombre";
-			else
-				$sql = "Select * from clientes as c join `categor�as clientes` as d on c.Categoria = d.Nombre where d.id like $_GET[tipo] and c.Estado_de_cliente like '-1' order by c.Nombre";
-		$consulta = mysql_query($sql,$con);
-		$i=0;
-		$cadena.="<table>";
-		$res1=mysql_fetch_array($consulta);
-		if($_GET[tipo]!='social')
-			if($_GET[tipo]=='conserje')
-				$cadena.="<tr><th>Listado Clientes Centro Negocios</th></tr>";
-			else
-				$cadena.="<tr><th>".$res1[categoria]."</th></tr>";
-		else
-			
-			$cadena.="<tr><th>Domicilio social Independencia 8 Dpo</th></tr>";
-		while(true == ($resultado = mysql_fetch_array($consulta)))
-			$cadena.="<tr><td>".$resultado[1]."</td></tr>";
-		$cadena.="</table>";	
+<?php 
+/**
+ * Excel File Doc Comment
+ *
+ * Fichero que genera el listado en excel
+ *
+ * PHP Version 5.2.6
+ *
+ * @category Excel
+ * @package  cni/inc
+ * @author   Ruben Lacasa Mas <ruben@ensenalia.com>
+ * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/
+ * 			 Creative Commons Reconocimiento-NoComercial-SinObraDerivada 3.0 Unported
+ * @link     https://github.com/independenciacn/cni
+ * @version  2.0e Estable
+ */
+require_once 'variables.php';
+checkSession();
+if (isset($_GET)) {
+    sanitize($_GET);
+}
+$cadena = "";	
+if(isset($_GET['tipo'])) {
+    if($_GET['tipo']=='social') {
+		$sql ="Select * from clientes where direccion 
+		like '%Independencia 8%' and Estado_de_cliente 
+		like '-1' order by Nombre";
+    } else {
+		if($_GET['tipo']=='conserje') {
+			$sql = "Select * from clientes 
+			where (categoria like '%domicili%' or categoria like '%despachos%')
+			 and Estado_de_cliente like '-1' order by Nombre";
+		} else {
+			$sql = "Select * from clientes as c join `categorías clientes` as d 
+			on c.Categoria = d.Nombre where d.id like ".$_GET['tipo']." 
+			and c.Estado_de_cliente like '-1' order by c.Nombre";
+        }
+    }
+	$consulta = mysql_query($sql,$con);
+	$i=0;
+	$cadena.="<table>";
+	$res1=mysql_fetch_array($consulta);
+	if($_GET['tipo']!='social') {
+		if($_GET['tipo']=='conserje') {
+			$cadena.="<tr><th>Listado Clientes Centro Negocios</th></tr>";
+		} else {
+			$cadena.="<tr><th>".$res1['categoria']."</th></tr>";
+		}
+	} else {
+		$cadena.="<tr><th>Domicilio social Independencia 8 Dpo</th></tr>";
 	}
-	else
-	{
+	while(true == ($resultado = mysql_fetch_array($consulta))) {
+		$cadena.="<tr><td>".$resultado[1]."</td></tr>";
+	}
+	$cadena.="</table>";	
+} else {
 	$sql = "SELECT z.valor, c.Nombre, c.Categoria, f.observaciones FROM `facturacion` 
 	as f join clientes as c on c.id like f.idemp join z_sercont as z on z.idemp like 
 	c.id WHERE  Estado_de_cliente != 0 and 
 	(c.Categoria like '%domiciliac%' or c.Categoria like '%despacho%') and 
 	z.servicio like 'Codigo Negocio' order by z.valor asc";
 	$consulta = mysql_query($sql,$con);
-	$cadena = "<table width='100%' cellpadding='1px' cellspacing='1px' style={border-style:solid;border-width:1px;}>";
-	$cadena .= "<tr><th>Codigo</th><th>Cliente</th><th>Categoria</th><th>Observaciones</th></tr>";
-	while ($resultado = mysql_fetch_array($consulta))
-		$cadena .= "<tr><td>".$resultado[0]."</td><td>".$resultado[1]."</td><td>".$resultado[2]."</td><td>".$resultado[3]."</td></tr>";
-	$cadena .= "</table>";
+	$cadena = "<table width='100%' cellpadding='1px' cellspacing='1px' 
+	style={border-style:solid;border-width:1px;}>";
+	$cadena .= "<tr><th>Codigo</th><th>Cliente</th><th>Categoria</th>
+	<th>Observaciones</th></tr>";
+	while (true == ($resultado = mysql_fetch_array($consulta))) {
+		$cadena .= "<tr><td>".$resultado[0]."</td>
+		<td>".$resultado[1]."</td>
+		<td>".$resultado[2]."</td>
+		<td>".$resultado[3]."</td></tr>";
 	}
-	echo $cadena;
-?>
+	$cadena .= "</table>";
+}
+header("Content-type: application/vnd.ms-excel; charset=UTF-8");
+header("Content-Disposition:inline; filename=excel.xls");
+echo $cadena;
+exit(0);

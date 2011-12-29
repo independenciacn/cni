@@ -1,6 +1,9 @@
 <?php
 require_once 'variables.php';
 checkSession();
+if ( isset($_POST ) ) {
+    sanitize($_POST);
+}
 $cadena = "";
 if(isset($_SESSION['usuario']))
 {

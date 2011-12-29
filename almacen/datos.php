@@ -1,4 +1,4 @@
-<? //datos.php este solo devuelve datos
+<?php //datos.php este solo devuelve datos
 /* TODO: Deberia crear un clase para que hiciera todo esto, para la siguiente version
  * TODO: Coger el importe del almacenaje de la base de datos, no fijo
  */

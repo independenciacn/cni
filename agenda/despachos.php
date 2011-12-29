@@ -1,5 +1,5 @@
 <table id='agenda' width='100%'>
-<?
+<?php
 	include("../inc/variables.php");
 	include("funciones.php");
 	$sql = "SELECT z.valor, c.Nombre,c.id ,c.Categoria FROM clientes as c  join z_sercont as z on c.id like z.idemp 
