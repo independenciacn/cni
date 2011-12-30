@@ -16,16 +16,15 @@
  */
 require_once 'variables.php';
 checkSession();
+sanitize($_POST);
 if ( isset( $_POST['usuario'] ) && isset( $_POST['passwd']) ){
-    $usuario = mysql_real_escape_string($_POST['usuario'], $con);
-    $passwd = mysql_real_escape_string($_POST['passwd'], $con);
     $sql = "SELECT 1 from usuarios
-    WHERE nick like '".$usuario."' 
-    AND contra like sha1('".$passwd."')";
+    WHERE nick like '".$_POST['usuario']."' 
+    AND contra like sha1('".$_POST['passwd']."')";
     $consulta = mysql_query( $sql, $con );
     if ( mysql_num_rows($consulta) == 1 ) {
         // TODO OK
-        $_SESSION['usuario'] = $usuario;
+        $_SESSION['usuario'] = $_POST['usuario'];
         header("Location:../index.php");
         exit(0);
     } else {

@@ -23,7 +23,7 @@ checkSession();
  * TODO: Agregar un nuevo campo a la factura: Nº Pedido
  */
 if(isset($_SESSION['usuario'])) {
-	include_once 'inc/validacion.php';
+	include_once 'inc/menu.php';
 	echo "<div id='menu_general'>";
 	echo menu();
 	echo "</div>";

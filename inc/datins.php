@@ -1,10 +1,21 @@
 <?php 
-//datins.php Generacion de datos de interes para la aplicacion, avisos, cumplea�os, estadisticas, etc, lo vamos a controlar por opcion -> funcion si no es un kaos
-/*Indice de datos
-1 - Avisos
-2 - Cumplea�os
-*/
-//GENERAL recibe - procesa - devuelve
+/**
+ * Datins File Doc Comment
+ *
+ * Generacion de datos de interes para la aplicacion, avisos, 
+ * cumpleaños, estadisticas, etc, lo vamos a controlar por 
+ * opcion -> funcion si no es un kaos
+ *
+ * PHP Version 5.2.6
+ *
+ * @category Bavanzada
+ * @package  cni/inc
+ * @author   Ruben Lacasa Mas <ruben@ensenalia.com>
+ * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/
+ * 			 Creative Commons Reconocimiento-NoComercial-SinObraDerivada 3.0 Unported
+ * @link     https://github.com/independenciacn/cni
+ * @version  2.0e Estable
+ */
 require_once 'variables.php';
 checkSession();
 if (isset($_POST)) {

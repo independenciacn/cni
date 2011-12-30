@@ -1,9 +1,13 @@
 <?php /*Sencillo genera tablas pasandole el sql*/
+/**
+ * @deprecated - Obsoleto, chequear y borrar
+ */
+/*
 require_once 'variables.php';
 checkSession();
 function tabla($sql)
 {
-	global $dbname, $con;
+	global $con;
 	$consulta = mysql_query($sql,$con);
 	$cadena.="<table class='tabla' width='100%'>";
 	$cadena.= "<tr>";
@@ -34,6 +38,7 @@ function tabla($sql)
 		return $cadena;
 }
 /*Funcion que devuelve un array con los datos pedidos UNA SOLA COLUMNA*/
+/*
 function datos_columna($sql)
 {
 	//$matriz = array_fill(0, 12, '');
@@ -79,4 +84,5 @@ function mes_y_anyo($stamp)
 	}
 	return $fecha;
 }
-?>
+*/
+
