@@ -19,8 +19,21 @@
  */ 
 date_default_timezone_set('Europe/Madrid'); 
 /**
+ * Version de la aplicaci�n
+ * 
+ * @var string
+ */
+define('VERSION',"2.0e");
+/**
+ * Titulo de la aplicaci�n
+ * 
+ * @var string
+ */
+define('APLICACION','Aplicación Gestión Independencia Centro Negocios');
+/**
  * Conexion a la base de datos
- * @var
+ * 
+ * @var resource
  */
 $con = mysql_connect ("localhost","cni","inc") or die (mysql_error());
 mysql_set_charset('utf8', $con);
@@ -52,6 +65,8 @@ define("NOK","imagenes/error.png");
  * @var unknown_type
  */
 define("SISTEMA","windows");
+setlocale(LC_ALL, 'es_ES');
+setlocale(LC_NUMERIC, 'es_ES');
 function checkSession(){
     if ( session_id() != null ){
         session_regenerate_id();

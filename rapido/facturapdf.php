@@ -109,8 +109,7 @@ if((isset($_GET['factura'])) || (isset($_POST['factura'])))
 	$cantidad = 0;
 	$j = 0;
 	for($i=0;$i<=3;$i++)
-		while($resultado=mysql_fetch_array($consulta))
-		{
+		while(true == ($resultado=mysql_fetch_array($consulta))) {
 			$importe_sin_iva = $resultado['cantidad']*$resultado['unitario'];
 			$data[]=array("Servicio"=>ucfirst(utf8_decode($resultado[2]))." ".ucfirst(utf8_decode($resultado[6])),
 			"Cant."=>number_format($resultado['cantidad'],2,',','.'),
@@ -185,7 +184,7 @@ from historico where factura like '$factura' group by factura";
 		{
 			$pdfcode = $pdf->output();
 			$nombre_factura = "factura_".$factura.".pdf";
-			$ruta_wxp = "\\\\172.26.0.131\RED\PLANTILLAS\\facturas\\";
+			$ruta_wxp = '\\172.26.0.131\RED\PLANTILLAS\facturas\\';
 			if(isset($_POST['envio'])) {
 				include_once 'envia.php';
 				set_time_limit(120);	
@@ -202,4 +201,3 @@ from historico where factura like '$factura' group by factura";
 			$pdf->ezStream();
 		}
 }
-?>
