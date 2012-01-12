@@ -64,7 +64,7 @@ function seleccion_meses($mes = null)
 </head>
 <body>
 <form name='seleccion_cliente' id='seleccion_cliente'>
-<table  class='tabla'>
+<table class='tabla'>
 <tr>
 	<td align='left' valign='top' colspan='4'>
 		<input type='button' class='boton' onclick='window.close()' value='[X] Cerrar' />
@@ -124,6 +124,7 @@ function seleccion_meses($mes = null)
 </table>
 </form>
 <div id='parametros_facturacion'></div>
+<br/>
 <div id='listado_clientes'></div>
 <div id='tabla'></div>
 <div id='observa'></div>

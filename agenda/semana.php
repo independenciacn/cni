@@ -90,7 +90,7 @@ function nombre_cliente($id)
 	$sql="Select Nombre from clientes where id like $id";
 	$consulta = @mysql_query($sql,$con);
 	$resultado = @mysql_fetch_array($consulta);
-	return $resultado[Nombre];
+	return $resultado['Nombre'];
 }
 
 /*
@@ -170,14 +170,14 @@ function datos_ocupacion($despacho,$fecha)
 			//!!CASO RESERVAS A NO CLIENTES
 				if($resultado[id_cliente]!="")
 				{
-					$cadena.="<div class='las_horas'>".$hinc."-".$hfin."</div>".utf8_encode(nombre_cliente($resultado[1]));
+					$cadena.="<div class='las_horas'>".$hinc."-".$hfin."</div>".nombre_cliente($resultado[1]);
 					$cadena.="<br/><span class='mini_boton' onclick='informacion_cliente($resultado[1],0,$resultado[0])'>&nbsp;Observaciones&nbsp;</span><input type='hidden' id='cliente_despacho_$resultado[1]' value='$resultado[1]' /><p/>";
 					$cadena.=confirmado($resultado[conformidad]);
 					$cadena.="<p/>";
 				}
 				else
 				{
-					$cadena.="<div class='las_horas'>".$hinc."-".$hfin."</div>".utf8_encode($resultado[otro]);
+					$cadena.="<div class='las_horas'>".$hinc."-".$hfin."</div>".$resultado[otro];
 					$cadena.="<br/><span class='mini_boton' onclick='informacion_cliente($resultado[0],1)'>&nbsp;Observaciones&nbsp;</span><input type='hidden' id='cliente_despacho_$resultado[1]' value='$resultado[1]' /><p/>";
 					$cadena.=confirmado($resultado[conformidad]);
 					$cadena.="<p/>";
