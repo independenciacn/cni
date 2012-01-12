@@ -69,7 +69,7 @@ function datos_despacho($despacho)
 		while($resultado=@mysql_fetch_array($consulta))
 		{
 			$i++;
-			$cadena.=utf8_encode(nombre_cliente($resultado[id_cliente]))."<br/>";
+			$cadena.=nombre_cliente($resultado[id_cliente])."<br/>";
 			$cadena.=cambiaf($resultado[finc])." - ".cambiaf($resultado[ffin]).
 			"<br/>".quita_segundos($resultado[hinc])."-".quita_segundos($resultado[hfin]);
 			$cadena.="<br/><span class='mini_boton' style='background:#666699;' onclick='informacion_cliente($resultado[id_cliente])'>[+Info]</span><p/>";

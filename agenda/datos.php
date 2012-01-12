@@ -199,27 +199,6 @@ function dame_nombre_cliente($vars)
  * FUNCIONES AUXILIARES
  */
 
-/**
- * Traduccion de caracteres a formato legible
- * 
- * @deprecated
- */
-function traduce($texto)
-{
-	
-	return $texto;
-}
-
-/**
- * Codifica los caracteres para almacenarlos
- * 
- * @deprecated
- */
-function codifica($texto)
-{
-	
-	return $texto;
-}
 
 /*
  * Cambio de formato de fecha, en ambos sentidos

@@ -31,7 +31,7 @@
 			{
 				$cadena.="</div>
 				<div class='".$clase[$despacho]."' height='100%'>
-		".utf8_encode($despachos[$despacho]);
+		".$despachos[$despacho];
 				$cadena.="<p/><span class='mini_boton' onclick='informacion_cliente($cliente[$despacho])'>&nbsp;+Info&nbsp;</span>
 				<input type='hidden' id='cliente_despacho_$despacho' value='$cliente[$despacho]' />";
 			}
