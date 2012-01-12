@@ -199,28 +199,26 @@ function dame_nombre_cliente($vars)
  * FUNCIONES AUXILIARES
  */
 
-/*
+/**
  * Traduccion de caracteres a formato legible
+ * 
+ * @deprecated
  */
 function traduce($texto)
 {
-	if(SISTEMA == "windows")
-		$bien = utf8_encode($texto); //para windows
-	else
-		$bien = $texto;//para sistemas *nix
-	return $bien;
+	
+	return $texto;
 }
 
-/*
+/**
  * Codifica los caracteres para almacenarlos
+ * 
+ * @deprecated
  */
 function codifica($texto)
 {
-	if(SISTEMA == "windows")
-		$bien = utf8_decode($texto); //para windows
-	else
-		$bien = $texto;//para sistemas *nix
-	return $bien;
+	
+	return $texto;
 }
 
 /*
@@ -633,7 +631,7 @@ function datos_despacho($despacho) //!!!FUNCION REPETIDA
 		while($resultado=@mysql_fetch_array($consulta))
 		{
 			$i++;
-			$cadena.=utf8_encode(nombre_cliente($resultado[id_cliente]))."<br/>";
+			$cadena.=nombre_cliente($resultado[id_cliente])."<br/>";
 			$cadena.=cambiaf($resultado[finc])." - ".cambiaf($resultado[ffin])."<p/>";
 			$cadena.="<span class='mini_boton' style='background:#666699;' onclick='informacion_cliente($resultado[id_cliente])'>[+Info]</span><p/>";
 		}
