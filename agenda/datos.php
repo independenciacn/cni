@@ -1,4 +1,5 @@
 <?php
+require_once '../inc/variables.php';
 /*
  * Chequeo de errores activado
  */
@@ -46,11 +47,11 @@ else
  */
 function formulario_despacho($vars)
 {
-	include("../inc/variables.php");
+	global $con;
 	if(isset($vars[cliente]))
 	{
 		$sql = "Select Nombre from clientes where id like $vars[cliente]";
-		$consulta = @mysql_db_query($dbname,$sql,$con);
+		$consulta = @mysql_query($sql,$con);
 		if(@mysql_numrows($consulta)!=0)
 		{
 			$resultado = @mysql_fetch_array($consulta);
@@ -164,7 +165,7 @@ return $cadena;
  */
 function cuca($vars)
 {
-	include("../inc/variables.php");
+	global $con;
 	if($vars[texto] == "")
 	
 		$muestra = "";
@@ -172,7 +173,7 @@ function cuca($vars)
 	{
 		$vars[texto] = codifica($vars[texto]);
 		$sql = "Select * from `clientes` where (Nombre like '%$vars[texto]%' or Contacto like '%$vars[texto]%') and `Estado_de_cliente` like '-1' order by Nombre ";
-		$consulta = @mysql_db_query($dbname,$sql,$con);
+		$consulta = @mysql_query($sql,$con);
 		
 		while($resultado = @mysql_fetch_array($consulta))
 		{
@@ -187,9 +188,9 @@ function cuca($vars)
  */
 function dame_nombre_cliente($vars)
 {
-	include("../inc/variables.php");
+	global $con;
 	$sql = "Select * from `clientes` where id like $vars[cliente] ";
-	$consulta = @mysql_db_query($dbname,$sql,$con);
+	$consulta = @mysql_query($sql,$con);
 	$resultado = @mysql_fetch_array($consulta);
 	$cadena = $resultado[0].";".traduce($resultado[1]);
 	return $cadena;
@@ -237,9 +238,9 @@ function cambiaf($stamp)
  */
 function nombre_cliente($id)
 {
-	include("../inc/variables.php");
+	global $con;
 	$sql="Select Nombre from clientes where id like $id";
-	$consulta = @mysql_db_query($dbname,$sql,$con);
+	$consulta = @mysql_query($sql,$con);
 	$resultado = @mysql_fetch_array($consulta);
 	return $resultado[Nombre];
 }
@@ -259,9 +260,9 @@ function quita_segundos($hora)
  */
 function comprueba_cliente_total($vars)
 {
-	include("../inc/variables.php");
+	global $con;
 	$sql="Select * from z_sercont where idemp like '$vars[cliente]' and servicio like 'Codigo Negocio' and valor like '%$vars[despacho]'";
-	$consulta = @mysql_db_query($dbname,$sql,$con);
+	$consulta = @mysql_query($sql,$con);
 	if(@mysql_numrows($consulta)!=0)
 	$respuesta = true;
 	else
@@ -274,7 +275,7 @@ function comprueba_cliente_total($vars)
  */
 function comprueba_cliente_parcial($cliente)
 {
-	include("../inc/variables.php");
+	global $con;
 	return "";
 }
 
@@ -283,7 +284,7 @@ function comprueba_cliente_parcial($cliente)
  */
 function informacion_despacho($vars)
 {
-	include("../inc/variables.php");
+	global $con;
 	$cadena.="<div class='boton_cerrar' onclick='cerrar_informacion_despacho()'></div>";
 	if($vars[tipo]==0)
 	{
@@ -309,7 +310,7 @@ function informacion_despacho($vars)
 		$cadena.=traduce(empleados($datos_cliente[0]));
 		//Parte de las observaciones
 		$sql = "Select id_cliente,obs,id,despacho,conformidad,repeticion,hinc,hfin,finc,ffin from agenda where id like $vars[id]";
-		$consulta = @mysql_db_query($dbname,$sql,$con);
+		$consulta = @mysql_query($sql,$con);
 		$resultado = @mysql_fetch_array($consulta);
 		$cadena.="<div class='seccion'>Observaciones:</div><p>";
 		$cadena.="<textarea id='obs' cols='23' rows='5'>".$resultado[1]."</textarea><p/>";
@@ -363,7 +364,7 @@ function informacion_despacho($vars)
 	{
 		$cadena.="<div class='seccion'>Cliente:$vars[despacho]</div><p>";
 			$sql = "Select otro,obs,id,despacho,conformidad,finc,ffin,hinc,hfin from agenda where id like $vars[despacho]";
-		$consulta = @mysql_db_query($dbname,$sql,$con);
+		$consulta = @mysql_query($sql,$con);
 		$resultado = @mysql_fetch_array($consulta);
 		$cadena.=$resultado[0]."</p>";
 		
@@ -451,8 +452,8 @@ function guarda_obs($vars)
 	}
 	$sql = "Update agenda set obs='$vars[obs]',conformidad='$vars[conformidad]' ,repeticion ='$repes',hinc ='$vars[hinc]', hfin='$vars[hfin]',finc='$finc',ffin='$ffin' where id like $vars[id]";
 
-	include("../inc/variables.php");
-	if($consulta = @mysql_db_query($dbname,$sql,$con))
+	global $con;
+	if($consulta = @mysql_query($sql,$con))
 		$cadena = "Datos Guardados".$sql;
 	else
 		$cadena = $sql;
@@ -464,9 +465,9 @@ function guarda_obs($vars)
  */
 function comunicaciones($cliente,$seccion)
 {
-	include("../inc/variables.php");
+	global $con;
 	$sql = "select * from z_sercont where idemp like $cliente and servicio like '$seccion'";
-	$consulta = @mysql_db_query($dbname,$sql,$con);
+	$consulta = @mysql_query($sql,$con);
 	//echo $sql;//Depuracion
 	if(@mysql_num_rows($consulta)!=0)
 	{
@@ -487,9 +488,9 @@ function comunicaciones($cliente,$seccion)
  */
 function empleados($cliente)
 {
-	include("../inc/variables.php");
+	global $con;
 	$sql = "Select * from pempresa where idemp like $cliente";
-	$consulta=@mysql_db_query($dbname,$sql,$con);
+	$consulta=@mysql_query($sql,$con);
 	//echo $sql;//Depuracion
 	if(mysql_num_rows($consulta)!=0)
 	{
@@ -511,11 +512,11 @@ function empleados($cliente)
  */
 function detalles_ocupacion($vars)
 {
-	include("../inc/variables.php");
+	global $con;
 	$sql="Select * from agenda where despacho like '$vars[despacho]' and 
 		(datediff(curdate(),finc)<=0 or datediff(curdate(),ffin)<=0)
 		order by finc asc, hinc asc";
-	$consulta = @mysql_db_query($dbname,$sql,$con);
+	$consulta = @mysql_query($sql,$con);
 	$respuesta ="<div class='boton_cerrar_nuevo' onclick='cerrar_formulario_agenda()'></div>";
 	if($vars[despacho] == 23)
 		$muestra = "Sala de Juntas";
@@ -574,7 +575,7 @@ function guarda_despacho($vars)
 		if(isset($_POST[$repe]))
 		$repeat.=$_POST[$repe].";";
 	}
-	include("../inc/variables.php");
+	global $con;
 	//chequeo hora
 	if($vars[hinc]==" ")
 	$vars[hinc]=="00:00";
@@ -591,7 +592,7 @@ function guarda_despacho($vars)
 			$sql = "Insert into agenda (id_cliente,despacho,finc,ffin,hinc,hfin,repeticion)
 	values ('$vars[id_cliente]','$vars[despacho]','".cambiaf($vars[finc])."',
 	'".cambiaf($vars[ffin])."','$vars[hinc]','$vars[hfin]','$repeat')";
-		if($consulta = @mysql_db_query($dbname,$sql,$con))
+		if($consulta = @mysql_query($sql,$con))
 			$cadena.=datos_del_despacho($vars);
 		else
 			$cadena.=datos_del_despacho($vars);
@@ -620,11 +621,11 @@ function datos_del_despacho($vars) //Solo para parciales
  */
 function datos_despacho($despacho) //!!!FUNCION REPETIDA
 {
-	include("../inc/variables.php");
+	global $con;
 	$sql="Select * from agenda where despacho like '$despacho' and 
 		(datediff(curdate(),finc)<=0 or datediff(curdate(),ffin)<=0)
 		order by finc asc, hinc desc limit 2";
-	$consulta = @mysql_db_query($dbname,$sql,$con);
+	$consulta = @mysql_query($sql,$con);
 	if(@mysql_numrows($consulta)!=0)
 	{
 		$cadena.="<div class='despacho_parcial' height='100%'>";
@@ -649,9 +650,9 @@ function datos_despacho($despacho) //!!!FUNCION REPETIDA
  */
 function editar_ocupacion($vars)
 {
-	include("../inc/variables.php");
+	global $con;
 	$sql = "Select id_cliente,despacho,finc,ffin,hinc,hfin,tipo_ocupacion,otro from agenda where id like $vars[ocupacion]";
-	$consulta = @mysql_db_query($dbname,$sql,$con);
+	$consulta = @mysql_query($sql,$con);
 	$resultado = @mysql_fetch_array($consulta);
 	$param[cliente]=$resultado[0];
 	$param[despacho]=$resultado[1];
@@ -674,7 +675,7 @@ function editar_ocupacion($vars)
  */
 function actualiza_ocupacion($vars)
 {
-	include("../inc/variables.php");
+	global $con;
 	if($vars[id_cliente]!="")
 	$sql = "Update agenda set id_cliente='$vars[id_cliente]',";
 	else
@@ -683,7 +684,7 @@ function actualiza_ocupacion($vars)
 	ffin='".cambiaf($vars[ffin])."',
 	hinc='$vars[hinc]',
 	hfin='$vars[hfin]' where id like '$vars[registro]'";
-	if($consulta = @mysql_db_query($dbname,$sql,$con))
+	if($consulta = @mysql_query($sql,$con))
 		$cadena.=datos_del_despacho($vars);
 	else
 		$cadena.=datos_del_despacho($vars);
@@ -695,9 +696,9 @@ function actualiza_ocupacion($vars)
  */
 function borra_ocupacion($vars)
 {
-	include("../inc/variables.php");
+	global $con;
 	$sql = "Delete from agenda where id like $vars[ocupacion]";
-	if($consulta = @mysql_db_query($dbname,$sql,$con))
+	if($consulta = @mysql_query($sql,$con))
 		$cadena.=datos_del_despacho($vars);
 	else
 		$cadena.=datos_del_despacho($vars);
@@ -717,11 +718,11 @@ function formulario_agenda($vars)
 	$color_es = array('Ninguno','Amarillo','Rosa','Gris','Violeta');
 	if(isset($vars[tarea]))
 	{
-		include("../inc/variables.php");
+		global $con;
 		//chequeamos si hay datos modificados 
 		
 		$sql="Select * from agenda_interna where id like '$vars[tarea]'";
-		$consulta=@mysql_db_query($dbname,$sql,$con);
+		$consulta=@mysql_query($sql,$con);
 		$resultado=@mysql_fetch_array($consulta);
 		$titulo="Modificar Tarea";
 		$descripcion=$resultado[descripcion];
@@ -735,7 +736,7 @@ function formulario_agenda($vars)
 		
 		//Si hemos modificado el valor de esta celda
 		$sql = "Select * from agenda_interna_estado where id_tarea like $vars[tarea] and hour(hora) like hour('$hinc') and dia like '$resultado[dia]'";
-		$consulta = @mysql_db_query($dbname,$sql,$con);
+		$consulta = @mysql_query($sql,$con);
 		if(@mysql_numrows($consulta)!=0)
 		{	
 			$resultado = @mysql_fetch_array($consulta);
@@ -844,7 +845,7 @@ function personalizacion($vars)
  */
 function agrega_tarea($vars)
 {
-	include("../inc/variables.php");
+	global $con;
 	//inicializo repeticion,frecuencia y dia
 	$repeticion="";
 	$frecuencia=1;
@@ -865,7 +866,7 @@ function agrega_tarea($vars)
 	(descripcion,dia,inicio,fin,repetir,repeticion,frecuencia,color)
 	values
 	('$vars[descripcion]','$dia','$vars[inicio]','$vars[fin]','$vars[repetir]','$repeticion','$frecuencia','$vars[color]')";
-	if($consulta = @mysql_db_query($dbname,$sql,$con))
+	if($consulta = @mysql_query($sql,$con))
 		return "Tarea agregada";
 	else
 		return "No se ha agregado la tarea";
@@ -878,10 +879,10 @@ function agrega_tarea($vars)
 function agregar_tarea_pendiente($vars)
 {
 	$fecha = cambiaf($vars[vencimiento]);
-	include("../inc/variables.php");
+	global $con;
 	$sql = "Insert into tareas_pendientes (nombre,vencimiento,prioridad,asignada) 
 	values ('$vars[nombre]','$fecha','$vars[prioridad]',$vars[asignada])";
-	if($consulta = @mysql_db_query($dbname,$sql,$con))
+	if($consulta = @mysql_query($sql,$con))
 		return "Tarea agregada";
 	else
 		return "No se ha agregado la tarea";
@@ -895,10 +896,10 @@ function marmota($vars)
 	//Chequeo despacho,dia,hora
 	$horas=array();
 	$fecha=cambiaf($vars[finc]);
-	include("../inc/variables.php");
+	global $con;
 	$sql = "SELECT hinc,hfin
 	FROM `agenda` WHERE finc='$fecha' and despacho like '$vars[despacho]'";
-	$consulta = @mysql_db_query($dbname,$sql,$con);
+	$consulta = @mysql_query($sql,$con);
 	while($resultado = @mysql_fetch_array($consulta))
 	{
 		$hora_a=explode(":",$resultado[hinc]);
@@ -932,12 +933,12 @@ function marmota($vars)
  */
  function actualiza_tarea_pendiente($vars)
  {
- 	include("../inc/variables.php");
+ 	global $con;
 	$vencimiento = cambiaf($vars[vencimiento]);
 	$sql ="Update tareas_pendientes set nombre = '$vars[nombre]',
 	vencimiento='$vencimiento', prioridad='$vars[prioridad]',asignada ='$vars[asignada]' where id like
 	$vars[tarea]";
-	if($consulta = @mysql_db_query($dbname,$sql,$con))
+	if($consulta = @mysql_query($sql,$con))
 		return "Tarea Modificada";
 	else	
 		return "No se ha modificado la tarea".$sql;
@@ -948,13 +949,13 @@ function marmota($vars)
   */
  function cambia_estado_tarea($vars)
  {
- 	include("../inc/variables.php");
+ 	global $con;
 	if($vars[estado]=="on")
 		$valor = "Si";
 	else
 		$valor = "No";
 	$sql = "Update tareas_pendientes set realizada = '$valor' where id = '$vars[tarea]'";
-	if($consulta = @mysql_db_query($dbname,$sql,$con))
+	if($consulta = @mysql_query($sql,$con))
 		return "Tarea actualizada";
 	else
 		return "No se ha actualizado la tarea ".$sql;
@@ -965,9 +966,9 @@ function marmota($vars)
   */
  function borra_tarea($vars)
  {
- 	include("../inc/variables.php");
+ 	global $con;
 	$sql = "Delete from tareas_pendientes where id like $vars[tarea]";
-	if($consulta = @mysql_db_query($dbname,$sql,$con))
+	if($consulta = @mysql_query($sql,$con))
 		return "Tarea borrada";
 	else
 		return "No se ha borrado la tarea ".$sql;
@@ -999,7 +1000,7 @@ function marmota($vars)
 	//$frecuencia=$vars[frecuencia];
 	$frecuencia = 1;
 	}
-	include("../inc/variables.php");
+	global $con;
 	if($vars[repetir]=='O')
 		$sql = "Update agenda_interna set 
 	descripcion = '$vars[descripcion]', dia = '$dia',
@@ -1015,10 +1016,10 @@ function marmota($vars)
 	frecuencia = '$frecuencia',
 	color = '$vars[color]' where id = '$vars[tarea]'";
 	$sql2 = $sql;
-	if($consulta = @mysql_db_query($dbname,$sql,$con))
+	if($consulta = @mysql_query($sql,$con))
 	{
 		$sql = "Delete from agenda_interna_estado where id_tarea like $vars[tarea]";
-		if($consulta = @mysql_db_query($dbname,$sql,$con))
+		if($consulta = @mysql_query($sql,$con))
 			return "Tarea actualizada";
 		else
 			return "No se ha actualizado la tarea ".$sql;
@@ -1032,16 +1033,16 @@ function marmota($vars)
  function actualiza_esta_tarea($vars)
  {
  	
-	include("../inc/variables.php");
+	global $con;
 	$sql = "Select id from agenda_interna_estado where dia like '$vars[dia]' and hour(hora) like hour('$vars[hora]') and id_tarea like $vars[tarea]";
-	$consulta = @mysql_db_query($dbname,$sql,$con);
+	$consulta = @mysql_query($sql,$con);
 	if(@mysql_numrows($consulta)!=0)
 	{
 		foreach($vars as $key => $var)
 		$cadena.="[".$key."]=>".$var.";";
 		$resultado = @mysql_fetch_array($consulta);
 		$sql = "Update agenda_interna_estado set color = '$vars[color]' where id_tarea like $vars[tarea] and dia like '$vars[dia]' and hour(hora) like hour('$vars[hora]')";
-		if($consulta = @mysql_db_query($dbname,$sql,$con))
+		if($consulta = @mysql_query($sql,$con))
 			return "Tarea Actualizada";
 		else
 			return "No se ha actualizado la tarea".$sql;
@@ -1049,7 +1050,7 @@ function marmota($vars)
 	else
 	{
 		$sql = "Insert into agenda_interna_estado (dia,hora,color,id_tarea) values('$vars[dia]','$vars[hora]','$vars[color]','$vars[tarea]')";
-		if($consulta = @mysql_db_query($dbname,$sql,$con))
+		if($consulta = @mysql_query($sql,$con))
 			return "Tarea Actualizada";
 		else
 			return "No se ha actualizado la tarea".$sql;
@@ -1060,9 +1061,9 @@ function marmota($vars)
   */
  function borra_tarea_interna($vars)
  {
- 	include("../inc/variables.php");
+ 	global $con;
 	$sql = "Delete from agenda_interna where id like $vars[tarea]";
-	if($consulta = @mysql_db_query($dbname,$sql,$con))
+	if($consulta = @mysql_query($sql,$con))
 		return "Tarea Borrada";
 	else
 		return "No se ha borrado la tarea".$sql;
@@ -1073,7 +1074,7 @@ function marmota($vars)
   */
  function filtrado_tareas_pendientes($vars)
  {
- 	include("../inc/variables.php");
+ 	global $con;
 	$tareas = array("Normal","Media","Alta","Muy Alta");
 	$opcion = array("No","Si");
 	$tipo = array("pendientes","realizadas");
@@ -1087,7 +1088,7 @@ function marmota($vars)
 			if(isset($vars[vencimiento]))
 				$sql = "Select * from tareas_pendientes where vencimiento like '$vars[vencimiento]' order by prioridad desc ,vencimiento asc";
 	
-	$consulta = @mysql_db_query($dbname,$sql,$con);
+	$consulta = @mysql_query($sql,$con);
 	if(@mysql_numrows($consulta)!=0)
 	{
 		while($resultado = @mysql_fetch_array($consulta))
@@ -1119,9 +1120,9 @@ return $texto;
  */
 function nombre_emp($id)
 {
-	include("../inc/variables.php");
+	global $con;
 	$sql = "Select * from empleados where Id like $id";
-	$consulta = @mysql_db_query($dbname,$sql,$con);
+	$consulta = @mysql_query($sql,$con);
 	$resultado = @mysql_fetch_array($consulta);
 	return "<span class='fecha_tarea'>".$resultado[3]." ".$resultado[1].":</span>";
 }
@@ -1130,10 +1131,10 @@ function nombre_emp($id)
  */
  function agrega_nota($vars)
  {
- 	include("../inc/variables.php");
+ 	global $con;
 	$fecha = cambiaf($vars[vencimiento]);
 	$sql= "Insert into notas (fecha,nota) values ('$fecha','$vars[nota]')";
-	if($consulta = @mysql_db_query($dbname,$sql,$con))
+	if($consulta = @mysql_query($sql,$con))
 		$cadena = "Tarea agregada";
 	else
 		$cadena = "No se ha agregado la nota ".$sql;
@@ -1144,10 +1145,10 @@ function nombre_emp($id)
   */
  function actualiza_nota($vars)
  {
- 	include("../inc/variables.php");
+ 	global $con;
 	$fecha = cambiaf($vars[vencimiento]);
 	$sql = "Update notas set fecha='$fecha' ,nota='$vars[nota]' where id like $vars[id]";
-	if($consulta = @mysql_db_query($dbname,$sql,$con))
+	if($consulta = @mysql_query($sql,$con))
 		$cadena.="Nota modificada";
 	else
 		$cadena.="No se ha modificado la nota".$sql;
@@ -1158,9 +1159,9 @@ function nombre_emp($id)
   */
 function borra_nota($vars)
 {
-	include("../inc/variables.php");
+	global $con;
 	$sql = "Delete from notas where id like $vars[nota]";
-	if($consulta = @mysql_db_query($dbname,$sql,$con))
+	if($consulta = @mysql_query($sql,$con))
 		$cadena.="Nota borrada";
 	else
 		$cadena.="No se ha borrado la nota".$sql;
@@ -1171,11 +1172,11 @@ function borra_nota($vars)
  */
 function tareas_no_realizadas()
 {
-	include("../inc/variables.php");
+	global $con;
 	$sql="SELECT e.Nombre, e.Apell1, t.vencimiento, t.nombre
 FROM `tareas_pendientes` AS t
 JOIN empleados AS e ON e.id = t.asignada where t.vencimiento like curdate() and realizada like 'No'";
-	$consulta = @mysql_db_query($dbname,$sql,$con);
+	$consulta = @mysql_query($sql,$con);
 	if(@mysql_numrows($consulta)!=0)
 	{
 		$cadena.="Tareas con vencimiento hoy:\n";

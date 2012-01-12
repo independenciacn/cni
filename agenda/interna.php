@@ -1,4 +1,5 @@
 <?php session_start();
+require_once '../inc/variables.php';
 /*
  * Inicializamos la fecha que se definiria como hoy que 
  * sera el punto de partida de 
@@ -24,7 +25,7 @@ else
 		$anyo=date("Y");
 		$hoy_es=date("N");
 	}
-include("../inc/variables.php");
+
 ?>
 <form name='seleccion_fecha' method='' action='' onsubmit='cambia_fecha();return false'>
 <label>Seleccionar Fecha: </label><input type='text' id='semana' name='semana' size ='10'  value='<? echo $hoy; ?>' onchange='cambia_fecha()' />
@@ -33,7 +34,7 @@ include("../inc/variables.php");
 <? echo $mes." de ".$anyo.". Semana: ". $semana;?>
 </form>
 <table width='100%' id='semana'>
-<?
+<?php
 /*
  * Calculamos las semanas totales del año actual
  * Dibujo la tabla luego la lleno
@@ -111,13 +112,13 @@ function ver_dia($k,$hoy_es,$hoy)
  */
 function chequea_celda($hora,$dia)
 {
-	include("../inc/variables.php");
+	global $con;
 	$semana = array("","L","M","X","J","V","S","D");
 	$dia =cambiaf($dia);
 	//Chequemos si la celda tiene otro color
 	$sql = "Select * from agenda_interna_estado where hour(hora) like hour('$hora') and dia like '$dia'";
 	//$cadena.=$sql;
-	$consulta = @mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	if(@mysql_numrows($consulta)!=0)
 	{
 		
@@ -128,7 +129,7 @@ function chequea_celda($hora,$dia)
 		}
 	}
 	$sql = "Select * from agenda_interna where hour(inicio) like hour('$hora')";
-	$consulta = @mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	while($resultado = @mysql_fetch_array($consulta))
 	{
 		if(isset($color_mod) && (in_array($resultado[id],$tarea_mod)))
@@ -200,7 +201,7 @@ function chequea_celda($hora,$dia)
  	/*1 semana es 604800 * frecuencia si coincide se muestra si
  	 * y tendra que ser multiplo
  	 */
-	include("../inc/variables.php");
+	global $con;
 	return "";//$id."-".$dia;
  }
 /*

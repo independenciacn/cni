@@ -1,12 +1,12 @@
 <table id='agenda' width='100%'>
 <?php
-	include("../inc/variables.php");
-	include("funciones.php");
+	require_once '../inc/variables.php';
+	include_once 'funciones.php';
 	$sql = "SELECT z.valor, c.Nombre,c.id ,c.Categoria FROM clientes as c  join z_sercont as z on c.id like z.idemp 
 		WHERE  Estado_de_cliente != 0 and 
 		 c.Categoria like '%despacho%' and 
 		z.servicio like 'Codigo Negocio' order by z.valor asc";
-	$consulta = @mysql_db_query($dbname,$sql,$con);
+	$consulta = @mysql_query($sql,$con);
 	$despachos=array();
 	$clase=array();
 	while($resultado = @mysql_fetch_array($consulta))

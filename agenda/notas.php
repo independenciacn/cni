@@ -1,9 +1,9 @@
 <?php
-	include("../inc/variables.php");
+	require_once '../inc/variables.php';
 	if(isset($_POST[nota]))
 	{
 		$sql ="Select * from notas where id like ".$_POST[nota]."";
-		$consulta = @mysql_db_query($dbname,$sql,$con);
+		$consulta = @mysql_query($sql,$con);
 		$resultado = @mysql_fetch_array($consulta);
 		$hoy = cambiaf($resultado[fecha]);
 		$nota = $resultado[nota];
@@ -30,7 +30,7 @@
 	/*listado de las notas*/
 	
 	$sql="Select * from notas order by fecha desc";
-	$consulta = @mysql_db_query($dbname,$sql,$con);
+	$consulta = @mysql_query($sql,$con);
 	if(@mysql_numrows($consulta)==0)
 	$cadena.="No hay notas";
 	else

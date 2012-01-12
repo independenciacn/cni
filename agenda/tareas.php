@@ -1,9 +1,9 @@
 <?php 
-include("../inc/variables.php");
+require_once '../inc/variables.php';
 if (isset($_POST[tarea])) 
 {
 	$sql = "Select * from tareas_pendientes where id like $_POST[tarea]";
-	$consulta = @mysql_db_query($dbname,$sql,$con);
+	$consulta = @mysql_query($sql,$con);
 	$resultado = @mysql_fetch_array($consulta);
 	$accion="actualiza_tarea_pendiente($resultado[id])";		
 }
@@ -23,7 +23,7 @@ else
 $seleccion_asignada="<option value='0'>-No Asignada-</option>";
 
 	$sql2 = "Select Id,Apell1,Nombre from empleados";
-	$consulta2 = @mysql_db_query($dbname,$sql2,$con);
+	$consulta2 = @mysql_query($sql2,$con);
 	while($resultado2 = @mysql_fetch_array($consulta2))
 	{	
 		if($resultado[asignada]==$resultado2[0])
@@ -75,7 +75,7 @@ $tipo = array("pendientes","realizadas");
 $sql = "SELECT vencimiento
 FROM `tareas_pendientes`
 GROUP BY vencimiento";
-$consulta = @mysql_db_query($dbname,$sql,$con);
+$consulta = @mysql_query($sql,$con);
 while($resultado = @mysql_fetch_array($consulta))
 $fechas[]=$resultado[0];
 /*Fin*/
@@ -96,7 +96,7 @@ for($j=0;$j<=1;$j++)
 	$texto.= $seleccion_asignada;
 	$texto.="</select></div><div id='lista_tareas_pendientes'>";
 	$sql = "Select * from tareas_pendientes where realizada like '$opcion[$j]' order by prioridad desc ,vencimiento asc";
-	$consulta = @mysql_db_query($dbname,$sql,$con);
+	$consulta = @mysql_query($sql,$con);
 	if(@mysql_numrows($consulta)!=0)
 	{
 		while($resultado = @mysql_fetch_array($consulta))
@@ -123,11 +123,10 @@ echo $texto."</div>";
 
 function nombre_emp($id)
 {
-	include("../inc/variables.php");
+	global $con;
 	$sql = "Select * from empleados where Id like $id";
-	$consulta = @mysql_db_query($dbname,$sql,$con);
+	$consulta = @mysql_query($sql,$con);
 	$resultado = @mysql_fetch_array($consulta);
 	return "<span class='fecha_tarea'>".$resultado[3]." ".$resultado[1].":</span>";
 	//return "CO";
 }
-?>

@@ -2,15 +2,15 @@
 /*
  * FUNCIONES AUXILIARES
  */
- 
+require_once '../inc/variables.php';
 /*
  * Muestra las telecomunicaciones
  */
 function teleco_cliente($cliente,$servicio)
 {
-	include("../inc/variables.php");
+	global $con;
 	$sql = "Select valor from z_sercont where idemp like $cliente and servicio like '".$servicio."'";
-	$consulta = @mysql_db_query($dbname,$sql,$con);
+	$consulta = @mysql_query($sql,$con);
 	while($resultado = @mysql_fetch_array($consulta))
 	{
 		$cadena.=$resultado[0]."<br/>";
@@ -34,9 +34,9 @@ function cambiaf($stamp)
  */
 function nombre_cliente($id)
 {
-	include("../inc/variables.php");
+	global $con;
 	$sql="Select Nombre from clientes where id like $id";
-	$consulta = @mysql_db_query($dbname,$sql,$con);
+	$consulta = @mysql_query($sql,$con);
 	$resultado = @mysql_fetch_array($consulta);
 	return $resultado[Nombre];
 }
@@ -57,11 +57,11 @@ function quita_segundos($hora)
  */ 
 function datos_despacho($despacho)
 {
-	include("../inc/variables.php");
+	global $con;
 	$sql="Select * from agenda where despacho like '$despacho' and 
 		(datediff(curdate(),finc)<=0 or datediff(curdate(),ffin)<=0)
 		order by finc asc, hinc asc limit 2";
-	$consulta = @mysql_db_query($dbname,$sql,$con);
+	$consulta = @mysql_query($sql,$con);
 	if(@mysql_numrows($consulta)!=0)
 	{
 		$cadena.="<div class='despacho_parcial' height='100%'>";
@@ -78,7 +78,7 @@ function datos_despacho($despacho)
 		$sql="Select * from agenda where despacho like '$despacho' and 
 		(datediff(curdate(),finc)<=0 or datediff(curdate(),ffin)<=0)
 		order by finc asc, hinc asc";
-		$consulta = @mysql_db_query($dbname,$sql,$con);
+		$consulta = @mysql_query($sql,$con);
 		if(@mysql_numrows($consulta)>=2)
 			$cadena.="<br/>Mas en detalles";
 		//fin del si hay mas de dos
