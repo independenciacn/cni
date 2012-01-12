@@ -1,5 +1,9 @@
 <?php
-//Funcion antigua de envio - BORRAR YA NO USADA
+/**
+ * Fichero antiguo de envio
+ * 
+ * @deprecated
+ */
 /*
  * Funcion de cambio de fecha
  */

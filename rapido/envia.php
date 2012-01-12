@@ -15,7 +15,14 @@
 */
 require_once 'Zend/Loader/Autoloader.php';
 Zend_Loader_Autoloader::getInstance();
-
+/**
+ * Funcion encargada del envio de facturas
+ * 
+ * @param string $fichero
+ * @param string $numeroFactura
+ * @param string $dup
+ * @return string
+ */
 function envia( $fichero, $numeroFactura, $dup ) {
 	global $con;
 	$sql = "Select date_format(r.fecha,'%d-%m-%Y') as fecha,
@@ -127,7 +134,9 @@ que la ley lo exija expresamente.
 		$mail->createAttachment($fichero,
 			'application/pdf',
 			Zend_Mime::DISPOSITION_ATTACHMENT,
-			Zend_Mime::ENCODING_BASE64);
+			Zend_Mime::ENCODING_BASE64,
+		    "factura-".$numeroFactura.".pdf"
+		);
 		if ( $mail->send($transport) ) {
 			echo "<div class='span-24 success'>Factura ".$numeroFactura." Enviada</div>";
 		} else {

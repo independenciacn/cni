@@ -71,6 +71,10 @@ function almacenaje($cliente,$mes,$anyo)
 {
 	global $con;
 	$j = 0;
+	$cadena = "";
+	$subtotales = 0;
+	$totales = 0;
+	$cantidad = 0;
     $sql = "Select datediff('".$anyo."-".$mes."-01','2010-07-01')";
     $consulta = mysql_query($sql,$con);
     $diff = $resultado = mysql_fetch_array($consulta);
@@ -139,6 +143,7 @@ function servicios()
 function cuca($vars)
 {
 	global $con;
+	$muestra = "";
 	if($vars['texto'] == "") {
 		$muestra = "";
 	} else {
@@ -193,6 +198,7 @@ function ver_servicios_contratados($vars)
 	global $con;
 	$j = 0;
 	$cadena = "";
+	$cantidad = 0;
 	$mes_buscado = ($vars['mes'] <= 9) ? "0".$vars['mes'] : $vars['mes'];
 	$sql = "Select d.Servicio, d.Cantidad, 
 	date_format(c.fecha,'%d-%m-%Y') as fecha, d.PrecioUnidadEuros, 
@@ -219,6 +225,7 @@ function ver_servicios_contratados($vars)
 	$cadena .= $almacenaje[0];
 	$subtotal = $almacenaje[1];
 	$total = $almacenaje[2];
+	
 //fin del almacenaje
 	while (true == ( $resultado=mysql_fetch_array( $consulta ) ) ) {
 		$subtotal = ($resultado[4]+($resultado[4]*$resultado[5])/100);	
@@ -298,7 +305,7 @@ function frm_modificacion_servicio($vars)
 	$modi[5] = $resultado[11];//observaciones
 	$total = ($modi[3]+($modi[3]*$modi[4]/100))*$modi[1];//importe total
 	$total = round($total,2);
-	$cadena .= "
+	$cadena = "
 	<input type='button' class='boton_cerrar' 
 		onclick='cierra_frm_modificacion()' value='Cerrar'/>
 	<form id='modificacion' name='modificacion' method='post' 
@@ -747,7 +754,7 @@ function dibuja_pantalla($sql,$marca_cliente,$marca_factura,$marca_fecha,$marca_
 {
 	global $con;
 	//Ordenes
-	$cadena .="
+	$cadena ="
 	<input type='hidden' id='marca_cliente' value='".$marca_cliente."' />
 	<input type='hidden' id='marca_factura' value='".$marca_factura."' />
 	<input type='hidden' id='marca_fecha' value='".$marca_fecha."' />

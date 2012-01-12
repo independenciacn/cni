@@ -1,7 +1,10 @@
 <?php
-if((isset($_GET['factura'])) || (isset($_POST['factura'])))
-{
-	//calculo del total con iva
+require_once '../inc/variables.php';
+require_once '../inc/ezpdf/class.ezpdf.php';
+if((isset($_GET['factura'])) || (isset($_POST['factura']))) {
+    $factura = ( isset( $_POST['factura'] ) ) ? $_POST['factura']:$_GET['factura'];
+    
+    //calculo del total con iva
 	function iva($importe,$iva)
 	{
 		$total = round($importe + ($importe * $iva)/100,2);
@@ -36,68 +39,58 @@ if((isset($_GET['factura'])) || (isset($_POST['factura'])))
 		return $fecha;
 	}
 /*******************************************************************************************************************/
-	require_once '../inc/variables.php';
-	require_once '../inc/ezpdf/class.ezpdf.php';
-	
-	if(isset($_POST['factura']))
-	{
-		$factura = $_POST['factura'];
-	}
-	else
-	{
-		$factura= $_GET['factura'];
-	}
 		
-		$pdf =& new Cezpdf('a4');
-		$all = $pdf->openObject();
-		$pdf->saveState();
-		$euro_diff = array(33=>'Euro'); 
-		$pdf->selectFont('../inc/ezpdf/fonts/Helvetica.afm', 
-        array('encoding'=>'WinAnsiEncoding','differences'=>$euro_diff));
-		$pdf->addInfo('Title','Factura');
-		$pdf->addInfo('Author','Independencia Centro de Negocios');
-		$pdf->ezSetCmMargins(3,2,1.2,1.2);
-		$im = imagecreatefromjpeg("logo_n.jpg");
-		$pdf->addImage($im,33,740,200);
-        //10 aniversario
-        $gif = imagecreatefromgif("image001.gif");
-		$pdf->addImage(&$gif, 470, 750, 90);
-		//fin 10 aniversario
-        $im = imagecreatefromjpeg("pie_n.jpg");
-		$pdf->addImage($im,0,0,600);
-		$im = imagecreatefromjpeg("nif_n.jpg");
-		$pdf->addImage($im,0,200,33);
-		$pdf->restoreState();
-		$pdf->closeObject();
-		$pdf->addObject( $all, 'all' );
+	$pdf =& new Cezpdf('a4');
+	$all = $pdf->openObject();
+	$pdf->saveState();
+	$euro_diff = array(33=>'Euro'); 
+	$pdf->selectFont('../inc/ezpdf/fonts/Helvetica.afm', 
+    array('encoding'=>'WinAnsiEncoding','differences'=>$euro_diff));
+	$pdf->addInfo('Title','Factura');
+	$pdf->addInfo('Author','Independencia Centro de Negocios');
+	$pdf->ezSetCmMargins(3,2,1.2,1.2);
+	$im = imagecreatefromjpeg("logo_n.jpg");
+	$pdf->addImage($im,33,740,200);
+    //10 aniversario
+    $gif = imagecreatefromgif("image001.gif");
+	$pdf->addImage(&$gif, 470, 750, 90);
+	//fin 10 aniversario
+    $im = imagecreatefromjpeg("pie_n.jpg");
+	$pdf->addImage($im,0,0,600);
+	$im = imagecreatefromjpeg("nif_n.jpg");
+	$pdf->addImage($im,0,200,33);
+	$pdf->restoreState();
+	$pdf->closeObject();
+	$pdf->addObject( $all, 'all' );
 
 //Cabezera de la factura
-		$sql ="Select c.Nombre,c.Direccion,c.CP,c.Ciudad,
-		c.NIF,r.fecha, r.pedidoCliente, c.id from clientes as c 
-		join regfacturas as r on r.id_cliente = c.id 
-		where r.codigo like $factura";
-		$consulta = mysql_query($sql,$con);
-		$resultado = mysql_fetch_array($consulta);
-		if((isset($_GET['dup']))||(isset($_POST['dup']))){
-			$pdf->addText(363,730,16,"<b>FACTURA (DUPLICADO)<b>");
-			$dup = true;
-		}
-		else {
-			$pdf->addText(463,730,16,"<b>FACTURA<b>");
-			$dup = false;
-		}
-		$pdf->rectangle(263,660,280,50);
+	$sql ="Select c.Nombre,c.Direccion,c.CP,c.Ciudad,
+	c.NIF,r.fecha, r.pedidoCliente, c.id from clientes as c 
+	join regfacturas as r on r.id_cliente = c.id 
+	where r.codigo like ".$factura;
+	$consulta = mysql_query($sql,$con);
+	$resultado = mysql_fetch_array($consulta);
+	if((isset($_GET['dup']))||(isset($_POST['dup']))){
+		$pdf->addText(363,730,16,"<b>FACTURA (DUPLICADO)<b>");
+		$dup = true;
+	}
+	else {
+		$pdf->addText(463,730,16,"<b>FACTURA<b>");
+		$dup = false;
+	}
+	$pdf->rectangle(263,660,280,50);
 //ID CLIENTE
-		$cliente = $resultado[6];
-		$texto="FECHA:".cambiaf($resultado[5]);
-		$pdf->addText(50,700,12,$texto);
-		$texto="Num. FACTURA:".$factura;
-		$pdf->addText(50,685,12,$texto);
+	$cliente = $resultado[6];
+	$texto="FECHA:".cambiaf($resultado[5]);
+	$pdf->addText(50,700,12,$texto);
+	$texto="Num. FACTURA:".$factura;
+	$pdf->addText(50,685,12,$texto);
 /*Datos cliente*/
-		$pdf->addText(265,698,10,"<b>".utf8_decode($resultado[0])."</b>");
-		$pdf->addText(265,687,10,"<b>".utf8_decode($resultado[1])."</b>");
-		$pdf->addText(265,676,10,"<b>".utf8_decode($resultado[2])."-".utf8_decode($resultado[3])."</b>");
-		$pdf->addText(265,665,10,"<b>NIF:".$resultado[4]."</b>");
+	$pdf->addText(265,698,10,"<b>".utf8_decode($resultado[0])."</b>");
+	$pdf->addText(265,687,10,"<b>".utf8_decode($resultado[1])."</b>");
+	$pdf->addText(265,676,10,"<b>".utf8_decode($resultado[2])."-".
+	    utf8_decode($resultado[3])."</b>");
+	$pdf->addText(265,665,10,"<b>NIF:".$resultado[4]."</b>");
 //Asi se pone el fondo en todas
      
 //Paso de datos de historico
@@ -111,7 +104,8 @@ if((isset($_GET['factura'])) || (isset($_POST['factura'])))
 	for($i=0;$i<=3;$i++)
 		while(true == ($resultado=mysql_fetch_array($consulta))) {
 			$importe_sin_iva = $resultado['cantidad']*$resultado['unitario'];
-			$data[]=array("Servicio"=>ucfirst(utf8_decode($resultado[2]))." ".ucfirst(utf8_decode($resultado[6])),
+			$data[]=array(
+			"Servicio"=>ucfirst(utf8_decode($resultado[2]))." ".ucfirst(utf8_decode($resultado[6])),
 			"Cant."=>number_format($resultado['cantidad'],2,',','.'),
 			"P/Unitario"=>number_format($resultado['unitario'],2,',','.')."!",
 			"Importe"=>number_format($importe_sin_iva,2,',','.')."!",
@@ -194,8 +188,9 @@ from historico where factura like '$factura' group by factura";
 				$fp=fopen($ruta,'wb');
 				fwrite($fp,$pdfcode);
 				fclose($fp);
-				unset($pdfcode);
+				
 			}
+			unset($pdfcode);
 		}
 		else {
 			$pdf->ezStream();

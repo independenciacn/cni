@@ -31,10 +31,21 @@ define('VERSION',"2.0e");
  */
 define('APLICACION','Aplicación Gestión Independencia Centro Negocios');
 /**
+ * Iva Generico a utilizar en la aplicación
+ * @var integer
+ */
+define('IVA', 18 );
+/**
+ * Precio Generico del almacenaje
+ * @var integer
+ */
+define('ALMACENAJE',0.70);
+/**
  * Conexion a la base de datos
  * 
  * @var resource
  */
+
 $con = mysql_connect ("localhost","cni","inc") or die (mysql_error());
 mysql_set_charset('utf8', $con);
 /**
@@ -61,12 +72,36 @@ define("NOK","imagenes/error.png");
 //define("SISTEMA","*nix");
 /**
  * Define el sistema operativo donde va a trabajar la aplicacion
- * @deprecated - Sustituir por rutas
+ * 
  * @var unknown_type
  */
 define("SISTEMA","windows");
 setlocale(LC_ALL, 'es_ES');
 setlocale(LC_NUMERIC, 'es_ES');
+/**
+ * Devuelve el precio formateado con 2 decimales separados por , miles . y
+ * el simbolo del Euro;
+ * @param integer $number
+ */
+function formatoDinero( $number ) {
+    if ( SISTEMA == "windows" ) {
+        $number = number_format($number,2,',','.')."&euro;";
+    } else {
+        $number = money_format('%n', $number);
+    }
+    return $number;
+}
+/**
+ * Devuelve el numero formateado con 2 decimales separados por , y miles .
+ * @param unknown_type $number
+ */
+function formatoNoDinero( $number ) {
+    $number = number_format($number,2,',','.');
+    return $number;
+}
+/**
+ * Chequea si la sesion se ha iniciado
+ */
 function checkSession(){
     if ( session_id() != null ){
         session_regenerate_id();

@@ -37,7 +37,8 @@ function observaciones_especiales($cliente,$factura)
  */
 function dame_el_mes($mes)
 {
-	switch($mes)
+	$marcado = "";
+    switch($mes)
 	{
 		case 1: $marcado = "Enero";breaK;
 		case 2: $marcado = "Febrero";breaK;
@@ -362,9 +363,9 @@ function consulta_almacenaje($cliente,$mes,$inicial,$final)
  */
 function historico($factura)
 {
-	global $con, $dbname;
+	global $con;
 	$sql = "Select * from historico where factura like " . $factura;
-	$consulta = mysql_db_query( $dbname, $sql, $con);
+	$consulta = mysql_query( $sql, $con);
 	if ( mysql_numrows( $consulta )!=0 ) {
 		return "ok";
 	} else {
@@ -425,7 +426,7 @@ if( isset( $_GET['factura'] ) || isset( $_GET['duplicado'] ) ) {
 	} else {
 		$datos = "Select * from regfacturas where id like " . $_GET['duplicado'];
 	}
-	$consulta = mysql_db_query( $dbname, $datos, $con);
+	$consulta = mysql_query( $datos, $con);
 	$resultado = mysql_fetch_array( $consulta ); // resultado de la consulta
 	$cliente = $resultado['id_cliente'];
 	$fecha_factura = cambiaf( $resultado['fecha'] );
@@ -475,6 +476,8 @@ $tituloPagina = ( $inicio!= "0000-00-00") ? "ocupacion puntual" : dame_el_mes( "
 <?php
 	$celdas = 0;
 	$cantidad = 0;
+	$total = 0;
+	$bruto = 0;
 	echo $cabezera_factura;
 	echo "
 	<table cellpadding='2px' cellspacing='0px' width='100%' id='tabloide'>
@@ -502,7 +505,7 @@ if($historico == "ok") {
 		<td align='right'>".number_format($resultado['cantidad'],2,',','.')."&nbsp;</td>
 		<td align='right'>".number_format($resultado['unitario'],2,',','.')."&euro;&nbsp;</td>
 		<td align='right'>".number_format($importe_sin_iva,2,',','.')."&euro;&nbsp;</td>
-		<td align='right'>".$resultado[iva]."%&nbsp;</td>
+		<td align='right'>".$resultado['iva']."%&nbsp;</td>
 		<td align='right'>".
 			number_format(iva($importe_sin_iva,$resultado['iva']),2,',','.')."&euro;&nbsp;
 		</td></tr>";
@@ -562,14 +565,14 @@ if($historico == "ok") {
         $consulta = mysql_query($sql,$con);
         $par_almacenaje = mysql_fetch_array($consulta);
     } else {
-        $par_almacenaje = array('PrecioEuro'=>'0.70','iva'=>'18');
+        $par_almacenaje = array('PrecioEuro'=>'0.70','iva'=>'16');
     }
     /*Final datos de valores del almacenaje*/
 	$sql = consulta_almacenaje($cliente,$mes,$inicio,$final);
 	//echo $sql;/*PUNTO DE CONTROL*/
 	
-	$consulta = @mysql_db_query($dbname,$sql,$con);
-	while (true == ($resultado = @mysql_fetch_array($consulta))) {
+	$consulta = mysql_query($sql,$con);
+	while (true == ($resultado = mysql_fetch_array($consulta))) {
 		$dias_almacen = $resultado[1];
 		$subtotala = $resultado[0]*$dias_almacen*$par_almacenaje['PrecioEuro'];
         $totala = iva($subtotala,$par_almacenaje['iva']);
@@ -587,7 +590,7 @@ if($historico == "ok") {
 		$celdas++;
 		$cadena_texto = " del  ".cambiaf($resultado[2])." al ".cambiaf($resultado[3]);
 		if(($historico == "ko")&& (!isset($_GET['prueba']))) { //Agregamos al historico
-			agrega_historico($codigo,"Bultos Almacenados",1,
+			agrega_historico($codigo,"Bultos Almacenados",$resultado[0],
 					$subtotala,$par_almacenaje['iva'],$cadena_texto);
 		}
 	}
@@ -752,9 +755,10 @@ if(($fichero!="PROFORMA") && (!isset($_GET['duplicado']))) {
 			'".$fecha."','".$importe_iva."','".$importe_total."',
 			'".$observaciones."','".$mes."','".$ano."')";
 		}
+		$consulta=mysql_query($esecuele,$con);
 	}
 	//echo $esecuele;/*LINEA DE TEST*/
-	$consulta=mysql_query($esecuele,$con);
+	
 	//else
 		//echo comprueba_la_factura($cliente,$codigo,$fecha,$total_iva,$total);
 }

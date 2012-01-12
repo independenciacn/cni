@@ -1,32 +1,33 @@
-<? //fichero telecos.php generacion del formulario y gestion de datos de las telecomunicaciones.Realizado por Ruben Lacasa Mas ruben@ensenalia.com 2006-2007
+<?php //fichero telecos.php generacion del formulario y gestion de datos de las telecomunicaciones.Realizado por Ruben Lacasa Mas ruben@ensenalia.com 2006-2007
 require_once '../inc/variables.php';
-switch($_POST['opcion'])
-{
-	case 1:$devuelve = genera_formulario();break;
-	case "telefonos":$devuelve = genera_telefonos();break;
-	case "ip":$devuelve = genera_ips();break;
-	case "fotocopias":$devuelve = genera_fotocopias();break;
-	case "afotocopias":$devuelve = genera_afotocopias();break;
-	case "negocio":$devuelve = genera_negocio();break;
-	case "adsl":$devuelve = genera_adsl();break;
-	case "ckadsl":$devuelve = check_adsl($_POST['adsl']);break;
-	case "agradsl":$devuelve = agrega_adsl($_POST['cliente'],$_POST['adsl']);break;
-	case "fax":$devuelve = genera_fax();break;
-	case "ckfax":$devuelve = check_fax($_POST['fax']);break;
-	case "agrfax":$devuelve = agrega_fax($_POST['cliente'],$_POST['fax']);break;
-	case "aip":$devuelve = agrega_ips($_POST['cliente'],$_POST['ip']);break;
-	case "cktel":$devuelve = check_telefono($_POST['telefono']);break;
-	case "agrtel":$devuelve = agrega_telefono($_POST['cliente'],$_POST['telefono']);break; 
-	case "ckfot":$devuelve = check_fotocopias($_POST['fotocopias']);break;
-	case "agrfot":$devuelve = agrega_fotocopias($_POST['cliente'],$_POST['fotocopias']);break;
-	case "ckafot":$devuelve = check_afotocopias($_POST['afotocopias']);break;
-	case "agrafot":$devuelve = agrega_afotocopias($_POST['cliente'],$_POST['afotocopias']);break;
-	case "ckneg":$devuelve = check_negocio($_POST['negocio']);break;
-	case "agrneg":$devuelve = agrega_negocio($_POST['cliente'],$_POST['negocio']);break; 
-	case "lstcli":$devuelve = listado_telecos($_POST['cliente']);break;
-	case "borrasrv":$devuelve = borra_teleco($_POST['servicio']);break;
+if ( isset($_POST['opcion'])) {
+    switch($_POST['opcion']) {
+    	case 1:$devuelve = genera_formulario();break;
+    	case "telefonos":$devuelve = genera_telefonos();break;
+    	case "ip":$devuelve = genera_ips();break;
+    	case "fotocopias":$devuelve = genera_fotocopias();break;
+    	case "afotocopias":$devuelve = genera_afotocopias();break;
+    	case "negocio":$devuelve = genera_negocio();break;
+    	case "adsl":$devuelve = genera_adsl();break;
+    	case "ckadsl":$devuelve = check_adsl($_POST['adsl']);break;
+    	case "agradsl":$devuelve = agrega_adsl($_POST['cliente'],$_POST['adsl']);break;
+    	case "fax":$devuelve = genera_fax();break;
+    	case "ckfax":$devuelve = check_fax($_POST['fax']);break;
+    	case "agrfax":$devuelve = agrega_fax($_POST['cliente'],$_POST['fax']);break;
+    	case "aip":$devuelve = agrega_ips($_POST['cliente'],$_POST['ip']);break;
+    	case "cktel":$devuelve = check_telefono($_POST['telefono']);break;
+    	case "agrtel":$devuelve = agrega_telefono($_POST['cliente'],$_POST['telefono']);break; 
+    	case "ckfot":$devuelve = check_fotocopias($_POST['fotocopias']);break;
+    	case "agrfot":$devuelve = agrega_fotocopias($_POST['cliente'],$_POST['fotocopias']);break;
+    	case "ckafot":$devuelve = check_afotocopias($_POST['afotocopias']);break;
+    	case "agrafot":$devuelve = agrega_afotocopias($_POST['cliente'],$_POST['afotocopias']);break;
+    	case "ckneg":$devuelve = check_negocio($_POST['negocio']);break;
+    	case "agrneg":$devuelve = agrega_negocio($_POST['cliente'],$_POST['negocio']);break; 
+    	case "lstcli":$devuelve = listado_telecos($_POST['cliente']);break;
+    	case "borrasrv":$devuelve = borra_teleco($_POST['servicio']);break;
+    }
+    echo $devuelve;
 }
-echo $devuelve;
 //parte de las funciones
 
 //Genera el formulario principal
