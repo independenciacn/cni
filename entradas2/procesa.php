@@ -4,10 +4,13 @@
  * clic en la vista de acumulados
  * TODO: Mejorar la presentacion de las tablas
  */
+require_once 'clases/EntradasSalidas.php';
+$entradas = new EntradasSalidas();
+/**
+ * Si se postea Datos
+ */
 if (isset($_POST['datos'])) {
     //parametros tipo,categoria,año inicial, añofinal
-    require_once ("clases/EntradasSalidas.php");
-    $entradas = new EntradasSalidas();
     $datos = explode("#", urldecode($_POST['datos']));
     $entradas->anyoInicial = $datos[2];
     $entradas->anyoFinal = $datos[3];
@@ -30,7 +33,6 @@ if (isset($_POST['datos'])) {
     } else {
         $listado = $entradas->detallesServiciosExternos($datos[1]);
         $columnas = 3;
-        
     }
     foreach ($listado as $entrada) {
         if ($datos[0] != "servicios") {
@@ -105,17 +107,17 @@ if (isset($_POST['datos'])) {
     echo "</table>";
     echo "<a href='#arriba' class='enlacedetallada'>Ir Arriba</a>";
 }
-
+/**
+ * Si posteamos Servicio
+ */
 if (isset($_POST['servicio'])) {
-    require_once 'clases/EntradasSalidas.php';
-    $entradas = new EntradasSalidas();
     $dato = explode('#', $_POST['servicio']);
     $html = "<table class='listaacumulada'>";
     if (! isset($dato[3])) {
         $html .= "<tr><td> No hay datos </td></tr>";
     } else {
         $detalles = 
-        $entradas->detallesServiciosExternos(utf8_decode(urldecode($dato[1])), $dato[2], $dato[3]);
+        $entradas->detallesServiciosExternos(urldecode($dato[1]), $dato[2], $dato[3]);
         $html .= "
         <tr>
          <th class='acumulada'>Cliente</th>
@@ -139,8 +141,6 @@ if (isset($_POST['servicio'])) {
  */
 if (isset($_POST['cliente'])) {
 	
-    require_once 'clases/EntradasSalidas.php';
-    $entradas = new EntradasSalidas();
     $dato = explode('#', urldecode($_POST['cliente']));
     
     $html = "<table class='listaacumulada'>";
@@ -174,10 +174,6 @@ if (isset($_POST['cliente'])) {
     echo $html;
 }
 if (isset($_POST['ocupacion'])){
-    
-    require_once 'clases/EntradasSalidas.php';
-    
-    $entradas = new EntradasSalidas();
     $anyoFinal = NULL;
     $dato = explode('#',urldecode($_POST['ocupacion']));
     $class = "celdadialog";
@@ -255,4 +251,3 @@ if (isset($_POST['ocupacion'])){
     $html .= "<a href='#arriba' class='enlacedetallada'>Ir Arriba</a>";
     echo $html;
 }
-

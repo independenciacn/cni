@@ -166,11 +166,11 @@ class EntradasSalidas extends Sql
 	 */
     public function categorias ()
     {
+        $datos = array();
         $sql = "SELECT Nombre FROM `categorías clientes`";
         $this->_conn = new Sql();
         $this->_conn->consulta($sql);
         $this->_datos = $this->_conn->datos();
-       
         foreach ($this->_datos as $key => $dato) {
             if (array_search($dato['Nombre'], $this->_categoriasBaneadas) === FALSE)
                 $datos[] = $dato;
@@ -202,6 +202,7 @@ class EntradasSalidas extends Sql
 	 */
     public function movimientos ()
     {
+        $finales = array();
         $totales = $this->movimientosTotales();
         $entradas = $this->entradasTotales();
         $salidas = $this->salidasTotales();
@@ -429,6 +430,7 @@ class EntradasSalidas extends Sql
      */
     public function auxiliarTotales($sql)
     {
+        $finales = array();
         foreach ($this->categorias() as $categoria) 
             $finales[] = array('categoria' => $categoria['Nombre'], 'total' => 0);
         
@@ -499,7 +501,7 @@ class EntradasSalidas extends Sql
             $sql .= "WHERE ({$this->inicioSalidas()} ".
                     "AND {$tipo} <= '{$this->anyoFinal}-12-15') ";
             
-        $sql .= "AND e.categoria LIKE '" . utf8_decode($categoria) ."' ".
+        $sql .= "AND e.categoria LIKE '" . $categoria ."' ".
                 "ORDER by e.{$tipo};";
         $this->_conn = new Sql();
         $this->_conn->consulta($sql);
@@ -573,7 +575,7 @@ class EntradasSalidas extends Sql
 	 */
     public function totalesPorMeses ($tipo, $categoria)
     {
-        $categoria = utf8_decode($categoria);
+        
         
         if ($tipo == 'entrada') {
             $sql = "SELECT MONTH({$tipo}) AS mes, " .
@@ -606,10 +608,7 @@ class EntradasSalidas extends Sql
 	 * entrada o salida, el mes y el año. Devuelve el detalle de los movimientos
 	 */
     function detalleClienteMes ($categoria, $tipo, $mes, $anyo)
-    {
-        
-        $categoria = utf8_decode($categoria);
-        
+    {   
     	$sql = "SELECT c.Nombre, e.entrada, e.salida, e.categoria " .
          "FROM `centro`.`entradas_salidas` AS e " .
          "INNER JOIN `centro`.`clientes` AS c " . 

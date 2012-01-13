@@ -5,7 +5,7 @@
  * Valores de datos: 1 = Movimientos de Clientes, 2 = Consumo de Servicios
  */
 if (isset($_POST['inicio'])) {
-    include_once 'clases/EntradasSalidas.php';
+    require_once 'clases/EntradasSalidas.php';
     $entradasSalidas = new EntradasSalidas();
     $entradasSalidas->anyoInicial = $_POST['inicio'];
     $entradasSalidas->anyoFinal = $_POST['fin'];
@@ -35,6 +35,3 @@ if (isset($_POST['inicio'])) {
     }
     echo $html;
 }
-
-
-

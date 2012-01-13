@@ -59,7 +59,7 @@ datos que desea visualizar</p>
 <!-- Visualizaremos el resultado de la opción seleccionada --></div>
 
 
-<div id='footer'>devel by <a href="http://sbarrat.wordpress.com" target="_blank">&copy;sbarrat::<?php
+<div id='footer'>devel by <a href="http://rubenlacasa.wordpress.com" target="_blank">&copy;rubenlacasa::<?php
 echo date ( 'Y' )?></a></div>
 </div>
 <script type='text/javascript'>
@@ -77,36 +77,36 @@ $('#frmopciones').submit(function(){
 	if($('#inicio').val() == 0){
 		mensaje += "Debe especificar un año Inicial\n";
 		$('#inicio').addClass('errorfrm');
-		var fallo = 1;
+		fallo = 1;
 	}
 	if($('#fin').val() == 0){
 		mensaje += "Debe especificar un año Final\n";
 		$('#fin').addClass('errorfrm');
-		var fallo = 1;
+		fallo = 1;
 	}
 	if($('#vista').val() == 0){
 		mensaje += "Debe especificar un tipo de Vista\n";
 		$('#vista').addClass('errorfrm');
-		var fallo = 1;
+		fallo = 1;
 	}
 	if($('#datos').val() == 0){
 		mensaje += "Debe especificar que datos quiere visualizar\n";
 		$('#datos').addClass('errorfrm');
-		var fallo = 1;
+		fallo = 1;
 	}
 	if($('#inicio').val() > $('#fin').val())
 	{
 		mensaje += "El año de fin debe ser mayor o igual que el año de inicio\n";
 		$('#inicio').addClass('errorfrm');
 		$('#fin').addClass('errorfrm');
-		var fallo = 1;
+		fallo = 1;
 	}
 	
 	if( ( $('#fin').val() - $('#inicio').val()) > 1){
 		mensaje += "El rango maximo es de 2 años. ej(2008 - 2009)\n";
 		$('#inicio').addClass('errorfrm');
 		$('#fin').addClass('errorfrm');
-		var fallo = 1;
+		fallo = 1;
 	}
 	
 	if(fallo == 0){
