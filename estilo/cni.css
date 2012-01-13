@@ -1300,6 +1300,7 @@ textarea
 /*Tabla del sublistado*/
 .sublistado
 {
+	font-size:small;
 	border-style:dotted;
 	border-color:#7d0063;
 	border-width:1px;
