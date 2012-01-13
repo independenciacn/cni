@@ -330,7 +330,7 @@ function frm_modificacion_servicio($vars)
 	</tr>
 	<tr>
 	<th align='left'>Importe:</th>
-	<td><span id='importe'>".$modi[3]."</span>&euro</td>
+	<td><span id='importe'>".$modi[3]."</span>&euro;</td>
 	<th align='left'>Total:</th>
 	<td><span id='total'>".$total."</span>&euro;</td>
 	<td></td>
@@ -363,7 +363,7 @@ function modificacion_servicio($vars)
 			`iva` = '".$vars['iva']."',
 			`observaciones` = '".$vars['observacion']."' 
 		where `Id` like '".$vars['servicio']."'";
-	if ( mysql_db_query($sql,$con) ) {
+	if ( mysql_query($sql,$con) ) {
 		return "<div class='success'>Servicio Actualizado</div>";
 	} else {
 		return "<div class='error'>ERROR:Servicio No actualizado</div>";
