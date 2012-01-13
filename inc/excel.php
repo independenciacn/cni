@@ -21,36 +21,58 @@ if (isset($_GET)) {
 }
 $cadena = "";	
 if(isset($_GET['tipo'])) {
-    if($_GET['tipo']=='social') {
-		$sql ="Select * from clientes where direccion 
-		like '%Independencia 8%' and Estado_de_cliente 
-		like '-1' order by Nombre";
+    if ($_GET['tipo']=='social') {
+        $sql ="Select * from clientes where direccion not like ''
+        and Estado_de_cliente like '-1' order by Nombre";
     } else {
-		if($_GET['tipo']=='conserje') {
-			$sql = "Select * from clientes 
-			where (categoria like '%domicili%' or categoria like '%despachos%')
-			 and Estado_de_cliente like '-1' order by Nombre";
-		} else {
-			$sql = "Select * from clientes as c join `categorías clientes` as d 
-			on c.Categoria = d.Nombre where d.id like ".$_GET['tipo']." 
-			and c.Estado_de_cliente like '-1' order by c.Nombre";
+        if($_GET['tipo']=='comercial') {
+            $sql="Select * from clientes where dcomercial != ''
+            and Estado_de_cliente like '-1' order by Nombre";
+        } else {
+            if($_GET['tipo']=='conserje') {
+                $sql = "Select * from clientes where
+                (categoria like '%domicili%' or categoria
+                like '%despachos%' or categoria like '%tencion telefo%')
+                and Estado_de_cliente like '-1' order by Nombre";
+            } else {
+                if($_GET['tipo']=='independencia') {
+                    $sql ="Select * from clientes where direccion
+                    like '%Independencia, 8 dpdo%'
+                    and Estado_de_cliente like '-1' order by Nombre";
+                } else {
+                    $sql = "Select * from clientes as c join `categorías clientes`
+                    as d on c.Categoria = d.Nombre
+                    where d.id like ".$_GET['tipo']."
+                    and c.Estado_de_cliente like '-1' order by c.Nombre";
+                }
+            }
         }
     }
-	$consulta = mysql_query($sql,$con);
+    $consulta = mysql_query($sql,$con);
 	$i=0;
 	$cadena.="<table>";
 	$res1=mysql_fetch_array($consulta);
-	if($_GET['tipo']!='social') {
-		if($_GET['tipo']=='conserje') {
-			$cadena.="<tr><th>Listado Clientes Centro Negocios</th></tr>";
-		} else {
-			$cadena.="<tr><th>".$res1['categoria']."</th></tr>";
-		}
+	if ($_GET['tipo']=='social') {
+	    $cadena.="<tr><th>Listado Clientes Con Dirección Social</th></tr>";
 	} else {
-		$cadena.="<tr><th>Domicilio social Independencia 8 Dpo</th></tr>";
+	    if($_GET['tipo']=='comercial') {
+	        $cadena.="<tr><th>Listado Clientes Con Dirección de Facturación</th></tr>";
+	    } else {
+	        if($_GET['tipo']=='conserje') {
+	            $cadena.="<tr><th>Listado Clientes Centro Negocios</th></tr>";
+	        } else {
+	            if($_GET['tipo']=='independencia') {
+	            $cadena.="<tr><th>Domicilio social Independencia 8 Dpo</th></tr>";
+	            } else {
+	                $cadena.="<tr><th>".$res1['categoria']."</th></tr>";
+	            }
+	        }
+	    }
 	}
+	$consulta = mysql_query($sql,$con);
+	$j=0;
 	while(true == ($resultado = mysql_fetch_array($consulta))) {
-		$cadena.="<tr><td>".$resultado[1]."</td></tr>";
+		$cadena.="<tr><td>". ++$j." " .utf8_decode($resultado[1])."</td></tr>";
 	}
 	$cadena.="</table>";	
 } else {
@@ -66,13 +88,13 @@ if(isset($_GET['tipo'])) {
 	<th>Observaciones</th></tr>";
 	while (true == ($resultado = mysql_fetch_array($consulta))) {
 		$cadena .= "<tr><td>".$resultado[0]."</td>
-		<td>".$resultado[1]."</td>
-		<td>".$resultado[2]."</td>
-		<td>".$resultado[3]."</td></tr>";
+		<td>".utf8_decode($resultado[1])."</td>
+		<td>".utf8_decode($resultado[2])."</td>
+		<td>".utf8_decode($resultado[3])."</td></tr>";
 	}
 	$cadena .= "</table>";
 }
-header("Content-type: application/vnd.ms-excel; charset=UTF-8");
-header("Content-Disposition:inline; filename=excel.xls");
+/*header("Content-type: application/vnd.ms-excel; charset=UTF-8");
+header("Content-Disposition:inline; filename=excel.xls");*/
 echo $cadena;
 exit(0);
