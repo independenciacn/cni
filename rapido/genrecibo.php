@@ -82,7 +82,7 @@ if(isset($vto[1])) {
 	<th align='left'>FIRMA</th>
 </tr>
 <tr>
-	<td colspan='2'><? echo ficha_cliente($resultado['id_cliente'']); ?></td>
+	<td colspan='2'><?php echo ficha_cliente( $resultado['id_cliente'] ); ?></td>
 	<td>&nbsp;</td>
 </tr>
 </table>

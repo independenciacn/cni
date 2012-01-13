@@ -7,9 +7,9 @@ error_reporting(0);
 /*
  * Recoge la opcion y la manda a su destino
  */
-if(isset($_POST[opcion]))
+if(isset($_POST['opcion']))
 {
-	switch($_POST[opcion])
+	switch($_POST['opcion'])
 	{
 		case 0:$respuesta=formulario_despacho($_POST);break;
 		case 1:$respuesta=cuca($_POST);break;
@@ -48,62 +48,55 @@ else
 function formulario_despacho($vars)
 {
 	global $con;
-	if(isset($vars[cliente]))
-	{
-		$sql = "Select Nombre from clientes where id like $vars[cliente]";
-		$consulta = @mysql_query($sql,$con);
-		if(@mysql_numrows($consulta)!=0)
-		{
-			$resultado = @mysql_fetch_array($consulta);
-			$cliente = traduce($resultado[0]);}
-			if($vars[ocupacion]=='total')
-			{
-				$parcial="";
-				$total ="checked='checked'";
-			}
-			else
-			{
-				$parcial= "checked='checked'";
-				$total = "";
-			}
-	}
-	else
-	{	
-		if($vars[otro]!="")
-		{
+	if ( isset( $vars['cliente'] ) ) {
+		$sql = "Select Nombre from clientes where id like ".$vars['cliente'];
+		$consulta = mysql_query($sql,$con);
+		if ( mysql_numrows($consulta)!=0 ) {
+			$resultado = mysql_fetch_array($consulta);
+			$cliente = $resultado[0];
+		}
+		if ( $vars['ocupacion']=='total') {
+			$parcial="";
+			$total ="checked='checked'";
+		} else {
+			$parcial= "checked='checked'";
+			$total = "";
+		}
+	} else {	
+		if ( $vars['otro']!="" ) {
 			$cliente = "";
-			if($vars[ocupacion]=='total')
-			{
+			if($vars['ocupacion']=='total') {
 				$parcial="";
 				$total ="checked='checked'";
-			}
-			else
-			{
+			} else {
 				$parcial= "checked='checked'";
 				$total = "";
 			}
+		} else {
+		    $cliente = "";
+		    $parcial="checked='checked'";
+		    $total="";
 		}
-		else
-		{
-		$cliente = "";
-		$parcial="checked='checked'";
-		$total="";
-		}
-		
 	}
 	//Comprobacion del tipo de cliente y sus datos
 	
-	$cadena ="<div class='boton_cerrar' onclick='cerrar_formulario_agenda()'></div>";
-	if(isset($vars[tipo])){
-		$cadena .= "<form name='form_despachos' id='form_despachos' method='post' action='' onsubmit='actualiza_ocupacion(); return false'><input type='hidden' id='registro' name='registro' value='$vars[registro]'/>";
-		$id_cliente=$vars[cliente];}
-	else{
-		$cadena .= "<form name='form_despachos' id='form_despachos' method='post' action='' onsubmit='guarda_despacho(); return false'>";
+	$cadena ="<div class='boton_cerrar' onclick='cerrar_formulario_agenda()'>
+	</div>";
+	if ( isset($vars['tipo']) ) {
+		$cadena .= "<form name='form_despachos' id='form_despachos' 
+		method='post' action='' onsubmit='actualiza_ocupacion(); return false'>
+		<input type='hidden' id='registro' name='registro' 
+		value='".$vars['registro']."'/>";
+		$id_cliente=$vars['cliente'];
+	} else {
+		$cadena .= "<form name='form_despachos' id='form_despachos' 
+		method='post' action='' onsubmit='guarda_despacho(); return false'>";
 		$id_cliente="";}
-	if($vars[despacho] == 23)
+	if ( $vars['despacho'] == 23 ) {
 		$muestra = "Sala de Juntas";
-	else
-		$muestra = "Despacho ".$vars[despacho];
+	} else {
+		$muestra = "Despacho ".$vars['despacho'];
+	}
 	$cadena .="<div class='seccion'>$muestra<input type='hidden' name='despacho' id='despacho' readonly value='$vars[despacho]' /><input type='hidden' name='id_cliente' readonly id='id_cliente' value='$id_cliente'/></div><p/>";
 	$cadena .="Cliente:<input type='text' name='cliente' id='cliente' autocomplete='off' onkeyup='busca_cliente()' size='24%' value='$cliente' />
 	<div id='listado_clientes_agenda'></div>";
@@ -119,8 +112,7 @@ function formulario_despacho($vars)
 	}
 	else
 	{
-		if(isset($_POST[dia]))
-		{
+		if(isset($_POST[dia])) {
 			$finc=$_POST[dia];
 			$ffin=$_POST[dia];
 		}
