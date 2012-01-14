@@ -873,7 +873,7 @@ function subformulario($vars) //opcion,codigo,registro, codigo = codigo de subme
 		        ."".sublist($listado,$resultado[0]);
 		break;
 	}
-	$cadena .= "a</table></form>";
+	$cadena .= "</table></form>";
 	return $cadena;
 }
 /**
