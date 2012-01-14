@@ -2,7 +2,8 @@
 /**
  * Excel File Doc Comment
  *
- * Fichero que genera el listado en excel
+ * Fichero que genera el listado en excel, los utf8_decode son necesarios para
+ * que se visualize bien en excel
  *
  * PHP Version 5.2.6
  *
@@ -50,21 +51,27 @@ if(isset($_GET['tipo'])) {
     }
     $consulta = mysql_query($sql,$con);
 	$i=0;
+	$fichero = "listado";
 	$cadena.="<table>";
 	$res1=mysql_fetch_array($consulta);
 	if ($_GET['tipo']=='social') {
-	    $cadena.="<tr><th>Listado Clientes Con Dirección Social</th></tr>";
+	    $cadena.="<tr><th>Listado Clientes Con Direcci&oacute;n de Facturaci&oacute;n</th></tr>";
+	    $fichero = "Clientes Con direccion de facturacion";
 	} else {
 	    if($_GET['tipo']=='comercial') {
-	        $cadena.="<tr><th>Listado Clientes Con Dirección de Facturación</th></tr>";
+	        $cadena.="<tr><th>Listado Clientes Con Direcci&oacute;n de Contrato</th></tr>";
+	        $fichero = "Clientes con Direccion de Contrato";
 	    } else {
 	        if($_GET['tipo']=='conserje') {
 	            $cadena.="<tr><th>Listado Clientes Centro Negocios</th></tr>";
+	            $fichero = "Listado Clientes Centro Negocios";
 	        } else {
 	            if($_GET['tipo']=='independencia') {
 	            $cadena.="<tr><th>Domicilio social Independencia 8 Dpo</th></tr>";
+	            $fichero = "Clientes con Domicilio social Independencia 8Dpo";
 	            } else {
-	                $cadena.="<tr><th>".$res1['categoria']."</th></tr>";
+	                $cadena.="<tr><th>".utf8_decode($res1[2])."</th></tr>";
+	                $fichero = $res1[2];
 	            }
 	        }
 	    }
@@ -94,7 +101,9 @@ if(isset($_GET['tipo'])) {
 	}
 	$cadena .= "</table>";
 }
-/*header("Content-type: application/vnd.ms-excel; charset=UTF-8");
-header("Content-Disposition:inline; filename=excel.xls");*/
+header("Content-type: application/vnd.ms-excel; charset=UTF-8");
+header("Content-Disposition:inline; filename=".urlencode( $fichero ).".xls");
+header("Pragma: no-cache");
+header("Expires: 0");
 echo $cadena;
 exit(0);
