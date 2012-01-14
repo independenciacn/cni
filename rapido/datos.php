@@ -419,8 +419,7 @@ function frm_alta_servicio($vars)
 	<tr>
 	<th colspan='2'>Observaciones:</th>
 	<td colspan='2'>
-		<textarea id='observacion' name='observacion' rows='1' cols='50' tabindex='5'>
-		</textarea>
+		<textarea id='observacion' name='observacion' rows='1' cols='50' tabindex='5'></textarea>
 	</td>
 	<th colspan='2'>
 		<input type='submit' class='agregar' id='agregar' accesskey='a' 
