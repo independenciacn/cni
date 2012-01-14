@@ -371,6 +371,7 @@ function tipo_campo($campo,$tabla,$valor,$opcion,$orden)
 		case "select": //hay que hacer una consulta a la tabla dependiente de los valores
 				$sql = "Select * from `".$resultado['depende']."` order by 2";
 				$consulta = mysql_query($sql,$con);
+				
 				if ($tabla =='z_sercont') { //caso del z_sercont
 				    $cadena ="<select id='".$resultado['variable']."' 
 				    name='".$resultado['campoo']."' tabindex='".$i."' 
@@ -379,12 +380,23 @@ function tipo_campo($campo,$tabla,$valor,$opcion,$orden)
 					$cadena ="<select id='".$resultado['variable']."' 
 					name='".$resultado['campoo']."' tabindex='".$i."'>";
 				}
+				$categoriasBaneadas = array(
+				'Clientes domiciliación especial  + atencion telefonica',
+				'Clientes domiciliación integral + atencion telefonica'
+				);
 				$cadena .="
 				<option value='0'>-::".$resultado['campoo'].":-</option>";
 				while (true == ($resultado = mysql_fetch_array($consulta))) {
 				    $marcado = ( $resultado[1] == $valor ) ? 'selected': '';
-				    $cadena .= "<option ".$marcado." value='".$resultado[1]."'>
-				    ".$resultado[1]."</option>";
+				    if ($tabla == 'entradas_salidas') {
+				        if ( !in_array(trim($resultado[1]), $categoriasBaneadas)) {
+				            $cadena .= "<option ".$marcado." value='".$resultado[1]."'>
+				            ".$resultado[1]."</option>";
+				        }
+				    } else {
+				        $cadena .= "<option ".$marcado." value='".$resultado[1]."'>
+				            ".$resultado[1]."</option>";
+				    }
 				}
 				$cadena .= "</select> ".$valor;
 		break;					
