@@ -130,7 +130,7 @@ if((isset($_GET['factura'])) || (isset($_POST['factura']))) {
 sum(round((cantidad*unitario)*(iva/100),2)) as iva,
 sum((cantidad*unitario) + round((cantidad*unitario)*(iva/100),2)) as total
 from historico where factura like '$factura' group by factura";	
-	$consulta = @mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$resultado = @mysql_fetch_array($consulta);
 		$data[]=array("Servicio"=>'TOTALES',
 "Cant."=>number_format($resultado[0],2,',','.'),"P/Unitario"=>"","Importe"=>number_format($resultado[1],2,',','.')."!","IVA"=>"","TOTAL"=>number_format($resultado[3],2,',','.')."!");
@@ -178,17 +178,16 @@ from historico where factura like '$factura' group by factura";
 		{
 			$pdfcode = $pdf->output();
 			$nombre_factura = "factura_".$factura.".pdf";
-			$ruta_wxp = '\\172.26.0.131\RED\PLANTILLAS\facturas\\';
+			$ruta_wxp = "\\\\172.26.0.131\\RED\\PLANTILLAS\\facturas\\";
 			if(isset($_POST['envio'])) {
 				include_once 'envia.php';
 				set_time_limit(120);	
 				envia($pdfcode, $factura, $dup);
 			} else {
 				$ruta = $ruta_wxp.$nombre_factura;
-				$fp=fopen($ruta,'wb');
+				$fp = fopen($ruta,'wb');
 				fwrite($fp,$pdfcode);
 				fclose($fp);
-				
 			}
 			unset($pdfcode);
 		}
