@@ -15,7 +15,7 @@
 <body>
 <div id='titulo'>
 	Informes y busquedas de Consumos *Datos desde el 
-	1 de Julio de 2007 obtenidos de la facturaci&oacute;n
+	1 de Julio de 2007 obtenidos de la facturación
 </div>
 <div id='botones'>
 	<span class='boton' onclick='menu(0)'>Por cliente</span>
