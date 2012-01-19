@@ -55,8 +55,16 @@ if((isset($_GET['factura'])) || (isset($_POST['factura']))) {
     $gif = imagecreatefromgif("image001.gif");
 	$pdf->addImage(&$gif, 470, 750, 90);
 	//fin 10 aniversario
-    $im = imagecreatefromjpeg("pie_n.jpg");
+	/**
+	 * @todo Genera consumo alto revisar formato imagen
+	 * @var unknown_type
+	 */
+    $im = imagecreatefromjpeg("pie_n2.jpg");
 	$pdf->addImage($im,0,0,600);
+	/**
+	 * @todo Genera consumo alto revisar formato imagen
+	 * @var unknown_type
+	 */
 	$im = imagecreatefromjpeg("nif_n.jpg");
 	$pdf->addImage($im,0,200,33);
 	$pdf->restoreState();

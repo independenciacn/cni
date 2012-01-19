@@ -159,6 +159,7 @@ function mes($modo) {
  * ano(): Funcion que muestra los anyos desde el 2000 hasta	
  */	
 function anyo($modo) {
+	$select = "";
 	switch ($modo) {
 		case 0 :
 			$tipo = "ano";
