@@ -27,7 +27,7 @@ function cambiaf($stamp) //funcion del cambio de fecha
 		print("<table width=100% cellpadding=0 cellspacing=0>");
 		print("<tr><th colspan=7>Servicios contratados por $empresa - Periodo $mostrada - Servicio: $sersel</th></tr>");
 		print("<tr><th align='left'>Fecha</th><th align='left'>Servicio</th><th align='left'>Cantidad</th><th align='left'>Precio unidad</th><th align='left'>Subtotal</th><th align='left'>Iva</th><th align='left'>Total</th></tr>");
-		while($resultado=mysql_fetch_array($consulta))
+		while( true == ( $resultado = mysql_fetch_array( $consulta ) ) )
 		{
 			if($_SESSION['metagrupado']==1)
 			$fecha = "Agrupado";

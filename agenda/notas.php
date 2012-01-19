@@ -35,7 +35,7 @@
 	$cadena.="No hay notas";
 	else
 	{
-		while($resultado = @mysql_fetch_array($consulta))
+		while( true == ( $resultado = mysql_fetch_array( $consulta ) ) )
 		{
 			
 			$cadena.="&nbsp;&nbsp;<span class='fecha_nota'>".cambiaf($resultado[fecha])."&nbsp;&nbsp;&nbsp;&nbsp;<img src='imagenes/editar.png' alt='Editar Nota' onclick='editar_nota(".$resultado[0].")' /> &nbsp;|&nbsp;<img src='imagenes/borrar.png' alt='Borrar Nota' onclick='borra_nota(".$resultado[0].")' /></span>

@@ -122,7 +122,7 @@ function chequea_celda($hora,$dia)
 	if(@mysql_numrows($consulta)!=0)
 	{
 		
-		while($resultado = @mysql_fetch_array($consulta))
+		while( true == ( $resultado = mysql_fetch_array( $consulta ) ) )
 		{
 			$color_mod[$resultado[id_tarea]] = $resultado[color];
 			$tarea_mod[] = $resultado[id_tarea];
@@ -130,7 +130,7 @@ function chequea_celda($hora,$dia)
 	}
 	$sql = "Select * from agenda_interna where hour(inicio) like hour('$hora')";
 	$consulta = mysql_query($sql,$con);
-	while($resultado = @mysql_fetch_array($consulta))
+	while( true == ( $resultado = mysql_fetch_array( $consulta ) ) )
 	{
 		if(isset($color_mod) && (in_array($resultado[id],$tarea_mod)))
 			$color_celda = $color_mod[$resultado[id]];

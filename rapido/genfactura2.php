@@ -123,7 +123,7 @@ $codigo_factura = genera_codigo_factura($cliente,$mes);
 //<tr><th align='left'>Contrato</th><td colspan='5' align='left'>".$resultado[3] ."</td></tr>";
 //formas de pago y + datos de facturacion
 	$sql = "SELECT * from facturacion where idemp like $cliente";
-	if ($consulta = mysql_db_query($dbname,$sql,$con))
+	if ( true == ( $resultado = mysql_fetch_array( $consulta ) ) )
 	{
 		$resultado = mysql_fetch_array($consulta);
 		$pie_factura = "<table width='100%' cellpadding='1px' cellspacing='1px' style='font-size:10.0pt'>
@@ -157,7 +157,7 @@ $codigo_factura = genera_codigo_factura($cliente,$mes);
 //la primera linea tiene que ser el importe del mes del tipo de cliente
 	$sql = "Select * from tarifa_cliente where ID_Cliente like $cliente";
 	$consulta = mysql_query($sql,$con);
-	while ($resultado = mysql_fetch_array($consulta))
+	while ( true == ( $resultado = mysql_fetch_array( $consulta ) ) )
 	{
 		echo "<tr>
 		<td style='border-right-style:solid; border-width:1px;border-color:#000000;' align='center'>Mensual</td>
@@ -174,7 +174,7 @@ $codigo_factura = genera_codigo_factura($cliente,$mes);
 //almacenaje
 	$sql = "Select bultos, datediff(fin,inicio) from z_almacen where cliente like $cliente and month(fin) like $mes";
 	$consulta = mysql_query($sql,$con);
-	while ($resultado = mysql_fetch_array($consulta))
+	while ( true == ( $resultado = mysql_fetch_array( $consulta ) ) )
 	{
 		$almacen_con_iva = round($resultado[1]*1.16,2);
 		$total = $almacen_con_iva + $total;
@@ -194,7 +194,7 @@ $codigo_factura = genera_codigo_factura($cliente,$mes);
 //Servicio contratado
 	$sql = "Select d.Servicio, sum(d.Cantidad), date_format(c.fecha,'%d-%m-%Y') as fecha, sum(d.PrecioUnidadEuros), sum(d.ImporteEuro), d.iva, c.`Id Pedido` ,d.observaciones from `detalles consumo de servicios` as d join `consumo de servicios` as c on c.`Id Pedido` = d.`Id Pedido` where c.Cliente like $cliente and (date_format(curdate(),'%Y') like date_format(c.fecha,'%Y') and '$mes' like date_format(c.fecha,'%c')) group by d.servicio";
 	$consulta = mysql_query($sql,$con);
-	while ($resultado=mysql_fetch_array($consulta))
+	while ( true == ( $resultado = mysql_fetch_array( $consulta ) ) )
 	{
 		//$subtotal = round(round($resultado[4],2)+(round($resultado[4],2)*$resultado[5])/100,2);
 		//$subtotal = round($resultado[4] + ($resultado[4]*$resultado[5])/100,2);

@@ -162,7 +162,7 @@ function datos_ocupacion($despacho,$fecha)
 		$consulta = @mysql_query($sql,$con);
 		if(@mysql_numrows($consulta)!=0)
 		{
-			while($resultado=@mysql_fetch_array($consulta))
+			while( true == ( $resultado = mysql_fetch_array( $consulta ) ) )
 			{
 				$cadena.="<div id='ocupacion_".$resultado[0]."' class='despacho_ocupado'>";
 				$hinc = quita_segundos($resultado[hinc]);

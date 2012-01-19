@@ -13,8 +13,8 @@ else
 	$accion="agregar_tarea_pendiente()";	
 } 
 ?>
-<form id='tareas_pendientes' name='tareas_pendientes' method='' action='' onsubmit='<? echo $accion; ?>;return false' >
-<label>Tarea:</label><br/><textarea name='nombre' cols='50' rows'6'><? echo $resultado[nombre]; ?></textarea>
+<form id='tareas_pendientes' name='tareas_pendientes' method='post' action='' onsubmit='<? echo $accion; ?>;return false' >
+<label>Tarea:</label><br/><textarea name='nombre' cols='50' rows='6'><? echo $resultado[nombre]; ?></textarea>
 <p/><label>Vencimiento:</label><input type='text' name='vencimiento' id='semana' size='10' value='<? echo cambiaf($resultado[vencimiento]); ?>' />
 <button type='button' class='boton' id='f_trigger_semana' >...</button>
 <label>Asignada a:</label>
@@ -23,8 +23,8 @@ else
 $seleccion_asignada="<option value='0'>-No Asignada-</option>";
 
 	$sql2 = "Select Id,Apell1,Nombre from empleados";
-	$consulta2 = @mysql_query($sql2,$con);
-	while($resultado2 = @mysql_fetch_array($consulta2))
+	$consulta2 = mysql_query($sql2,$con);
+	while(true == ($resultado2 = @mysql_fetch_array($consulta2)))
 	{	
 		if($resultado[asignada]==$resultado2[0])
 			$check_as = "selected";
@@ -76,7 +76,7 @@ $sql = "SELECT vencimiento
 FROM `tareas_pendientes`
 GROUP BY vencimiento";
 $consulta = @mysql_query($sql,$con);
-while($resultado = @mysql_fetch_array($consulta))
+while( true == ( $resultado = mysql_fetch_array( $consulta ) ) )
 $fechas[]=$resultado[0];
 /*Fin*/
 for($j=0;$j<=1;$j++)
@@ -99,12 +99,10 @@ for($j=0;$j<=1;$j++)
 	$consulta = @mysql_query($sql,$con);
 	if(@mysql_numrows($consulta)!=0)
 	{
-		while($resultado = @mysql_fetch_array($consulta))
+		$i = 0;
+		while( true == ( $resultado = mysql_fetch_array( $consulta ) ) )
 		{
-			if($i++%2)
-				$clase= "lista_par";
-			else
-				$clase= "lista_impar";
+			$clase = ( $i++ % 2) ? "lista_par" : "lista_impar";
 		/*
  		 * Colores de las prioridades
  		 */	

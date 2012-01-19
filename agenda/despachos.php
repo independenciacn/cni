@@ -9,7 +9,7 @@
 	$consulta = @mysql_query($sql,$con);
 	$despachos=array();
 	$clase=array();
-	while($resultado = @mysql_fetch_array($consulta))
+	while( true == ( $resultado = mysql_fetch_array( $consulta ) ) )
 	{
 		 $despachos[intval($resultado[0])]=$resultado[1];
 		 $clase[intval($resultado[0])]="despacho_ocupado";

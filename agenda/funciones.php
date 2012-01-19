@@ -11,7 +11,7 @@ function teleco_cliente($cliente,$servicio)
 	global $con;
 	$sql = "Select valor from z_sercont where idemp like $cliente and servicio like '".$servicio."'";
 	$consulta = @mysql_query($sql,$con);
-	while($resultado = @mysql_fetch_array($consulta))
+	while( true == ( $resultado = mysql_fetch_array( $consulta ) ) )
 	{
 		$cadena.=$resultado[0]."<br/>";
 	}
@@ -66,7 +66,7 @@ function datos_despacho($despacho)
 	{
 		$cadena.="<div class='despacho_parcial' height='100%'>";
 		$i=0;
-		while($resultado=@mysql_fetch_array($consulta))
+		while( true == ( $resultado = mysql_fetch_array( $consulta ) ) )
 		{
 			$i++;
 			$cadena.=nombre_cliente($resultado[id_cliente])."<br/>";
