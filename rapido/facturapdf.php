@@ -59,7 +59,7 @@ if((isset($_GET['factura'])) || (isset($_POST['factura']))) {
 	 * @todo Genera consumo alto revisar formato imagen
 	 * @var unknown_type
 	 */
-    $im = imagecreatefromjpeg("pie_n2.jpg");
+    $im = imagecreatefromjpeg("pie_n.jpg");
 	$pdf->addImage($im,0,0,600);
 	/**
 	 * @todo Genera consumo alto revisar formato imagen
