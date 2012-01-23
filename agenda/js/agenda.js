@@ -428,6 +428,7 @@ function cambia_fecha(fecha)
 					})
 			}
 		});
+	return false;
 }
 
 /*

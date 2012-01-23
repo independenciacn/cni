@@ -27,13 +27,13 @@ else
 	}
 
 ?>
-<form name='seleccion_fecha' method='' action='' onsubmit='cambia_fecha();return false'>
+<form name='seleccion_fecha' method='post' action='' onsubmit='cambia_fecha()'>
 <label>Seleccionar Fecha: </label><input type='text' id='semana' name='semana' size ='10'  value='<? echo $hoy; ?>' onchange='cambia_fecha()' />
 <button type='button' class='boton' id='f_trigger_semana' >...</button>
 <input type='hidden' id='seccion' value='1' />
 <? echo $mes." de ".$anyo.". Semana: ". $semana;?>
 </form>
-<table width='100%' id='semana'>
+<table style={width:100%;} id='semana'>
 <?php
 /*
  * Calculamos las semanas totales del año actual
