@@ -148,7 +148,7 @@ function mes($modo) {
 	$meses = nombreMeses ();
 	
 	$select .= "<option value=0>-Mes-</option>";
-	for($i = 0; $i <= 11; $i ++) {
+	for($i = 0; $i <= 12; $i ++) {
 		$diam = $i + 1;
 		$select .= "<option value='" . $diam . "'>" . $meses [$i] . "</option>";
 	}
