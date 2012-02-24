@@ -1084,6 +1084,7 @@ function actualiza_descripcion_telefono(telefono)
 	var descripcion = $F('descripcion_'+ telefono);
 	var id = $F('identificador_'+ telefono);
 	pars = 'opcion=17&telefono='+telefono+'&descripcion='+descripcion+'&id='+id;
+	console.log( pars );
 	var myAjax = new Ajax.Request(url,
 	{
 		method:'post',

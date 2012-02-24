@@ -845,7 +845,7 @@ function borra_telefono_asignado( $vars )
  	global $con;
 	$sql = "Update `telipext` set descripcion = '".$vars['descripcion']."' 
 	where id like ".$vars['id'];
-	if (mysql_db_query($sql,$con) ) {
+	if (mysql_query($sql,$con) ) {
         return true;
 	} else {
         return false;
@@ -888,8 +888,6 @@ function actNuevaPass( $vars )
 {
 	global $con;
 	$mensaje = "";
-	//$vars['vieja'] = mysql_real_escape_string($vars['vieja'], $con);
-	//$vars['nueva'] = mysql_real_escape_string($vars['nueva'], $con);
 	$sql = "Select 1 
 	from usuarios where nick like 'usuario' 
 	and contra like sha1('". $vars['vieja']."')";

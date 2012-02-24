@@ -488,14 +488,27 @@ function sort(seccion,valor,tipo)
 		onCreate:$('tabla_resultados').innerHTML = "Cargando...<p/><img src='loader.gif' alt='Cargando...'/>"
 		});
 }
-//Aqui los filtros
-
+/**
+ * Aplica los filtros al listado de facturas
+ */
 function filtro(filtro)
 {
-	var url="datos.php"
-	var texto=$F('filtro_'+filtro)
-	var pars='opcion=14&filtro='+filtro+'&texto='+texto
-	var myAjax = new Ajax.Request(url,
+	var busca = false;
+	var url="datos.php";
+	var texto=$F('filtro_'+filtro);
+	var pars='opcion=14&filtro='+filtro+'&texto='+texto;
+	// filtro 2 y texto mayor o igual a 10
+	if ( filtro == 2 ) {
+		if ( texto.length >= 10 ) {
+			busca = true;
+		}
+	} else {
+		if ( texto.length >= 3 ) { // minimo 3 caracteres para los demas
+			busca = true;
+		}
+	}
+	if ( busca ) {
+		var myAjax = new Ajax.Request(url,
 		{
 		method: 'post',
 		parameters: pars,
@@ -505,6 +518,7 @@ function filtro(filtro)
 			},
 		onCreate:$('tabla_resultados').innerHTML = "Cargando...<p/><img src='loader.gif' alt='Cargando...'/>"
 		});
+	}
 }
 function sort(seccion)
 {
