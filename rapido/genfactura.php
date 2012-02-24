@@ -524,9 +524,15 @@ if($historico == "ok") {
 		$sql = "Select * from tarifa_cliente 
 		where ID_Cliente like ".$cliente." order by Imp_Euro desc";
 		//echo $sql;/*PUNTO DE CONTROL*/
-		$consulta = mysql_query($sql,$con);
+		$consulta = mysql_query( $sql, $con );
+		/**
+		 * Acumulado del total de servicios fijos
+		 * @var float $importeServiciosFijos
+		 */
+		$importeServiciosFijos = 0;
 		while ( true == ($resultado = mysql_fetch_array($consulta))) {
 			$importe_sin_iva = $resultado[7]*$resultado[4];
+			$importeServiciosFijos += $importe_sin_iva; 
 			echo "<tr>
 			<td>
 			<p class='texto'>".ucfirst($resultado[2])." ".ucfirst($resultado[6])."</p>
@@ -539,6 +545,7 @@ if($historico == "ok") {
 				number_format(iva($importe_sin_iva,$resultado[5]),2,',','.')."&euro;&nbsp;
 			</td></tr>";
 			$total = $total + iva($importe_sin_iva,$resultado[5]);
+			
 			$bruto = $bruto + $importe_sin_iva;
 			$celdas++;
 			$cantidad++;
@@ -662,13 +669,17 @@ if($historico == "ok") {
 		}
 	}
 //descuento si procede
+/**
+ * El descuento se calcula del total de los servicios fijos
+ * Esta como un servicio FIJO MENSUAL
+ */
 		$esql = "Select razon from clientes where id like ".$cliente;
 		$consulta = mysql_query($esql,$con);
 		$resultado = mysql_fetch_array($consulta);
 		if(($resultado[0] != "") && ($resultado[0] != "")) {
-			$porcentaje = explode("%",$resultado[0]);
-			$descuento = ($bruto * $porcentaje[0])/100;
-			$descuento_con_iva = $descuento * 1.18;
+			$porcentaje = explode("%",$resultado[0]); // Porcentaje del descuento
+			$descuento = ($importeServiciosFijos * $porcentaje[0])/100;// @FIXME calculo en base al total de servicios fijos
+			$descuento_con_iva = $descuento * 1.18; 
 			echo "<tr>
 			<td ><p class='texto'>Descuento del ".$porcentaje[0]."%</p></td>
 			<td align='right'>1&nbsp;</td>
@@ -676,14 +687,17 @@ if($historico == "ok") {
 			<td align='right'>-".number_format($descuento,2,',','.')."&euro;&nbsp;</td>
 			<td align='right'>18%&nbsp;</td>
 			<td align='right'>-".number_format($descuento_con_iva,2,',','.')."&euro;&nbsp;</td></tr>";
-		$descuento_historico = "-".$descuento;
-		if(($historico == "ko")&& (!isset($_GET['prueba']))){ //Agregamos al historico
-			agrega_historico($codigo,"Descuento","1",$descuento_historico,"18", "del ".$porcentaje[0]);
+			$descuento_historico = "-".$descuento;
+			if(($historico == "ko")&& (!isset($_GET['prueba']))){ //Agregamos al historico
+				agrega_historico($codigo,"Descuento","1",$descuento_historico,"18", "del ".$porcentaje[0]);
 			}
 		} else {
 			$descuento = 0;
 			$descuento_con_iva = 0;
 		}
+		/**
+		 * Para el resultado de pie esta bien
+		 */
 		$bruto = $bruto - $descuento;
 		$total = $total - $descuento_con_iva;
 } //Cierre de las que no estan en historico

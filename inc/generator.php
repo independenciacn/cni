@@ -180,7 +180,7 @@ function color_cabezera($tabla,$vars)
  */
 function codigo_negocio($idemp)
 {
-	global $dbname, $con;
+	global $con;
 	$cadena = "";
 	if(isset($idemp)&& $idemp!=NULL)
     {
@@ -193,6 +193,15 @@ function codigo_negocio($idemp)
 	    } 
     } 
 	return $cadena;
+}
+function esOculto( $campo, $tabla) {
+	global $con;
+	$sql = "Select tipo from alias
+	where tabla like '".$tabla."' and `campoo` like '".$campo."'";
+	$consulta = mysql_query($sql,$con);
+	$resultado = mysql_fetch_array($consulta);
+	return ( $resultado[0] == 'oculto' ) ? true : false;
+	
 }
 /**
  * Generacion del formulario dependiendo de la seccion donde estamos
@@ -255,18 +264,21 @@ function formulario($vars)
 		if($j%2==0){
 		    $cadena .= "</tr><tr>";
 		}
-		$j++;
-		$cadena .= "<th align='left' valign='top' 
-		class='nombre_campo'>".
-		nombre_campo(mysql_field_name($consulta,$i),$vars['tabla']) ."</th>
-		<td align='left' valign='top' class='valor_campo'>".
-		tipo_campo(
-		    mysql_field_name($consulta,$i),
-		    $vars['tabla'],
-		    $resultado[$i],
-		    'actualiza',
-		    $i
-		) ."</td>";
+		
+		if ( !esOculto(mysql_field_name($consulta, $i), $vars['tabla'])) {
+			$cadena .= "<th align='left' valign='top' 
+				class='nombre_campo'>".
+				nombre_campo(mysql_field_name($consulta,$i),$vars['tabla']) ."</th>
+				<td align='left' valign='top' class='valor_campo'>".
+				tipo_campo(
+		    	mysql_field_name($consulta,$i),
+		    		$vars['tabla'],
+		    		$resultado[$i],
+		    		'actualiza',
+		    		$i
+				) ."</td>";
+			$j++;
+		}
 	}
 	$cadena .= "</tr>";
 	//parte de la botoneria ya empezamos con los casos particulars

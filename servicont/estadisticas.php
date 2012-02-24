@@ -148,9 +148,8 @@ function mes($modo) {
 	$meses = nombreMeses ();
 	
 	$select .= "<option value=0>-Mes-</option>";
-	for($i = 0; $i <= 12; $i ++) {
-		$diam = $i + 1;
-		$select .= "<option value='" . $diam . "'>" . $meses [$i] . "</option>";
+	for($i = 1; $i <= 12; $i ++) {
+		$select .= "<option value='" . $i . "'>" . $meses [$i] . "</option>";
 	}
 	$select .= "</select>";
 	return $select;
@@ -875,100 +874,96 @@ function genera_consultas($inicio,$fin)
  	global $con;
 	$consulta = mysql_query($sql,$con);
 
-$cadena.="<table id='tabla' width='100%'><tr>";
-$cadena.="<tr><th></th><th colspan='".mysql_num_fields($consulta)."'>
-".$vars['titulo']." - ".$subtitulo."</th></tr>";
-if(mysql_numrows($consulta)>=10000 || mysql_numrows($consulta)==0)
-{
-	if(mysql_numrows($consulta)>=10000)
-		$cadena.="<tr><th colspan='".mysql_num_fields($consulta)."'>
-	    Demasiados Resultados. Filtre Mas</th></tr>";
-	else
-		$cadena.="<tr><th colspan='".mysql_num_fields($consulta)."'>
-	    No hay Resultados.</th></tr>";
-} else {
-	$cadena.="<th></th>";
-    for($i=0;$i<=mysql_num_fields($consulta)-1;$i++)
-	    $cadena.= "<th>".mysql_field_name($consulta,$i)."</th>";
-$cadena.="</tr>";
-$j=0;
-$aux = " ";
-$minitot = 0;
-while(true == ($resultado = mysql_fetch_array($consulta)))
-{
-	$j++;
-	if($j%2==0)
-		$clase = "par";
-	else
-		$clase = "impar";
-    if(isset($resultado["Nombre"]) && isset($resultado["fecha"]))
-    {
-
-            if((($resultado["Nombre"]!=$aux)&&($aux != " ")) 
-                ||(($resultado["fecha"]!=$aux2)&&($aux != " ")))
-            {
-                $cadena.="<tr><th colspan='8'>Total ".$aux." ".cambiaf($aux2)."</th>
-                <th>".round($minitot,2)."&euro;</th></tr>";
-                $pal_final = $cadena;
-                $aux2 = $resultado["fecha"];
-                $aux = $resultado["Nombre"];
-                $minitot = 0;
-            }
-            else
-                if($aux == " ")
-                {
-                    $aux = $resultado["Nombre"];
-                    $aux2 = $resultado["fecha"];
-                
-                }
-                $minitot = $minitot + $resultado['Total'];
-    }
-	$cadena.="<tr><th>".$j."</th>";
-	for($i=0;$i<=mysql_num_fields($consulta)-1;$i++)
-	{
-		switch(mysql_field_type($consulta,$i))
-		{
-			case "string":
-						if(mysql_field_name($consulta,$i)=="Servicio")
-							$campo = $resultado[$i];
-						else
-							$campo = $resultado[$i];break;
-			case "real":$campo = number_format($resultado[$i],2,',','.');
-						$tot[$i]=$tot[$i]+$resultado[$i];
-					break;
-			case "date":$campo = cambiaf($resultado[$i]);break;
-			default:$campo = $resultado[$i];
-					$tot[$i] ="";
-					break;
+	$cadena ="<table id='tabla' width='100%'><tr>";
+	$cadena.="<tr><th></th><th colspan='".mysql_num_fields($consulta)."'>
+		".$vars['titulo']." - ".$subtitulo."</th></tr>";
+	if(mysql_numrows($consulta)>=10000 || mysql_numrows($consulta)==0) {
+		if(mysql_numrows($consulta)>=10000) {
+			$cadena.="<tr><th colspan='".mysql_num_fields($consulta)."'>
+	    		Demasiados Resultados. Filtre Mas</th></tr>";
+		} else {
+			$cadena.="<tr><th colspan='".mysql_num_fields($consulta)."'>
+	    		No hay Resultados.</th></tr>";
 		}
-
-		$cadena.="<td class='".$clase."'>".$campo."</td>";
+	} else {
+		$cadena.="<th></th>";
+    	for($i=0;$i<=mysql_num_fields($consulta)-1;$i++)
+	    	$cadena.= "<th>".mysql_field_name($consulta,$i)."</th>";
+			$cadena.="</tr>";
+			$j=0;
+			$aux = " ";
+			$aux2 = "";
+			$minitot = 0;
+			while(true == ($resultado = mysql_fetch_array($consulta))) {
+				$j++;
+				$clase = ( $j % 2 == 0 ) ? "par" : "impar";
+    			if(isset($resultado["Nombre"]) && isset($resultado["fecha"])) {
+					if((($resultado["Nombre"]!=$aux)&&($aux != " ")) 
+                		||(($resultado["fecha"]!=$aux2)&&($aux != " "))) {
+                		$cadena.="<tr><th colspan='8'>Total ".$aux." ".cambiaf($aux2)."</th>
+                		<th>".round($minitot,2)."&euro;</th></tr>";
+                		$pal_final = $cadena;
+                		$aux2 = $resultado["fecha"];
+                		$aux = $resultado["Nombre"];
+                		$minitot = 0;
+            		} else {
+                		if($aux == " ") {
+                    		$aux = $resultado["Nombre"];
+                    		$aux2 = $resultado["fecha"];
+                		}
+            		}
+                	$minitot = $minitot + $resultado['Total'];
+    			}
+				$cadena.="<tr><th>".$j."</th>";
+				for($i=0;$i<=mysql_num_fields($consulta)-1;$i++) {
+					switch(mysql_field_type($consulta,$i)) {
+						case "string":
+							if(mysql_field_name($consulta,$i)=="Servicio") {
+								$campo = $resultado[$i];
+							} else {
+								$campo = $resultado[$i];
+							}
+						break;
+						case "real":
+							$campo = number_format($resultado[$i],2,',','.');
+							$tot[$i]=$tot[$i]+$resultado[$i];
+						break;
+						case "date":
+							$campo = cambiaf($resultado[$i]);
+						break;
+						default:
+							$campo = $resultado[$i];
+							$tot[$i] ="";
+						break;
+					}
+					$cadena.="<td class='".$clase."'>".$campo."</td>";
+				}
+				$cadena.="</tr>";
+			}
+			if(isset($aux) && isset($aux2) && isset($minitot)) {
+				$cadena.="<tr><th colspan='8'>Total ".$aux." ".cambiaf($aux2)."</th>
+				<th>".round($minitot,2)."&euro;</th></tr>";
+			}
+			$cadena.="<tr><th></th>";
+			for($i=0;$i<=mysql_num_fields($consulta)-1;$i++) {
+				switch(mysql_field_type($consulta,$i)) {
+					case "string":
+						$cadena.="<th></th>";
+					break;
+					case "real":
+						$cadena.="<th>".number_format($tot[$i],2,',','.')."</th>";
+					break;
+					default:
+						$cadena.="<th></th>";
+					break;
+				}
+			}
 	}
 	$cadena.="</tr>";
-    
-   
+	$cadena.="</table>";
+	$cadena.="<div id='titulo'>Total Resultados: ".mysql_numrows($consulta)."</div>";
+	return $cadena;
 }
-if(isset($aux) && isset($aux2) && isset($minitot))
-$cadena.="<tr><th colspan='8'>Total ".$aux." ".cambiaf($aux2)."</th>
-<th>".round($minitot,2)."&euro;</th></tr>";
-
-$cadena.="<tr><th></th>";
-for($i=0;$i<=mysql_num_fields($consulta)-1;$i++)
-	{
-		switch(mysql_field_type($consulta,$i))
-		{
-			case "string":$cadena.="<th></th>";break;
-			case "real":$cadena.="<th>".number_format($tot[$i],2,',','.')."</th>";
-					break;
-			default:$cadena.="<th></th>";break;
-		}
-	}
-}
-$cadena.="</tr>";
-$cadena.="</table>";
-$cadena.="<div id='titulo'>Total Resultados: ".mysql_numrows($consulta)."</div>";
-return $cadena;
- }
  
 /*
  * Generacion de las tablas de las comparativas 
@@ -1242,7 +1237,7 @@ function generamos_titulo_comparativa($esquel) {
  */
 function nombreMeses() {
 	$meses = array (
-			"", "Enero", "Febrero", "Marzo", "Abril", "Mayo", 
+			1=>"Enero", "Febrero", "Marzo", "Abril", "Mayo", 
 			"Junio", "Julio", "Agosto", "Septiembre", "Octubre", 
 			"Noviembre", "Diciembre" );
 	return $meses;
