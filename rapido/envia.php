@@ -35,10 +35,12 @@ function envia( $fichero, $numeroFactura, $dup ) {
 	$resultado = mysql_fetch_array( $consulta, MYSQL_ASSOC);
 	$direcciones = explode(";",$resultado['direccion']);
 	foreach( $direcciones as $direccion ) {
-		$correos[] = array(
-			'destinatario' => $resultado['cliente'],
-			'email' => $direccion	
-		);
+		if( filter_var( $direccion, FILTER_VALIDATE_EMAIL ) ) {
+			$correos[] = array(
+				'destinatario' => $resultado['cliente'],
+				'email' => $direccion	
+			);
+		}
 	}
 	if ( $dup ) {
 		$duplicado = "duplicado de ";
