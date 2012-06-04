@@ -1,0 +1,1302 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+  <html xmlns="http://www.w3.org/1999/xhtml">
+		<head>
+			<!-- template designed by Marco Von Ballmoos -->
+			<title>Docs For Class RotImage</title>
+			<link rel="stylesheet" href="../media/stylesheet.css" />
+			<meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'/>
+		</head>
+		<body>
+			<div class="page-body">			
+<h2 class="class-name">Class RotImage</h2>
+
+<a name="sec-description"></a>
+<div class="info-box">
+	<div class="info-box-title">Description</div>
+	<div class="nav-bar">
+					<span class="disabled">Description</span> |
+													<a href="#sec-var-summary">Vars</a> (<a href="#sec-vars">details</a>)
+						|											<a href="#sec-method-summary">Methods</a> (<a href="#sec-methods">details</a>)
+						
+					</div>
+	<div class="info-box-body">
+        		<!-- ========== Info from phpDoc block ========= -->
+		<p class="notes">
+			Located in <a class="field" href="_entradas2---jpgraph---gd_image.inc.php.html">/entradas2/jpgraph/gd_image.inc.php</a> (line <span class="field">1938</span>)
+		</p>
+		
+				
+		<pre><a href="../default/Image.html">Image</a>
+   |
+   --RotImage</pre>
+	
+			</div>
+</div>
+
+
+
+	<a name="sec-var-summary"></a>
+	<div class="info-box">
+		<div class="info-box-title">Variable Summary</span></div>
+		<div class="nav-bar">
+			<a href="#sec-description">Description</a> |
+						<span class="disabled">Vars</span> (<a href="#sec-vars">details</a>)
+							| 
+									<a href="#sec-method-summary">Methods</a> (<a href="#sec-methods">details</a>)
+							
+								</div>
+		<div class="info-box-body">
+			<div class="var-summary">
+																																																								<div class="var-title">
+					<span class="var-type">mixed</span>
+					<a href="#$a" title="details" class="var-name">$a</a>
+				</div>
+																<div class="var-title">
+					<span class="var-type">mixed</span>
+					<a href="#$dx" title="details" class="var-name">$dx</a>
+				</div>
+																<div class="var-title">
+					<span class="var-type">mixed</span>
+					<a href="#$dy" title="details" class="var-name">$dy</a>
+				</div>
+																<div class="var-title">
+					<span class="var-type">mixed</span>
+					<a href="#$transx" title="details" class="var-name">$transx</a>
+				</div>
+																<div class="var-title">
+					<span class="var-type">mixed</span>
+					<a href="#$transy" title="details" class="var-name">$transy</a>
+				</div>
+											</div>
+		</div>
+	</div>
+
+	<a name="sec-method-summary"></a>
+	<div class="info-box">
+		<div class="info-box-title">Method Summary</span></div>
+		<div class="nav-bar">
+			<a href="#sec-description">Description</a> |
+																		<a href="#sec-var-summary">Vars</a> (<a href="#sec-vars">details</a>)
+				 
+				|
+						<span class="disabled">Methods</span> (<a href="#sec-methods">details</a>)
+		</div>
+		<div class="info-box-body">			
+			<div class="method-summary">
+																																																																																																																																																																												
+												<div class="method-definition">
+											<span class="method-result">RotImage</span>
+										<a href="#__construct" title="details" class="method-name">__construct</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$aWidth</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$aHeight</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$a</span> = <span class="var-default">0</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$aFormat</span> = <span class="var-default">DEFAULT_GFORMAT</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$aSetAutoMargin</span> = <span class="var-default">true</span>])
+									</div>
+																<div class="method-definition">
+											<span class="method-result">void</span>
+										<a href="#Arc" title="details" class="method-name">Arc</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$xc</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$yc</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$w</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$h</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$s</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$e</span>)
+									</div>
+																<div class="method-definition">
+											<span class="method-result">void</span>
+										<a href="#ArrRotate" title="details" class="method-name">ArrRotate</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$pnts</span>)
+									</div>
+																<div class="method-definition">
+											<span class="method-result">void</span>
+										<a href="#Circle" title="details" class="method-name">Circle</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$xc</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$yc</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$r</span>)
+									</div>
+																<div class="method-definition">
+											<span class="method-result">void</span>
+										<a href="#CopyMerge" title="details" class="method-name">CopyMerge</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$fromImg</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$toX</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$toY</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$fromX</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$fromY</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$toWidth</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$toHeight</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$fromWidth</span> = <span class="var-default">-1</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$fromHeight</span> = <span class="var-default">-1</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$aMix</span> = <span class="var-default">100</span>])
+									</div>
+																<div class="method-definition">
+											<span class="method-result">void</span>
+										<a href="#DashedLine" title="details" class="method-name">DashedLine</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$x1</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$y1</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$x2</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$y2</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$dash_length</span> = <span class="var-default">1</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$dash_space</span> = <span class="var-default">4</span>])
+									</div>
+																<div class="method-definition">
+											<span class="method-result">void</span>
+										<a href="#FilledArc" title="details" class="method-name">FilledArc</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$xc</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$yc</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$w</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$h</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$s</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$e</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$style</span> = <span class="var-default">''</span>])
+									</div>
+																<div class="method-definition">
+											<span class="method-result">void</span>
+										<a href="#FilledCircle" title="details" class="method-name">FilledCircle</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$xc</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$yc</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$r</span>)
+									</div>
+																<div class="method-definition">
+											<span class="method-result">void</span>
+										<a href="#FilledPolygon" title="details" class="method-name">FilledPolygon</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$pnts</span>)
+									</div>
+																<div class="method-definition">
+											<span class="method-result">void</span>
+										<a href="#FilledRectangle" title="details" class="method-name">FilledRectangle</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$x1</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$y1</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$x2</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$y2</span>)
+									</div>
+																<div class="method-definition">
+											<span class="method-result">void</span>
+										<a href="#Line" title="details" class="method-name">Line</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$x1</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$y1</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$x2</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$y2</span>)
+									</div>
+																<div class="method-definition">
+											<span class="method-result">void</span>
+										<a href="#Point" title="details" class="method-name">Point</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$x</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$y</span>)
+									</div>
+																<div class="method-definition">
+											<span class="method-result">void</span>
+										<a href="#Polygon" title="details" class="method-name">Polygon</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$pnts</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$closed</span> = <span class="var-default">FALSE</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$fast</span> = <span class="var-default">FALSE</span>])
+									</div>
+																<div class="method-definition">
+											<span class="method-result">void</span>
+										<a href="#Rectangle" title="details" class="method-name">Rectangle</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$x1</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$y1</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$x2</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$y2</span>)
+									</div>
+																<div class="method-definition">
+											<span class="method-result">void</span>
+										<a href="#Rotate" title="details" class="method-name">Rotate</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$x</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$y</span>)
+									</div>
+																<div class="method-definition">
+											<span class="method-result">void</span>
+										<a href="#SetAngle" title="details" class="method-name">SetAngle</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$a</span>)
+									</div>
+																<div class="method-definition">
+											<span class="method-result">void</span>
+										<a href="#SetCenter" title="details" class="method-name">SetCenter</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$dx</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$dy</span>)
+									</div>
+																<div class="method-definition">
+											<span class="method-result">void</span>
+										<a href="#SetMargin" title="details" class="method-name">SetMargin</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$lm</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$rm</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$tm</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$bm</span>)
+									</div>
+																<div class="method-definition">
+											<span class="method-result">void</span>
+										<a href="#SetTranslation" title="details" class="method-name">SetTranslation</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$dx</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$dy</span>)
+									</div>
+																<div class="method-definition">
+											<span class="method-result">void</span>
+										<a href="#StrokeText" title="details" class="method-name">StrokeText</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$x</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$y</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$txt</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$dir</span> = <span class="var-default">0</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$paragraph_align</span> = <span class="var-default">&quot;left&quot;</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$debug</span> = <span class="var-default">false</span>])
+									</div>
+																<div class="method-definition">
+											<span class="method-result">void</span>
+										<a href="#UpdateRotMatrice" title="details" class="method-name">UpdateRotMatrice</a>
+										()
+									</div>
+								</div>
+		</div>
+	</div>		
+
+	<a name="sec-vars"></a>
+	<div class="info-box">
+		<div class="info-box-title">Variables</div>
+		<div class="nav-bar">
+			<a href="#sec-description">Description</a> |
+										<a href="#sec-var-summary">Vars</a> (<span class="disabled">details</span>)
+						
+			
+										| 
+									<a href="#sec-method-summary">Methods</a> (<a href="#sec-methods">details</a>)
+							
+					</div>
+		<div class="info-box-body">
+			<a name="var$a" id="$a"><!-- --></A>
+<div class="oddrow">
+
+	<div class="var-header">
+		<span class="var-title">
+			<span class="var-type">mixed</span>
+			<span class="var-name">$a</span>
+						(line <span class="line-number">1939</span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+	<ul class="tags">
+				<li><span class="field">access:</span> public</li>
+			</ul>
+	
+	
+		
+		
+
+</div>
+<a name="var$dx" id="$dx"><!-- --></A>
+<div class="evenrow">
+
+	<div class="var-header">
+		<span class="var-title">
+			<span class="var-type">mixed</span>
+			<span class="var-name">$dx</span>
+						(line <span class="line-number">1940</span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+	<ul class="tags">
+				<li><span class="field">access:</span> public</li>
+			</ul>
+	
+	
+		
+		
+
+</div>
+<a name="var$dy" id="$dy"><!-- --></A>
+<div class="oddrow">
+
+	<div class="var-header">
+		<span class="var-title">
+			<span class="var-type">mixed</span>
+			<span class="var-name">$dy</span>
+						(line <span class="line-number">1940</span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+	<ul class="tags">
+				<li><span class="field">access:</span> public</li>
+			</ul>
+	
+	
+		
+		
+
+</div>
+<a name="var$transx" id="$transx"><!-- --></A>
+<div class="evenrow">
+
+	<div class="var-header">
+		<span class="var-title">
+			<span class="var-type">mixed</span>
+			<span class="var-name">$transx</span>
+						(line <span class="line-number">1940</span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+	<ul class="tags">
+				<li><span class="field">access:</span> public</li>
+			</ul>
+	
+	
+		
+		
+
+</div>
+<a name="var$transy" id="$transy"><!-- --></A>
+<div class="oddrow">
+
+	<div class="var-header">
+		<span class="var-title">
+			<span class="var-type">mixed</span>
+			<span class="var-name">$transy</span>
+						(line <span class="line-number">1940</span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+	<ul class="tags">
+				<li><span class="field">access:</span> public</li>
+			</ul>
+	
+	
+		
+		
+
+</div>
+							<h4>Inherited Variables</h4>
+				<A NAME='inherited_vars'><!-- --></A>
+									<p>Inherited from <span class="classname"><a href="../default/Image.html">Image</a></span></p>
+					<blockquote>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$bbox_cache">Image::$bbox_cache</a></span><br>
+							</span>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$canvascolor">Image::$canvascolor</a></span><br>
+							</span>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$colorstack">Image::$colorstack</a></span><br>
+							</span>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$colorstackidx">Image::$colorstackidx</a></span><br>
+							</span>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$current_color">Image::$current_color</a></span><br>
+							</span>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$current_color_name">Image::$current_color_name</a></span><br>
+							</span>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$expired">Image::$expired</a></span><br>
+							</span>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$ff_font0">Image::$ff_font0</a></span><br>
+							</span>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$ff_font0_bold">Image::$ff_font0_bold</a></span><br>
+							</span>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$ff_font1">Image::$ff_font1</a></span><br>
+							</span>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$ff_font1_bold">Image::$ff_font1_bold</a></span><br>
+							</span>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$ff_font2">Image::$ff_font2</a></span><br>
+							</span>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$ff_font2_bold">Image::$ff_font2_bold</a></span><br>
+							</span>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$font_family">Image::$font_family</a></span><br>
+							</span>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$font_file">Image::$font_file</a></span><br>
+							</span>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$font_size">Image::$font_size</a></span><br>
+							</span>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$font_style">Image::$font_style</a></span><br>
+							</span>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$iInterlace">Image::$iInterlace</a></span><br>
+							</span>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$img">Image::$img</a></span><br>
+							</span>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$img_format">Image::$img_format</a></span><br>
+							</span>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$langconv">Image::$langconv</a></span><br>
+							</span>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$lastx">Image::$lastx</a></span><br>
+							</span>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$lasty">Image::$lasty</a></span><br>
+							</span>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$line_style">Image::$line_style</a></span><br>
+							</span>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$obs_list">Image::$obs_list</a></span><br>
+							</span>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$original_height">Image::$original_height</a></span><br>
+							</span>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$original_width">Image::$original_width</a></span><br>
+							</span>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$plotheight">Image::$plotheight</a></span><br>
+							</span>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$plotwidth">Image::$plotwidth</a></span><br>
+							</span>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$quality">Image::$quality</a></span><br>
+							</span>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$rgb">Image::$rgb</a></span><br>
+							</span>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$text_halign">Image::$text_halign</a></span><br>
+							</span>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$text_valign">Image::$text_valign</a></span><br>
+							</span>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$ttf">Image::$ttf</a></span><br>
+							</span>
+													<span class="var-title">
+								<span class="var-name"><a href="../default/Image.html#var$use_anti_aliasing">Image::$use_anti_aliasing</a></span><br>
+							</span>
+											</blockquote> 
+										
+		</div>
+	</div>
+	
+	<a name="sec-methods"></a>
+	<div class="info-box">
+		<div class="info-box-title">Methods</div>
+		<div class="nav-bar">
+			<a href="#sec-description">Description</a> |
+															<a href="#sec-var-summary">Vars</a> (<a href="#sec-vars">details</a>)
+																	<a href="#sec-method-summary">Methods</a> (<span class="disabled">details</span>)
+						
+		</div>
+		<div class="info-box-body">
+			<A NAME='method_detail'></A>
+
+<a name="method__construct" id="__construct"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<span class="method-title">Constructor __construct</span> (line <span class="line-number">1943</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">RotImage</span>
+		<span class="method-name">
+			__construct
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$aWidth</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$aHeight</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$a</span> = <span class="var-default">0</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$aFormat</span> = <span class="var-default">DEFAULT_GFORMAT</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$aSetAutoMargin</span> = <span class="var-default">true</span>])
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$aWidth</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$aHeight</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$a</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$aFormat</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$aSetAutoMargin</span>			</li>
+				</ul>
+		
+			<hr class="separator" />
+		<div class="notes">Redefinition of:</div>
+		<dl>
+			<dt><a href="../default/Image.html#method__construct">Image::__construct()</a></dt>
+					</dl>
+			
+	</div>
+<a name="methodArc" id="Arc"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<span class="method-title">Arc</span> (line <span class="line-number">1997</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			Arc
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$xc</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$yc</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$w</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$h</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$s</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$e</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$xc</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$yc</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$w</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$h</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$s</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$e</span>			</li>
+				</ul>
+		
+			<hr class="separator" />
+		<div class="notes">Redefinition of:</div>
+		<dl>
+			<dt><a href="../default/Image.html#methodArc">Image::Arc()</a></dt>
+					</dl>
+			
+	</div>
+<a name="methodArrRotate" id="ArrRotate"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<span class="method-title">ArrRotate</span> (line <span class="line-number">2036</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			ArrRotate
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$pnts</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$pnts</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodCircle" id="Circle"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<span class="method-title">Circle</span> (line <span class="line-number">1986</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			Circle
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$xc</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$yc</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$r</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$xc</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$yc</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$r</span>			</li>
+				</ul>
+		
+			<hr class="separator" />
+		<div class="notes">Redefinition of:</div>
+		<dl>
+			<dt><a href="../default/Image.html#methodCircle">Image::Circle()</a></dt>
+					</dl>
+			
+	</div>
+<a name="methodCopyMerge" id="CopyMerge"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<span class="method-title">CopyMerge</span> (line <span class="line-number">2030</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			CopyMerge
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$fromImg</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$toX</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$toY</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$fromX</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$fromY</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$toWidth</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$toHeight</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$fromWidth</span> = <span class="var-default">-1</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$fromHeight</span> = <span class="var-default">-1</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$aMix</span> = <span class="var-default">100</span>])
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$fromImg</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$toX</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$toY</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$fromX</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$fromY</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$toWidth</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$toHeight</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$fromWidth</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$fromHeight</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$aMix</span>			</li>
+				</ul>
+		
+			<hr class="separator" />
+		<div class="notes">Redefinition of:</div>
+		<dl>
+			<dt><a href="../default/Image.html#methodCopyMerge">Image::CopyMerge()</a></dt>
+					</dl>
+			
+	</div>
+<a name="methodDashedLine" id="DashedLine"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<span class="method-title">DashedLine</span> (line <span class="line-number">2045</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			DashedLine
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$x1</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$y1</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$x2</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$y2</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$dash_length</span> = <span class="var-default">1</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$dash_space</span> = <span class="var-default">4</span>])
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$x1</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$y1</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$x2</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$y2</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$dash_length</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$dash_space</span>			</li>
+				</ul>
+		
+			<hr class="separator" />
+		<div class="notes">Redefinition of:</div>
+		<dl>
+			<dt><a href="../default/Image.html#methodDashedLine">Image::DashedLine()</a></dt>
+					</dl>
+			
+	</div>
+<a name="methodFilledArc" id="FilledArc"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<span class="method-title">FilledArc</span> (line <span class="line-number">2004</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			FilledArc
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$xc</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$yc</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$w</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$h</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$s</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$e</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$style</span> = <span class="var-default">''</span>])
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$xc</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$yc</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$w</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$h</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$s</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$e</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$style</span>			</li>
+				</ul>
+		
+			<hr class="separator" />
+		<div class="notes">Redefinition of:</div>
+		<dl>
+			<dt><a href="../default/Image.html#methodFilledArc">Image::FilledArc()</a></dt>
+					</dl>
+			
+	</div>
+<a name="methodFilledCircle" id="FilledCircle"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<span class="method-title">FilledCircle</span> (line <span class="line-number">1991</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			FilledCircle
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$xc</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$yc</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$r</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$xc</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$yc</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$r</span>			</li>
+				</ul>
+		
+			<hr class="separator" />
+		<div class="notes">Redefinition of:</div>
+		<dl>
+			<dt><a href="../default/Image.html#methodFilledCircle">Image::FilledCircle()</a></dt>
+					</dl>
+			
+	</div>
+<a name="methodFilledPolygon" id="FilledPolygon"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<span class="method-title">FilledPolygon</span> (line <span class="line-number">2080</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			FilledPolygon
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$pnts</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$pnts</span>			</li>
+				</ul>
+		
+			<hr class="separator" />
+		<div class="notes">Redefinition of:</div>
+		<dl>
+			<dt><a href="../default/Image.html#methodFilledPolygon">Image::FilledPolygon()</a></dt>
+					</dl>
+			
+	</div>
+<a name="methodFilledRectangle" id="FilledRectangle"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<span class="method-title">FilledRectangle</span> (line <span class="line-number">2062</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			FilledRectangle
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$x1</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$y1</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$x2</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$y2</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$x1</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$y1</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$x2</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$y2</span>			</li>
+				</ul>
+		
+			<hr class="separator" />
+		<div class="notes">Redefinition of:</div>
+		<dl>
+			<dt><a href="../default/Image.html#methodFilledRectangle">Image::FilledRectangle()</a></dt>
+					</dl>
+			
+	</div>
+<a name="methodLine" id="Line"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<span class="method-title">Line</span> (line <span class="line-number">2051</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			Line
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$x1</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$y1</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$x2</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$y2</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$x1</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$y1</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$x2</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$y2</span>			</li>
+				</ul>
+		
+			<hr class="separator" />
+		<div class="notes">Redefinition of:</div>
+		<dl>
+			<dt><a href="../default/Image.html#methodLine">Image::Line()</a></dt>
+					</dl>
+			
+	</div>
+<a name="methodPoint" id="Point"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<span class="method-title">Point</span> (line <span class="line-number">2084</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			Point
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$x</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$y</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$x</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$y</span>			</li>
+				</ul>
+		
+			<hr class="separator" />
+		<div class="notes">Redefinition of:</div>
+		<dl>
+			<dt><a href="../default/Image.html#methodPoint">Image::Point()</a></dt>
+					</dl>
+			
+	</div>
+<a name="methodPolygon" id="Polygon"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<span class="method-title">Polygon</span> (line <span class="line-number">2069</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			Polygon
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$pnts</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$closed</span> = <span class="var-default">FALSE</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$fast</span> = <span class="var-default">FALSE</span>])
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$pnts</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$closed</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$fast</span>			</li>
+				</ul>
+		
+			<hr class="separator" />
+		<div class="notes">Redefinition of:</div>
+		<dl>
+			<dt><a href="../default/Image.html#methodPolygon">Image::Polygon()</a></dt>
+					</dl>
+			
+	</div>
+<a name="methodRectangle" id="Rectangle"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<span class="method-title">Rectangle</span> (line <span class="line-number">2057</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			Rectangle
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$x1</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$y1</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$x2</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$y2</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$x1</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$y1</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$x2</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$y2</span>			</li>
+				</ul>
+		
+			<hr class="separator" />
+		<div class="notes">Redefinition of:</div>
+		<dl>
+			<dt><a href="../default/Image.html#methodRectangle">Image::Rectangle()</a></dt>
+					</dl>
+			
+	</div>
+<a name="methodRotate" id="Rotate"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<span class="method-title">Rotate</span> (line <span class="line-number">2018</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			Rotate
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$x</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$y</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$x</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$y</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodSetAngle" id="SetAngle"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<span class="method-title">SetAngle</span> (line <span class="line-number">1979</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			SetAngle
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$a</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$a</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodSetCenter" id="SetCenter"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<span class="method-title">SetCenter</span> (line <span class="line-number">1950</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			SetCenter
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$dx</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$dy</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$dx</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$dy</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodSetMargin" id="SetMargin"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<span class="method-title">SetMargin</span> (line <span class="line-number">2011</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			SetMargin
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$lm</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$rm</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$tm</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$bm</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$lm</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$rm</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$tm</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$bm</span>			</li>
+				</ul>
+		
+			<hr class="separator" />
+		<div class="notes">Redefinition of:</div>
+		<dl>
+			<dt><a href="../default/Image.html#methodSetMargin">Image::SetMargin()</a></dt>
+					</dl>
+			
+	</div>
+<a name="methodSetTranslation" id="SetTranslation"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<span class="method-title">SetTranslation</span> (line <span class="line-number">1959</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			SetTranslation
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$dx</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$dy</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$dx</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$dy</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodStrokeText" id="StrokeText"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<span class="method-title">StrokeText</span> (line <span class="line-number">2089</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			StrokeText
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$x</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$y</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$txt</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$dir</span> = <span class="var-default">0</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$paragraph_align</span> = <span class="var-default">&quot;left&quot;</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$debug</span> = <span class="var-default">false</span>])
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$x</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$y</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$txt</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$dir</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$paragraph_align</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$debug</span>			</li>
+				</ul>
+		
+			<hr class="separator" />
+		<div class="notes">Redefinition of:</div>
+		<dl>
+			<dt><a href="../default/Image.html#methodStrokeText">Image::StrokeText()</a></dt>
+					</dl>
+			
+	</div>
+<a name="methodUpdateRotMatrice" id="UpdateRotMatrice"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<span class="method-title">UpdateRotMatrice</span> (line <span class="line-number">1966</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			UpdateRotMatrice
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+							<h4>Inherited Methods</h4>
+				<a name='inherited_methods'><!-- --></a>	
+									<!-- =========== Summary =========== -->
+					<p>Inherited From <span class="classname"><a href="../default/Image.html">Image</a></span></p>
+					<blockquote>
+													<span class="method-name"><a href="../default/Image.html#method__construct">Image::__construct()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodAddTxtCR">Image::AddTxtCR()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodArc">Image::Arc()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodBevel">Image::Bevel()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodCakeSlice">Image::CakeSlice()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodCircle">Image::Circle()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodCloneCanvasH">Image::CloneCanvasH()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodCopy">Image::Copy()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodCopyCanvasH">Image::CopyCanvasH()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodCopyMerge">Image::CopyMerge()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodCreateColorForImageSmoothArc">Image::CreateColorForImageSmoothArc()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodCreateFromString">Image::CreateFromString()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodCreateImgCanvas">Image::CreateImgCanvas()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodCreateRawCanvas">Image::CreateRawCanvas()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodDashedLine">Image::DashedLine()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodDashedLineForGrid">Image::DashedLineForGrid()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodDestroy">Image::Destroy()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodDoSupersampling">Image::DoSupersampling()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodDrawImageSmoothArc">Image::DrawImageSmoothArc()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodDrawLine">Image::DrawLine()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodEllipse">Image::Ellipse()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodFill">Image::Fill()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodFilledArc">Image::FilledArc()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodFilledBevel">Image::FilledBevel()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodFilledCakeSlice">Image::FilledCakeSlice()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodFilledCircle">Image::FilledCircle()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodFilledPolygon">Image::FilledPolygon()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodFilledRectangle">Image::FilledRectangle()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodFilledRectangle2">Image::FilledRectangle2()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodFilledRoundedRectangle">Image::FilledRoundedRectangle()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodFillToBorder">Image::FillToBorder()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodGetAntiAliasing">Image::GetAntiAliasing()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodGetBBoxHeight">Image::GetBBoxHeight()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodGetBBoxTTF">Image::GetBBoxTTF()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodGetBBoxWidth">Image::GetBBoxWidth()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodGetFontHeight">Image::GetFontHeight()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodGetFontWidth">Image::GetFontWidth()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodGetHeight">Image::GetHeight()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodGetTextHeight">Image::GetTextHeight()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodGetTextWidth">Image::GetTextWidth()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodGetTTFBBox">Image::GetTTFBBox()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodGetWidth">Image::GetWidth()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodHeaders">Image::Headers()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodimageSmoothCircle">Image::imageSmoothCircle()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodimagettfbbox_fixed">Image::imagettfbbox_fixed()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodLine">Image::Line()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodLineTo">Image::LineTo()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodlip">Image::lip()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodNormAngle">Image::NormAngle()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodPoint">Image::Point()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodPolygon">Image::Polygon()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodPopColor">Image::PopColor()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodPushColor">Image::PushColor()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodRectangle">Image::Rectangle()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodRoundedRectangle">Image::RoundedRectangle()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodSetAlphaBlending">Image::SetAlphaBlending()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodSetAntiAliasing">Image::SetAntiAliasing()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodSetAutoMargin">Image::SetAutoMargin()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodSetCanvasColor">Image::SetCanvasColor()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodSetCanvasH">Image::SetCanvasH()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodSetColor">Image::SetColor()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodSetExpired">Image::SetExpired()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodSetFont">Image::SetFont()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodSetImgFormat">Image::SetImgFormat()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodSetInterlace">Image::SetInterlace()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodSetLineStyle">Image::SetLineStyle()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodSetLineWeight">Image::SetLineWeight()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodSetMargin">Image::SetMargin()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodSetQuality">Image::SetQuality()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodSetStartPoint">Image::SetStartPoint()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodSetTextAlign">Image::SetTextAlign()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodSetTransparent">Image::SetTransparent()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodShadowRectangle">Image::ShadowRectangle()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodStream">Image::Stream()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodStrokeBoxedText">Image::StrokeBoxedText()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodStrokeBoxedText2">Image::StrokeBoxedText2()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodStrokeText">Image::StrokeText()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodStyleLine">Image::StyleLine()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#methodStyleLineTo">Image::StyleLineTo()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#method_StrokeBuiltinFont">Image::_StrokeBuiltinFont()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#method_StrokeTTF">Image::_StrokeTTF()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#method__get">Image::__get()</a></span><br>
+													<span class="method-name"><a href="../default/Image.html#method__set">Image::__set()</a></span><br>
+											</blockquote>
+										
+		</div>
+	</div>
+
+
+	<p class="notes" id="credit">
+		Documentation generated on Mon, 04 Jun 2012 19:21:44 +0200 by <a href="http://www.phpdoc.org" target="_blank">phpDocumentor 1.4.4</a>
+	</p>
+	</div></body>
+</html>
