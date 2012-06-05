@@ -15,3 +15,4 @@ tmp/*
 */tmp/*
 *.sql
 /build
+build/*
