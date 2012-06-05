@@ -18,10 +18,6 @@
   <mkdir dir="${basedir}/build/pdepend"/>
  </target>
 
- <target name="phpunit" description="Run unit tests using PHPUnit and generates junit.xml and clover.xml">
-  <exec executable="phpunit" failonerror="true"/>
- </target>
-
  <target name="parallelTasks" description="Run the pdepend, phpmd, phpcpd, phpcs, phpdoc and phploc tasks in parallel using a maximum of 2 threads.">
   <parallel threadCount="2">
    <sequential>
@@ -37,7 +33,8 @@
 
  <target name="pdepend" description="Generate jdepend.xml and software metrics charts using PHP_Depend">
   <exec executable="pdepend">
-   <arg line="--jdepend-xml=${basedir}/build/logs/jdepend.xml
+   <arg line="--ignore=${basedir}/build
+              --jdepend-xml=${basedir}/build/logs/jdepend.xml
               --jdepend-chart=${basedir}/build/pdepend/dependencies.svg
               --overview-pyramid=${basedir}/build/pdepend/overview-pyramid.svg
               ${source}" />
@@ -49,19 +46,20 @@
    <arg line="${source}
               xml
               codesize,design,naming,unusedcode
+              --exclude ${basedir}/build
               --reportfile ${basedir}/build/logs/pmd.xml" />
   </exec>
  </target>
 
  <target name="phpcpd" description="Generate pmd-cpd.xml using PHPCPD">
   <exec executable="phpcpd">
-   <arg line="--log-pmd ${basedir}/build/logs/pmd-cpd.xml ${source}" />
+   <arg line="--exclude ${basedir}/build --log-pmd ${basedir}/build/logs/pmd-cpd.xml ${source}" />
   </exec>
  </target>
 
  <target name="phploc" description="Generate phploc.csv">
   <exec executable="phploc">
-   <arg line="--log-csv ${basedir}/build/logs/phploc.csv ${source}" />
+   <arg line="--exclude ${basedir}/build --log-csv ${basedir}/build/logs/phploc.csv ${source}" />
   </exec>
  </target>
 
@@ -70,6 +68,9 @@
    <arg line="--report=checkstyle
               --report-file=${basedir}/build/logs/checkstyle.xml
               --standard=Zend
+              --extensions=php
+   	          --encoding=UTF-8
+              --ignore=${basedir}/build
               ${source}" />
   </exec>
  </target>
@@ -84,9 +85,10 @@
   <exec executable="phpcb">
    <arg line="--log    ${basedir}/build/logs
               --source ${source}
+   	          --exclude ${basedir}/build
               --output ${basedir}/build/code-browser" />
   </exec>
  </target>
 
- <target name="build" depends="clean,parallelTasks,phpunit,phpcb"/>
+ <target name="build" depends="clean,parallelTasks,phpcb"/>
 </project>
