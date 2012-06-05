@@ -33,7 +33,7 @@
 
  <target name="pdepend" description="Generate jdepend.xml and software metrics charts using PHP_Depend">
   <exec executable="pdepend">
-   <arg line="--ignore=${basedir}/build
+   <arg line="--ignore=${basedir}/build,${basedir}/inc/ezpdf,${basedir}/entradas2/jpgraph
               --jdepend-xml=${basedir}/build/logs/jdepend.xml
               --jdepend-chart=${basedir}/build/pdepend/dependencies.svg
               --overview-pyramid=${basedir}/build/pdepend/overview-pyramid.svg
@@ -46,20 +46,22 @@
    <arg line="${source}
               xml
               codesize,design,naming,unusedcode
-              --exclude ${basedir}/build
+              --exclude ${basedir}/build,${basedir}/inc/ezpdf,${basedir}/entradas2/jpgraph
               --reportfile ${basedir}/build/logs/pmd.xml" />
   </exec>
  </target>
 
  <target name="phpcpd" description="Generate pmd-cpd.xml using PHPCPD">
   <exec executable="phpcpd">
-   <arg line="--exclude ${basedir}/build --log-pmd ${basedir}/build/logs/pmd-cpd.xml ${source}" />
+   <arg line="--exclude ${basedir}/build,${basedir}/inc/ezpdf,${basedir}/entradas2/jpgraph
+   	          --log-pmd ${basedir}/build/logs/pmd-cpd.xml ${source}" />
   </exec>
  </target>
 
  <target name="phploc" description="Generate phploc.csv">
   <exec executable="phploc">
-   <arg line="--exclude ${basedir}/build --log-csv ${basedir}/build/logs/phploc.csv ${source}" />
+   <arg line="--exclude ${basedir}/build,${basedir}/inc/ezpdf,${basedir}/entradas2/jpgraph 
+   	          --log-csv ${basedir}/build/logs/phploc.csv ${source}" />
   </exec>
  </target>
 
@@ -70,7 +72,7 @@
               --standard=Zend
               --extensions=php
    	          --encoding=UTF-8
-              --ignore=${basedir}/build
+              --ignore=${basedir}/build,${basedir}/inc/ezpdf,${basedir}/entradas2/jpgraph
               ${source}" />
   </exec>
  </target>
@@ -85,7 +87,7 @@
   <exec executable="phpcb">
    <arg line="--log    ${basedir}/build/logs
               --source ${source}
-   	          --exclude ${basedir}/build
+   	          --exclude ${basedir}/build,${basedir}/inc/ezpdf,${basedir}/entradas2/jpgraph
               --output ${basedir}/build/code-browser" />
   </exec>
  </target>
