@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
     <project name="cni" default="build">
 	 <target name="build"
-	   depends="prepare,lint,phploc,pdepend,phpmd-ci,phpcs-ci,phpcpd,phpdox,phpunit,phpcb"/>
+	   depends="prepare,lint,phploc,pdepend,phpmd-ci,phpcs-ci,phpcpd,phpdox,phpcb"/>
 
 	 <target name="build-parallel"
-	   depends="prepare,lint,tools-parallel,phpunit,phpcb"/>
+	   depends="prepare,lint,tools-parallel,phpcb"/>
 
 	 <target name="tools-parallel" description="Run tools in parallel">
 	  <parallel threadCount="2">
@@ -54,68 +54,80 @@
 
 	 <target name="phploc" description="Measure project size using PHPLOC">
 	  <exec executable="phploc">
-       <arg value="--exclude ${basedir}/build/*,${basedir}/inc/ezpdf/*,${basedir}/entradas2/jpgraph/*"/>
+       <arg value="--exclude"/> 
+	   <arg path="${basedir}/build/,${basedir}/inc/ezpdf/,${basedir}/entradas2/jpgraph/"/>
 	   <arg value="--log-csv" />
-	   <arg value="${basedir}/build/logs/phploc.csv" />
+	   <arg path="${basedir}/build/logs/phploc.csv" />
 	   <arg path="${basedir}" />
 	  </exec>
 	 </target>
 
 	 <target name="pdepend" description="Calculate software metrics using PHP_Depend">
 	  <exec executable="pdepend">
-       <arg value="--ignore=${basedir}/build/*,${basedir}/inc/ezpdf/*,${basedir}/entradas2/jpgraph/*" />
-	   <arg value="--jdepend-xml=${basedir}/build/logs/jdepend.xml" />
-	   <arg value="--jdepend-chart=${basedir}/build/pdepend/dependencies.svg" />
-	   <arg value="--overview-pyramid=${basedir}/build/pdepend/overview-pyramid.svg" />
-	   <arg path="${basedir}" />
+	  <arg value="--jdepend-xml=build/logs/jdepend.xml" />
+	  <arg value="--jdepend-chart=build/pdepend/dependencies.svg" />
+	  <arg value="--overview-pyramid=build/pdepend/overview-pyramid.svg" />
+	  <arg value="--ignore=build,inc/ezpdf,entradas2/jpgraph" />	
+      <arg path="." />
 	  </exec>
 	 </target>
 
 	 <target name="phpmd"
 	         description="Perform project mess detection using PHPMD and print human readable output. Intended for usage on the command line before committing.">
 	  <exec executable="phpmd">
-	   <arg path="${basedir}" />
-       <arg value="--exclude ${basedir}/build/*,${basedir}/inc/ezpdf/*,${basedir}/entradas2/jpgraph/*" />
+	   <arg path="." />
 	   <arg value="text" />
-	   <arg value="${basedir}/build/phpmd.xml" />
+	   <arg value="codesize,design,naming,unusedcode"/>
+	   <arg value="--exclude" /> 
+	   <arg path="build/,inc/ezpdf/,entradas2/jpgraph/" />	
 	  </exec>
 	 </target>
 
 	 <target name="phpmd-ci" description="Perform project mess detection using PHPMD creating a log file for the continuous integration server">
 	  <exec executable="phpmd">
-	   <arg path="${basedir}" />
-       <arg value="--exclude ${basedir}/build/*,${basedir}/inc/ezpdf/*,${basedir}/entradas2/jpgraph/*"/>
+	   <arg path="." />
 	   <arg value="xml" />
-	   <arg value="${basedir}/build/phpmd.xml" />
+	   <arg value="codesize,design,naming,unusedcode"/>
 	   <arg value="--reportfile" />
-	   <arg value="${basedir}/build/logs/pmd.xml" />
+	   <arg path="build/logs/pmd.xml" />
+	   <arg value="--exclude"/> 
+	   <arg path="build/,inc/ezpdf/,entradas2/jpgraph/"/>
 	  </exec>
 	 </target>
 
 	 <target name="phpcs"
 	         description="Find coding standard violations using PHP_CodeSniffer and print human readable output. Intended for usage on the command line before committing.">
 	  <exec executable="phpcs">
-       <arg value="--ignore=${basedir}/build/*,${basedir}/inc/ezpdf/*,${basedir}/entradas2/jpgraph/*"/>
-	   <arg value="--standard=${basedir}/build/phpcs.xml" />
-	   <arg path="${basedir}" />
+	  	<arg value="--ignore=build/,inc/ezpdf/,entradas2/jpgraph/"/>
+	    <arg value="-v" />
+	    <arg value="--standard=Zend" />
+	    <arg value="--encoding=UTF-8" />        
+	  	<arg path="." />
 	  </exec>
 	 </target>
 
 	 <target name="phpcs-ci" description="Find coding standard violations using PHP_CodeSniffer creating a log file for the continuous integration server">
 	  <exec executable="phpcs" output="/dev/null">
-       <arg value="--ignore=${basedir}/build/*,${basedir}/inc/ezpdf/*,${basedir}/entradas2/jpgraph/*"/>
+       <arg value="--ignore=build/,inc/ezpdf/,entradas2/jpgraph/"/>
 	   <arg value="--report=checkstyle" />
-	   <arg value="--report-file=${basedir}/build/logs/checkstyle.xml" />
-	   <arg value="--standard=${basedir}/build/phpcs.xml" />
-	   <arg path="${basedir}" />
+	   <arg value="--report-file=build/logs/checkstyle.xml" />
+	   <arg value="-v" />
+	   <arg value="--standard=Zend" />
+	   <arg value="--encoding=UTF-8" />
+	   <arg path="." />
 	  </exec>
 	 </target>
 
 	 <target name="phpcpd" description="Find duplicate code using PHPCPD">
 	  <exec executable="phpcpd">
 	   <arg value="--log-pmd" />
-       <arg value="--exclude ${basedir}/build/*,${basedir}/inc/ezpdf/*,${basedir}/entradas2/jpgraph/*"/>
-	   <arg value="${basedir}/build/logs/pmd-cpd.xml" />
+	   <arg path="${basedir}/build/logs/pmd-cpd.xml" />
+       <arg value="--exclude" />
+	   <arg path="${basedir}/build/"/>
+	   <arg value="--exclude" />
+	  	<arg path="${basedir}/inc/ezpdf/"/>
+	   <arg value="--exclude" />
+	  	<arg path="${basedir}/entradas2/jpgraph/"/>
 	   <arg path="${basedir}" />
 	  </exec>
 	 </target>
@@ -124,13 +136,11 @@
 	  <exec executable="phpdox"/>
 	 </target>
 
-	 <target name="phpunit" description="Run unit tests with PHPUnit">
-	  <exec executable="phpunit" failonerror="true"/>
-	 </target>
 
 	 <target name="phpcb" description="Aggregate tool output with PHP_CodeBrowser">
 	  <exec executable="phpcb">
-       <arg value="--exclude ${basedir}/build/*,${basedir}/inc/ezpdf/*,${basedir}/entradas2/jpgraph/*" />
+       <arg value="--exclude"/>
+       <arg path="${basedir}/build/,${basedir}/inc/ezpdf/,${basedir}/entradas2/jpgraph/" />
 	   <arg value="--log" />
 	   <arg path="${basedir}/build/logs" />
 	   <arg value="--source" />
