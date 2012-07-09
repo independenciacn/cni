@@ -8,8 +8,8 @@ function clientes($cliente)
 {
 	include("../inc/variables.php");
 	$sql = "Select Id,Nombre from clientes where `Estado_de_cliente` like '-1' or `Estado_de_cliente` like 'on' order by Nombre";
-	$consulta = mysql_db_query($dbname,$sql,$con);
-	while($resultado = mysql_fetch_array($consulta))
+	$consulta = mysql_query($sql,$con);
+	while(true == ($resultado = mysql_fetch_array($consulta)))
 	{
 		if($cliente == $resultado[0])
 		$seleccionado = "selected";
@@ -21,10 +21,10 @@ function clientes($cliente)
 }
 ?>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html" charset="iso-8859-1" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <meta http-equiv="pragma" content="no-cache" />
 <script src="../js/prototype.js" type="text/javascript"></script>
 <script type="text/javascript" src="../js/calendar.js"></script>

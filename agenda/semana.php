@@ -3,6 +3,7 @@
  * Inicializamos la fecha que se definiria como hoy que sera el
  * punto de partida de todas las operaciones del calendario
  */
+require_once '../inc/variables.php';
 $meses=array("","Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
 $dia=array("","Lunes","Martes","Miercoles","Jueves","Viernes","Sabado","Domingo");
 if(isset($_POST[fecha]))
@@ -22,13 +23,13 @@ else
 	$anyo=date("Y");
 	$hoy_es=date("N");
 	}
-include("../inc/variables.php");
+
 ?>
 <form name='seleccion_fecha' method='' action='' onsubmit='cambia_fecha();return false'>
 <label>Seleccionar Fecha: </label><input type='text' id='semana'  name='semana' size ='10'  value='<? echo $hoy; ?>' onchange=cambia_fecha() />
 <button type='button' class='boton' id='f_trigger_semana' >...</button>
 <input type='hidden' id='seccion' value='0' />
-<?php echo $mes." de ".$anyo.". Semana: ". $semana;?>
+<? echo $mes." de ".$anyo.". Semana: ". $semana;?>
 </form>
 
 <table id='semana'  width='100%'>
@@ -83,13 +84,13 @@ function cambiaf($stamp)
 /*
  * Devuelve el nombre del cliente
  */
-function nombreCliente($id)
+function nombre_cliente($id)
 {
-	include("../inc/variables.php");
+	global $con;
 	$sql="Select Nombre from clientes where id like $id";
-	$consulta = @mysql_db_query($dbname,$sql,$con);
+	$consulta = @mysql_query($sql,$con);
 	$resultado = @mysql_fetch_array($consulta);
-	return $resultado[Nombre];
+	return $resultado['Nombre'];
 }
 
 /*
@@ -119,14 +120,14 @@ function ver_dia($k,$hoy_es,$hoy)
  */
 function despacho_ocupado($despacho)
 {
-	include("../inc/variables.php");
+	global $con;
 	//parche para libre
 	//if($despacho == 23)
 		//$param = "LIBRE JUNTAS";
 	//else 
 		//$param = "LIBRE ".$despacho;
 	//$sql = "Select * from clientes where Nombre like '$param'";
-	//$consulta = @mysql_db_query($dbname,$sql,$con);
+	//$consulta = @mysql_query($sql,$con);
 	//if(@mysql_numrows($consulta!=0))
 		//$ocupado=0;
 	//else
@@ -136,7 +137,7 @@ function despacho_ocupado($despacho)
 		else
 			$despacho = "00".$despacho;
 		$sql="Select * from z_sercont where servicio like 'Codigo Negocio' and valor like '$despacho'";
-		$consulta = @mysql_db_query($dbname,$sql,$con);
+		$consulta = @mysql_query($sql,$con);
 		if(@mysql_numrows($consulta)!=0)
 			$ocupado=1;
 		else
@@ -152,16 +153,16 @@ function datos_ocupacion($despacho,$fecha)
 {
 	$dias_co=array("","L","M","X","J","V","S","D");
 	
-	include("../inc/variables.php");
+	global $con;
 	$stamp = cambiaf($fecha);
 	$tokeao = explode("-",$stamp);
 	$paso_el=date("w",mktime(0, 0, 0, $tokeao[1], $tokeao[2], $tokeao[0]));
 	
 	$sql = "Select * from agenda where datediff(finc,'$stamp') <=0 and datediff(ffin,'$stamp')>=0 and despacho like $despacho or repeticion like '%$dias_co[$paso_el];%' and despacho like $despacho and datediff(finc,'$stamp') <=0 order by hinc asc";
-		$consulta = @mysql_db_query($dbname,$sql,$con);
+		$consulta = @mysql_query($sql,$con);
 		if(@mysql_numrows($consulta)!=0)
 		{
-			while($resultado=@mysql_fetch_array($consulta))
+			while( true == ( $resultado = mysql_fetch_array( $consulta ) ) )
 			{
 				$cadena.="<div id='ocupacion_".$resultado[0]."' class='despacho_ocupado'>";
 				$hinc = quita_segundos($resultado[hinc]);
@@ -169,14 +170,14 @@ function datos_ocupacion($despacho,$fecha)
 			//!!CASO RESERVAS A NO CLIENTES
 				if($resultado[id_cliente]!="")
 				{
-					$cadena.="<div class='las_horas'>".$hinc."-".$hfin."</div>".utf8_encode(nombreCliente($resultado[1]));
+					$cadena.="<div class='las_horas'>".$hinc."-".$hfin."</div>".nombre_cliente($resultado[1]);
 					$cadena.="<br/><span class='mini_boton' onclick='informacion_cliente($resultado[1],0,$resultado[0])'>&nbsp;Observaciones&nbsp;</span><input type='hidden' id='cliente_despacho_$resultado[1]' value='$resultado[1]' /><p/>";
 					$cadena.=confirmado($resultado[conformidad]);
 					$cadena.="<p/>";
 				}
 				else
 				{
-					$cadena.="<div class='las_horas'>".$hinc."-".$hfin."</div>".utf8_encode($resultado[otro]);
+					$cadena.="<div class='las_horas'>".$hinc."-".$hfin."</div>".$resultado[otro];
 					$cadena.="<br/><span class='mini_boton' onclick='informacion_cliente($resultado[0],1)'>&nbsp;Observaciones&nbsp;</span><input type='hidden' id='cliente_despacho_$resultado[1]' value='$resultado[1]' /><p/>";
 					$cadena.=confirmado($resultado[conformidad]);
 					$cadena.="<p/>";

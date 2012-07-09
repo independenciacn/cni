@@ -1,18 +1,18 @@
-<? //generador de datos
+<?php //generador de datos
 include("../conexion.php");
 if (isset($_POST[contrato]))
 {
 //1.-Cargamos datos y tablas necesarios para llenar el formulario de ese contrato	
 $sql = "Select * from z_contratos where id like $_POST[contrato]";
-$consulta = mysql_db_query($dbname,$sql,$con);
+$consulta = mysql_query($sql,$con);
 $resultado = mysql_fetch_array($consulta);
 $fichero = $resultado[2];
 $totcamp = $resultado[3];
 //buscamos los alias
 $sql = "Select * from z_ccontratos where contrato like $_POST[contrato] order by orden";
-$consulta = mysql_db_query($dbname,$sql,$con);
+$consulta = mysql_query($sql,$con);
 $j=0;
-while($resultado = mysql_fetch_array($consulta))
+while(true == ($resultado = mysql_fetch_array($consulta)))
 {
 	$muestra[$j]=$resultado[campof];
 	$j++;
@@ -29,6 +29,6 @@ for ($i=0;$i<=$totcamp-1;$i++)
 ?>
 </table>
 <span  class='boton' id='genera' onclick = 'generalo()' />Generar Contrato</span>
-<? 
+<?php 
 } 
 ?>

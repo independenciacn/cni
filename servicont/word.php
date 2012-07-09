@@ -1,4 +1,4 @@
-<?
+<?php
 // Enviamos los encabezados de hoja de calculo
 //session_cache_limiter("public");
 session_start();
@@ -22,12 +22,12 @@ function cambiaf($stamp) //funcion del cambio de fecha
 
 // Creamos la tabla
 		
-		$consulta = mysql_db_query($dbname,$sql,$con);
+		$consulta = mysql_query($sql,$con);
 		//dise�o de la tabla con el boton de eliminar
 		print("<table width=100% cellpadding=0 cellspacing=0>");
 		print("<tr><th colspan=7>Servicios contratados por $empresa - Periodo $mostrada - Servicio: $sersel</th></tr>");
 		print("<tr><th align='left'>Fecha</th><th align='left'>Servicio</th><th align='left'>Cantidad</th><th align='left'>Precio unidad</th><th align='left'>Subtotal</th><th align='left'>Iva</th><th align='left'>Total</th></tr>");
-		while($resultado=mysql_fetch_array($consulta))
+		while( true == ( $resultado = mysql_fetch_array( $consulta ) ) )
 		{
 			if($_SESSION['metagrupado']==1)
 			$fecha = "Agrupado";

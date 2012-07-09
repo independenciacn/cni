@@ -1,9 +1,9 @@
-<? 
-include("../inc/variables.php");
+<?php 
+require_once '../inc/variables.php';
 if (isset($_POST[tarea])) 
 {
 	$sql = "Select * from tareas_pendientes where id like $_POST[tarea]";
-	$consulta = @mysql_db_query($dbname,$sql,$con);
+	$consulta = @mysql_query($sql,$con);
 	$resultado = @mysql_fetch_array($consulta);
 	$accion="actualiza_tarea_pendiente($resultado[id])";		
 }
@@ -13,8 +13,8 @@ else
 	$accion="agregar_tarea_pendiente()";	
 } 
 ?>
-<form id='tareas_pendientes' name='tareas_pendientes' method='' action='' onsubmit='<? echo $accion; ?>;return false' >
-<label>Tarea:</label><br/><textarea name='nombre' cols='50' rows'6'><? echo $resultado[nombre]; ?></textarea>
+<form id='tareas_pendientes' name='tareas_pendientes' method='post' action='' onsubmit='<? echo $accion; ?>;return false' >
+<label>Tarea:</label><br/><textarea name='nombre' cols='50' rows='6'><? echo $resultado[nombre]; ?></textarea>
 <p/><label>Vencimiento:</label><input type='text' name='vencimiento' id='semana' size='10' value='<? echo cambiaf($resultado[vencimiento]); ?>' />
 <button type='button' class='boton' id='f_trigger_semana' >...</button>
 <label>Asignada a:</label>
@@ -23,8 +23,8 @@ else
 $seleccion_asignada="<option value='0'>-No Asignada-</option>";
 
 	$sql2 = "Select Id,Apell1,Nombre from empleados";
-	$consulta2 = @mysql_db_query($dbname,$sql2,$con);
-	while($resultado2 = @mysql_fetch_array($consulta2))
+	$consulta2 = mysql_query($sql2,$con);
+	while(true == ($resultado2 = @mysql_fetch_array($consulta2)))
 	{	
 		if($resultado[asignada]==$resultado2[0])
 			$check_as = "selected";
@@ -37,12 +37,12 @@ echo $seleccion_asignada;
 </select>
 <label>Prioridad:</label>
 <select name='prioridad'>
-	<option <? if ($resultado[prioridad]==0) echo "selected"; ?> value='0'>Normal</option>
-	<option <? if ($resultado[prioridad]==1) echo "selected"; ?> value='1'>Media</option>
-	<option <? if ($resultado[prioridad]==2) echo "selected"; ?> value='2'>Alta</option>
-	<option <? if ($resultado[prioridad]==3) echo "selected"; ?> value='3'>Urgente</option>
+	<option <?php if ($resultado[prioridad]==0) echo "selected"; ?> value='0'>Normal</option>
+	<option <?php if ($resultado[prioridad]==1) echo "selected"; ?> value='1'>Media</option>
+	<option <?php if ($resultado[prioridad]==2) echo "selected"; ?> value='2'>Alta</option>
+	<option <?php if ($resultado[prioridad]==3) echo "selected"; ?> value='3'>Urgente</option>
 </select>
-<? 
+<?php 
 if(isset($resultado[id]))
 	echo "<input type='submit' value='Actualizar Tarea' /><input type='button' value='Limpiar' onclick='cambia_vista()'/>";
 else 
@@ -50,7 +50,7 @@ else
 ?>
 </form>
 <div id='estado_tarea'></div>	
-<?
+<?php
 /*
  * Cambia la fecha a sql y a la inversa
  */
@@ -75,8 +75,8 @@ $tipo = array("pendientes","realizadas");
 $sql = "SELECT vencimiento
 FROM `tareas_pendientes`
 GROUP BY vencimiento";
-$consulta = @mysql_db_query($dbname,$sql,$con);
-while($resultado = @mysql_fetch_array($consulta))
+$consulta = @mysql_query($sql,$con);
+while( true == ( $resultado = mysql_fetch_array( $consulta ) ) )
 $fechas[]=$resultado[0];
 /*Fin*/
 for($j=0;$j<=1;$j++)
@@ -96,15 +96,13 @@ for($j=0;$j<=1;$j++)
 	$texto.= $seleccion_asignada;
 	$texto.="</select></div><div id='lista_tareas_pendientes'>";
 	$sql = "Select * from tareas_pendientes where realizada like '$opcion[$j]' order by prioridad desc ,vencimiento asc";
-	$consulta = @mysql_db_query($dbname,$sql,$con);
+	$consulta = @mysql_query($sql,$con);
 	if(@mysql_numrows($consulta)!=0)
 	{
-		while($resultado = @mysql_fetch_array($consulta))
+		$i = 0;
+		while( true == ( $resultado = mysql_fetch_array( $consulta ) ) )
 		{
-			if($i++%2)
-				$clase= "lista_par";
-			else
-				$clase= "lista_impar";
+			$clase = ( $i++ % 2) ? "lista_par" : "lista_impar";
 		/*
  		 * Colores de las prioridades
  		 */	
@@ -123,11 +121,10 @@ echo $texto."</div>";
 
 function nombre_emp($id)
 {
-	include("../inc/variables.php");
+	global $con;
 	$sql = "Select * from empleados where Id like $id";
-	$consulta = @mysql_db_query($dbname,$sql,$con);
+	$consulta = @mysql_query($sql,$con);
 	$resultado = @mysql_fetch_array($consulta);
 	return "<span class='fecha_tarea'>".$resultado[3]." ".$resultado[1].":</span>";
 	//return "CO";
 }
-?>

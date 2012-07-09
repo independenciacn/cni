@@ -14,3 +14,5 @@ copias/*
 tmp/*
 */tmp/*
 *.sql
+/build
+build/*

@@ -5,7 +5,7 @@ function busca_cliente()
 {
 	var cadena = $F('cliente');
 	var url = "datos.php";
-	var pars = "opcion=1&texto="+cadena
+	var pars = "opcion=1&texto="+cadena;
 	var myAjax = new Ajax.Request(url,
 	{
 		method: 'post',
@@ -13,7 +13,7 @@ function busca_cliente()
 		onComplete: 
 			function gen(respuesta) 
 			{ 
-				$('listado_clientes').innerHTML = respuesta.responseText
+				$('listado_clientes').innerHTML = respuesta.responseText;
 			}
 	});
 }
@@ -21,7 +21,7 @@ function busca_cliente()
 function marca(id_cliente)
 {
 	var url = "datos.php";
-	var pars = "opcion=2&cliente="+id_cliente
+	var pars = "opcion=2&cliente="+id_cliente;
 	var myAjax = new Ajax.Request(url,
 	{
 		method: 'post',
@@ -29,12 +29,11 @@ function marca(id_cliente)
 		onComplete: 
 			function gen(respuesta) 
 			{ 
-				var datos = new String(respuesta.responseText)
-				var finale = datos.split(';')
-				$('id_cliente').value = finale[0]
-				$('cliente').value = finale[1]
-				$('listado_clientes').innerHTML = ""
-				
+				var datos = new String(respuesta.responseText);
+				var finale = datos.split(';');
+				$('id_cliente').value = finale[0];
+				$('cliente').value = finale[1];
+				$('listado_clientes').innerHTML = "";
 			},
 		onSuccess: ver_servicios_contratados(id_cliente)
 	});
@@ -44,9 +43,9 @@ function ver_servicios_contratados(id_cliente)
 {
 	var url= "datos.php";
 	if (id_cliente == null)
-	var id_cliente = $F('id_cliente')
+	var id_cliente = $F('id_cliente');
 	var mes = $('meses').value
-	var pars = "opcion=3&cliente="+id_cliente+"&mes="+mes+"&anyo="+$('anyo').value
+	var pars = "opcion=3&cliente="+id_cliente+"&mes="+mes+"&anyo="+$('anyo').value;
 	var myAjax = new Ajax.Request(url,
 	{
 		method: 'post',
@@ -55,22 +54,20 @@ function ver_servicios_contratados(id_cliente)
 			function gen(respuesta) 
 			{ 
 				//alert(respuesta.responseText)
-				$('tabla').innerHTML = respuesta.responseText
+				$('tabla').innerHTML = respuesta.responseText;
 			}
 	});
-	
 }
-
 //Funcion que borra el servicio asignado al cliente****************************************************/
 function borra(servicio)
 {
 	//alert(servicio)
-	var respuesta = confirm("Borrar servicio?")
+	var respuesta = confirm("Borrar servicio?");
 	if (respuesta==true)
 	{
 		 
-		var url="datos.php"
-		var pars = "opcion=4&servicio="+servicio
+		var url="datos.php";
+		var pars = "opcion=4&servicio="+servicio;
 		var myAjax = new Ajax.Request(url,
 		{
 		method: 'post',
@@ -253,54 +250,53 @@ function cierra_ventana_observaciones()
 //LANZA LA FUNCION DE GENFACTURA****************************************************************
 function genera_factura(codigo)
 {
-	var cliente = $F('id_cliente')
-	var mes=$('meses').value
-	var fecha_factura = $F('fecha_factura')
-	var observaciones = encodeURI($F('observaciones'))
-	var codigo = $F('codigo')
+	var cliente = $F('id_cliente');
+	var mes=$('meses').value;
+	var fecha_factura = $F('fecha_factura');
+	var observaciones = encodeURI($F('observaciones'));
+	var codigo = $F('codigo');
 	//parte nueva claseado
 	if($F('tipo') == 1) //puntual
 	{
-	 	var fecha_inicial_factura = $F('fecha_inicial_factura')
-	 	var fecha_final_factura = $F('fecha_final_factura')
+	 	var fecha_inicial_factura = $F('fecha_inicial_factura');
+	 	var fecha_final_factura = $F('fecha_final_factura');
 	}
 	else
 	{
-		var fecha_inicial_factura = "0000-00-00"
-		var fecha_final_factura = "0000-00-00"
+		var fecha_inicial_factura = "0000-00-00";
+		var fecha_final_factura = "0000-00-00";
 	}
 	if(cliente != 0 || mes !=0)
 	{
-	var url = "genfactura.php?mes="+mes+"&cliente="+cliente+"&fecha_factura="+fecha_factura+"&codigo="+codigo+"&fecha_inicial_factura="+fecha_inicial_factura+"&fecha_final_factura="+fecha_final_factura+"&observaciones="+observaciones
-	window.open(url)
+	var url = "genfactura.php?mes="+mes+"&cliente="+cliente+"&fecha_factura="+fecha_factura+"&codigo="+codigo+"&fecha_inicial_factura="+fecha_inicial_factura+"&fecha_final_factura="+fecha_final_factura+"&observaciones="+observaciones;
+	window.open(url);
 	}
 	else
 	alert("Debe seleccionar un cliente y Mes");
 }
 function genera_factura_prueba(codigo)
 {
-	var cliente = $F('id_cliente')
-	var mes=$('meses').value
-	var fecha_factura = $F('fecha_factura')
-	var observaciones = encodeURI($F('observaciones'))
-	var codigo = $F('codigo')
+	var cliente = $F('id_cliente');
+	var mes=$('meses').value;
+	var fecha_factura = $F('fecha_factura');
+	var observaciones = encodeURI($F('observaciones'));
+	var codigo = $F('codigo');
 	if($F('tipo') == 1) //puntual
 	{
-	 	var fecha_inicial_factura = $F('fecha_inicial_factura')
-	 	var fecha_final_factura = $F('fecha_final_factura')
+	 	var fecha_inicial_factura = $F('fecha_inicial_factura');
+	 	var fecha_final_factura = $F('fecha_final_factura');
 	}
 	else
 	{
-		var fecha_inicial_factura = "0000-00-00"
-		var fecha_final_factura = "0000-00-00"
+		var fecha_inicial_factura = "0000-00-00";
+		var fecha_final_factura = "0000-00-00";
 	}
 	if(cliente != 0 || mes !=0)
 	{
 		var url = "genfactura.php?mes="+mes+"&cliente="+cliente+"&fecha_factura="+fecha_factura+"&codigo="+codigo+"&fecha_inicial_factura="+fecha_inicial_factura+"&fecha_final_factura="+fecha_final_factura+"&observaciones="+observaciones
-	+"&prueba=1"
-	window.open(url)
-	cliente_rango(0)
-		
+	+"&prueba=1";
+	window.open(url);
+	cliente_rango(0);
 	}
 	else
 	alert("Debe seleccionar un cliente y Mes");
@@ -492,14 +488,27 @@ function sort(seccion,valor,tipo)
 		onCreate:$('tabla_resultados').innerHTML = "Cargando...<p/><img src='loader.gif' alt='Cargando...'/>"
 		});
 }
-//Aqui los filtros
-
+/**
+ * Aplica los filtros al listado de facturas
+ */
 function filtro(filtro)
 {
-	var url="datos.php"
-	var texto=$F('filtro_'+filtro)
-	var pars='opcion=14&filtro='+filtro+'&texto='+texto
-	var myAjax = new Ajax.Request(url,
+	var busca = false;
+	var url="datos.php";
+	var texto=$F('filtro_'+filtro);
+	var pars='opcion=14&filtro='+filtro+'&texto='+texto;
+	// filtro 2 y texto mayor o igual a 10
+	if ( filtro == 2 ) {
+		if ( texto.length >= 10 ) {
+			busca = true;
+		}
+	} else {
+		if ( texto.length >= 3 ) { // minimo 3 caracteres para los demas
+			busca = true;
+		}
+	}
+	if ( busca ) {
+		var myAjax = new Ajax.Request(url,
 		{
 		method: 'post',
 		parameters: pars,
@@ -509,6 +518,7 @@ function filtro(filtro)
 			},
 		onCreate:$('tabla_resultados').innerHTML = "Cargando...<p/><img src='loader.gif' alt='Cargando...'/>"
 		});
+	}
 }
 function sort(seccion)
 {
@@ -603,10 +613,9 @@ function envia_la_factura(numero,dup)
 		var adic = "&dup=1"
 	else
 		var adic = ""
-	alert("Enviada factura "+numero)
 	var url='facturapdf.php'
-	var linea = ""
-	linea = linea + "<br />Enviada Factura " +numero
+	var linea = $('linea_generacion').
+	linea = linea + "<br /><b>Enviada Factura " +numero+" - Envio Completado</b>";
 	var myAjax = new Ajax.Request(url,
 	{
 		method: 'post',

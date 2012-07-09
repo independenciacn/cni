@@ -1,20 +1,23 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-<head><title>Contratos</title></head>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Contratos</title></head>
 <link REL="stylesheet" TYPE="text/css" href="../cni.css">
 <script src="prototype.js" type="text/javascript"></script>
 <script src="contratos.js" type="text/javascript"></script>
 <meta http-equiv="cache-control" content="no-cache">
 <meta http-equiv="pragma" content="no-cache">
 <body>
-<? require_once("../conexion.php");
+<?php require_once("../conexion.php");
 //header("Content-type:  application/msword");
 //header("Content-Disposition: attachment; filename=contrato.doc");
 function clientes($cliente)
 {
 	include("../conexion.php");
 	$sql = "Select Id,Nombre from clientes where `Estado_de_cliente` like '-1' or `Estado_de_cliente` like 'on' order by Nombre";
-	$consulta = mysql_db_query($dbname,$sql,$con);
-	while($resultado = mysql_fetch_array($consulta))
+	$consulta = mysql_query($sql,$con);
+	while(true == ($resultado = mysql_fetch_array($consulta)))
 	{
 		if($cliente == $resultado[0])
 		$seleccionado = "selected";
@@ -28,8 +31,8 @@ function contratos($cliente)
 {
 	include("../conexion.php");
 	$sql = "Select * from z_contratos";
-	$consulta = mysql_db_query($dbname,$sql,$con);
-	while($resultado = mysql_fetch_array($consulta))
+	$consulta = mysql_query($sql,$con);
+	while(true == ($resultado = mysql_fetch_array($consulta)))
 	{
 		$texto .= "<option ".$seleccionado." value='".$resultado[0]."'>".$resultado[1]."</option>";	
 	}

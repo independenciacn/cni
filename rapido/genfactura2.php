@@ -11,18 +11,18 @@ setlocale(LC_ALL, 'es_ES');
 function traduce($texto)
 {
 //en algunos casos
-if(SISTEMA == "windows")
-	$bien = utf8_encode($texto); //para windows
-else
+//if(SISTEMA == "windows")
+//	$bien = utf8_encode($texto); //para windows
+//else
 	$bien = $texto;//para sistemas *nix
 return $bien;
 }
 function codifica($texto)
 {
 //en algunos casos
-if(SISTEMA == "windows")
-	$bien = utf8_decode($texto); //para windows
-else
+//if(SISTEMA == "windows")
+	//$bien = utf8_decode($texto); //para windows
+//else
 	$bien = $texto;//para sistemas *nix
 return $bien;
 }
@@ -59,7 +59,7 @@ function genera_codigo_factura($cliente,$mes)
 	//a�adimos al final el mes y a�o
 	include("../inc/variables.php");
 	$sql = "Select valor from z_sercont where idemp like $cliente and servicio like 'negocio'";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	if ($mes <= 9)
 	$mes = "0".$mes;
 	if(mysql_numrows($consulta) >= 1)
@@ -83,7 +83,7 @@ if(isset($_GET[cliente]))
 	$lista_meses = array("","Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
 //nombre del cliente y del fichero
 	$sql = "Select * from clientes where id like '$cliente'";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$resultado = mysql_fetch_array($consulta);
 	$nombre_fichero = "<span style='font-size:16.0pt'>Factura</span>";//.$resultado[1]." - ".$lista_meses[$mes]." - ". $ano_domini."</span>";
 //cabezera de word ya bien
@@ -123,7 +123,7 @@ $codigo_factura = genera_codigo_factura($cliente,$mes);
 //<tr><th align='left'>Contrato</th><td colspan='5' align='left'>".$resultado[3] ."</td></tr>";
 //formas de pago y + datos de facturacion
 	$sql = "SELECT * from facturacion where idemp like $cliente";
-	if ($consulta = mysql_db_query($dbname,$sql,$con))
+	if ( true == ( $resultado = mysql_fetch_array( $consulta ) ) )
 	{
 		$resultado = mysql_fetch_array($consulta);
 		$pie_factura = "<table width='100%' cellpadding='1px' cellspacing='1px' style='font-size:10.0pt'>
@@ -156,8 +156,8 @@ $codigo_factura = genera_codigo_factura($cliente,$mes);
 //PARTE DEL CONTRATO Y DEL ALMACENAJE SI PROCEDE cuidado con el mes
 //la primera linea tiene que ser el importe del mes del tipo de cliente
 	$sql = "Select * from tarifa_cliente where ID_Cliente like $cliente";
-	$consulta = mysql_db_query($dbname,$sql,$con);
-	while ($resultado = mysql_fetch_array($consulta))
+	$consulta = mysql_query($sql,$con);
+	while ( true == ( $resultado = mysql_fetch_array( $consulta ) ) )
 	{
 		echo "<tr>
 		<td style='border-right-style:solid; border-width:1px;border-color:#000000;' align='center'>Mensual</td>
@@ -173,8 +173,8 @@ $codigo_factura = genera_codigo_factura($cliente,$mes);
 //Hasta aqui el importe del contrato base
 //almacenaje
 	$sql = "Select bultos, datediff(fin,inicio) from z_almacen where cliente like $cliente and month(fin) like $mes";
-	$consulta = mysql_db_query($dbname,$sql,$con);
-	while ($resultado = mysql_fetch_array($consulta))
+	$consulta = mysql_query($sql,$con);
+	while ( true == ( $resultado = mysql_fetch_array( $consulta ) ) )
 	{
 		$almacen_con_iva = round($resultado[1]*1.16,2);
 		$total = $almacen_con_iva + $total;
@@ -193,8 +193,8 @@ $codigo_factura = genera_codigo_factura($cliente,$mes);
 //FIN DE ESTA PARTE
 //Servicio contratado
 	$sql = "Select d.Servicio, sum(d.Cantidad), date_format(c.fecha,'%d-%m-%Y') as fecha, sum(d.PrecioUnidadEuros), sum(d.ImporteEuro), d.iva, c.`Id Pedido` ,d.observaciones from `detalles consumo de servicios` as d join `consumo de servicios` as c on c.`Id Pedido` = d.`Id Pedido` where c.Cliente like $cliente and (date_format(curdate(),'%Y') like date_format(c.fecha,'%Y') and '$mes' like date_format(c.fecha,'%c')) group by d.servicio";
-	$consulta = mysql_db_query($dbname,$sql,$con);
-	while ($resultado=mysql_fetch_array($consulta))
+	$consulta = mysql_query($sql,$con);
+	while ( true == ( $resultado = mysql_fetch_array( $consulta ) ) )
 	{
 		//$subtotal = round(round($resultado[4],2)+(round($resultado[4],2)*$resultado[5])/100,2);
 		//$subtotal = round($resultado[4] + ($resultado[4]*$resultado[5])/100,2);

@@ -1,103 +1,161 @@
 <?php 
 /**
  * Variables File Doc Comment
- * 
- * Variables usadas en la aplicacion
- * 
+ *
+ * Funciones y variables requeridas por las funciones de la aplicacion
+ *
  * PHP Version 5.2.6
- * 
- * @category Index
- * @package  cni
- * @author   Ruben Lacasa Mas <ruben@ensenalia.com> 
- * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/ 
+ *
+ * @category Valida
+ * @package  cni/inc
+ * @author   Ruben Lacasa Mas <ruben@ensenalia.com>
+ * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/
  * 			 Creative Commons Reconocimiento-NoComercial-SinObraDerivada 3.0 Unported
  * @link     https://github.com/independenciacn/cni
+ * @version  2.0e Estable
  */
-session_start();
-setlocale( LC_NUMERIC, 'es_ES' );
-ini_set( 'mysql.default_host', 'localhost' );
-ini_set( 'mysql.default_user', 'cni' );
-ini_set( 'mysql.default_password', 'inc' );
-$dbname = "centro";
-$con = mysql_pconnect() or die ( mysql_error() );
-if ( !mysql_set_charset( 'utf8', $con ) ) {
-    die( mysql_error() );
-}
-if ( !mysql_select_db( $dbname, $con ) ) {
-    die( mysql_error() );
-}
-// Constantes 
-DEFINE( "OK", "imagenes/clean.png" ); //imagen en el mensaje de correcto
-DEFINE( "NOK", "imagenes/error.png" ); //imagen en el mensaje de fallo
-DEFINE( "SISTEMA", "*nix" );
-// Variables genericas
-// Meses
-$meses = array( 1 => "Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio",
-"Agosto","Septiembre","Octubre","Noviembre","Diciembre");
-// Dias de la semana - Formato Largo
-$dias = array( 1 => "Lunes","Martes","Miercoles","Jueves","Viernes",
-"Sabado","Domingo");
-// Dias de la semana - Formato Corto
-$diasCortos=array( 1=> "L","M","X","J","V","S","D");
-// Funciones Genericas
+error_reporting(0);
 /**
- * Devuelve el dia y el mes en formato Español
- * 
- * @param string $stamp
- * @return string
- */
-function diaYmes( $stamp )
-{
-    $fecha = explode( "-", $stamp );
-    return $fecha[2]."-".$fecha[1];
-}
+ * Establecemos la zona horaria 
+ */ 
+date_default_timezone_set('Europe/Madrid'); 
 /**
- * Cambia el formato de fecha de un estandar a otro
+ * Version de la aplicaci�n
  * 
- * @param string $stamp
- * @return string
+ * @var string
  */
-function cambiaf( $stamp )
-{
-    $fecha = explode( "-", $stamp );
-    if ( count( $fecha ) == 3 ){
-        return $fecha[2] . "-" . $fecha[1] . "-" . $fecha[0];
+define('VERSION',"2.0e");
+/**
+ * Titulo de la aplicaci�n
+ * 
+ * @var string
+ */
+define('APLICACION','Aplicación Gestión Independencia Centro Negocios');
+/**
+ * Iva Generico a utilizar en la aplicación
+ * @var integer
+ */
+define('IVA', 18 );
+/**
+ * Precio Generico del almacenaje
+ * @var integer
+ */
+define('ALMACENAJE',0.70);
+/**
+ * Conexion a la base de datos
+ * 
+ * @var resource
+ */
+
+$con = mysql_connect ("localhost","cni","inc") or die (mysql_error());
+mysql_set_charset('utf8', $con);
+/**
+ * Nombre de la tabla
+ * 
+ * @deprecated - establecerlo dentro de la funcion mysql_select_db
+ * @var string
+ */
+$dbname = "centro"; 
+mysql_select_db($dbname, $con);
+/**
+ * Imagen en el mensaje de correcto
+ * 
+ * @deprecated - Estan siendo retiradas de donde aparecian
+ * @var unknown_type
+ */
+define("OK", "imagenes/clean.png");
+/**
+ * Imagen en el mensaje de error
+ * @deprecated - Estan siendo retiradas de donde aparecian
+ * @var unknown_type
+ */
+define("NOK","imagenes/error.png");
+//define("SISTEMA","*nix");
+/**
+ * Define el sistema operativo donde va a trabajar la aplicacion
+ * 
+ * @var unknown_type
+ */
+define("SISTEMA","windows");
+setlocale(LC_ALL, 'es_ES');
+setlocale(LC_NUMERIC, 'es_ES');
+/**
+ * Devuelve el precio formateado con 2 decimales separados por , miles . y
+ * el simbolo del Euro;
+ * @param integer $number
+ */
+function formatoDinero( $number ) {
+    if ( SISTEMA == "windows" ) {
+        $number = number_format($number,2,',','.')."&euro;";
     } else {
-        return "--";
+        $number = money_format('%n', $number);
+    }
+    return $number;
+}
+/**
+ * Devuelve el numero formateado con 2 decimales separados por , y miles .
+ * @param unknown_type $number
+ */
+function formatoNoDinero( $number ) {
+    $number = number_format($number,2,',','.');
+    return $number;
+}
+/**
+ * Chequea si la sesion se ha iniciado
+ */
+function checkSession(){
+    if ( session_id() != null ){
+        session_regenerate_id();
+    } else {
+        session_start();
     }
 }
 /**
- * Devuelve el dia y mes invertidos para la ordenacion
- * 
- * @param string $stamp
- * @return string
- */
-function invierte( $stamp )
-{
-    $fecha = explode( "-", $stamp );
-    return $fecha[1]."-".$fecha[0];
-}
-/**
- * Establece la clase de la tabla
+ * Devuelve el tipo de clase css que sera el campo
  * 
  * @param integer $k
- * @return string $clase
+ * @return string
  */
-function clase( $k )
+function clase($k)
 {
-    $clase = "impar";
-    if ( $k%2 == 0 ) {
-        $clase = "par";
-    }
+    $clase = ( $k%2 == 0)? 'par': 'impar';
     return $clase;
 }
 /**
- * Trata el array de entrada
- * 
- * @param string $value
+ * Se le puede pasar como parametro un array o una string y la sanea
+ *
+ * @param mixed $vars
+ *
  */
-function sanitize( &$value )
-{
+function sanitize( &$vars ) {
     global $con;
-    $value = mysql_real_escape_string( $value );
-}    
+    if ( is_array( $vars ) ) {
+        foreach ( $vars as &$var ) {
+            mysql_real_escape_string( $var, $con );
+        }
+    } elseif( is_string( $vars ) ) {
+        mysql_real_escape_string( $vars, $con );
+    }
+}
+/**
+ * Convierte el texto a utf8
+ * 
+ * @deprecated
+ * @param string $texto
+ * @return string $texto
+ */
+function traduce($texto)
+{
+    return $texto;
+}
+/**
+ * Traduce el texto de utf8
+ * 
+ * @deprecated
+ * @param string $texto
+ * @return string $texto
+ */
+function codifica($texto)
+{
+    return $texto;
+}

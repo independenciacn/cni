@@ -1,7 +1,10 @@
 <?php
-if((isset($_GET[factura])) || (isset($_POST[factura])))
-{
-	//calculo del total con iva
+require_once '../inc/variables.php';
+require_once '../inc/ezpdf/class.ezpdf.php';
+if((isset($_GET['factura'])) || (isset($_POST['factura']))) {
+    $factura = ( isset( $_POST['factura'] ) ) ? $_POST['factura']:$_GET['factura'];
+    
+    //calculo del total con iva
 	function iva($importe,$iva)
 	{
 		$total = round($importe + ($importe * $iva)/100,2);
@@ -36,80 +39,91 @@ if((isset($_GET[factura])) || (isset($_POST[factura])))
 		return $fecha;
 	}
 /*******************************************************************************************************************/
-	include("../inc/variables.php");
-	require_once('clases/class.ezpdf.php');
-	if(isset($_POST[factura]))
-	{
-		$factura = $_POST[factura];
-	}
-	else
-	{
-		$factura= $_GET[factura];
-	}
 		
-		$pdf =& new Cezpdf('a4');
-		$all = $pdf->openObject();
-		$pdf->saveState();
-		$euro_diff = array(33=>'Euro'); 
-		$pdf->selectFont('fonts/Helvetica.afm', 
-        array('encoding'=>'WinAnsiEncoding','differences'=>$euro_diff));
-		$pdf->addInfo('Title','Factura');
-		$pdf->addInfo('Author','Independencia Centro de Negocios');
-		$pdf->ezSetCmMargins(3,2,1.2,1.2);
-		$im = imagecreatefromjpeg("logo_n.jpg");
-		$pdf->addImage($im,33,740,200);
-        //10 aniversario
-        $gif = imagecreatefromgif("image001.gif");
-        $pdf->addImage(&$gif, 470, 750, 90);
-		//fin 10 aniversario
-        $im = imagecreatefromjpeg("pie_n.jpg");
-		$pdf->addImage($im,0,0,600);
-		$im = imagecreatefromjpeg("nif_n.jpg");
-		$pdf->addImage($im,0,200,33);
-		$pdf->restoreState();
-		$pdf->closeObject();
-		$pdf->addObject( $all, 'all' );
+	$pdf =& new Cezpdf('a4');
+	$all = $pdf->openObject();
+	$pdf->saveState();
+	$euro_diff = array(33=>'Euro'); 
+	$pdf->selectFont('../inc/ezpdf/fonts/Helvetica.afm', 
+    array('encoding'=>'WinAnsiEncoding','differences'=>$euro_diff));
+	$pdf->addInfo('Title','Factura');
+	$pdf->addInfo('Author','Independencia Centro de Negocios');
+	$pdf->ezSetCmMargins(3,2,1.2,1.2);
+	$im = imagecreatefromjpeg("logo_n.jpg");
+	$pdf->addImage($im,33,740,200);
+    //10 aniversario
+    $gif = imagecreatefromgif("image001.gif");
+	$pdf->addImage(&$gif, 470, 750, 90);
+	//fin 10 aniversario
+	/**
+	 * @todo Genera consumo alto revisar formato imagen
+	 * @var unknown_type
+	 */
+    $im = imagecreatefromjpeg("pie_n.jpg");
+	$pdf->addImage($im,0,0,600);
+	/**
+	 * @todo Genera consumo alto revisar formato imagen
+	 * @var unknown_type
+	 */
+	$im = imagecreatefromjpeg("nif_n.jpg");
+	$pdf->addImage($im,0,200,33);
+	$pdf->restoreState();
+	$pdf->closeObject();
+	$pdf->addObject( $all, 'all' );
 
 //Cabezera de la factura
-		$sql ="Select c.Nombre,c.Direccion,c.CP,c.Ciudad,c.NIF,r.fecha,c.id from clientes as c join regfacturas as r on r.id_cliente = c.id where r.codigo like $factura";
-		$consulta = mysql_db_query($dbname,$sql,$con);
-		$resultado = mysql_fetch_array($consulta);
-		if((isset($_GET[dup]))||(isset($_POST[dup])))
-			$pdf->addText(363,730,16,"<b>FACTURA (DUPLICADO)<b>");
-		else
-			$pdf->addText(463,730,16,"<b>FACTURA<b>");
-		$pdf->rectangle(263,660,280,50);
+	$sql ="Select c.Nombre,c.Direccion,c.CP,c.Ciudad,
+	c.NIF,r.fecha, r.pedidoCliente, c.id from clientes as c 
+	join regfacturas as r on r.id_cliente = c.id 
+	where r.codigo like ".$factura;
+	$consulta = mysql_query($sql,$con);
+	$resultado = mysql_fetch_array($consulta);
+	if((isset($_GET['dup']))||(isset($_POST['dup']))){
+		$pdf->addText(363,730,16,"<b>FACTURA (DUPLICADO)<b>");
+		$dup = true;
+	}
+	else {
+		$pdf->addText(463,730,16,"<b>FACTURA<b>");
+		$dup = false;
+	}
+	$pdf->rectangle(263,660,280,50);
 //ID CLIENTE
-		$cliente = $resultado[6];
-		$texto="FECHA:".cambiaf($resultado[5]);
-		$pdf->addText(50,700,12,$texto);
-		$texto="Num. FACTURA:".$factura;
-		$pdf->addText(50,685,12,$texto);
+	$cliente = $resultado[6];
+	$texto="FECHA:".cambiaf($resultado[5]);
+	$pdf->addText(50,700,12,$texto);
+	$texto="Num. FACTURA:".$factura;
+	$pdf->addText(50,685,12,$texto);
 /*Datos cliente*/
-		$pdf->addText(265,698,10,"<b>".$resultado[0]."</b>");
-		$pdf->addText(265,687,10,"<b>".$resultado[1]."</b>");
-		$pdf->addText(265,676,10,"<b>".$resultado[2]."-".$resultado[3]."</b>");
-		$pdf->addText(265,665,10,"<b>NIF:".$resultado[4]."</b>");
+	$pdf->addText(265,698,10,"<b>".utf8_decode($resultado[0])."</b>");
+	$pdf->addText(265,687,10,"<b>".utf8_decode($resultado[1])."</b>");
+	$pdf->addText(265,676,10,"<b>".utf8_decode($resultado[2])."-".
+	    utf8_decode($resultado[3])."</b>");
+	$pdf->addText(265,665,10,"<b>NIF:".$resultado[4]."</b>");
 //Asi se pone el fondo en todas
      
 //Paso de datos de historico
 	$sql = "Select * from historico where factura like '$factura'";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
+	$total = 0;
+	$bruto = 0;
+	$celdas = 0;
+	$cantidad = 0;
+	$j = 0;
 	for($i=0;$i<=3;$i++)
-		while($resultado=mysql_fetch_array($consulta))
-		{
-			$importe_sin_iva = $resultado[cantidad]*$resultado[unitario];
-			$data[]=array("Servicio"=>ucfirst($resultado[2])." ".ucfirst($resultado[6]),
-			"Cant."=>number_format($resultado[cantidad],2,',','.'),
-			"P/Unitario"=>number_format($resultado[unitario],2,',','.')."!",
+		while(true == ($resultado=mysql_fetch_array($consulta))) {
+			$importe_sin_iva = $resultado['cantidad']*$resultado['unitario'];
+			$data[]=array(
+			"Servicio"=>ucfirst(utf8_decode($resultado[2]))." ".ucfirst(utf8_decode($resultado[6])),
+			"Cant."=>number_format($resultado['cantidad'],2,',','.'),
+			"P/Unitario"=>number_format($resultado['unitario'],2,',','.')."!",
 			"Importe"=>number_format($importe_sin_iva,2,',','.')."!",
-			"IVA"=>$resultado[iva]."%",
-			"TOTAL"=>number_format(iva($importe_sin_iva,$resultado[iva]),2,',','.')."!");
+			"IVA"=>$resultado['iva']."%",
+			"TOTAL"=>number_format(iva($importe_sin_iva,$resultado['iva']),2,',','.')."!");
 			$total = $total + iva($importe_sin_iva,$resultado[5]);
 			$bruto = $bruto + $importe_sin_iva;
 			$celdas++;
 			//$cantidad++;
-			$cantidad = $cantidad + number_format($resultado[cantidad],2,',','.');
+			$cantidad = $cantidad + number_format($resultado['cantidad'],2,',','.');
 			$j++;
 		}
 		for($k=$j;$k<=30;$k++)
@@ -124,7 +138,7 @@ if((isset($_GET[factura])) || (isset($_POST[factura])))
 sum(round((cantidad*unitario)*(iva/100),2)) as iva,
 sum((cantidad*unitario) + round((cantidad*unitario)*(iva/100),2)) as total
 from historico where factura like '$factura' group by factura";	
-	$consulta = @mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$resultado = @mysql_fetch_array($consulta);
 		$data[]=array("Servicio"=>'TOTALES',
 "Cant."=>number_format($resultado[0],2,',','.'),"P/Unitario"=>"","Importe"=>number_format($resultado[1],2,',','.')."!","IVA"=>"","TOTAL"=>number_format($resultado[3],2,',','.')."!");
@@ -149,39 +163,43 @@ from historico where factura like '$factura' group by factura";
 				'TOTAL'=>array('justification'=>'center'))));
 
 		/*Modificar para sacar de regfacturas*/
-		$sql = "Select fpago,obs_fpago,obs_alt from regfacturas where codigo like $factura";
-		$consulta = mysql_db_query($dbname,$sql,$con);
+		$sql = "Select fpago,obs_fpago,obs_alt, pedidoCliente from regfacturas where codigo like $factura";
+		$consulta = mysql_query($sql,$con);
 		$resultado = mysql_fetch_array($consulta);
 //$pdf->ezText("");
-		$pdf->ezSetY(90);
-		$pdf->ezText("Forma de Pago:".$resultado[0]);
+		$pdf->ezSetY( 115 );
+		$pdf->ezText("Forma de Pago:" .$resultado[0]);
 		//if(($resultado[fpago] != "Cheque") && ($resultado[fpago] != "Contado") && ($resultado[fpago] != "Tarjeta credito")&& ($resultado[fpago] != utf8_decode("Liquidación")))
 		//$pdf->ezText("CC:".$resultado[1]);
-		$pdf->ezText($resultado[1]." ".$resultado[2]);
+		$observacion = preg_replace('|<br\/>|', "\n\r", $resultado[1]);
+		$observacion = preg_replace('|\(|' ,"\n\r(", $observacion );
+		$observacion = preg_replace('|Vto|',"\n\rVto", $observacion );
+		$observacion = preg_replace('|Vencimien|',"\n\rVencimien", $observacion );
+		$pdf->ezText(utf8_decode($observacion)." ".utf8_decode($resultado[2]));
+		// Agregamos si existe en Pedido de Cliente
+		if ( !is_null( $resultado['pedidoCliente'] ) ) {
+			$pdf->ezText( $resultado['pedidoCliente'] );
+		}
 
 //Si se ha mandado a guardar escribimos en el fichero
-		if(isset($_POST[factura]))
+		if(isset($_POST['factura']))
 		{
 			$pdfcode = $pdf->output();
 			$nombre_factura = "factura_".$factura.".pdf";
-			$ruta_osx = "/Users/ruben/Desktop/facturas/";
-			$ruta_wxp = "\\\\172.26.0.131\RED\PLANTILLAS\facturas\\";
-			if(isset($_POST[envio]))
-				$ruta = "tmp/".$nombre_factura;
-			else
+			$ruta_wxp = "\\\\172.26.0.131\\RED\\PLANTILLAS\\facturas\\";
+			if(isset($_POST['envio'])) {
+				include_once 'envia.php';
+				set_time_limit(120);	
+				envia($pdfcode, $factura, $dup);
+			} else {
 				$ruta = $ruta_wxp.$nombre_factura;
-			//$ruta_wxp = "C:\RED\PLANTILLAS\facturas\\";
-			$fp=fopen($ruta,'wb');
-			fwrite($fp,$pdfcode);
-			fclose($fp);
-			unset($pdfcode);
-			
-			if(isset($_POST[envio]))
-			{
-				include("envio.php");
+				$fp = fopen($ruta,'wb');
+				fwrite($fp,$pdfcode);
+				fclose($fp);
 			}
+			unset($pdfcode);
 		}
-		else
+		else {
 			$pdf->ezStream();
+		}
 }
-?>

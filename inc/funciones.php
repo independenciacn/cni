@@ -1,6 +1,10 @@
 <?php
 //Este codigo ha sido desarrollado en su totalidad por Ruben Lacasa Mas ruben@sbarrat.org 2006
-
+/**
+ * @deprecated - Este fichero no es necesario ya comentarlo entero comprobar
+ * y borrar
+ */
+/*
 if ($ssid == session_id())//comprobacion de seguridad
 {
 include("conexion.php");
@@ -14,6 +18,7 @@ function cambiaf($stamp) //funcion del cambio de fecha
 }
 //No son funciones pero como si lo fueran
 /*************************************************************************/
+/*
 if(isset($_POST['alta']))//alta en la base de datos
 {
 $tabla = $_POST['tabla'];
@@ -67,6 +72,7 @@ else
 $_SESSION['accion'] = "<span id='avisnok'>No se ha dado de alta el servicio</span>";
 }	
 /*************************************************************************/
+/*
 if(isset($_POST['modificar']))//modificacion
 {
 $tabla = $_POST['tabla'];
@@ -124,6 +130,7 @@ else
 $_SESSION['accion'] = "<span id='avisnok'>No se han actualizado los datos</span>";
 }
 /*************************************************************************/
+/*
 if(isset($_POST['borrar']))//borrado, deshabilitado
 {
 $tabla = $_POST['tabla'];
@@ -140,6 +147,7 @@ else
 $_SESSION['accion'] = "<span id='avisnok'>No se ha borrado el registro</span>";
 }
 /*************************************************************************/
+/*
 if(isset($_POST['limpiar']))//limpiar formulario
 {
 	unset($_SESSION['busqueda']);
@@ -151,7 +159,7 @@ if(isset($_POST['todos']))
 	unset($_SESSION['pagbus']);
 }
 /***********************************************************/
-
+/*
 function generatabla ($nombretabla,$categoria,$ssid,$pagina,$columnas)
 {
 include("conexion.php");
@@ -244,6 +252,7 @@ while ($rservic = mysql_fetch_array($cservic))
 	
 	//$muestra .= "<tr bgcolor=".$colorlinea.">";
 	/*Parte del desvio*/
+/*
 	$desvio = desvio($rservic[0]); //cambia el color de linea si esta marcado el desvio
 	if($desvio == -1)
 	$muestra .= "<tr bgcolor='#FCD393'>";
@@ -311,6 +320,7 @@ $muestra .= "</table>";
 return $muestra;
 }
 /***********************************************************************************/
+/*
 function generaformulario($nombretabla,$categoria,$sel,$ssid)
 {
 	//Funcion para generar formularios
@@ -364,12 +374,14 @@ function generaformulario($nombretabla,$categoria,$sel,$ssid)
 		
 		//parte de los subformularios
 		/****SOLO para este caso vamos a poner que si la sub es 2 salga idemp*******/	
+/*
 		if(($_GET['sub']==2) || ($_GET['sub']==8))/* !!!!!!SOLO PARA ESTE CASO cambiarlo cuando se pueda*/
-		$sql .= " from `$nombretabla` where idemp like $sel";
+/*		
+        $sql .= " from `$nombretabla` where idemp like $sel";
 		else
 		$sql .= " from `$nombretabla` where id like $sel";
 		//echo $sql;//depuracion
-		$consulta = mysql_db_query($dbname,$sql,$con);
+		$consulta = mysql_query($sql,$con);
 		$resultado = mysql_fetch_array($consulta);
 	}
 	
@@ -673,9 +685,11 @@ function desvio($empresa) //funcion que dice si hay desvio o no
 {
 	include("conexion.php");
 	$sql = "Select Desvio from clientes where id like $empresa";
-	$consulta = mysql_db_query($dbname,$sql,$con);
+	$consulta = mysql_query($sql,$con);
 	$resultado = mysql_fetch_array($consulta);
 	return $resultado[0];
 }
 
 }
+
+*/
