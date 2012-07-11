@@ -2,7 +2,7 @@
 /**
  * estadisticas.php File Doc Comment
  *
- * Generacion de consultas de estadisticas nuevas Julio 2008-Agosto 2008 DEBUG
+ * Generacion de consultas de estadisticas nuevas Julio 2008-Agosto 2008
  *
  * PHP Version 5.2.6
  *
@@ -15,7 +15,8 @@
  * @link     https://github.com/independenciacn/cni
  */
 require_once '../inc/variables.php';
-checkSession();
+require_once '../inc/Cni.php';
+Cni::chequeaSesion();
 if ( isset( $_SESSION['usuario']) ) {
     if ( isset( $_POST['opcion'] ) ) {
         switch ($_POST['opcion']) {
@@ -36,10 +37,6 @@ if ( isset( $_SESSION['usuario']) ) {
 } else {
     echo "No se ha iniciado sesion";
 }
-
-/*
- * Devuelve el nombre del cliente
- */
 /**
  * Devuelve el nombre del cliente
  * 
@@ -49,17 +46,18 @@ if ( isset( $_SESSION['usuario']) ) {
  */
 function nombreCliente($cliente)
 {
-    $sql = "Select Nombre from clientes where id like ".$cliente;
-    $resultado = ejecutaConsulta( $sql );
+    $sql = "SELECT Nombre FROM clientes WHERE id LIKE ".$cliente;
+    $resultado = Cni::consulta($sql);
 
     return $resultado [0];
 }
-/*
+/**
  * Listado de Clientes
+ * 
+ * @return string Select de clientes
  */
 function clientes()
 {
-    global $con;
     if (isset ( $_GET ['emp'] )) {
         $_SESSION ['wcliente'] = $_GET ['emp'];
         $cliente = $_SESSION ['cliente'];
@@ -67,53 +65,62 @@ function clientes()
         $cliente = 0;
     }
     $form = "<select id='cliente' name='cliente'>";
-    $sql = "Select id, Nombre from clientes order by Nombre"; // mostramos
+    $sql = "SELECT id, Nombre FROM clientes ORDER BY Nombre"; // mostramos
                                                               // tambien los
                                                               // inactivos
-    $consulta = mysql_query ( $sql, $con );
+    $resultados = Cni::consulta($sql);
     $form .= "<option value='0'>-Cliente-</option>";
-    while ( true == ($resultado = mysql_fetch_array ( $consulta )) ) {
+    foreach ($resultados as $resultado) {
         $marcado = ($cliente == $resultado [0]) ? "selected" : "";
-        if (trim ( $resultado [1] ) != "") {
-            $form .= "<option value='$resultado[0]' $marcado >" .
-                $resultado [1] . " " . $resultado [2] . "</option>";
-        }
+        if ( trim( $resultado [1] ) != "" ) {
+            $form .= "<option value='".$resultado[0]."' $marcado >" .
+            $resultado [1] ."</option>";
+        } 
     }
     $form .= "</select>";
 
     return $form;
 }
-/*
- * Select de categorias
+/**
+ * Listado de las categorias
+ * 
+ * @return string
  */
 function categorias()
 {
-    global $con;
-    $form .= "<select id='categoria' name='categoria'>";
-    $sql = "Select categoria from clientes group by categoria";
-    $consulta = mysql_query ( $sql, $con );
+    $form = "<select id='categoria' name='categoria'>";
+    $sql = "SELECT categoria FROM clientes GROUP BY categoria";
+    $resultados = Cni::consulta($sql);
     $form .= "<option value='0'>-Categorias-</option>";
-    while ( true == ($resultado = mysql_fetch_array ( $consulta )) ) {
+    foreach ($resultados as $resultado) {
         if (trim ( $resultado [0] ) != "") {
-            $form .= "<option value='" . $resultado [0] . "' >" . $resultado [0] . "</option>";
+            $form .= "<option value='" . $resultado [0] . "' >" . 
+            $resultado [0] . "</option>";
         }
     }
     $form .= "</select>";
 
     return $form;
 }
- /*
-  * Selector de fecha
-  */
+/**
+ * Segun el modo en el que estamos devuelve un formato de fecha u otro
+ * @param string $modo
+ * @return string
+ */
 function fecha($modo)
 {
     $form = dias ( $modo ) . mes ( $modo ) . anyo ( $modo );
 
     return $form;
 }
- /*
- * dias(): Devuelve 31 independientemente del mes marcado
- * Revisar:Generar funcion que dependiendo del mes y año de un valor u otro
+
+/**
+ * Devuelve 31 dias independientemente del mes marcado
+ * @todo Generar funcion que dependiendo del mes y año de un valor u otro
+ *         cal_days_in_month($calendar, $month, $year)
+ * 
+ * @param string $modo
+ * @return string
  */
 function dias($modo)
 {
@@ -131,17 +138,20 @@ function dias($modo)
             $tipo = "rdiaf";
             break;
     }
-    $select = "<select id='" . $tipo . "' name='" . $tipo . "'>";
+    $select = "<select id='". $tipo ."' name='". $tipo ."'>";
     $select .= "<option value='0'>-Dia-</option>";
     for ($i = 1; $i <= 31; $i ++) {
-        $select .= "<option value='$i'>$i</option>";
+        $select .= "<option value='".$i."'>".$i."</option>";
     }
     $select .= "</select>";
 
     return $select;
 }
-/*
- * mes(): Opciones del campo select que muestran el mes
+/**
+ * Opciones del campo select que muestran el mes
+ * 
+ * @param string $modo
+ * @return string
  */
 function mes($modo)
 {
@@ -159,20 +169,20 @@ function mes($modo)
             $tipo = "rmesf";
             break;
     }
-    $select = "<select id='" . $tipo . "' name='" . $tipo . "'>";
-
-    $meses = nombreMeses ();
-
+    $select = "<select id='". $tipo ."' name='". $tipo ."'>";
     $select .= "<option value=0>-Mes-</option>";
-    for ($i = 1; $i <= 12; $i ++) {
-        $select .= "<option value='" . $i . "'>" . $meses [$i] . "</option>";
+    foreach (Cni::$meses as $key => $mes) {
+        $select .= "<option value='". $key ."'>". $mes ."</option>";
     }
     $select .= "</select>";
 
     return $select;
 }
-/*
- * ano(): Funcion que muestra los anyos desde el 2000 hasta
+/**
+ * Muestra el select de los años desde el 2007 hasta el actual
+ * 
+ * @param string $modo
+ * @return string
  */
 function anyo($modo)
 {
@@ -194,48 +204,43 @@ function anyo($modo)
     $select .= "<select id='" . $tipo . "' name='" . $tipo . "'>";
     $select .= "<option value='0'>-A&ntilde;o-</option>";
     $select .= "<option value='2007'>2007</option>";
-    for ($i = 8; $i <= 20; $i ++) {
-        if ($i <= 9) {
-            $valor = "200" . $i;
-        } else {
-            $valor = "20" . $i;
-        }
-        $select .= "<option value='" . $valor . "'>" . $valor . "</option>";
+    for ($i = 2008; $i <= date('Y'); $i++) {
+        $select .= "<option value='" . $i . "'>" . $i . "</option>";
     }
     $select .= "</select>";
 
     return $select;
 }
-    /*
- * Select de servicios
+/**
+ * Select de los servicios
+ * 
+ * @fixme Coge los datos de servicio del historio???
+ * @return string
  */
 function servicios()
 {
-    global $con;
-    $form .= "<select id='servicios' name='servicios'>";
-    $sql = "Select trim(servicio) from historico
-    group by trim(servicio) order by trim(servicio)";
-    $consulta = mysql_query ( $sql, $con );
+    $sql = "SELECT TRIM(servicio) FROM historico
+    group by TRIM(servicio) ORDER BY TRIM(servicio)";
+    $resultados = Cni::consulta($sql);
+    $form = "<select id='servicios' name='servicios'>";
     $form .= "<option value='0'>-Servicios-</option>";
-    while ( true == ($resultado = mysql_fetch_array ( $consulta )) ) {
-        $form .= "<option value='" . trim ( $resultado [0] ) . "' >" . trim ( $resultado [0] ) . "</option>";
+    foreach ($resultados as $resultado) {
+        $form .= "<option value='".trim($resultado[0])."' >". 
+            trim($resultado[0])."</option>";
     }
     $form .= "</select>";
 
     return $form;
 }
-/*
- * Funciones Especificas Aplicacion
+/**
+ * Se genera el formulario para la consulta por cliente
+ *
+ * @param array $vars
  */
-
- /**
-  * Se genera el formulario para la consulta por cliente
-  *
-  * @param array $vars
-  */
 function formulario($vars)
 {
-    //Este al ser entre fechas por cliente en formulario tenemos fechas y clientes
+    //Este al ser entre fechas por cliente en formulario 
+    //tenemos fechas y clientes
     //y devolvera servicios
     $cadena = "<form name='consulta' id='consulta' method='post'
     onsubmit='procesa();return false'>";
@@ -673,7 +678,7 @@ function respuesta($vars)
             break;
         }
         //Rango de fechas de la comparativa
-        $rangete_a = genera_consultas($vars['fecha_inicio_a'],$vars['fecha_fin_a']);
+        $rangete_a = generaConsultas($vars['fecha_inicio_a'],$vars['fecha_fin_a']);
         //echo $sql." ".$filtro." ".$grupo.$vars[servicios];
         $subtitulo = "Datos del ".$vars['fecha_inicio_a']." al ".$vars['fecha_fin_a']." de ";
         if(is_array($rangete_a))
@@ -683,7 +688,7 @@ function respuesta($vars)
             and month('$rango') like month(c.fecha)  ".$filtro.$grupo;
         }
         if ($vars['fecha_inicio_b']!='' && $vars['fecha_fin_b']!='') {
-            $rangete_b = genera_consultas($vars['fecha_inicio_b'],$vars['fecha_fin_b']);
+            $rangete_b = generaConsultas($vars['fecha_inicio_b'],$vars['fecha_fin_b']);
             $subtitulo2 = "Datos del ".$vars['fecha_inicio_b']." al ".$vars['fecha_fin_b'];
             if(is_array($rangete_b))
             foreach ($rangete_b as $rango) {
@@ -738,32 +743,39 @@ if ($vars['formu']!=7) {
  /*
   * Funcion genera consultas, otra que genera bucles
   */
-function genera_consultas($inicio,$fin)
+/**
+ * Genera consultas.
+ * 
+ * @todo No se muy bien que hace
+ * @param string $inicio fecha Inicio rango
+ * @param string $fin fecha Fin rango
+ * @return string
+ */
+function generaConsultas($inicio, $fin)
 {
-    global $con;
-    //cambio formato de fechas
-    $inicio=cambiaf($inicio);
-    $fin=cambiaf($fin);
-    //miramos cuantos años hay en el rango inicial
-    $sql = "Select year(fecha) from regfacturas
-    where (fecha>='".$inicio."' and fecha<='".$fin."') group by year(fecha)
-    order by year(fecha)";
-    //echo $sql;
-    $consulta = mysql_query($sql,$con);
-    while(true == ($resultado = mysql_fetch_array($consulta)))
-    $anyos_inicio[] = $resultado[0];
-    //miramos los meses para cada año
-    if (is_array($anyos_inicio))
-    foreach ($anyos_inicio as $anyo) {
-    $sql = "Select month(fecha) from regfacturas where
-    (fecha>='".$inicio."' and fecha<='".$fin."' and year(fecha) like ".$anyo.")
-    group by month(fecha) order by month(fecha)";
-    $consulta = mysql_query($sql,$con);
-    while(true == ($resultado = mysql_fetch_array($consulta)))
-        $mes_anyo[]=$anyo."-".$resultado[0];
+    $sql = "SELECT YEAR(fecha) FROM `regfacturas`
+        WHERE ( 
+            DATE_FORMAT(fecha, '%d-%m-%Y) >= '".$inicio."' 
+            AND DATE_FORMAT(fecha, '%d-%m-%Y) <= '".$fin."'
+        ) 
+        GROUP BY YEAR(fecha)
+        ORDER BY YEAR(fecha)";
+    $anyosInicio = Cni::consulta($sql);
+    foreach ($anyosInicio as $anyo) {
+        $sql = "SELECT MONTH(fecha) FROM `regfacturas` 
+            WHERE (
+                DATE_FORMAT(fecha, '%d-%m-%Y) >= '".$inicio."' 
+                AND DATE_FORMAT(fecha, '%d-%m-%Y) <='".$fin."' 
+                AND YEAR(fecha) LIKE ".$anyo."
+            )
+            GROUP BY MONTH(fecha) 
+            ORDER BY MONTH(fecha)";
+        $meses = Cni::consulta($sql);
+        foreach ($meses as $mes) {
+            $mesAnyo[] = $anyo."-".$mes;
+        }
     }
-
-    return $mes_anyo;
+    return $mesAnyo;
 }
  /*
   * Para las comparativas, una consulta por mes
@@ -1135,7 +1147,7 @@ function generamos_titulo($sql)
     $acumulado = 0;
     $dato_ant = 0;
     foreach ($sql as $key => $esquel) {
-        $titulo [] = generamos_titulo_comparativa ( $esquel );
+        $titulo [] = generamosTituloComparativa ( $esquel );
         $consulta = mysql_query ( $esquel, $con );
         while ( true == ($resultado = mysql_fetch_array ( $consulta )) ) {
             $subdatos [$resultado [0]] = $resultado [1];
@@ -1207,19 +1219,25 @@ function generamos_titulo($sql)
 
     return $cadena;
 }
-function generamosTituloComparativa($esquel)
+/**
+ * Genera el titulo de la Comparativa
+ * 
+ * @todo Otra que tampoco se que hace
+ * @param string $sql
+ * @return string
+ */
+function generamosTituloComparativa($sql)
 {
-    $cadena = explode ( "year('", $esquel );
+    $cadena = explode ( "year('", $sql );
     $cadena1 = explode ( "-1')", $cadena [1] );
-    $cadena2 = cambiaf ( $cadena1 [0] );
+    $cadena2 = Cni::cambiaFormatoFecha($cadena1[0]);
     $cadena3 = explode ( "-", $cadena2 );
-    $meses = nombreMeses ();
-
-    return $meses [$cadena3 [1]] . " / " . $cadena3 [2];
+    return Cni::$meses[$cadena3 [1]] . " / " . $cadena3 [2];
 }
 /**
  * Funcion que devuelve el nombre de los meses del año
- *
+ * 
+ * @deprecated usar Cni::$meses
  * @return array $meses
  */
 function nombreMeses()

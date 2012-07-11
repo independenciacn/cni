@@ -8,7 +8,20 @@ final class Cni
 {
     private static $_con;
     private static $_query;
-    
+    public static $meses = array (
+        1=>"Enero", 
+        "Febrero", 
+        "Marzo", 
+        "Abril", 
+        "Mayo",
+        "Junio", 
+        "Julio", 
+        "Agosto", 
+        "Septiembre", 
+        "Octubre",
+        "Noviembre", 
+        "Diciembre" 
+        );
     
     
     /**
