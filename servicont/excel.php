@@ -78,7 +78,7 @@ if(session_id() == $_GET[id]) {
 			    $fecha = cambiaf($resultado[2]);
 			$total = ((round($resultado[4],2) * $resultado[5])/100) + round($resultado[4],2);
 			$total = round($total,2);
-			$stotal = $stotal + $total;
+			$totalAcumulado = $totalAcumulado + $total;
 			$unitario = round($resultado[3],2);
 			$subtotal = round($resultado[4],2);
 			if($resultado[7]!='')
@@ -100,7 +100,7 @@ if(session_id() == $_GET[id]) {
 		<th align='left' class='texto'>Servicios: $servicios</th>
 		<th align='right'>".number_format($toserv,2,',','.')."</th>
 		<td></td><td></td><td></td>
-		<th align='right'>".number_format($stotal,2,',','.')." &euro;</th></tr>");
+		<th align='right'>".number_format($totalAcumulado,2,',','.')." &euro;</th></tr>");
 		print("</table>");
 }
 else

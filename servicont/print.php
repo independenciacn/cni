@@ -1,92 +1,81 @@
 <?php
-require_once '../inc/variables.php';
-checkSession();
 /**
- * Cambiaf cambia el formato de la fecha de uno a otro
- * 
- * @deprecated
- * @param unknown_type $stamp
- * @return string
+ * print.php File Doc Comment
+ *
+ * Genera la tabla con los resultados recibidos
+ *
+ * PHP Version 5.2.6
+ *
+ * @category servicont
+ * @package  cni/servicont
+ * @author   Ruben Lacasa Mas <ruben@ensenalia.com>
+ * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/
+ *           Creative Commons Reconocimiento-NoComercial-SinObraDerivada
+ *           3.0 Unported
+ * @link     https://github.com/independenciacn/cni
  */
-function cambiaf($stamp) {
-		$fdia = explode("-",$stamp);
-		$fdia2 = explode(" ",$fdia[2]);
-		$fecha = $fdia2[0]."-".$fdia[1]."-".$fdia[0];
-		return $fecha;
-}
-	
+require_once '../inc/variables.php';
+require_once '../inc/Cni.php';
+Cni::chequeaSesion();
+$tabla = "";
 if ( isset($_SESSION['titulo']) ) {
-		$sql = $_SESSION['sqlQuery'];
-		$consulta = mysql_query($sql,$con);
-		$totalCampos = mysql_num_fields($consulta);
-		$totalCeldas = mysql_numrows($consulta);
-		$mensaje = "";
-		$j=0;
-		$cadena = "
-		<table class='tabla' width='100%'>
-		    <tr>
-		        <th colspan='".$totalCampos."'>
-		            ".$_SESSION['titulo']."
-		        </th>
-		    </tr>";
-		if ( $totalCeldas >= 10000 ) {
-		    $mensaje = "Demasiados Resultados. Filtre mas"; 
-		    $cadena.="<tr><th colspan='".$totalCampos."'>".$mensaje."</th></tr>";
-		} elseif ( $totalCeldas == 0 ) {
-		    $mensaje = "No hay Resultados";
-		    $cadena.="<tr><th colspan='".$totalCampos."'>".$mensaje."</th></tr>";
-		} else {
-		    $cadena.="<tr>";
-		    for ( $i = 0; $i < $totalCampos; $i ++ ) {
-				$cadena.= "<th>".mysql_field_name($consulta,$i)."</th>";
+	$sql = $_SESSION['sqlQuery'];
+	$resultados = Cni::consulta($sql);
+	$totalResultados = Cni::totalDatosConsulta();
+	$cabezera = true;
+	$cabezeraTabla = "<tr>";
+	$datosTabla = "";
+	$pieTabla = "";
+	$celda = 0;
+	$numeroColumnas = 0;
+	$totalColumna = array_fill(0, 10, null);
+	if ( $totalResultados > 0 ) {
+	    foreach ($resultados as $resultado) {
+		    $datosTabla .= "<tr class='".Cni::clase($celda++)."'>";
+		    foreach ($resultado as $key => $var) {
+		        if (  $cabezera && !is_numeric($key) ) {
+		            $cabezeraTabla .="<th>".$key."</th>";
+		            $numeroColumnas++;
+		        }
+		        if ( is_numeric($key) ) {
+		            $datosColumna = Cni::datosColumna($key);
+		            $datosTabla .="<td>".
+		                Cni::formateaCampo($var, $datosColumna['native_type'])
+		                ."</td>";
+		            if ( is_numeric($var) ) {
+		                $totalColumna[$key] = $totalColumna[$key] + $var;    
+		            }
+		        }
 		    }
-			$cadena.="</tr>";
-			while ( true == ( $resultado = mysql_fetch_array( $consulta ) ) ) {
-				$clase = ( $j++ % 2 == 0) ? "par" : "impar";
-				$cadena."<tr>";
-				for ( $i = 0; $i < $totalCampos; $i++ ) {
-					switch ( mysql_field_type( $consulta, $i ) ) {
-						case "string":
-						    $campo = $resultado[$i];
-						    break;
-						case "real":
-						    $campo = number_format($resultado[$i],2,',','.');
-							$tot[$i]=$tot[$i]+$resultado[$i];
-						    break;
-						case "date":
-						    $campo = cambiaf($resultado[$i]);
-						    break;
-						default:
-						    $campo = $resultado[$i];
-							$tot[$i] ="";
-					        break;
-					}
-					$cadena.="<td class='".$clase."'>".$campo."</td>";
-				}
-				$cadena.="</tr>";
-			}
-			$cadena.="<tr>";
-			for ( $i = 0; $i < $totalCampos; $i++ ) {
-				switch ( mysql_field_type( $consulta, $i ) ) {
-					case "string":
-					    $cadena.="<th></th>";
-					    break;
-					case "real":
-					    $cadena.="<th>".number_format($tot[$i],2,',','.')."</th>";
-					    break;
-					default:
-					    $cadena.="<th></th>";
-					    break;
-				}
-			}
+		    $cabezera = false;
+		    $datosTabla .= "</tr>";
 		}
-		$cadena.="</tr>";
-		$cadena.="</table>";
-		$cadena.="<div id='titulo'>Total Resultados: ".$totalCeldas."</div>";
-	
+    } else {
+		$cabezeraTabla .="<th>No Hay Resultados</th>";
+	}
+	$cabezeraTabla .= "</tr>";
+	// Ponemos los datos del pie de la tabla
+	$pieTabla .= "<tr>";
+	for ($i = 0; $i < $numeroColumnas; $i++) {
+	    $pieTabla .= "<th>";
+	    if ( !is_null($totalColumna[$i]) ) {
+	        $pieTabla .= Cni::formateaNumero($totalColumna[$i]);
+	    }
+	    $pieTabla .= "</th>";
+	}
+	$pieTabla .= "</tr>";
+	// Guardamos la tabla final
+	$tabla .= "
+	    <table class='tabla' width='100%'>
+	        <caption>".$_SESSION['titulo']."</caption>
+	        <thead>".$cabezeraTabla."</thead>
+	        <tbody>".$datosTabla."</tbody>
+	        <tfoot>".$pieTabla."</tfoot>
+	    </table>";
 }
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
+"http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -94,6 +83,6 @@ if ( isset($_SESSION['titulo']) ) {
 <title>Aplicacion Gestion Independencia Centro Negocios </title>
 <body>
 	<span class='volver' onclick='window.history.back()'>&larr; Volver</span>
-	<?php echo $cadena; ?>
+	<?php echo $tabla; ?>
 </body>
 </html>

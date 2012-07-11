@@ -462,22 +462,6 @@ function desvio_activo($desvio,$estado,$extranet,$cliente)
 	return $cadena;	
 }
 /**
- * Cabio de fecha de formato americano - español y viceversa (CAMBIAR EN FUTURA)
- * 
- * @todo Cambiar a una general en futuras versiones para no duplicar
- * @param unknown_type $stamp
- * @return string
- */
-function cambiaf($stamp)
-{
-	//formato en el que llega aaaa-mm-dd o al reves
-	$fdia = explode("-",$stamp);
-	$fecha = $fdia[2]."-".$fdia[1]."-".$fdia[0];
-	if($fecha == "--")
-		$fecha = "0000-00-00";
-	return $fecha;
-}
-/**
  * Genera el submenu si la tabla pasada lo tiene si no no lo genera
  * 
  * @param array $tabla

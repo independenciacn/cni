@@ -1,57 +1,105 @@
 <?php
-// Enviamos los encabezados de hoja de calculo
-//session_cache_limiter("public");
+/**
+ * word.php File Doc Comment
+ * 
+ * Genera la version imprimible de los resultados generados
+ * 
+ * PHP Version 5.2.6
+ * 
+ * @category servicont
+ * @package  cni/servicont
+ * @author   Ruben Lacasa Mas <ruben@ensenalia.com> 
+ * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/ 
+ *           Creative Commons Reconocimiento-NoComercial-SinObraDerivada 
+ *           3.0 Unported
+ * @link     https://github.com/independenciacn/cni
+ */
 session_start();
-if(session_id() == $_GET[id])
-{
-require_once("../inc/variables.php");
-$sql = $_SESSION['metagenerator'];
-$empresa = $_SESSION['metaempresa'];
-$mostrada = $_SESSION['metafecha'];
-$sersel = $_SESSION['metaservicio'];
-$agrupado = $_SESSION['metagrupado'];
-header("Content-type:  application/msword");
-header("Content-Disposition: attachment; filename=word.doc");
-function cambiaf($stamp) //funcion del cambio de fecha
-{
-	//formato en el que llega aaaa-mm-dd o al reves
-	$fdia = explode("-",$stamp);
-	$fecha = $fdia[2]."-".$fdia[1]."-".$fdia[0];
-	return $fecha;
-}
-
-// Creamos la tabla
-		
-		$consulta = mysql_query($sql,$con);
-		//dise�o de la tabla con el boton de eliminar
-		print("<table width=100% cellpadding=0 cellspacing=0>");
-		print("<tr><th colspan=7>Servicios contratados por $empresa - Periodo $mostrada - Servicio: $sersel</th></tr>");
-		print("<tr><th align='left'>Fecha</th><th align='left'>Servicio</th><th align='left'>Cantidad</th><th align='left'>Precio unidad</th><th align='left'>Subtotal</th><th align='left'>Iva</th><th align='left'>Total</th></tr>");
-		while( true == ( $resultado = mysql_fetch_array( $consulta ) ) )
-		{
-			if($_SESSION['metagrupado']==1)
+require_once '../inc/variables.php';
+require_once '../inc/Cni.php';
+Cni::chequeaSesion();
+$html = "Acceso denegado";
+if ( isset($_SESSION['usuario']) ) {
+	$sql = $_SESSION['metagenerator'];
+	$empresa = $_SESSION['metaempresa'];
+	$mostrada = $_SESSION['metafecha'];
+	$sersel = $_SESSION['metaservicio'];
+	$agrupado = $_SESSION['metagrupado'];
+	$resultados = Cni::consulta($sql);
+	$servicios = 0;
+	$totalAcumulado = 0;
+	$html = "
+	<table width=100% cellpadding=0 cellspacing=0>
+	<tr>
+		<th colspan=7>
+			Servicios contratados por ".$empresa." - 
+			Periodo ".$mostrada." - Servicio: ".$sersel."
+		</th>
+	</tr>
+	<tr>
+		<th align='left'>Fecha</th>
+		<th align='left'>Servicio</th>
+		<th align='left'>Cantidad</th>
+		<th align='left'>Precio unidad</th>
+		<th align='left'>Subtotal</th>
+		<th align='left'>Iva</th>
+		<th align='left'>Total</th>
+	</tr>
+	";
+	foreach ($resultados as $key => $resultado) {
+		if ( $agrupado == 1 ) {
 			$fecha = "Agrupado";
-			else
-			$fecha = cambiaf($resultado[2]);
-			$total = ((round($resultado[4],2) * $resultado[5])/100) + round($resultado[4],2);
-			$total = round($total,2);
-			$stotal = $stotal + $total;
-			$unitario = round($resultado[3],2);
-			$subtotal = round($resultado[4],2);
-			if($resultado[7]!='')
-			$observa = "<div>".$resultado[7]."</div>";
-			else 
-			$observa = "";
-			print( "<tr><td align='left' valign='top'>$fecha</td><td align='left' valign='top'>$resultado[0] $observa</td><td align='left' valign='top'>$resultado[1]</td><td align='left' valign='top'>$unitario &euro;</td><td align='left' valign='top'>$subtotal &euro;</td><td align='left' valign='top'>$resultado[5]</td><td align='left' valign='top'>$total &euro;</td></tr>");
-			$servicios++;
-			$toserv = $toserv+$resultado[1];
+		} else {
+			$fecha = Cni::cambiaFormatoFecha($resultado[2]);
 		}
-		print("<tr><th>Totales</th><th align='left'>Servicios: $servicios</th><th align='left'>Cantidad: $toserv</th><th></th><th></th><th></th><th align='left'>$stotal &euro;</th></tr>");
-		print("</table>");
+		$total = Cni::totalconIva($resultado[4], $resultado[5]);
+		$totalAcumulado = $totalAcumulado + $total;
+		$unitario = round($resultado[3], 2);
+		$subtotal = round($resultado[4], 2);
+		if ( $resultado[7] != '' ) {
+			$observa = "<div>".$resultado[7]."</div>";
+		} else { 
+			$observa = "";
+		}
+		$html .= "
+		<tr>
+		    <td align='left' valign='top'>
+		        ".$fecha."
+		    </td>
+		    <td align='left' valign='top'>
+		        ".$resultado[0]." ".$observa."
+		    </td>
+		    <td align='left' valign='top'>
+		        ".$resultado[1]."
+		    </td>
+		    <td align='left' valign='top'>
+		        ".Cni::formateaNumero($unitario, true)."
+		    </td>
+		    <td align='left' valign='top'>
+		        ".Cni::formateaNumero($subtotal, true)."
+		    </td>
+		    <td align='left' valign='top'>
+		        ".$resultado[5]."
+		    </td>
+		    <td align='left' valign='top'>
+		        ".Cni::formateaNumero($total, true)."
+		    </td>
+		</tr>";
+		$servicios++;
+		$toserv = $toserv+$resultado[1];
+	}
+	$html .= "
+	    <tr>
+	        <th>Totales</th>
+	        <th align='left'>Servicios: ".$servicios."</th>
+	        <th align='left'>Cantidad: ".$toserv."</th>
+	        <th></th>
+	        <th></th>
+	        <th></th>
+	        <th align='left'>".Cni::formateaNumero($totalAcumulado, true)."</th>
+	    </tr>";
+	$html .= "</table>";
 }
-else
-{
 header("Content-type:  application/msword");
 header("Content-Disposition: attachment; filename=word.doc");
-echo "Acceso denegado";
-}
+echo $html;
