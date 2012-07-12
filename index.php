@@ -1,8 +1,10 @@
 <?php
 require_once 'inc/variables.php';
-checkSession();
+require_once 'inc/Cni.php';
+Cni::chequeaSesion();
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
+"http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -22,25 +24,28 @@ checkSession();
  * TODO: Que se pueda modificar la contraseña de acceso
  * TODO: Agregar un nuevo campo a la factura: Nº Pedido
  */
-if(isset($_SESSION['usuario'])) {
+if (isset($_SESSION['usuario']) ) {
 	include_once 'inc/menu.php';
 	echo "<div id='menu_general'>";
 	echo menu();
 	echo "</div>";
 } else {
-?>
-<div id='registro'>
-<center>
-	<img src='imagenes/logotipo2.png' width='538px' alt='The Perfect Place' />
-</center>
-<p />
-<center>
-<?php
-	if(isset($_GET["exit"]))
+    ?>
+    <div id='registro'>
+        <center>
+	        <img src='imagenes/logotipo2.png' width='538px' 
+	            alt='The Perfect Place' />
+        </center>
+        <p />
+        <center>
+    <?php
+	if (isset($_GET["exit"])) {
 		echo "<span class='ok'>Sesion Cerrada</span>";
-	if(isset($_GET["error"]))
+	}
+	if (isset($_GET["error"])) {
 		echo "<span class='ko'>Usuario o Contrase&ntilde;a Incorrecta</span>";
-?>
+	}
+    ?>
 	<form id='login_usuario' method='post' action='inc/valida.php'>
 	<table width='30%' class="login">
   	<tr>
@@ -53,36 +58,40 @@ if(isset($_SESSION['usuario'])) {
 	<td align='right'>
 	Contrase&ntilde;a:
 	</td><td>
-	<input type='password' id="passwd" name="passwd" accesskey="c" tabindex="2" />
+	<input type='password' id="passwd" name="passwd" accesskey="c" 
+	    tabindex="2" />
 	</td></tr>
 	<tr>
 	<td align='center' colspan="2">
-	<input type='submit' class='boton' accesskey="e" tabindex="3"  value = '[->]Entrar' />
+	<input type='submit' class='boton' accesskey="e" tabindex="3"  
+	    value = '[&raquo;]Entrar' />
 	</td></tr>
 	<tr><td colspan='2'></td></tr>
 	</table>
 	</form>
-</center>
-<p />
-<center>
-  <p>
+    </center>
+    <p />
+    <center>
+    <p>
   	<span class="etiqueta">Desarrollado por:</span>
-  </p>
-  <p>
-  	<a href='http://www.ensenalia.com'><img src='imagenes/ensenalia.jpg' width='128' /></a>
-  </p></center>
- </div>
-<?php 
+    </p>
+    <p>
+  	<a href='http://www.ensenalia.com'>
+  	    <img src='imagenes/ensenalia.jpg' width='128' />
+  	</a>
+    </p>
+    </center>
+    </div>
+    <?php 
 } 
 ?>
 </div>
 <div id='datos_interesantes'></div>
 <div id='debug'></div>
 <?php 
-if(isset($_SESSION['usuario']))
-{
+if (isset($_SESSION['usuario'])) {
 	echo "<div id='avisos'>";
-	include("inc/avisos.php");//Se muestran los avisos solo con el include
+	include_once "inc/avisos.php";//Se muestran los avisos solo con el include
 	//echo "Eh co lets go";
 	//echo avisos();
 	echo "</div>";

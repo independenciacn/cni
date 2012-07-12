@@ -8,6 +8,7 @@ final class Cni
 {
     private static $_con;
     private static $_query;
+    private static $_type = PDO::FETCH_BOTH;
     public static $meses = array (
         1=>"Enero", 
         "Febrero", 
@@ -66,17 +67,29 @@ final class Cni
         return $numero;
     }
     /**
+     * Establece el tipo de devolucion de datos
+     * 
+     * @param number|null $type
+     */
+    private static function setType ( $type ) 
+    {
+        if ( !is_null($type) ) {
+            $self::$_type = $type;
+        }
+    }
+    /**
      * Ejecuta la consulta y devuelve los resultados
      *
      * @param string $sql
      * @param integer $type PDO::FETCH_BOTH, PDO::FETCH_ASSOC
      * @return resource
      */
-    public static function consulta( $sql, $type = PDO::FETCH_BOTH )
+    public static function consulta( $sql, $type = null )
     {
         try {
+            self::setType($type);
             self::$_con = CniDB::connect();
-            self::$_query = self::$_con->query($sql, $type);
+            self::$_query = self::$_con->query($sql, self::$_type);
             return self::$_query;
         } catch (Exception $e) {
             var_dump($e->getMessage());
@@ -89,13 +102,14 @@ final class Cni
      * @param array $params
      * @param int $type
      */
-    public static function consultaPreparada( $sql, $params, $type = PDO::FETCH_BOTH )
+    public static function consultaPreparada($sql, $params, $type = null )
     {
         try {
+            self::setType($type);
             self::$_con = CniDB::connect();
             self::$_query = self::$_con->prepare($sql);
             self::$_query->execute($params);
-            return self::$_query->fetchAll($type);
+            return self::$_query->fetchAll(self::$_type);
         } catch (Exception $e) {
             var_dump($e->getMessage());
         }

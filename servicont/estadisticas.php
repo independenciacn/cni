@@ -46,10 +46,14 @@ if ( isset( $_SESSION['usuario']) ) {
  */
 function nombreCliente($cliente)
 {
-    $sql = "SELECT Nombre FROM clientes WHERE id LIKE :idcliente";
-    $params = array(':idcliente' => $cliente);
-    $resultado = Cni::consultaPreparada($sql, $params);
-    return $resultado[0]['Nombre'];
+    if ($cliente) {
+        $sql = "SELECT Nombre FROM clientes WHERE id LIKE :idcliente";
+        $params = array(':idcliente' => $cliente);
+        $resultado = Cni::consultaPreparada($sql, $params);
+        return $resultado[0]['Nombre'];
+    } else {
+        return "Cliente No especificado";
+    }
 }
 /**
  * Listado de Clientes
@@ -412,6 +416,11 @@ function respuesta($vars)
 /**
  * Consultas en pruebas //O cogemos del global de globales
  * @todo: Revisar las consultas
+ * 
+ * Consumos por Cliente - Acumulado, Detallado, Comparativa Inicio - Fin
+ * Consumos por Categoria de Cliente - Acumulado, Detallado, Comparativa Inicio - Fin
+ * Consumos por Servicios - Acumulado, Detallado, Comparativa Inicio - Fin
+ * Consumos por Cliente/Servicios 
  */
 function consulta($vars)
 {
@@ -616,7 +625,7 @@ function consulta($vars)
                 } else {
                     $filtra_servicio = "  ";
                 }
-                $rango=array_de_rangos($vars);
+                $rango=arrayRangos($vars);
                 foreach ($rango as $rangillo) {
                     $esql[]="SELECT trim(h.servicio) as Servicio,
                         sum(h.cantidad*h.unitario+h.cantidad*h.unitario*h.iva/100) as Total
@@ -656,7 +665,7 @@ function consulta($vars)
                     $filtra_cliente = " and c.id_cliente like ".$vars['cliente']." ";
                 else
                     $filtra_cliente = "";
-                $rango=array_de_rangos($vars);
+                $rango=arrayRangos($vars);
                 foreach($rango as $rangillo)
                     $esql[]="SELECT l.Nombre as Cliente,
                     sum(h.cantidad*h.unitario+h.cantidad*h.unitario*h.iva/100) as Total
@@ -755,7 +764,7 @@ if ($vars['formu']!=7) {
         $cadena.=genera_la_tabla_chunga($esql,$vars,$subtitulo);//multiarray
         $print = false;
     } else
-        $cadena=genera_la_tabla($sql,$vars,$subtitulo);
+        $cadena=generaTabla($sql,$vars,$subtitulo);
 // 	$cadena.="<br/><span class='boton'
 // 	onclick='window.open(\"print.php?sql=".urlencode($sql)."\",\"_self\")'>Imprimir</span>";
     $_SESSION['sqlQuery'] = $sql;
@@ -828,47 +837,52 @@ function generaConsultas($inicio, $fin)
     }
     return $mesAnyo;
 }
- /*
-  * Para las comparativas, una consulta por mes
-  */
- function array_de_rangos($vars)
- {
-     //Rango de años
-    global $con;
-    //he marcado los años
-
-    //No he marcado ningun año
+/**
+ * Para las comparativas, una consulta por mes
+ * 
+ * @param array $vars
+ * @return array
+ */
+function arrayRangos($vars)
+{
+    /**
+     * Si no se ha marcado ningun año
+     */
     if ($vars['ano']==0 && $vars['anof']==0) {
-        $sql = "Select year(fecha) from regfacturas group by year(fecha)";
-        $consulta = mysql_query($sql,$con);
-        while (true == ($resultado = mysql_fetch_array($consulta))) {
-        if($resultado[0]>='2008')
-            $cadena[]=" where year(c.Fecha) like ".$resultado[0]." ";
-        else
-            $cadena[]= " where month(c.Fecha)>=8
-            and year(c.Fecha) like ".$resultado[0]." ";
+        $sql = "SELECT YEAR(fecha) 
+            FROM `regfacturas` 
+            GROUP BY YEAR(fecha)";
+        $resultados = Cni::consulta($sql);
+        foreach ($resultados as $resultado) {
+            if ($resultado[0] >= '2008') {
+                $cadena[] = " WHERE YEAR(c.Fecha) lIKE ".$resultado[0]." ";
+            } else {
+                $cadena[] = " WHERE MONTH(c.Fecha) >= 8 
+                    AND YEAR(c.Fecha) LIKE ".$resultado[0]." ";
+            }
         }
     }
-    //he marcado años
+    /**
+     * Si se han marcado los dos años
+     */
     if ($vars['ano']!=0 && $vars['anof']!=0) {
-        for ($i=$vars['ano'];$i<=$vars['anof'];$i++) {
-            //if($vars[mes]!=0 && $vars[mesf]==0)//el mismo mes en 2 años
-            //if($vars[mes]!=0 && $vars[mesf]!=0)//rango en 2 años
-        if($i>=2008)
-            $sql = "Select month(fecha) from regfacturas
-            where year(fecha) like ".$i." group by month(fecha) ";
-        else
-            $sql = "Select month(fecha) from regfacturas
-            where year(fecha) like ".$i." and month(fecha) >= 8 group by month(fecha) ";
-        $consulta = mysql_query($sql,$con);
-        while(true == ($resultado = mysql_fetch_array($consulta)))
-            $cadena[]= " where month(c.Fecha) like ".$resultado[0]."
-            and year(fecha) like $i";
+        $sql = "SELECT MONTH(fecha) FROM regfacturas
+                    WHERE YEAR(fecha) LIKE :anyo";
+        for ($i=$vars['ano']; $i<=$vars['anof']; $i++) {
+            if ($i == 2007 ) {
+                $sql .= " AND MONTH(fecha) >= 8 ";
+            }
+            $sql .= " GROUP BY MONTH(fecha) ";
+            $resultados = Cni::consultaPreparada($sql, array(':anyo' => $i));
+            foreach ($resultados as $resultado) {
+                $cadena[]= " WHERE MONTH(c.Fecha) 
+                    LIKE ".$resultado[0]."
+                    AND YEAR(fecha) LIKE ".$i;
+            }
         }
     }
-
     return $cadena;
- }
+}
 
 /**
  * Generación de la consulta con las fechas
@@ -939,23 +953,28 @@ function consultaFecha($vars)
  * Generacion de la tabla simple para las partes normales
  */
 
- function genera_la_tabla($sql,$vars,$subtitulo)
- {
-     global $con;
-    $consulta = mysql_query($sql,$con);
-
-    $cadena ="<table id='tabla' width='100%'><tr>";
-    $cadena.="<tr><th></th><th colspan='".mysql_num_fields($consulta)."'>
-        ".$vars['titulo']." - ".$subtitulo."</th></tr>";
-    if (mysql_numrows($consulta)>=10000 || mysql_numrows($consulta)==0) {
-        if (mysql_numrows($consulta)>=10000) {
-            $cadena.="<tr><th colspan='".mysql_num_fields($consulta)."'>
-                Demasiados Resultados. Filtre Mas</th></tr>";
-        } else {
-            $cadena.="<tr><th colspan='".mysql_num_fields($consulta)."'>
-                No hay Resultados.</th></tr>";
-        }
+function generaTabla($sql, $vars, $subtitulo)
+{
+    $resultados = Cni::consulta($sql);
+    $cadena = "
+        <table id='tabla' width='100%'>
+            <caption>".$vars['titulo']."-".$subtitulo."</caption>
+        ";
+    $cadena .= "<thead><tr>";
+    if ( Cni::totalDatosConsulta() >= 10000 ) {
+        $cadena .= "<th>Demasiados Resultados. Filtre Mas</th>";
+    } elseif ( Cni::totalDatosConsulta() < 1 ) {
+        $cadena .= "<th>No hay Resultados</th>";
     } else {
+        foreach ($resultados as $resultado) {
+           /**
+            * @todo Cabezera y datos tabla
+            */
+        }
+    }
+    
+    
+     else {
         $cadena.="<th></th>";
         for($i=0;$i<=mysql_num_fields($consulta)-1;$i++)
             $cadena.= "<th>".mysql_field_name($consulta,$i)."</th>";
@@ -1153,30 +1172,38 @@ function posicion($l,$claves,$clave)
     return $pos;
 }
 
-/*
- * Buscamos la aguja en el pajar
- */
-function diferencia($aguja,$pajar_ant,$pajar)
-{
-    if(is_array($pajar_ant))
-        if(array_key_exists($aguja,$pajar_ant))
-            if (array_key_exists($aguja,$pajar)) {
-                $valor = $pajar[$aguja]-$pajar_ant[$aguja];
-                if($valor>0)
-                    $valor="<font color='green'><b>".round($valor,2)."&euro;</b></font>";
-                else
-                    if($valor<0)
-                        $valor="<font color='red'><b>".round($valor,2)."&euro;</b></font>";
-                    else
-                        $valor="<b>".round($valor,2)."&euro;</b>";
-            } else
-                $valor = "--Sin datos--";
-        else
-            $valor = "--Sin datos--";
-    else
-        $valor="--Sin datos--";
 
-    return $valor;
+/**
+ * Devuelve el valor formateado segun la diferencia
+ * 
+ * @param unknown_type $aguja
+ * @param unknown_type $pajarAnt
+ * @param unknown_type $pajar
+ * @return string
+ */
+function diferencia($aguja, $pajarAnt, $pajar)
+{
+    $html = "--Sin datos--";
+    $valor = 0;
+    $color = false;
+    if ( is_array($pajarAnt) && is_array($pajar) ) {
+        if ( array_key_exists($aguja, $pajarAnt) 
+            && array_key_exists($aguja, $pajar) ) {
+            $valor = $pajar[$aguja] - $pajarAnt[$aguja];
+            if ( $valor > 0 ) {
+                $color = 'green';
+            } elseif( $valor < 0 ) {
+                $color = 'red';
+            } else {
+                $color = 'black';
+            }
+            $html = "
+                <font color='".$color."'>
+                    <strong>".Cni::formateaNumero($valor, true)."</strong>
+                </font>";
+        }
+    }
+    return $html;
 }
 
 /*
@@ -1289,26 +1316,11 @@ function generamos_titulo($sql)
  * @param string $sql
  * @return string
  */
-function generamosTituloComparativa($sql)
+function generamosTituloComparativa( $sql )
 {
     $cadena = explode ( "year('", $sql );
     $cadena1 = explode ( "-1')", $cadena [1] );
     $cadena2 = Cni::cambiaFormatoFecha($cadena1[0]);
     $cadena3 = explode ( "-", $cadena2 );
     return Cni::$meses[$cadena3 [1]] . " / " . $cadena3 [2];
-}
-/**
- * Funcion que devuelve el nombre de los meses del año
- * 
- * @deprecated usar Cni::$meses
- * @return array $meses
- */
-function nombreMeses()
-{
-    $meses = array (
-            1=>"Enero", "Febrero", "Marzo", "Abril", "Mayo",
-            "Junio", "Julio", "Agosto", "Septiembre", "Octubre",
-            "Noviembre", "Diciembre" );
-
-    return $meses;
 }

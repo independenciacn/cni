@@ -10,12 +10,14 @@
  * @package  cni/inc
  * @author   Ruben Lacasa Mas <ruben@ensenalia.com>
  * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/
- * 			 Creative Commons Reconocimiento-NoComercial-SinObraDerivada 3.0 Unported
+ * 			 Creative Commons Reconocimiento-NoComercial-SinObraDerivada 
+ *           3.0 Unported
  * @link     https://github.com/independenciacn/cni
  * @version  2.0e Estable
  */
 require_once 'variables.php';
-checkSession();
+require_once 'Cni.php';
+Cni::chequeaSesion();
 if ( isset($_POST ) ) {
     sanitize($_POST);
 }
@@ -261,8 +263,8 @@ function avisos()
 		{
 			//$texto .="<tr><td class='".clase($k)."'>".cambiaf($resultado[FechNac])."</td><td class='".clase($k)."'>". traduce($resultado[3])." ".traduce($resultado[1])." ".traduce($resultado[2])."</td></tr>";
 			$cumplesmil[]=array(
-			    invierte(cambiaf($resultado['FechNac'])),
-			    cambiaf($resultado['FechNac']),
+			    invierte(Cni::cambiaFormatoFecha($resultado['FechNac'])),
+			    Cni::cambiaFormatoFecha($resultado['FechNac']),
 			    $resultado[3]." ".$resultado[1],
 			    NULL,
 			    NULL
@@ -289,20 +291,7 @@ function avisos()
 	return $texto;
 	//Y mañana adddate(curdate(),1) like  cumple Select * from empleados where date_format(FechNac,'%d %c' ) like date_format(adddate(curdate(),1),'%d %c')
 }
-/**
- * Funcion del cambio de fecha 
- * 
- * @deprecated
- * @param string $stamp
- * @return string $fecha
- */
-function cambiaf($stamp) //funcion del cambio de fecha
-{
-	//formato en el que llega aaaa-mm-dd o al reves
-	$fdia = explode("-",$stamp);
-	$fecha = $fdia[2]."-".$fdia[1]."-".$fdia[0];
-	return $fecha;
-}
+
 /**
  * Funcion que devuelve el dia y el mes
  * 
@@ -448,7 +437,7 @@ function avisos_new()
 	if ($total >= 1) {
 		while(true == ($resultado = mysql_fetch_array($consulta))) {
 			$cadena .="<tr>
-			<td class='".clase($k)."'>".cambiaf($resultado[4])."</td>
+			<td class='".clase($k)."'>".Cni::cambiaFormatoFecha($resultado[4])."</td>
 			<td class='".clase($k)."'>
 			<a href='javascript:muestra(".$resultado[1].")' >".$resultado[5]."</a>
 			</td>
@@ -481,7 +470,7 @@ function avisos_new()
 	if ($total >= 1) {
 		while(true == ($resultado = mysql_fetch_array($consulta))) {
 			$cadena .="<tr>
-			<td class='".clase($k)."'>".cambiaf($resultado[4])."</td>
+			<td class='".clase($k)."'>".Cni::cambiaFormatoFecha($resultado[4])."</td>
 			<td class='".clase($k)."'>
 			<a href='javascript:muestra(".$resultado[1].")' >".$resultado[5]."</a>
 			</td></tr>";
