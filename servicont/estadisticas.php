@@ -46,10 +46,10 @@ if ( isset( $_SESSION['usuario']) ) {
  */
 function nombreCliente($cliente)
 {
-    $sql = "SELECT Nombre FROM clientes WHERE id LIKE ".$cliente;
-    $resultado = Cni::consulta($sql);
-
-    return $resultado [0];
+    $sql = "SELECT Nombre FROM clientes WHERE id LIKE :idcliente";
+    $params = array(':idcliente' => $cliente);
+    $resultado = Cni::consultaPreparada($sql, $params);
+    return $resultado[0]['Nombre'];
 }
 /**
  * Listado de Clientes
@@ -64,11 +64,9 @@ function clientes()
     } else {
         $cliente = 0;
     }
-    $form = "<select id='cliente' name='cliente'>";
-    $sql = "SELECT id, Nombre FROM clientes ORDER BY Nombre"; // mostramos
-                                                              // tambien los
-                                                              // inactivos
+    $sql = "SELECT id, Nombre FROM clientes ORDER BY Nombre";
     $resultados = Cni::consulta($sql);
+    $form = "<select id='cliente' name='cliente'>";
     $form .= "<option value='0'>-Cliente-</option>";
     foreach ($resultados as $resultado) {
         $marcado = ($cliente == $resultado [0]) ? "selected" : "";
@@ -88,9 +86,9 @@ function clientes()
  */
 function categorias()
 {
-    $form = "<select id='categoria' name='categoria'>";
     $sql = "SELECT categoria FROM clientes GROUP BY categoria";
     $resultados = Cni::consulta($sql);
+    $form = "<select id='categoria' name='categoria'>";
     $form .= "<option value='0'>-Categorias-</option>";
     foreach ($resultados as $resultado) {
         if (trim ( $resultado [0] ) != "") {
@@ -104,6 +102,7 @@ function categorias()
 }
 /**
  * Segun el modo en el que estamos devuelve un formato de fecha u otro
+ * 
  * @param string $modo
  * @return string
  */
@@ -116,6 +115,7 @@ function fecha($modo)
 
 /**
  * Devuelve 31 dias independientemente del mes marcado
+ * 
  * @todo Generar funcion que dependiendo del mes y año de un valor u otro
  *         cal_days_in_month($calendar, $month, $year)
  * 
@@ -214,7 +214,7 @@ function anyo($modo)
 /**
  * Select de los servicios
  * 
- * @fixme Coge los datos de servicio del historio???
+ * @fixme Coge los datos de servicio del historico???
  * @return string
  */
 function servicios()
@@ -242,10 +242,11 @@ function formulario($vars)
     //Este al ser entre fechas por cliente en formulario 
     //tenemos fechas y clientes
     //y devolvera servicios
-    $cadena = "<form name='consulta' id='consulta' method='post'
-    onsubmit='procesa();return false'>";
-    $cadena.="<input type='hidden' name='formu' id='formu'
-    value='".$vars['form']."'>";
+    $cadena = "
+        <form name='consulta' id='consulta' method='post'
+            onsubmit='procesa();return false'>
+            <input type='hidden' name='formu' id='formu' 
+                value='".$vars['form']."'>";
     $inicioFin = "Inicio:".fecha(0)."Fin:".fecha(1);
     switch ($vars['form']) {
         //Entre Fechas por cliente
@@ -301,71 +302,95 @@ function formulario($vars)
     return $cadena;
 }
 
-/*
- * Funcion generadora de comparativas, iba la marcianada
+/**
+ * Genera el formulario de las comparativas
+ * 
+ * @param array $vars
+ * @return string
  */
 function comparativas($vars)
 {
     if (!isset($vars['tipo'])) {
-        $cadena ="<input type='hidden' name='formu' id='formu' value='7' />";
-        $cadena.="Comparacion de:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <select name='tipo_comparativa' id='tipo_comparativa' onchange='comparativa()'>";
-        $cadena .="<option value='0'>-- Opcion --</option>";
-        $cadena .="<option value='1'>Clientes</option>";
-        $cadena .="<option value='2'>Servicio</option>";
-        $cadena .="<option value='3'>Categoria</option>";
-        $cadena .="</select>";
-        $cadena.= "<div id='comparativas'></div>";
+        $cadena =
+        "<input type='hidden' name='formu' id='formu' value='7' />
+        <label for='tipo_comparativa'>Comparacion de:</label>
+        <select name='tipo_comparativa' id='tipo_comparativa' 
+            onchange='comparativa()'>
+            <option value='0'>-- Opcion --</option>
+            <option value='1'>Clientes</option>
+            <option value='2'>Servicio</option>
+            <option value='3'>Categoria</option>
+        </select>
+        <div id='comparativas'></div>";
     } else {
         switch ($vars['tipo']) {
-            case(1):$cadena="Seleccione Cliente:
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".clientes().servicios();break;
-            case(2):$cadena="Seleccione Servicio:&nbsp;&nbsp;&nbsp;".servicios();break;
-            case(3):$cadena="Seleccione Categoria:&nbsp;".categorias().servicios();break;
+            case(1):
+                $cadena="Seleccione Cliente:".clientes();
+            break;
+            case(2):
+                $cadena="Seleccione Servicio:";
+            break;
+            case(3):
+                $cadena="Seleccione Categoria:".categorias();
+            break;
         }
-    $cadena_fechas ="
-    <br />Inicio Rango:
-    <input type='text' readonly size='10' id='fecha_inicio_a' name='fecha_inicio_a' />
-    <button TYPE='button' class='calendario' id='boton_fecha_inicio_a'></button>
-    Fin Rango:
-    <input type='text' readonly size='10'id='fecha_fin_a' name='fecha_fin_a' />
-    <button type='button' class='calendario' id='boton_fecha_fin_a' ></button>
-    &nbsp;&nbsp;<strong><-- Frente a --></strong>&nbsp;&nbsp;
-    Inicio Rango:<input type='text' readonly size='10' id='fecha_inicio_b'
-    name='fecha_inicio_b' />
-    <button TYPE='button' class='calendario' id='boton_fecha_inicio_b'></button>
-    Fin Rango:
-    <input type='text' readonly size='10' id='fecha_fin_b' name='fecha_fin_b' />
-    <button type='button' class='calendario' id='boton_fecha_fin_b'></button>";
-    $cadena.=$cadena_fechas."<input type='submit' value='Comparar' />";
+        $cadena .= servicios();
+        $cadenaFechas ="
+        <br />
+        <label for='fecha_inicio_a'>Inicio Rango:</label>
+        <input type='text' readonly size='10' id='fecha_inicio_a' 
+            name='fecha_inicio_a' />
+            <button type='button' class='calendario' id='boton_fecha_inicio_a'>
+            </button>
+        <label for='fecha_fin_a'>Fin Rango:</label>
+        <input type='text' readonly size='10'id='fecha_fin_a' 
+            name='fecha_fin_a' />
+        <button type='button' class='calendario' id='boton_fecha_fin_a' >
+            </button>
+        <strong><-- Frente a --></strong>
+        <label for='fecha_inicio_b'>Inicio Rango:</label>
+        <input type='text' readonly size='10' id='fecha_inicio_b'
+            name='fecha_inicio_b' />
+        <button TYPE='button' class='calendario' id='boton_fecha_inicio_b'>
+            </button>
+        <label for='fecha_fin_b'>Fin Rango:</label>
+        <input type='text' readonly size='10' id='fecha_fin_b' 
+            name='fecha_fin_b' />
+        <button type='button' class='calendario' id='boton_fecha_fin_b'>
+            </button>";
+        $cadena.=$cadenaFechas."<input type='submit' value='Comparar' />";
     }
-
+    
     return $cadena;
 }
-/*
+/**
  * Generamos la respuesta dependiendo de los parametros que llegan
+ * 
+ * @param array $vars
+ * @return string
  */
 function respuesta($vars)
 {
+    $titulo = "Consumo mensual y acumulado entre fechas por";
     switch ($vars ['formu']) {
         case (0) :
-            $vars ['titulo'] = "Consumo mensual y acumulado entre fechas por cliente";
+            $vars ['titulo'] = $titulo." cliente";
             $cadena = consulta ( $vars );
             break;
         case (1) :
-            $vars ['titulo'] = "Consumo mensual y acumulado entre fechas por categoria";
+            $vars ['titulo'] = $titulo." categoria";
             $cadena = consulta ( $vars );
             break;
         case (2) :
-            $vars ['titulo'] = "Consumo mensual y acumulado entre fechas por servicios";
+            $vars ['titulo'] = $titulo." servicios";
             $cadena = consulta ( $vars );
             break;
         case (3) :
-            $vars ['titulo'] = "Consumo mensual y acumulados entre fechas por cliente/servicio";
+            $vars ['titulo'] = $titulo." cliente/servicio";
             $cadena = consulta ( $vars );
             break;
         case (4) :
-            $vars ['titulo'] = "Consumo mensual y acumulado entre fechas por categoria/servicio";
+            $vars ['titulo'] = $titulo." categoria/servicio";
             $cadena = consulta ( $vars );
             break;
         case (5) :
@@ -384,49 +409,71 @@ function respuesta($vars)
 
     return $cadena;
 }
-/*
+/**
  * Consultas en pruebas //O cogemos del global de globales
+ * @todo: Revisar las consultas
  */
- function consulta($vars)
- {
-     $print = true;
-    $confecha=consulta_fecha($vars); //Lo paso directamente a una funcion para que saque las fechas
-    if($confecha != "" && $vars['formu']!= 5)
-        $con_fecha = " and ".$confecha;
-    else
-        if($vars['formu']==5)
-            $con_fecha = $confecha;
-        else
-            $con_fecha = "";
+function consulta($vars)
+{
+    var_dump($vars);
+    
+    $print = true;
+    
+    $confecha = consultaFecha($vars);
+    if ($confecha != "" && $vars['formu'] != 5) {
+        $conFecha = " AND ".$confecha;
+    } else {
+        if ($vars['formu'] == 5) {
+            $conFecha = $confecha;
+        } else {
+            $conFecha = "";
+        }
+    }
+    
+    
     /*Limite de registros*/
-    if($vars['limite']!=0)
-            $limite = " LIMIT ".$vars['limite']." ";
-            else
-            $limite = " ";
+    if ($vars['limite'] != 0) {
+        $limite = " LIMIT ".$vars['limite']." ";
+    } else {
+        $limite = " ";
+    }
     /*Filtro de la categoria de la consulta*/
     //Seleccion de tipo de consulta
 
-//Consultas entre fechas de clientes
-    if ($vars['formu']==0) {
-        if ($vars['tipo']=="acumulado") {
-            $sql="SELECT trim(h.servicio) as Servicio,
-            sum(h.cantidad) as Unidades, sum(h.cantidad*h.unitario) as Importe,
-            sum(h.cantidad*h.unitario*h.iva/100) Iva,
-            sum(h.cantidad*h.unitario+h.cantidad*h.unitario*h.iva/100) as Total
-            FROM `historico` as h
-            INNER JOIN `regfacturas` AS c on h.factura = c.codigo
-            INNER JOIN `clientes` AS l ON c.id_cliente = l.Id
-            WHERE c.id_cliente like '".$vars['cliente']."' ".$con_fecha."
-            GROUP BY h.servicio";
+    
+    
+    
+    if ($vars['tipo'] == "acumulado") {
+        $columnasAcumulado = "
+            SUM(h.cantidad) AS Unidades, 
+            SUM(h.cantidad * h.unitario) AS Importe,
+            SUM(h.cantidad * h.unitario * h.iva/100) AS Iva,
+            SUM(h.cantidad * h.unitario + h.cantidad * h.unitario * h.iva/100 ) AS Total
+            FROM `historico` as h ";
+    }
+    
+    if ($vars['formu'] == 0) {
+        if ($vars['tipo'] == "acumulado") {
+            $sql = "
+                SELECT TRIM(h.servicio) AS Servicio,
+                ". $columnasAcumulado ."
+                INNER JOIN `regfacturas` AS c on h.factura = c.codigo
+                INNER JOIN `clientes` AS l ON c.id_cliente = l.Id
+                WHERE c.id_cliente like '".$vars['cliente']."' ".$conFecha."
+                GROUP BY h.servicio";
         } else {
-            $sql="SELECT c.fecha, trim(d.servicio) as Servicio,
-            trim(d.obs) as Observaciones, d.cantidad as Unidades,
-            d.unitario as Importe, d.iva,
-            ((d.unitario*d.cantidad) + (d.unitario*d.cantidad)*d.iva/100) as Total
-            FROM `historico` AS d
-            INNER JOIN `regfacturas` AS c on c.`codigo` = d.`factura`
-            INNER JOIN `clientes` AS s ON c.id_cliente = s.Id
-            WHERE c.id_cliente like '".$vars['cliente']."' ".$con_fecha." order by c.fecha";
+            $sql = "SELECT c.fecha, 
+                TRIM(h.servicio) AS Servicio,
+                TRIM(h.obs) AS Observaciones, 
+                h.cantidad AS Unidades,
+                h.unitario AS Importe, 
+                h.iva AS Iva,
+                ((h.unitario * h.cantidad) + (h.unitario * h.cantidad) * h.iva/100) AS Total
+                FROM `historico` AS h
+                INNER JOIN `regfacturas` AS c on h.`factura` = c.`codigo`
+                INNER JOIN `clientes` AS l ON c.id_cliente = l.Id
+                WHERE c.id_cliente like '".$vars['cliente']."' ".$conFecha." 
+                order by l.fecha";
         }
         $subtitulo = nombreCliente($vars['cliente']);
     }
@@ -444,7 +491,7 @@ function respuesta($vars)
             WHERE ( (e.salida >= c.fecha or e.salida like '0000-00-00')
             and e.entrada <= c.fecha
             and e.Categoria like '".$vars['categoria']."'
-            ".$con_fecha.") GROUP BY h.servicio";
+            ".$conFecha.") GROUP BY h.servicio";
         } else {
             /*$sql="SELECT c.fecha, s.Nombre as Cliente, trim(d.servicio) as Servicio,
             trim(d.obs) as Observaciones, d.cantidad as Unidades, d.unitario as Importe,
@@ -464,7 +511,7 @@ function respuesta($vars)
             inner join historico as d on c.codigo like d.factura
             where  ((e.salida >= c.fecha or e.salida like '0000-00-00')
             and e.entrada <= c.fecha
-            and e.categoria like '".$vars['categoria']."' ".$con_fecha.")
+            and e.categoria like '".$vars['categoria']."' ".$conFecha.")
             order by c.fecha, s.Nombre";
         }
         $subtitulo = $vars['categoria'];
@@ -479,7 +526,7 @@ function respuesta($vars)
             FROM `historico` as h
             INNER JOIN `regfacturas` AS c on h.factura = c.codigo
             INNER JOIN `clientes` AS l ON c.id_cliente = l.Id
-            WHERE trim(h.servicio) like '".$vars['servicios']."' ".$con_fecha."
+            WHERE trim(h.servicio) like '".$vars['servicios']."' ".$conFecha."
             GROUP BY h.servicio";
         } else {
             $sql="SELECT c.fecha, s.nombre as Cliente, d.obs as Observaciones,
@@ -488,7 +535,7 @@ function respuesta($vars)
             FROM `historico` AS d
             INNER JOIN `regfacturas` AS c on c.`codigo` = d.`factura`
             INNER JOIN `clientes` AS s ON c.id_cliente = s.Id
-            WHERE trim(d.servicio) LIKE '".$vars['servicios']."' ".$con_fecha."
+            WHERE trim(d.servicio) LIKE '".$vars['servicios']."' ".$conFecha."
             order by c.fecha";
         }
         $subtitulo = $vars['servicios'];
@@ -503,7 +550,7 @@ function respuesta($vars)
             FROM `historico` as h
             INNER JOIN `regfacturas` AS c on h.factura = c.codigo
             INNER JOIN `clientes` AS l ON c.id_cliente = l.Id
-            WHERE trim(h.servicio) like '".$vars['servicios']."' ".$con_fecha."
+            WHERE trim(h.servicio) like '".$vars['servicios']."' ".$conFecha."
             and c.id_cliente LIKE '".$vars['cliente']."' GROUP BY h.servicio";
         } else {
             $sql="SELECT c.fecha, d.obs as Observaciones, d.cantidad as Unidades,
@@ -512,7 +559,7 @@ function respuesta($vars)
             FROM `historico` AS d
             INNER JOIN `regfacturas` AS c on c.`codigo` = d.`factura`
             INNER JOIN `clientes` AS s ON c.id_cliente = s.Id
-            WHERE trim(d.servicio) LIKE '".$vars['servicios']."' ".$con_fecha."
+            WHERE trim(d.servicio) LIKE '".$vars['servicios']."' ".$conFecha."
             and c.id_cliente LIKE '".$vars['cliente']."' order by c.fecha";
         }
         $subtitulo = nombreCliente($vars['cliente'])." / ".$vars['servicios'];
@@ -527,7 +574,7 @@ function respuesta($vars)
             FROM `historico` as h
             INNER JOIN `regfacturas` AS c on h.factura = c.codigo
             INNER JOIN `clientes` AS l ON c.id_cliente = l.Id
-            WHERE trim(h.servicio) like '".$vars['servicios']."' ".$con_fecha."
+            WHERE trim(h.servicio) like '".$vars['servicios']."' ".$conFecha."
             and l.Categoria LIKE '".$vars['categoria']."' GROUP BY h.servicio";
         } else {
             $sql="SELECT c.fecha, s.Nombre as Cliente, d.obs as Observaciones,
@@ -537,7 +584,7 @@ function respuesta($vars)
             INNER JOIN `regfacturas` AS c on c.`codigo` = d.`factura`
             INNER JOIN `clientes` AS s ON c.id_cliente = s.Id
             WHERE trim(d.servicio) LIKE '".$vars['servicios']."'
-            ".$con_fecha." and s.Categoria LIKE '".$vars['categoria']."'
+            ".$conFecha." and s.Categoria LIKE '".$vars['categoria']."'
             order by c.fecha";
         }
         $subtitulo = nombreCliente($vars['categoria'])." / ".$vars['servicios'];
@@ -551,7 +598,7 @@ function respuesta($vars)
             FROM `historico` as h
             INNER JOIN `regfacturas` AS c on h.factura = c.codigo
             INNER JOIN `clientes` AS l ON c.id_cliente = l.Id
-            ".$con_fecha." GROUP BY trim(h.servicio) order by Total desc";
+            ".$conFecha." GROUP BY trim(h.servicio) order by Total desc";
         } else {
             if ($vars['tipo'] == "detallado") {
                 $sql="SELECT c.fecha, trim(d.servicio) as Servicio,
@@ -561,7 +608,7 @@ function respuesta($vars)
                     FROM `historico` AS d
                     INNER JOIN `regfacturas` AS c on c.`codigo` = d.`factura`
                     INNER JOIN `clientes` AS s ON c.id_cliente = s.Id
-                    ".$con_fecha." order by c.fecha";
+                    ".$conFecha." order by c.fecha";
             } else {
                 if ($vars['servicios']!="0") {
                     $filtra_servicio = " and trim(h.servicio)
@@ -593,7 +640,7 @@ function respuesta($vars)
         FROM `historico` as h
         INNER JOIN `regfacturas` AS c on h.factura = c.codigo
         INNER JOIN `clientes` AS l ON c.id_cliente = l.Id
-        ".$con_fecha." GROUP BY l.Nombre order by Total desc";
+        ".$conFecha." GROUP BY l.Nombre order by Total desc";
         else
             if($vars['tipo']=="detallado")
         $sql="SELECT c.fecha, s.Nombre as Cliente,
@@ -603,7 +650,7 @@ function respuesta($vars)
         FROM `historico` AS d
         INNER JOIN `regfacturas` AS c on c.`codigo` = d.`factura`
         INNER JOIN `clientes` AS s ON c.id_cliente = s.Id
-        ".$con_fecha." order by c.fecha";
+        ".$conFecha." order by c.fecha";
             else { /*Comparativa entre rangos*/
                 if($vars['cliente']!=0)
                     $filtra_cliente = " and c.id_cliente like ".$vars['cliente']." ";
@@ -653,10 +700,12 @@ function respuesta($vars)
                 $filtro = " and trim(h.servicio) like trim('".$vars['servicios']."') ";
                 $grupo = " GROUP BY trim(h.servicio)";
             } else {
-                $sql="SELECT 1, sum(h.cantidad*h.unitario+h.cantidad*h.unitario*h.iva/100) as Total
-                FROM `historico` as h
-                INNER JOIN `regfacturas` AS c on h.factura = c.codigo
-                INNER JOIN `clientes` AS l ON c.id_cliente = l.Id";
+                $sql="
+                    SELECT 1, 
+                    sum(h.cantidad*h.unitario+h.cantidad*h.unitario*h.iva/100) as Total
+                    FROM `historico` as h
+                    INNER JOIN `regfacturas` AS c on h.factura = c.codigo
+                    INNER JOIN `clientes` AS l ON c.id_cliente = l.Id";
                 $filtro = "  ";
             }
             break;
@@ -753,24 +802,26 @@ if ($vars['formu']!=7) {
  */
 function generaConsultas($inicio, $fin)
 {
+    $params = array(':inicio' => $inicio, ':fin' => $fin);
     $sql = "SELECT YEAR(fecha) FROM `regfacturas`
         WHERE ( 
-            DATE_FORMAT(fecha, '%d-%m-%Y) >= '".$inicio."' 
-            AND DATE_FORMAT(fecha, '%d-%m-%Y) <= '".$fin."'
+            DATE_FORMAT(fecha, '%d-%m-%Y) >= :inicio 
+            AND DATE_FORMAT(fecha, '%d-%m-%Y) <= :fin
         ) 
         GROUP BY YEAR(fecha)
         ORDER BY YEAR(fecha)";
-    $anyosInicio = Cni::consulta($sql);
+    $anyosInicio = Cni::consultaPreparada($sql, $params);
     foreach ($anyosInicio as $anyo) {
         $sql = "SELECT MONTH(fecha) FROM `regfacturas` 
             WHERE (
-                DATE_FORMAT(fecha, '%d-%m-%Y) >= '".$inicio."' 
-                AND DATE_FORMAT(fecha, '%d-%m-%Y) <='".$fin."' 
-                AND YEAR(fecha) LIKE ".$anyo."
+                DATE_FORMAT(fecha, '%d-%m-%Y) >= :inicio 
+                AND DATE_FORMAT(fecha, '%d-%m-%Y) <= :fin 
+                AND YEAR(fecha) LIKE :anyo
             )
             GROUP BY MONTH(fecha) 
             ORDER BY MONTH(fecha)";
-        $meses = Cni::consulta($sql);
+        $params[':anyo'] = $anyo;
+        $meses = Cni::consultaPreparada($sql, $params);
         foreach ($meses as $mes) {
             $mesAnyo[] = $anyo."-".$mes;
         }
@@ -818,59 +869,71 @@ function generaConsultas($inicio, $fin)
 
     return $cadena;
  }
- /*
-  * Generacion de la consulta con las fechas
-  */
- function consulta_fecha($vars)
- {
-     $check = 0;
-     $cadena = "";
-     if ($vars['diaf']==0 && $vars['mesf']==0 && $vars['anof']==0) { //sin limite
+
+/**
+ * Generación de la consulta con las fechas
+ * 
+ * @param array $vars
+ * @return string
+ */ 
+function consultaFecha($vars)
+{
+    $check = 0;
+    $cadena = "";
+    if ($vars['diaf']==0 && $vars['mesf']==0 && $vars['anof']==0) {
         if ($vars['dia']!=0) {
-            $cadena.= " day(c.Fecha) like ".$vars['dia']." ";
+            $cadena.= " DAY(c.Fecha) LIKE ".$vars['dia']." ";
             $check = 1;
         }
         if ($vars['mes']!=0) {
-            if($check == 1)
-            $cadena.= " and ";
-            $cadena.=" month(c.Fecha) like ".$vars['mes']." ";
+            if ($check == 1) {
+                $cadena.= " AND ";
+            }
+            $cadena.=" MONTH(c.Fecha) LIKE ".$vars['mes']." ";
             $check=1;
         }
         if ($vars['ano']!=0) {
-            if($check == 1)
-            $cadena.= " and ";
-            $cadena.=" year(c.Fecha) like ".$vars['ano']." ";
+            if ($check == 1) {
+                $cadena.= " AND ";
+            }
+            $cadena.=" YEAR(c.Fecha) LIKE ".$vars['ano']." ";
             $check=1;
         }
     } else {
         if ($vars['dia']!=0) {
-            $cadena.= " day(c.Fecha) >= ".$vars['dia']." ";
+            $cadena.= " DAY(c.Fecha) >= ".$vars['dia']." ";
             $check = 1;
         }
         if ($vars['mes']!=0) {
-            if($check == 1)
-            $cadena.= " and ";
-            $cadena.=" month(c.Fecha) >= ".$vars['mes']." ";
+            if ($check == 1) {
+                $cadena.= " AND ";
+            }
+            $cadena.=" MONTH(c.Fecha) >= ".$vars['mes']." ";
             $check=1;
         }
         if ($vars['ano']!=0) {
-            if($check == 1)
-            $cadena.= " and ";
-            $cadena.=" year(c.Fecha) >= ".$vars['ano']." ";
+            if ($check == 1) {
+                $cadena.= " and ";
+            }
+            $cadena.=" YEAR(c.Fecha) >= ".$vars['ano']." ";
             $check=1;
         }
-        if($vars['diaf']!= 0)
-                $cadena.= " and day(c.Fecha) <= ".$vars['diaf']." ";
-        if($vars['mesf']!= 0)
-                $cadena.= " and month(c.Fecha) <= ".$vars['mesf']." ";
-        if($vars['anof']!= 0)
-                $cadena.= " and year(c.Fecha) <= ".$vars['anof']." ";
+        if ($vars['diaf']!= 0) {
+                $cadena.= " AND DAY(c.Fecha) <= ".$vars['diaf']." ";
+        }
+        if ($vars['mesf']!= 0) {
+                $cadena.= " AND MONTH(c.Fecha) <= ".$vars['mesf']." ";
+        }
+        if ($vars['anof']!= 0) {
+                $cadena.= " AND YEAR(c.Fecha) <= ".$vars['anof']." ";
+        }
     }
-    if($vars['formu']== 5 && $cadena != "")
-        $cadena= " Where ".$cadena;
+    if ($vars['formu']== 5 && $cadena != "") {
+        $cadena= " WHERE ".$cadena;
+    }
 
     return $cadena;
- }
+}
 
 /*
  * Generacion de la tabla simple para las partes normales

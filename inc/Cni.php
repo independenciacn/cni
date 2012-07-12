@@ -83,6 +83,24 @@ final class Cni
         }
     }
     /**
+     * Ejecuta la consulta preparada, segura
+     * 
+     * @param string $sql
+     * @param array $params
+     * @param int $type
+     */
+    public static function consultaPreparada( $sql, $params, $type = PDO::FETCH_BOTH )
+    {
+        try {
+            self::$_con = CniDB::connect();
+            self::$_query = self::$_con->prepare($sql);
+            self::$_query->execute($params);
+            return self::$_query->fetchAll($type);
+        } catch (Exception $e) {
+            var_dump($e->getMessage());
+        }
+    }
+    /**
      * Devuelve el numero de datos afectados en la consulta
      * 
      * @return number
