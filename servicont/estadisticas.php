@@ -415,69 +415,88 @@ function respuesta($vars)
 }
 /**
  * Consultas en pruebas //O cogemos del global de globales
- * @todo: Revisar las consultas
  * 
- * Consumos por Cliente - Acumulado, Detallado, Comparativa Inicio - Fin
- * Consumos por Categoria de Cliente - Acumulado, Detallado, Comparativa Inicio - Fin
- * Consumos por Servicios - Acumulado, Detallado, Comparativa Inicio - Fin
- * Consumos por Cliente/Servicios 
+ * @todo: Revisar las consultas
  */
 function consulta($vars)
 {
     var_dump($vars);
     
     $print = true;
+    $conFecha = "";
+    $limite = "";
+    /**
+     * Inicio Consulta Select
+     */
+    $sql = "SELECT";
+    /**
+     * Parte comun de las consultas de acumulado
+     */
+    $acumuladoSql = "
+                SUM(h.cantidad) AS Unidades,
+                SUM(h.cantidad * h.unitario) AS Importe,
+                SUM(h.cantidad * h.unitario * h.iva / 100) AS Iva,
+                SUM(
+                    h.cantidad * h.unitario +
+                    h.cantidad * h.unitario * h.iva / 100
+                ) AS Total
+                FROM `historico` as h
+                INNER JOIN `regfacturas` AS c on h.factura = c.codigo
+                INNER JOIN `clientes` AS l ON c.id_cliente = l.Id ";
+    /**
+     * Parte comun del no acumulado
+     */
+    $noAcumuladoSql = "
+                h.cantidad AS Unidades,
+                h.cantidad * h.unitario AS Importe,
+                h.cantidad * h.unitario * h.iva / 100 AS Iva,
+                (
+                    h.cantidad * h.unitario +
+                    h.cantidad * h.unitario * h.iva / 100
+                ) AS Total
+                FROM `historico` as h
+                INNER JOIN `regfacturas` AS c on h.factura = c.codigo
+                INNER JOIN `clientes` AS l ON c.id_cliente = l.Id ";
     
-    $confecha = consultaFecha($vars);
-    if ($confecha != "" && $vars['formu'] != 5) {
-        $conFecha = " AND ".$confecha;
-    } else {
-        if ($vars['formu'] == 5) {
-            $conFecha = $confecha;
-        } else {
-            $conFecha = "";
-        }
+    /**
+     * Comprobamos si la consulta tiene rangos de fechas
+     */
+    if ( consultaFecha($vars) != "" && $vars['formu'] != 5 ) {
+        $conFecha = " AND ". consultaFecha($vars);   
+    } elseif ( $vars['formu'] == 5 ) {
+        $conFecha = consultaFecha($vars);
     }
-    
-    
-    /*Limite de registros*/
+    /**
+     * Comprobamos si la consulta tiene limite de registro
+     */
     if ($vars['limite'] != 0) {
         $limite = " LIMIT ".$vars['limite']." ";
-    } else {
-        $limite = " ";
     }
-    /*Filtro de la categoria de la consulta*/
-    //Seleccion de tipo de consulta
-
-    
-    
-    
-    if ($vars['tipo'] == "acumulado") {
-        $columnasAcumulado = "
-            SUM(h.cantidad) AS Unidades, 
-            SUM(h.cantidad * h.unitario) AS Importe,
-            SUM(h.cantidad * h.unitario * h.iva/100) AS Iva,
-            SUM(h.cantidad * h.unitario + h.cantidad * h.unitario * h.iva/100 ) AS Total
-            FROM `historico` as h ";
-    }
-    
+    /**
+     * FIXME Corregir las consultas y unificarlas
+     */
+    /**
+     * Filtro de la categoria de la consulta
+     */    
     if ($vars['formu'] == 0) {
         if ($vars['tipo'] == "acumulado") {
-            $sql = "
-                SELECT TRIM(h.servicio) AS Servicio,
-                ". $columnasAcumulado ."
-                INNER JOIN `regfacturas` AS c on h.factura = c.codigo
-                INNER JOIN `clientes` AS l ON c.id_cliente = l.Id
-                WHERE c.id_cliente like '".$vars['cliente']."' ".$conFecha."
+            $sql .= "
+                TRIM(h.servicio) AS Servicio,
+                ".$acumuladoSql."
+                WHERE c.id_cliente LIKE '".$vars['cliente']."' ".$conFecha."
                 GROUP BY h.servicio";
         } else {
-            $sql = "SELECT c.fecha, 
+            $sql .= "
+                c.fecha, 
                 TRIM(h.servicio) AS Servicio,
                 TRIM(h.obs) AS Observaciones, 
                 h.cantidad AS Unidades,
                 h.unitario AS Importe, 
                 h.iva AS Iva,
-                ((h.unitario * h.cantidad) + (h.unitario * h.cantidad) * h.iva/100) AS Total
+                (
+                    (h.unitario * h.cantidad) + 
+                    (h.unitario * h.cantidad) * h.iva/100
+                ) AS Total
                 FROM `historico` AS h
                 INNER JOIN `regfacturas` AS c on h.`factura` = c.`codigo`
                 INNER JOIN `clientes` AS l ON c.id_cliente = l.Id
@@ -486,128 +505,163 @@ function consulta($vars)
         }
         $subtitulo = nombreCliente($vars['cliente']);
     }
-//Consultas entre fechas de Categorias
-    if ($vars['formu']==1) {
-        if ($vars['tipo']=="acumulado") {
-            $sql="SELECT trim(h.servicio) as Servicio,
-            sum(h.cantidad) as Unidades, sum(h.cantidad*h.unitario) as Importe,
-            sum(h.cantidad*h.unitario*h.iva/100) Iva,
-            sum(h.cantidad*h.unitario+h.cantidad*h.unitario*h.iva/100) as Total
-            FROM `historico` as h
-            INNER JOIN `regfacturas` AS c on h.factura = c.codigo
-            INNER JOIN `clientes` AS l ON c.id_cliente = l.Id
-            INNER JOIN `entradas_salidas` AS e ON e.idemp like l.Id
-            WHERE ( (e.salida >= c.fecha or e.salida like '0000-00-00')
-            and e.entrada <= c.fecha
-            and e.Categoria like '".$vars['categoria']."'
-            ".$conFecha.") GROUP BY h.servicio";
+    /**
+     * Consultas entre fechas de categorias
+     */
+    if ($vars['formu'] == 1) {
+        if ($vars['tipo'] == "acumulado") {
+            $sql = "
+                SELECT TRIM(h.servicio) AS Servicio,
+                ".$acumuladoSql."
+                INNER JOIN `entradas_salidas` AS e ON e.idemp like l.Id
+                WHERE ( 
+                    (e.salida >= c.fecha OR e.salida like '0000-00-00')
+                    AND e.entrada <= c.fecha
+                    AND e.Categoria like '".$vars['categoria']."'
+                    ".$conFecha."
+                ) GROUP BY h.servicio";
         } else {
-            /*$sql="SELECT c.fecha, s.Nombre as Cliente, trim(d.servicio) as Servicio,
-            trim(d.obs) as Observaciones, d.cantidad as Unidades, d.unitario as Importe,
-            d.iva, ((d.unitario*d.cantidad) + (d.unitario*d.cantidad)*d.iva/100) as Total
-            FROM `historico` AS d
-            INNER JOIN `regfacturas` AS c on c.`codigo` = d.`factura`
-            INNER JOIN `clientes` AS s ON c.id_cliente = s.Id
-            WHERE s.Categoria like '".utf8_decode($vars[categoria])."' ".$con_fecha." order by c.fecha";
-        */
-            $sql = "SELECT c.fecha, s.Nombre, trim(d.servicio) as Servicio,
-            trim(d.obs) as Observaciones, d.cantidad as Unidades,
-            d.unitario as Importe,
-            d.iva, ((d.unitario*d.cantidad) + (d.unitario*d.cantidad)*d.iva/100) as Total
-            FROM entradas_salidas e
-            inner join clientes as s on e.idemp like s.Id
-            inner join regfacturas as c on e.idemp like c.id_cliente
-            inner join historico as d on c.codigo like d.factura
-            where  ((e.salida >= c.fecha or e.salida like '0000-00-00')
-            and e.entrada <= c.fecha
-            and e.categoria like '".$vars['categoria']."' ".$conFecha.")
-            order by c.fecha, s.Nombre";
+            /**
+             * ¿Por que de entradas y salidas????
+             */
+            $sql = "
+                SELECT c.fecha, 
+                s.Nombre, 
+                TRIM(d.servicio) AS Servicio,
+                TRIM(d.obs) AS Observaciones, 
+                d.cantidad AS Unidades,
+                d.unitario AS Importe,
+                d.iva AS Iva, 
+                (
+                    (d.unitario * d.cantidad) + 
+                    (d.unitario * d.cantidad) * d.iva / 100
+                ) AS Total
+                FROM entradas_salidas AS e
+                INNER JOIN clientes AS s ON e.idemp LIKE s.Id
+                INNER JOIN regfacturas AS c ON e.idemp LIKE c.id_cliente
+                INNER JOIN historico AS d ON c.codigo LIKE d.factura
+                WHERE (
+                    (e.salida >= c.fecha OR e.salida LIKE '0000-00-00')
+                    AND e.entrada <= c.fecha
+                    AND e.categoria LIKE '".$vars['categoria']."' 
+                    ".$conFecha."
+                ) ORDER BY c.fecha, s.Nombre";
         }
         $subtitulo = $vars['categoria'];
     }
-//Consumo mensual y acumulado entre fechas por servicios,control de almacenaje y fijos
-    if ($vars['formu']==2) {
-        if ($vars['tipo']=="acumulado") {
-            $sql="SELECT sum(h.cantidad) as Unidades,
-            sum(h.cantidad*h.unitario) as Importe,
-            sum(h.cantidad*h.unitario*h.iva/100) Iva,
-            sum(h.cantidad*h.unitario+h.cantidad*h.unitario*h.iva/100) as Total
-            FROM `historico` as h
-            INNER JOIN `regfacturas` AS c on h.factura = c.codigo
-            INNER JOIN `clientes` AS l ON c.id_cliente = l.Id
-            WHERE trim(h.servicio) like '".$vars['servicios']."' ".$conFecha."
-            GROUP BY h.servicio";
+    /**
+     * Consumo mensual y acumulado entre fechas por servicios, control
+     * de almacenaje y fijos
+     */
+    if ($vars['formu'] == 2) {
+        if ($vars['tipo'] == "acumulado") {
+            $sql = "
+                SELECT 
+                ".$acumuladoSql."
+                WHERE TRIM(h.servicio) LIKE '".$vars['servicios']."' 
+                ".$conFecha."
+                GROUP BY h.servicio";
         } else {
-            $sql="SELECT c.fecha, s.nombre as Cliente, d.obs as Observaciones,
-            d.cantidad as Unidades, d.unitario as Importe, d.iva,
-            ((d.unitario*d.cantidad) + (d.unitario*d.cantidad)*d.iva/100) as Total
-            FROM `historico` AS d
-            INNER JOIN `regfacturas` AS c on c.`codigo` = d.`factura`
-            INNER JOIN `clientes` AS s ON c.id_cliente = s.Id
-            WHERE trim(d.servicio) LIKE '".$vars['servicios']."' ".$conFecha."
-            order by c.fecha";
+            $sql = "
+                SELECT c.fecha, 
+                s.nombre AS Cliente, 
+                d.obs AS Observaciones,
+                d.cantidad AS Unidades, 
+                d.unitario AS Importe, 
+                d.iva AS Iva,
+                (
+                    (d.unitario * d.cantidad) + 
+                    (d.unitario * d.cantidad) * d.iva / 100
+                ) AS Total
+                FROM `historico` AS d
+                INNER JOIN `regfacturas` AS c ON c.`codigo` = d.`factura`
+                INNER JOIN `clientes` AS s ON c.id_cliente = s.Id
+                WHERE TRIM(d.servicio) LIKE '".$vars['servicios']."' 
+                ".$conFecha."
+                ORDER BY c.fecha";
         }
         $subtitulo = $vars['servicios'];
     }
-//Consumo mensual y acumulados entre fechas por cliente/servicio
-    if ($vars['formu']==3) {
-        if ($vars['tipo']=="acumulado") {
-            $sql="SELECT sum(h.cantidad) as Unidades,
-            sum(h.cantidad*h.unitario) as Importe,
-            sum(h.cantidad*h.unitario*h.iva/100) Iva,
-            sum(h.cantidad*h.unitario+h.cantidad*h.unitario*h.iva/100) as Total
-            FROM `historico` as h
-            INNER JOIN `regfacturas` AS c on h.factura = c.codigo
-            INNER JOIN `clientes` AS l ON c.id_cliente = l.Id
-            WHERE trim(h.servicio) like '".$vars['servicios']."' ".$conFecha."
-            and c.id_cliente LIKE '".$vars['cliente']."' GROUP BY h.servicio";
+    /**
+     * Consumo mensual y acumulados entre fechas por cliente/servicio
+     */
+    if ($vars['formu'] == 3) {
+        if ($vars['tipo'] == "acumulado") {
+            $sql = "
+                SELECT 
+                ".$acumuladoSql."
+                WHERE TRIM(h.servicio) LIKE '".$vars['servicios']."' 
+                ".$conFecha."
+                AND c.id_cliente LIKE '".$vars['cliente']."' 
+                GROUP BY h.servicio";
         } else {
-            $sql="SELECT c.fecha, d.obs as Observaciones, d.cantidad as Unidades,
-            d.unitario as Importe, d.iva,
-            ((d.unitario*d.cantidad) + (d.unitario*d.cantidad)*d.iva/100) as Total
-            FROM `historico` AS d
-            INNER JOIN `regfacturas` AS c on c.`codigo` = d.`factura`
-            INNER JOIN `clientes` AS s ON c.id_cliente = s.Id
-            WHERE trim(d.servicio) LIKE '".$vars['servicios']."' ".$conFecha."
-            and c.id_cliente LIKE '".$vars['cliente']."' order by c.fecha";
+            $sql = "
+                SELECT c.fecha, 
+                d.obs AS Observaciones, 
+                d.cantidad AS Unidades,
+                d.unitario AS Importe, 
+                d.iva AS Iva,
+                (
+                    (d.unitario * d.cantidad) + 
+                    (d.unitario * d.cantidad) * d.iva / 100
+                ) AS Total
+                FROM `historico` AS d
+                INNER JOIN `regfacturas` AS c ON c.`codigo` = d.`factura`
+                INNER JOIN `clientes` AS s ON c.id_cliente = s.Id
+                WHERE TRIM(d.servicio) LIKE '".$vars['servicios']."' 
+                ".$conFecha."
+                AND c.id_cliente LIKE '".$vars['cliente']."' 
+                ORDER BY c.fecha";
         }
         $subtitulo = nombreCliente($vars['cliente'])." / ".$vars['servicios'];
     }
-//Consumo mensual y acumulado entre fechas por categoria/servicio
-    if ($vars['formu']==4) {
-        if ($vars['tipo']=="acumulado") {
-            $sql="SELECT sum(h.cantidad) as Unidades,
-            sum(h.cantidad*h.unitario) as Importe,
-            sum(h.cantidad*h.unitario*h.iva/100) Iva,
-            sum(h.cantidad*h.unitario+h.cantidad*h.unitario*h.iva/100) as Total
-            FROM `historico` as h
-            INNER JOIN `regfacturas` AS c on h.factura = c.codigo
-            INNER JOIN `clientes` AS l ON c.id_cliente = l.Id
-            WHERE trim(h.servicio) like '".$vars['servicios']."' ".$conFecha."
-            and l.Categoria LIKE '".$vars['categoria']."' GROUP BY h.servicio";
+    /**
+     * Consumo mensual y acumulado entre fechas por categoria/servicio
+     */
+    if ($vars['formu'] == 4) {
+        if ($vars['tipo'] == "acumulado") {
+            $sql="
+                SELECT 
+                ".$acumuladoSql."
+                WHERE TRIM(h.servicio) LIKE '".$vars['servicios']."' 
+                ".$conFecha."
+                AND l.Categoria LIKE '".$vars['categoria']."' 
+                GROUP BY h.servicio";
         } else {
-            $sql="SELECT c.fecha, s.Nombre as Cliente, d.obs as Observaciones,
-            d.cantidad as Unidades, d.unitario as Importe, d.iva,
-            ((d.unitario*d.cantidad) + (d.unitario*d.cantidad)*d.iva/100) as Total
-            FROM `historico` AS d
-            INNER JOIN `regfacturas` AS c on c.`codigo` = d.`factura`
-            INNER JOIN `clientes` AS s ON c.id_cliente = s.Id
-            WHERE trim(d.servicio) LIKE '".$vars['servicios']."'
-            ".$conFecha." and s.Categoria LIKE '".$vars['categoria']."'
-            order by c.fecha";
+            $sql="
+                SELECT c.fecha, 
+                s.Nombre AS Cliente, 
+                d.obs AS Observaciones,
+                d.cantidad AS Unidades, 
+                d.unitario AS Importe, 
+                d.iva AS IVA,
+                (
+                    (d.unitario * d.cantidad) + 
+                    (d.unitario * d.cantidad) * d.iva / 100
+                ) AS Total
+                FROM `historico` AS d
+                INNER JOIN `regfacturas` AS c on c.`codigo` = d.`factura`
+                INNER JOIN `clientes` AS s ON c.id_cliente = s.Id
+                WHERE TRIM(d.servicio) LIKE '".$vars['servicios']."'
+                ".$conFecha." 
+                AND s.Categoria LIKE '".$vars['categoria']."'
+                ORDER by c.fecha";
         }
         $subtitulo = nombreCliente($vars['categoria'])." / ".$vars['servicios'];
     }
 //Servicios por volumen de facturacion + facturados
-    if ($vars['formu']==5) {
-        if ($vars['tipo']=="acumulado") {
-            $sql="SELECT trim(h.servicio) as Servicio, sum(h.cantidad) as Unidades,
-            sum(h.cantidad*h.unitario) as Importe, sum(h.cantidad*h.unitario*h.iva/100) as Iva,
-            sum(h.cantidad*h.unitario+h.cantidad*h.unitario*h.iva/100) as Total
-            FROM `historico` as h
-            INNER JOIN `regfacturas` AS c on h.factura = c.codigo
-            INNER JOIN `clientes` AS l ON c.id_cliente = l.Id
-            ".$conFecha." GROUP BY trim(h.servicio) order by Total desc";
+    /**
+     * Servicios por volumen de facturacion + facturados
+     */
+    if ($vars['formu'] == 5) {
+        if ($vars['tipo'] == "acumulado") {
+            $sql="
+                SELECT 
+                TRIM(h.servicio) AS Servicio,
+                ".$acumuladoSql."
+                ".$conFecha." 
+                GROUP BY TRIM(h.servicio) 
+                ORDER BY Total DESC";
         } else {
             if ($vars['tipo'] == "detallado") {
                 $sql="SELECT c.fecha, trim(d.servicio) as Servicio,
@@ -643,12 +697,7 @@ function consulta($vars)
     //Clientes por volumen de facturacion + facturados
     if ($vars['formu']==6) {
         if($vars['tipo']=="acumulado")
-        $sql="SELECT l.Nombre as Cliente, sum(h.cantidad) as Unidades,
-        sum(h.cantidad*h.unitario) as Importe, sum(h.cantidad*h.unitario*h.iva/100) as Iva,
-        sum(h.cantidad*h.unitario+h.cantidad*h.unitario*h.iva/100) as Total
-        FROM `historico` as h
-        INNER JOIN `regfacturas` AS c on h.factura = c.codigo
-        INNER JOIN `clientes` AS l ON c.id_cliente = l.Id
+        $sql="SELECT l.Nombre as Cliente, ".$acumuladoSql."
         ".$conFecha." GROUP BY l.Nombre order by Total desc";
         else
             if($vars['tipo']=="detallado")
@@ -1211,7 +1260,6 @@ function diferencia($aguja, $pajarAnt, $pajar)
  */
 function generamos_titulo($sql)
 {
-    $meses = nombreMeses();
     $wave1=explode("where month(c.Fecha) like",$sql);
     if($wave1[1]!="")
     $wave2=explode("and year(fecha) like",$wave1[1]);
@@ -1219,7 +1267,7 @@ function generamos_titulo($sql)
     $wave2=explode("year(c.Fecha) like",$wave1[0]);
     $wave3=explode("GROUP BY",$wave2[1]);
     if($wave1[1]!="")
-        $titulo = $meses[intval($wave2[0])]."-".$wave3[0];
+        $titulo = Cni::$meses[intval($wave2[0])]."-".$wave3[0];
     else
         $titulo = $wave3[0];
 

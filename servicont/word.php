@@ -2,7 +2,7 @@
 /**
  * word.php File Doc Comment
  * 
- * Genera la version imprimible de los resultados generados
+ * Genera la version imprimible de los resultados generados NO USADO BORRAR
  * 
  * PHP Version 5.2.6
  * 
