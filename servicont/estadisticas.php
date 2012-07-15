@@ -640,7 +640,7 @@ function consulta($vars)
                     (d.unitario * d.cantidad) * d.iva / 100
                 ) AS Total
                 FROM `historico` AS d
-                INNER JOIN `regfacturas` AS c on c.`codigo` = d.`factura`
+                INNER JOIN `regfacturas` AS c ON c.`codigo` = d.`factura`
                 INNER JOIN `clientes` AS s ON c.id_cliente = s.Id
                 WHERE TRIM(d.servicio) LIKE '".$vars['servicios']."'
                 ".$conFecha." 
@@ -649,8 +649,7 @@ function consulta($vars)
         }
         $subtitulo = nombreCliente($vars['categoria'])." / ".$vars['servicios'];
     }
-//Servicios por volumen de facturacion + facturados
-    /**
+	/**
      * Servicios por volumen de facturacion + facturados
      */
     if ($vars['formu'] == 5) {
@@ -664,186 +663,279 @@ function consulta($vars)
                 ORDER BY Total DESC";
         } else {
             if ($vars['tipo'] == "detallado") {
-                $sql="SELECT c.fecha, trim(d.servicio) as Servicio,
-                    trim(d.obs) as Observaciones, s.Nombre as Cliente,
-                    d.cantidad as Unidades, d.unitario as Importe, d.iva,
-                    ((d.unitario*d.cantidad) + (d.unitario*d.cantidad)*d.iva/100) as Total
-                    FROM `historico` AS d
-                    INNER JOIN `regfacturas` AS c on c.`codigo` = d.`factura`
-                    INNER JOIN `clientes` AS s ON c.id_cliente = s.Id
-                    ".$conFecha." order by c.fecha";
-            } else {
-                if ($vars['servicios']!="0") {
-                    $filtra_servicio = " and trim(h.servicio)
-                    like trim('".$vars['servicios']."') ";
-                } else {
-                    $filtra_servicio = "  ";
-                }
-                $rango=arrayRangos($vars);
-                foreach ($rango as $rangillo) {
-                    $esql[]="SELECT trim(h.servicio) as Servicio,
-                        sum(h.cantidad*h.unitario+h.cantidad*h.unitario*h.iva/100) as Total
-                        FROM `historico` as h
-                        INNER JOIN `regfacturas` AS c on h.factura = c.codigo
-                        INNER JOIN `clientes` AS l ON c.id_cliente = l.Id
-                        ".$rangillo." ".$filtra_servicio." GROUP BY trim(h.servicio)
-                        order by Total desc ".$limite;
-                }
-            //$cadena.=$vars[servicios];
-            }
-        }
-        $subtitulo = "";
-    }
-    //Clientes por volumen de facturacion + facturados
-    if ($vars['formu']==6) {
-        if($vars['tipo']=="acumulado")
-        $sql="SELECT l.Nombre as Cliente, ".$acumuladoSql."
-        ".$conFecha." GROUP BY l.Nombre order by Total desc";
-        else
-            if($vars['tipo']=="detallado")
-        $sql="SELECT c.fecha, s.Nombre as Cliente,
-        trim(d.servicio) as Servicio, trim(d.obs) as Observaciones,
-        d.cantidad as Unidades, d.unitario as Importe, d.iva,
-        ((d.unitario*d.cantidad) + (d.unitario*d.cantidad)*d.iva/100) as Total
-        FROM `historico` AS d
-        INNER JOIN `regfacturas` AS c on c.`codigo` = d.`factura`
-        INNER JOIN `clientes` AS s ON c.id_cliente = s.Id
-        ".$conFecha." order by c.fecha";
-            else { /*Comparativa entre rangos*/
-                if($vars['cliente']!=0)
-                    $filtra_cliente = " and c.id_cliente like ".$vars['cliente']." ";
-                else
-                    $filtra_cliente = "";
-                $rango=arrayRangos($vars);
-                foreach($rango as $rangillo)
-                    $esql[]="SELECT l.Nombre as Cliente,
-                    sum(h.cantidad*h.unitario+h.cantidad*h.unitario*h.iva/100) as Total
-                    FROM `historico` as h
-                    INNER JOIN `regfacturas` AS c on
-                    h.factura = c.codigo INNER JOIN `clientes` AS l ON c.id_cliente = l.Id
-                    ".$rangillo." ".$filtra_cliente."
-                    GROUP BY l.Nombre order by Total desc ".$limite;
-            }
-        $subtitulo = "";
-    }
-    //THIS IS THE MOTHER OF THE LAMB - Nueva seccion Comparativas
-    if ($vars['formu']==7) {
-        switch ($vars['tipo_comparativa']) {
-            //Clientes
-            case 1:
-            $sql="SELECT l.Nombre as Cliente,
-            sum(h.cantidad*h.unitario+h.cantidad*h.unitario*h.iva/100) as Total
-            FROM `historico` as h
-            INNER JOIN `regfacturas` AS c on h.factura = c.codigo
-            INNER JOIN `clientes` AS l ON c.id_cliente = l.Id";
-            if ($vars['cliente']!=0) {
-                $filtro = " and c.id_cliente like ".$vars['cliente']." ";
-                $grupo = " GROUP BY l.Nombre";
-            } else {
-                $sql = ereg_replace("l.Nombre as Cliente,"," 1 ,",$sql);
-                $filtro = " ";
-            }
-            if($vars['servicios']!="0")
-                $filtro .= " and trim(h.servicio) like trim('".$vars['servicios']."') ";
-            break;
-
-            //Servicios
-            case 2:
-            $sql="SELECT trim(h.servicio) as Servicio,
-                sum(h.cantidad*h.unitario+h.cantidad*h.unitario*h.iva/100) as Total
-                FROM `historico` as h
-                INNER JOIN `regfacturas` AS c on h.factura = c.codigo
-                INNER JOIN `clientes` AS l ON c.id_cliente = l.Id";
-            if ($vars['servicios']!="0") {
-                $filtro = " and trim(h.servicio) like trim('".$vars['servicios']."') ";
-                $grupo = " GROUP BY trim(h.servicio)";
-            } else {
                 $sql="
-                    SELECT 1, 
-                    sum(h.cantidad*h.unitario+h.cantidad*h.unitario*h.iva/100) as Total
-                    FROM `historico` as h
-                    INNER JOIN `regfacturas` AS c on h.factura = c.codigo
-                    INNER JOIN `clientes` AS l ON c.id_cliente = l.Id";
-                $filtro = "  ";
+                   SELECT c.fecha, 
+                   TRIM(d.servicio) AS Servicio,
+                   TRIM(d.obs) AS Observaciones, 
+                   s.Nombre AS Cliente,
+                   d.cantidad AS Unidades, 
+                   d.unitario AS Importe, 
+                   d.iva AS Iva,
+                   (
+                        (d.unitario * d.cantidad) + 
+                        (d.unitario * d.cantidad) * d.iva / 100
+                   ) AS Total
+                   FROM `historico` AS d
+                   INNER JOIN `regfacturas` AS c ON c.`codigo` = d.`factura`
+                   INNER JOIN `clientes` AS s ON c.id_cliente = s.Id
+                    ".$conFecha." order by c.fecha";
+        	} else {
+            	if ( $vars['servicios'] != "0") {
+                    $filtraServicio = " AND TRIM(h.servicio)
+                    LIKE TRIM('".$vars['servicios']."') ";
+        		} else {
+                    $filtraServicio = "  ";
+                }
+                $rango = arrayRangos($vars);
+                foreach ($rango as $rangillo) {
+                    $esql[]="
+                        SELECT TRIM(h.servicio) AS Servicio,
+                        SUM(
+                            h.cantidad * h.unitario + 
+                            h.cantidad * h.unitario * h.iva / 100
+                        ) AS Total
+                        FROM `historico` AS h
+                        INNER JOIN `regfacturas` AS c ON h.factura = c.codigo
+                        INNER JOIN `clientes` AS l ON c.id_cliente = l.Id
+                        ".$rangillo." ".$filtraServicio." 
+                        GROUP BY TRIM(h.servicio)
+                        ORDER BY Total DESC ".$limite;
+                }
             }
-            break;
-
-            //Categorias
-            case 3:
-            $sql="SELECT 1, sum(h.cantidad*h.unitario+h.cantidad*h.unitario*h.iva/100) as Total
-            FROM `historico` as h
-            INNER JOIN `regfacturas` AS c on h.factura = c.codigo INNER JOIN `clientes` AS l ON c.id_cliente = l.Id";
-            if ($vars['categoria']!="0") {
-                $filtro = " and l.Categoria like '".$vars['categoria']."' ";
-                $grupo = " GROUP BY l.Categoria";
+        }
+        $subtitulo = "";
+    }
+    /**
+     * Clientes por volumen de facturacion + facturados
+     */
+    if ($vars['formu'] == 6) {
+        if ($vars['tipo'] == "acumulado") {
+        	$sql="
+        		SELECT l.Nombre AS Cliente, 
+            	".$acumuladoSql."
+        		".$conFecha." 
+        		GROUP BY l.Nombre ORDER BY Total DESC";
+        } else {
+            if ($vars['tipo'] == "detallado") {
+        		$sql="
+        		    SELECT c.fecha, 
+        		    s.Nombre AS Cliente,
+        			TRIM(d.servicio) AS Servicio, 
+        		    TRIM(d.obs) AS Observaciones,
+        			d.cantidad AS Unidades, 
+        		    d.unitario AS Importe, 
+        		    d.iva AS Iva,
+        			(
+        		        (d.unitario * d.cantidad) + 
+        		        (d.unitario * d.cantidad) * d.iva / 100
+        		    ) AS Total
+        			FROM `historico` AS d
+        			INNER JOIN `regfacturas` AS c ON c.`codigo` = d.`factura`
+        			INNER JOIN `clientes` AS s ON c.id_cliente = s.Id
+        			".$conFecha." order by c.fecha";
             } else {
-                $sql = ereg_replace("l.Categoria as Categoria,"," 1 ,",$sql);
-                $filtro = "  ";
+                /**
+                 * Comparativa entre rangos
+                 */
+            	if ($vars['cliente'] != 0) {
+                    $filtra_cliente = " 
+                    	    AND c.id_cliente 
+                    	    LIKE ".$vars['cliente']." ";
+            	} else {
+                    $filtra_cliente = "";
+            	}
             }
-            if($vars['servicios']!="0")
-                $filtro .= " and trim(h.servicio) like trim('".$vars['servicios']."') ";
-            break;
+            $rango = arrayRangos($vars);
+            foreach ($rango as $rangillo) {
+                    $esql[]="
+                        SELECT l.Nombre AS Cliente,
+                    	SUM(
+                            h.cantidad * h.unitario + 
+                            h.cantidad * h.unitario * h.iva / 100
+                        ) AS Total
+                    	FROM `historico` AS h
+                    	INNER JOIN `regfacturas` AS c ON h.factura = c.codigo 
+                        INNER JOIN `clientes` AS l ON c.id_cliente = l.Id
+                    	".$rangillo." ".$filtra_cliente."
+                    	GROUP BY l.Nombre 
+                    	ORDER BY Total DESC ".$limite;
+            }
         }
-        //Rango de fechas de la comparativa
-        $rangete_a = generaConsultas($vars['fecha_inicio_a'],$vars['fecha_fin_a']);
-        //echo $sql." ".$filtro." ".$grupo.$vars[servicios];
-        $subtitulo = "Datos del ".$vars['fecha_inicio_a']." al ".$vars['fecha_fin_a']." de ";
-        if(is_array($rangete_a))
-        foreach ($rangete_a as $rango) {
-            $rango.="-1";
-            $esql[]=$sql." where year('$rango') like year(c.Fecha)
-            and month('$rango') like month(c.fecha)  ".$filtro.$grupo;
+        $subtitulo = "";
+    }
+    /**
+     * Nueva seccion de Comparativas
+     */
+    if ($vars['formu'] == 7) {
+        switch ($vars['tipo_comparativa']) {
+            /**
+             * Clientes
+             */
+            case 1:
+            	$sql="
+            	    SELECT l.Nombre AS Cliente,
+            		SUM(
+            	        h.cantidad * h.unitario + 
+            	        h.cantidad * h.unitario * h.iva / 100
+            	        ) AS Total
+            		FROM `historico` AS h
+            		INNER JOIN `regfacturas` AS c ON h.factura = c.codigo
+            		INNER JOIN `clientes` AS l ON c.id_cliente = l.Id";
+            	if ($vars['cliente'] != 0) {
+                	$filtro = " 
+                		    AND c.id_cliente LIKE ".$vars['cliente']." ";
+                	$grupo = " GROUP BY l.Nombre";
+            	} else {
+                	$sql = preg_replace(
+                			"#l.Nombre AS Cliente,#", 
+                		    " 1 ,", 
+                		    $sql
+                		    );
+                	$filtro = " ";
+            	}
+            	if ($vars['servicios'] != "0") {
+                	$filtro .= " AND TRIM(h.servicio) LIKE 
+                		    TRIM('".$vars['servicios']."') ";
+            	}
+            	break;
+			/**
+			 * Servicios
+			 */
+            case 2:
+            	$sql="
+            	    SELECT TRIM(h.servicio) AS Servicio,
+                	SUM(
+            	        h.cantidad * h.unitario + 
+            	        h.cantidad * h.unitario * h.iva/100
+            	    ) AS Total
+                	FROM `historico` AS h
+                	INNER JOIN `regfacturas` AS c ON h.factura = c.codigo
+                	INNER JOIN `clientes` AS l ON c.id_cliente = l.Id";
+            	if ($vars['servicios'] != "0") {
+                	$filtro = " AND TRIM(h.servicio) LIKE 
+                	        TRIM('".$vars['servicios']."') ";
+                	$grupo = " GROUP BY TRIM(h.servicio)";
+            	} else {
+                	$sql="
+                    	SELECT 1, 
+                    	SUM(h.cantidad * h.unitario + 
+                	        h.cantidad * h.unitario * h.iva / 100) AS Total
+                    	FROM `historico` as h
+                    	INNER JOIN `regfacturas` AS c ON h.factura = c.codigo
+                    	INNER JOIN `clientes` AS l ON c.id_cliente = l.Id";
+                	$filtro = "  ";
+            	}
+            	break;
+			/**
+			 * Categorias
+			 */
+            case 3:
+            	$sql="
+            	    SELECT 1, 
+            	    SUM(
+            	        h.cantidad * h.unitario + 
+            	        h.cantidad * h.unitario * h.iva / 100
+            	    ) AS Total
+            		FROM `historico` AS h
+            		INNER JOIN `regfacturas` AS c ON h.factura = c.codigo 
+            	    INNER JOIN `clientes` AS l ON c.id_cliente = l.Id";
+            	if ($vars['categoria'] != "0") {
+                	$filtro = " AND l.Categoria LIKE '".$vars['categoria']."' ";
+                	$grupo = " GROUP BY l.Categoria";
+            	} else {
+               		$sql = preg_replace(
+               		        "#l.Categoria as Categoria,#", 
+               		        " 1 ,", 
+               		        $sql
+               		        );
+                	$filtro = "  ";
+            	}
+            	if ($vars['servicios'] != "0") {
+                	$filtro .= " AND TRIM(h.servicio) 
+                	        LIKE TRIM('".$vars['servicios']."') ";
+            	}
+            	break;
         }
-        if ($vars['fecha_inicio_b']!='' && $vars['fecha_fin_b']!='') {
-            $rangete_b = generaConsultas($vars['fecha_inicio_b'],$vars['fecha_fin_b']);
-            $subtitulo2 = "Datos del ".$vars['fecha_inicio_b']." al ".$vars['fecha_fin_b'];
-            if(is_array($rangete_b))
-            foreach ($rangete_b as $rango) {
-                $rango.="-1";
-                $esql2[]=$sql." where year('$rango') like year(c.Fecha)
-                and month('$rango') like month(c.fecha)  ".$filtro.$grupo;
+        /**
+		 * Rango de las fechas de la comparativa
+         */
+        $rangoA = generaConsultas(
+        	$vars['fecha_inicio_a'], 
+        	$vars['fecha_fin_a']
+        	);
+	    $subtitulo = "Datos del ".$vars['fecha_inicio_a']." al ".
+	        	$vars['fecha_fin_a']." de ";
+        if ( is_array($rangoA) ) {
+        	foreach ($rangoA as $rango) {
+            	$rango .= "-1";
+            	$esql[] = $sql." WHERE YEAR('".$rango."') 
+            		LIKE YEAR(c.Fecha)
+            		AND MONTH('".$rango."') LIKE MONTH(c.fecha)  
+            		".$filtro.$grupo;
+        	}
+        }
+        if ($vars['fecha_inicio_b'] != '' && $vars['fecha_fin_b']!='') {
+            $rangoB = generaConsultas(
+            	    $vars['fecha_inicio_b'],
+            	    $vars['fecha_fin_b']
+            	    );
+            $subtitulo2 = "Datos del ".$vars['fecha_inicio_b']." al ".
+            	$vars['fecha_fin_b'];
+            if ( is_array($rangoB) ) {
+            	foreach ($rangoB as $rango) {
+                	$rango .= "-1";
+                	$esql2[] = $sql." WHERE YEAR('$rango') LIKE YEAR(c.Fecha)
+                		AND MONTH('$rango') LIKE MONTH(c.fecha)  
+                		".$filtro.$grupo;
+            	}
             }
         }
     }
-//EJECUTAMOS LAS CONSULTAS
-if ($vars['formu']!=7) {
-    $_SESSION['consulta']=$sql;//Almacenamos la consulta como variable de sesion
-    $_SESSION['titulo']=$vars['titulo']." - ".$subtitulo;
-    if (is_array($esql)) {
-        $cadena.=genera_la_tabla_chunga($esql,$vars,$subtitulo);//multiarray
-        $print = false;
-    } else
-        $cadena=generaTabla($sql,$vars,$subtitulo);
-// 	$cadena.="<br/><span class='boton'
-// 	onclick='window.open(\"print.php?sql=".urlencode($sql)."\",\"_self\")'>Imprimir</span>";
-    $_SESSION['sqlQuery'] = $sql;
-    if ($print) {
-        $cadena .= "<br/><span class='boton'
-            onclick='window.open(\"print.php\",\"_self\")'>Imprimir</span>";
-    }
-} else {
-    if (is_array($esql)) {
-        $cadena.=genera_la_tabla_comparativas($esql,$vars,$subtitulo);//multiarray
-        $print = false;
-        if (is_array($esql2)) {
-        $cadena.="</tr></table><br/>";
-        $cadena.=genera_la_tabla_comparativas($esql2,$vars,$subtitulo2);//multiarray
-        $print = false;
-        }
-    }
-    $cadena.="</tr></table>";
-    $_SESSION['sqlQuery'] = $sql;
-// 	$cadena.="<br/><span class='boton'
-// 	onclick='window.open(\"print.php?sql=".urlencode($sql)."\",\"_self\")'>Imprimir</span>";
-    if ($print) {
-        $cadena .= "<br/><span class='boton'
-            onclick='window.open(\"print.php\",\"_self\")'>Imprimir</span>";
-    }
-    //session_start();
-    unset($_SESSION['acumulado']);
-    unset($_SESSION['datos_ant']);
-}
-
+    /**
+     * Ejectuamos las consultas
+     */
+	if ($vars['formu'] != 7) {
+    	$_SESSION['consulta'] = $sql;
+    	$_SESSION['titulo'] = $vars['titulo']." - ".$subtitulo;
+    	if ( is_array($esql) ) {
+        	$cadena .= generaTablaComparativas($esql, $vars, $subtitulo);
+        	$print = false;
+    	} else {
+        	$cadena = generaTabla($sql, $vars, $subtitulo);
+    	}
+    	$_SESSION['sqlQuery'] = $sql;
+    	if ($print) {
+        	$cadena .= "<br/><span class='boton'
+            	onclick='window.open(\"print.php\",\"_self\")'>Imprimir</span>";
+    	}
+	} else {
+    	if ( is_array($esql) ) {
+        	$cadena .= generaTablaComparativasMejorada(
+        	        $esql, 
+        	        $vars, 
+        	        $subtitulo
+        	        );
+        	$print = false;
+        	if ( is_array($esql2) ) {
+        		$cadena.="</tr></table><br/>";
+        		$cadena.=generaTablaComparativasMejorada(
+        		        $esql2, 
+        		        $vars, 
+        		        $subtitulo2
+        		        );
+        		$print = false;
+        	}
+    	}
+    	$cadena .= "</tr></table>";
+    	$_SESSION['sqlQuery'] = $sql;
+    	if ($print) {
+        	$cadena .= "<br/><span class='boton'
+            	onclick='window.open(\"print.php\",\"_self\")'>Imprimir</span>";
+    	}
+    	//session_start();
+    	unset($_SESSION['acumulado']);
+    	unset($_SESSION['datos_ant']);
+	}
     return $cadena;
 }
 
@@ -997,11 +1089,9 @@ function consultaFecha($vars)
 
     return $cadena;
 }
-
 /*
  * Generacion de la tabla simple para las partes normales
  */
-
 function generaTabla($sql, $vars, $subtitulo)
 {
     $resultados = Cni::consulta($sql);
@@ -1016,9 +1106,9 @@ function generaTabla($sql, $vars, $subtitulo)
         $cadena .= "<th>No hay Resultados</th>";
     } else {
         foreach ($resultados as $resultado) {
-           /**
-            * @todo Cabezera y datos tabla
-            */
+            /**
+             * @todo Cabezera y datos tabla
+             */
         }
     }
     
@@ -1107,7 +1197,7 @@ function generaTabla($sql, $vars, $subtitulo)
 /*
  * Generacion de las tablas de las comparativas
  */
-function genera_la_tabla_chunga($sql,$vars,$subtitulo)
+function generaTablaComparativas($sql,$vars,$subtitulo)
 {
     global $con;
     //LLenamos el array multidimensional
@@ -1197,31 +1287,39 @@ function genera_la_tabla_chunga($sql,$vars,$subtitulo)
 
 /*
  * Posiciona los valores en el array para su comparacion
+ * 
+ */
+/**
+ * Posiciona los valores en el array para su comparacion
+ * 
+ * @param string $l posicion actual
+ * @param array $claves array de claves anteriores 
+ * @param string $clave valor de clave en la pos
+ * @return Ambigous <number, string>
  */
 function posicion($l,$claves,$clave)
 {
-    //$l posicion actual, $claves ->array de claves ant, $clave valor de clave en la pos
-    if (is_array($claves)) {
-    $pos=array_search($clave,$claves)-$l;
-    if($pos>0)
-        $pos="<font color='green'><b><- ".$pos."</b></font>";
-    else
-        if ($pos<0) {
-            $pos=$pos*-1;
-            if(array_search($clave,$claves))
-            $pos="<font color='red'><b>-> ".$pos."</b></font>";
-            else
-            $pos="--Sin datos--";
-        } else
-            $pos="<b>=</b>";
+    if ( is_array($claves)) {
+    	$pos = array_search($clave, $claves) - $l;
+    	if ( $pos > 0 ) {
+        	$pos="<font color='green'><b><- ".$pos."</b></font>";
+    	} else {
+        	if ( $pos < 0 ) {
+            	$pos = $pos * -1;
+            	if ( array_search($clave, $claves) ) {
+            		$pos = "<font color='red'><b>-> ".$pos."</b></font>";
+            	} else {
+            		$pos = "--Sin datos--";
+            	}
+        	} else {
+            	$pos = "<b>=</b>";
+    		}
+    	}
     } else {
-    $pos="--Sin datos--";
+    	$pos = "--Sin datos--";
     }
-
     return $pos;
 }
-
-
 /**
  * Devuelve el valor formateado segun la diferencia
  * 
@@ -1276,7 +1374,7 @@ function generamos_titulo($sql)
 /*
  * Generamos la tabla de las comparativas tabla chunga 2.0
  */
- function genera_la_tabla_comparativas($sql, $vars, $subtitulo)
+ function generaTablaComparativasMejorada($sql, $vars, $subtitulo)
  {
     global $con;
     $i = 0;
@@ -1315,16 +1413,21 @@ function generamos_titulo($sql)
         if (isset ( $_SESSION ['datos_ant'] )) {
 
             if (($dato != 0) && ($_SESSION ['datos_ant'] [$l] != 0)) {
-                $porcentaje = round ( ($dato * 100 / $_SESSION ['datos_ant'] [$l]) - 100, 2 );
-                if ($porcentaje > 0)
+                $porcentaje = round ( 
+                        ($dato * 100 / $_SESSION ['datos_ant'] [$l]) - 100,
+                         2 
+                        );
+                if ($porcentaje > 0) {
                     $mmi = "<font color='green'>" . $porcentaje . "%</font>";
-                else if ($porcentaje == 0)
+                } elseif ($porcentaje == 0) {
                     $mmi = $porcentaje . "%";
-                else
+                } else {
                     $mmi = "<font color='red'>" . $porcentaje . "%</font>";
+                }
                 $cadena .= "<div class='dato_par'>" . $mmi . "</div>";
-            } else
+            } else {
                 $cadena .= "<div class='dato_par'>--Sin Datos--</div>";
+        	}
         }
         $l ++;
         $cadena .= "</div>";

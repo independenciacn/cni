@@ -273,7 +273,7 @@ textarea
 	border-width:1px;
 	border-color:#FCD393;
 	color:#ffffff;
-	cursor:hand;
+	cursor:pointer;
 	cursor:pointer;
 }
 #observaciones
@@ -705,7 +705,7 @@ textarea
 	border-style:solid;
 	border-width:1px;
 	border-color:#333;
-	cursor:hand;
+	cursor:pointer;
 	cursor:pointer;
 }
 .ver_servicios
@@ -720,7 +720,7 @@ textarea
 	border-style:solid;
 	border-width:1px;
 	border-color:#333;
-	cursor:hand;
+	cursor:pointer;
 	cursor:pointer;
 }
 .limpiar
@@ -735,7 +735,7 @@ textarea
 	border-style:solid;
 	border-width:1px;
 	border-color:#333;
-	cursor:hand;
+	cursor:pointer;
 	cursor:pointer;
 }
 .generar_factura
@@ -750,7 +750,7 @@ textarea
 	border-style:solid;
 	border-width:1px;
 	border-color:#333;
-	cursor:hand;
+	cursor:pointer;
 	cursor:pointer;
 }
 .boton_cerrar
@@ -765,7 +765,7 @@ textarea
 	border-style:solid;
 	border-width:1px;
 	border-color:#333;
-	cursor:hand;
+	cursor:pointer;
 	cursor:pointer;
 }
 .boton_actualizar
@@ -778,7 +778,7 @@ textarea
 	border-style:solid;
 	border-width:1px;
 	border-color:#333;
-	cursor:hand;
+	cursor:pointer;
 	cursor:pointer;
 	color:#ffffff;
 }
@@ -791,7 +791,7 @@ textarea
 	background:#7d0063 url(../iconos/kate.png) no-repeat center center ;
 	color:#ffffff;
 	border-style:none;
-	cursor:hand;
+	cursor:pointer;
 	cursor:pointer;
 }
 .boton_borrar
@@ -802,7 +802,7 @@ textarea
 	text-indent:16px;
 	background:#7d0063 url(../iconos/edittrash.png) no-repeat center center ;
 	color:#ffffff;
-	cursor:hand;
+	cursor:pointer;
 	cursor:pointer;
 	border-style:none;
 }
@@ -815,7 +815,7 @@ textarea
 	background:#eeeeee url(../iconos/kate.png) no-repeat center center ;
 	color:#ffffff;
 	border-style:none;
-	cursor:hand;
+	cursor:pointer;
 	cursor:pointer;
 }
 .boton_borrar_par
@@ -826,7 +826,7 @@ textarea
 	text-indent:16px;
 	background:#eeeeee url(../iconos/edittrash.png) no-repeat center center ;
 	color:#ffffff;
-	cursor:hand;
+	cursor:pointer;
 	cursor:pointer;
 	border-style:none;
 }
@@ -839,7 +839,7 @@ textarea
 	background:#dddddd url(../iconos/kate.png) no-repeat center center ;
 	color:#ffffff;
 	border-style:none;
-	cursor:hand;
+	cursor:pointer;
 	cursor:pointer;
 }
 .boton_borrar_impar
@@ -850,7 +850,7 @@ textarea
 	text-indent:16px;
 	background:#dddddd url(../iconos/edittrash.png) no-repeat center center ;
 	color:#ffffff;
-	cursor:hand;
+	cursor:pointer;
 	cursor:pointer;
 	border-style:none;
 }
@@ -865,7 +865,7 @@ textarea
 	border-style:solid;
 	border-width:1px;
 	border-color:#333;
-	cursor:hand;
+	cursor:pointer;
 	cursor:pointer;
 }
 .calendario
@@ -879,9 +879,7 @@ textarea
 	border-style:solid;
 	border-color:#333;
 	border-width:1px;
-	cursor:hand;
 	cursor:pointer;
-	
 }
 .boton_excel
 {
@@ -894,7 +892,6 @@ textarea
 	border-style:solid;
 	border-width:1px;
 	border-color:#333;
-	cursor:hand;
 	cursor:pointer;
 }
 #cabezera_rapido th
