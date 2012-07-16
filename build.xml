@@ -44,11 +44,6 @@
 	    <include name="**/*.php" />
 	    <modified />
 	   </fileset>
-
-	   <fileset dir="${basedir}/tests">
-	    <include name="**/*.php" />
-	    <modified />
-	   </fileset>
 	  </apply>
 	 </target>
 
@@ -100,7 +95,7 @@
 	  <exec executable="phpcs">
 	  	<arg value="--ignore=build/,inc/ezpdf/,entradas2/jpgraph/"/>
 	    <arg value="-v" />
-	    <arg value="--standard=Zend" />
+	    <arg value="--standard=PSR" />
 	    <arg value="--encoding=UTF-8" />        
 	  	<arg path="." />
 	  </exec>
@@ -112,7 +107,7 @@
 	   <arg value="--report=checkstyle" />
 	   <arg value="--report-file=build/logs/checkstyle.xml" />
 	   <arg value="-v" />
-	   <arg value="--standard=Zend" />
+	   <arg value="--standard=PSR" />
 	   <arg value="--encoding=UTF-8" />
 	   <arg path="." />
 	  </exec>
