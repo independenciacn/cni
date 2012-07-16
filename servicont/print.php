@@ -19,59 +19,10 @@ require_once '../inc/Cni.php';
 Cni::chequeaSesion();
 $tabla = "";
 if ( isset($_SESSION['titulo']) ) {
-	$sql = $_SESSION['sqlQuery'];
-	$resultados = Cni::consulta($sql);
-	$totalResultados = Cni::totalDatosConsulta();
-	$cabezera = true;
-	$cabezeraTabla = "<tr>";
-	$datosTabla = "";
-	$pieTabla = "";
-	$celda = 0;
-	$numeroColumnas = 0;
-	$totalColumna = array_fill(0, 10, null);
-	if ( $totalResultados > 0 ) {
-	    foreach ($resultados as $resultado) {
-		    $datosTabla .= "<tr class='".Cni::clase($celda++)."'>";
-		    foreach ($resultado as $key => $var) {
-		        if (  $cabezera && !is_numeric($key) ) {
-		            $cabezeraTabla .="<th>".$key."</th>";
-		            $numeroColumnas++;
-		        }
-		        if ( is_numeric($key) ) {
-		            $datosColumna = Cni::datosColumna($key);
-		            $datosTabla .="<td>".
-		                Cni::formateaCampo($var, $datosColumna['native_type'])
-		                ."</td>";
-		            if ( is_numeric($var) ) {
-		                $totalColumna[$key] = $totalColumna[$key] + $var;    
-		            }
-		        }
-		    }
-		    $cabezera = false;
-		    $datosTabla .= "</tr>";
-		}
-    } else {
-		$cabezeraTabla .="<th>No Hay Resultados</th>";
-	}
-	$cabezeraTabla .= "</tr>";
-	// Ponemos los datos del pie de la tabla
-	$pieTabla .= "<tr>";
-	for ($i = 0; $i < $numeroColumnas; $i++) {
-	    $pieTabla .= "<th>";
-	    if ( !is_null($totalColumna[$i]) ) {
-	        $pieTabla .= Cni::formateaNumero($totalColumna[$i]);
-	    }
-	    $pieTabla .= "</th>";
-	}
-	$pieTabla .= "</tr>";
-	// Guardamos la tabla final
-	$tabla .= "
-	    <table class='tabla' width='100%'>
-	        <caption>".$_SESSION['titulo']."</caption>
-	        <thead>".$cabezeraTabla."</thead>
-	        <tbody>".$datosTabla."</tbody>
-	        <tfoot>".$pieTabla."</tfoot>
-	    </table>";
+	$tabla = Cni::generaTablaDatos(
+	        $_SESSION['sqlQuery'], 
+	        $_SESSION['titulo']
+	    );
 }
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 

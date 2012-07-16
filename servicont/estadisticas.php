@@ -901,7 +901,10 @@ function consulta($vars)
         	$cadena .= generaTablaComparativas($esql, $vars, $subtitulo);
         	$print = false;
     	} else {
-        	$cadena = generaTabla($sql, $vars, $subtitulo);
+        	$cadena = Cni::generaTablaDatos(
+        	        $sql, 
+        	        $vars['titulo']." - ".$subtitulo
+        	    );
     	}
     	$_SESSION['sqlQuery'] = $sql;
     	if ($print) {
@@ -1090,195 +1093,127 @@ function consultaFecha($vars)
     return $cadena;
 }
 /*
- * Generacion de la tabla simple para las partes normales
- */
-function generaTabla($sql, $vars, $subtitulo)
-{
-    $resultados = Cni::consulta($sql);
-    $cadena = "
-        <table id='tabla' width='100%'>
-            <caption>".$vars['titulo']."-".$subtitulo."</caption>
-        ";
-    $cadena .= "<thead><tr>";
-    if ( Cni::totalDatosConsulta() >= 10000 ) {
-        $cadena .= "<th>Demasiados Resultados. Filtre Mas</th>";
-    } elseif ( Cni::totalDatosConsulta() < 1 ) {
-        $cadena .= "<th>No hay Resultados</th>";
-    } else {
-        foreach ($resultados as $resultado) {
-            /**
-             * @todo Cabezera y datos tabla
-             */
-        }
-    }
-    
-    
-     else {
-        $cadena.="<th></th>";
-        for($i=0;$i<=mysql_num_fields($consulta)-1;$i++)
-            $cadena.= "<th>".mysql_field_name($consulta,$i)."</th>";
-            $cadena.="</tr>";
-            $j=0;
-            $aux = " ";
-            $aux2 = "";
-            $minitot = 0;
-            while (true == ($resultado = mysql_fetch_array($consulta))) {
-                $j++;
-                $clase = ( $j % 2 == 0 ) ? "par" : "impar";
-                if (isset($resultado["Nombre"]) && isset($resultado["fecha"])) {
-                    if((($resultado["Nombre"]!=$aux)&&($aux != " "))
-                        ||(($resultado["fecha"]!=$aux2)&&($aux != " "))) {
-                        $cadena.="<tr><th colspan='8'>Total ".$aux." ".cambiaf($aux2)."</th>
-                        <th>".round($minitot,2)."&euro;</th></tr>";
-                        $pal_final = $cadena;
-                        $aux2 = $resultado["fecha"];
-                        $aux = $resultado["Nombre"];
-                        $minitot = 0;
-                    } else {
-                        if ($aux == " ") {
-                            $aux = $resultado["Nombre"];
-                            $aux2 = $resultado["fecha"];
-                        }
-                    }
-                    $minitot = $minitot + $resultado['Total'];
-                }
-                $cadena.="<tr><th>".$j."</th>";
-                for ($i=0;$i<=mysql_num_fields($consulta)-1;$i++) {
-                    switch (mysql_field_type($consulta,$i)) {
-                        case "string":
-                            if (mysql_field_name($consulta,$i)=="Servicio") {
-                                $campo = $resultado[$i];
-                            } else {
-                                $campo = $resultado[$i];
-                            }
-                        break;
-                        case "real":
-                            $campo = number_format($resultado[$i],2,',','.');
-                            $tot[$i]=$tot[$i]+$resultado[$i];
-                        break;
-                        case "date":
-                            $campo = cambiaf($resultado[$i]);
-                        break;
-                        default:
-                            $campo = $resultado[$i];
-                            $tot[$i] ="";
-                        break;
-                    }
-                    $cadena.="<td class='".$clase."'>".$campo."</td>";
-                }
-                $cadena.="</tr>";
-            }
-            if (isset($aux) && isset($aux2) && isset($minitot)) {
-                $cadena.="<tr><th colspan='8'>Total ".$aux." ".cambiaf($aux2)."</th>
-                <th>".round($minitot,2)."&euro;</th></tr>";
-            }
-            $cadena.="<tr><th></th>";
-            for ($i=0;$i<=mysql_num_fields($consulta)-1;$i++) {
-                switch (mysql_field_type($consulta,$i)) {
-                    case "string":
-                        $cadena.="<th></th>";
-                    break;
-                    case "real":
-                        $cadena.="<th>".number_format($tot[$i],2,',','.')."</th>";
-                    break;
-                    default:
-                        $cadena.="<th></th>";
-                    break;
-                }
-            }
-    }
-    $cadena.="</tr>";
-    $cadena.="</table>";
-    $cadena.="<div id='titulo'>Total Resultados: ".mysql_numrows($consulta)."</div>";
-
-    return $cadena;
-}
-
-/*
  * Generacion de las tablas de las comparativas
  */
 function generaTablaComparativas($sql,$vars,$subtitulo)
 {
-    global $con;
-    //LLenamos el array multidimensional
+    $clavesAnteriores = null;
+    $estadoAnterior = null;
     $i=0;
     foreach ($sql as $key => $esquel) {
-        //echo $key."=>".$esquel;
-        $titulo[]=generamos_titulo($esquel);
-        $consulta = mysql_db_query($dbname,$esquel,$con);
-        while (true == ($resultado = mysql_fetch_array($consulta))) {
-            $subdatos[$resultado[0]]=$resultado[1];
+        $titulo[]=generamosTitulo($esquel);
+        $resultados = Cni::consulta($esquel);
+        foreach ($resultados as $resultado) {
+            $subdatos[$resultado[0]] = $resultado[1];
         }
-        $datos[$i]=$subdatos;
+        $datos[$i] = $subdatos;
         $i++;
         unset($subdatos);
     }
-    $cadena.="Tabla de comparativas ".$subtitulo;
-    $cadena.="";
-    $k=0;//Contador de titulo;
-
+    $cadena = "Tabla de comparativas ".$subtitulo;
+    $cadena .= "";
+    /**
+     * Contador de titulo
+     */
+    $k=0;
+    /**
+     * Llenamos la tabla de claves
+     */
     foreach ($datos as $key => $dato) {
-    //llenamos la tabla de claves
-        $claves[0]="";
-        $datillos[0]="";
-        if(is_array($dato))
-        foreach($dato as $clave => $datillo)
-        $claves[]=$clave;
-        //Llenamos la tabla de datos
-        if(is_array($dato))
-        foreach ($dato as $clave => $datillo) {
-        $datillos[]=$datillo;
-        $estad[$clave]=$datillo;
+        $claves[0] = "";
+        $datillos[0] = "";
+        if ( is_array($dato) ) {
+            foreach ($dato as $clave => $datillo) {
+                $claves[] = $clave;
+            }
         }
-    $cadena.="<tr><th colspan='10'height='2px'>".$titulo[$k]."</th></tr>";
-    //A partir de aqui en columnas de 10
-    $cadena.="<tr>";
-    echo count($dato);
-    //En el caso de las comparativas al mostrar solo 1 categoria
-    //Solo sale columna, esto es lo que hay que arreglar
-    for ($j=1;$j<=count($dato);$j++) {
-        $cadena.="<th>".$j."</th>";
-        if ($j%10==0 || $j==count($dato)) { //Llegamos al valor 10 y saltamos
-        $cadena.="</tr><tr>";
-        //Aqui recorremos 10 veces la tabla que almacena las claves;
-            if($j==count($dato)&& $j%10!=0) //No son 10 calcular el resto
-                $ciclos = count($dato)%10;
-            else
-                $ciclos = 10;
-            for ($l=$j-$ciclos;$l<=$j-1;$l++) {
-                if($vars[formu]==6)
-                    $cadena.="<td class='par' valign='top'><b>".$claves[$l+1]."</b></td>";
-                else
-                    $cadena.="<td class='par' valign='top'><b>".$claves[$l+1]."</b></td>";
+        /**
+         * Llenamos la tabla de datos
+         */
+        if ( is_array($dato) ) {
+            foreach ($dato as $clave => $datillo) {
+                $datillos[] = $datillo;
+                $estad[$clave] = $datillo;
             }
-        $cadena.="</tr><tr>";
-            for ($l=$j-$ciclos;$l<=$j-1;$l++) {
-                $cadena.="<td class='impar'><b>".round($datillos[$l+1],2)."&euro;</b></td>";
-            }
-        $cadena.="</tr><tr>";
-        //Diferencia de facturacion
-        for ($l=$j-$ciclos;$l<=$j-1;$l++) {
-                $posicion=diferencia($claves[$l+1],$estad_ant,$estad);
-                $cadena.="<td class='par'>".$posicion."</td>";
-            }
-        //Diferencia de posicion
-        $cadena.="</tr><tr>";
-            for ($l=$j-$ciclos;$l<=$j-1;$l++) {
-                //AQUI NOS QUEDAMOS
-                $posicion=posicion($l+1,$claves_ant,$claves[$l+1]);
-                $cadena.="<td class='impar'>".$posicion."</td>";
-            }
-        $cadena.="</tr><tr>";
         }
     }
-    $claves_ant=$claves; //Para la comparativa
-    $datillos_ant = $datillos; //Para la comparativa
-    $estad_ant = $estad; //Para la comparativa
-    unset($claves);
-    unset($datillos);
-    unset($estad);
-    $cadena.="</tr>";
-    $k++;
+    $cadena .= "
+        <tr>
+            <th colspan='10'height='2px'>".$titulo[$k]."</th>
+        </tr>";
+    /**
+     * A partir de aqui en columnas de 10
+     */
+    $cadena .= "<tr>";
+    echo count($dato);
+    /**
+     * @todo En el caso de las comparativas al mostrar solo 1 categoria
+     * Solo sale columna, esto es lo que hay que arreglar
+     */
+    for ($j = 1; $j <= count($dato); $j++) {
+        $cadena .= "<th>".$j."</th>";
+        /**
+         * Llegamos al valor 10 y saltamos
+         */
+        if ($j%10 == 0 || $j == count($dato)) { 
+            $cadena.="</tr><tr>";
+            /**
+             * Aqui recorremos 10 veces la tabla que almacena las claves
+             */
+            if ($j == count($dato) && $j % 10 != 0 ) {
+                $ciclos = count($dato) % 10;
+            } else {
+                $ciclos = 10;
+            }
+            for ($l = $j - $ciclos; $l <= $j - 1; $l++) {
+                if ($vars['formu'] == 6) {
+                    $cadena .= "<td class='par' valign='top'>
+                        <b>".$claves[$l+1]."</b></td>";
+                } else {
+                    $cadena .= "<td class='par' valign='top'>
+                        <b>".$claves[$l+1]."</b></td>";
+                }
+            }
+            $cadena .= "</tr><tr>";
+            for ($l = $j - $ciclos; $l <= $j - 1; $l++) {
+                $cadena .= "<td class='impar'><b>" .
+                Cni::formateaNumero($datillos[$l+1], true).
+                "</b></td>";
+            }
+            $cadena .= "</tr><tr>";
+            /**
+             * Diferencia de facturacion
+             */
+            for ($l = $j -$ciclos; $l <= $j - 1; $l++) {
+                $posicion = diferencia(
+                        $claves[$l + 1], 
+                        $estadoAnterior, 
+                        $estad
+                    );
+                $cadena .= "<td class='par'>".$posicion."</td>";
+            }
+            /**
+             * Diferencia de posicion
+             */
+            $cadena .= "</tr><tr>";
+            for ($l = $j - $ciclos; $l <= $j - 1; $l++) {
+                $posicion = posicion(
+                        $l + 1, 
+                        $clavesAnteriores, 
+                        $claves[ $l + 1]
+                    );
+                $cadena .= "<td class='impar'>".$posicion."</td>";
+            }
+            $cadena.="</tr><tr>";
+        }
+        $clavesAnteriores = $claves; //Para la comparativa
+        $datillos_ant = $datillos; //Para la comparativa
+        $estadoAnterior = $estad; //Para la comparativa
+        unset($claves);
+        unset($datillos);
+        unset($estad);
+        $cadena.="</tr>";
+        $k++;
     }
     $cadena.="</tabla>";
 
@@ -1352,31 +1287,39 @@ function diferencia($aguja, $pajarAnt, $pajar)
     }
     return $html;
 }
-
-/*
- * Se genera el titulo de la tabla ¡Modificar los de las comparativas!
+/**
+ * Se genera el titulo de la tabla
+ * 
+ * @param string $sql
+ * @return string
  */
-function generamos_titulo($sql)
+function generamosTitulo($sql)
 {
-    $wave1=explode("where month(c.Fecha) like",$sql);
-    if($wave1[1]!="")
-    $wave2=explode("and year(fecha) like",$wave1[1]);
-    else
-    $wave2=explode("year(c.Fecha) like",$wave1[0]);
-    $wave3=explode("GROUP BY",$wave2[1]);
-    if($wave1[1]!="")
-        $titulo = Cni::$meses[intval($wave2[0])]."-".$wave3[0];
-    else
-        $titulo = $wave3[0];
-
+    $primeraParte = explode("WHERE MONTH(c.Fecha) LIKE", $sql);
+    if ($primeraParte[1] != "") {
+        $segundaParte = explode("AND YEAR(fecha) LIKE", $primeraParte[1]);
+    } else {
+        $segundaParte = explode("YEAR(c.Fecha) LIKE", $primeraParte[0]);
+    }
+    $terceraParte = explode("GROUP BY", $segundaParte[1]);
+    if ($primeraParte[1] != "") {
+        $titulo = Cni::$meses[intval($segundaParte[0])]."-".$terceraParte[0];
+    } else {
+        $titulo = $terceraParte[0];
+    }
+  
     return $titulo;
 }
-/*
+/**
  * Generamos la tabla de las comparativas tabla chunga 2.0
+ * 
+ * @param string $sql
+ * @param array $vars
+ * @param string $subtitulo
+ * @return string
  */
- function generaTablaComparativasMejorada($sql, $vars, $subtitulo)
- {
-    global $con;
+function generaTablaComparativasMejorada($sql, $vars, $subtitulo)
+{
     $i = 0;
     $j = 0;
     $l = 0;
@@ -1384,22 +1327,25 @@ function generamos_titulo($sql)
     $dato_ant = 0;
     foreach ($sql as $key => $esquel) {
         $titulo [] = generamosTituloComparativa ( $esquel );
-        $consulta = mysql_query ( $esquel, $con );
-        while ( true == ($resultado = mysql_fetch_array ( $consulta )) ) {
-            $subdatos [$resultado [0]] = $resultado [1];
+        $resultados = Cni::consulta( $esquel );
+        foreach ($resultados as $resultado) {
+            $subdatos[$resultado[0]] = $resultado[1];
         }
-        $datos [$i] = $subdatos;
-        $i ++;
-        unset ( $subdatos );
+        $datos[$i] = $subdatos;
+        $i++;
+        unset( $subdatos );
     }
-    $cadena .= "<div class='nuevas_comparativas'><h3>Tabla de comparativas " . $subtitulo . "</h3>";
+    $cadena = "
+        <div class='nuevas_comparativas'>
+            <h3>Tabla de comparativas " . $subtitulo . "</h3>";
     foreach ($titulo as $tit) {
         $cadena .= "<div class='tit_compa'>
         <div class='titulo'>" . $tit . "</div>";
         $matriz = $datos [$j];
         if (is_array ( $matriz )) {
             foreach ($matriz as $key => $dato) {
-                $cadena .= "<div class='dato_impar'>" . round ( $dato, 2 ) . " &euro;</div>";
+                $cadena .= "<div class='dato_impar'>" .
+                     Cni::formateaNumero($dato, true) . "</div>";
                 $diferencia = round ( $dato - $dato_ant, 2 );
                 $acumulado = $acumulado + $dato;
                 $dato_ant = $dato;
@@ -1409,14 +1355,12 @@ function generamos_titulo($sql)
             $dato = 0;
         }
         $datos_ant [] = $dato;
-
         if (isset ( $_SESSION ['datos_ant'] )) {
-
             if (($dato != 0) && ($_SESSION ['datos_ant'] [$l] != 0)) {
-                $porcentaje = round ( 
-                        ($dato * 100 / $_SESSION ['datos_ant'] [$l]) - 100,
-                         2 
-                        );
+                $porcentaje = Cni::formateaNumero(
+                        ($dato * 100 / $_SESSION ['datos_ant'] [$l]) - 100
+                    );
+               
                 if ($porcentaje > 0) {
                     $mmi = "<font color='green'>" . $porcentaje . "%</font>";
                 } elseif ($porcentaje == 0) {
@@ -1429,33 +1373,41 @@ function generamos_titulo($sql)
                 $cadena .= "<div class='dato_par'>--Sin Datos--</div>";
         	}
         }
-        $l ++;
+        $l++;
         $cadena .= "</div>";
-        $j ++;
+        $j++;
     }
-    // Tabla totales
-    $cadena .= "<div class='tit_compa'><div class='titulo'>Acumulado</div>
-    <div class='dato_impar'>" . round ( $acumulado, 2 ) . " &euro;</div>";
+    /**
+     * Tabla Totales
+     */
+    $cadena .= "
+        <div class='tit_compa'>
+            <div class='titulo'>Acumulado</div>
+                <div class='dato_impar'>" .
+                    Cni::formateaNumero($acumulado, true) . 
+                "</div>";
     if (isset ( $_SESSION ['acumulado'] )) {
-        $total = round ( $acumulado - $_SESSION ['acumulado'], 2 );
+        $total = Cni::formateaNumero($acumulado - $_SESSION ['acumulado']);
         if ($_SESSION ['acumulado'] != 0) {
-            $porcentaje = round ( ($acumulado * 100 / $_SESSION ['acumulado']) - 100, 2 );
-            if ($porcentaje > 0)
+            $porcentaje = Cni::formateaNumero(
+                    ($acumulado * 100 / $_SESSION ['acumulado']) - 100
+                );
+            if ($porcentaje > 0) {
                 $mmi = "<font color='green'>" . $porcentaje . "%</font>";
-            else if ($diferencia == 0)
+            } elseif ($diferencia == 0) {
                 $mmi = $porcentaje;
-            else
+            } else {
                 $mmi = "<font color='red'>" . $porcentaje . "%</font>";
-        } else
+            }
+        } else {
             $mmi = "--Sin datos--";
+        }
         $cadena .= "<div class='dato_par'>" . $mmi . "</div>";
         $cadena .= "</div>";
     } else {
-        // $cadena.="<div class='dato_par'>&nbsp;</div></div>";
         $_SESSION ['acumulado'] = $acumulado;
         $_SESSION ['datos_ant'] = $datos_ant;
     }
-
     $cadena .= "</div>";
 
     return $cadena;

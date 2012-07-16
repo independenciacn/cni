@@ -6,8 +6,8 @@ require_once 'CniDB.php';
  */
 final class Cni
 {
-    private static $_con;
-    private static $_query;
+    private static $_con = null;
+    private static $_query = null;
     private static $_type = PDO::FETCH_BOTH;
     public static $meses = array (
         1=>"Enero", 
@@ -117,20 +117,41 @@ final class Cni
     /**
      * Devuelve el numero de datos afectados en la consulta
      * 
-     * @return number
+     * @return number|boolean
      */
     public static function totalDatosConsulta()
     {
-        return self::$_query->rowCount();
+        if ( !is_null(self::$_query) ) {
+            return self::$_query->rowCount();
+        } else {
+            return false;
+        }
+    }
+    /**
+     * Devuelve el numero de columnas afectadas en la consulta
+     * @return number|boolean
+     */
+    public static function totalColumnasConsulta()
+    {
+        if ( !is_null(self::$_query) ) {
+            return self::$_query->columnCount();
+        } else {
+            return false;
+        }
     }
     /**
      * Devuelve los datos relativos al numero de columna pasado
      * 
      * @param array $columna
+     * @return string|boolean
      */
     public static function datosColumna($columna)
     {
-        return self::$_query->getColumnMeta($columna);
+        if ( !is_null(self::$_query) ) {
+            return self::$_query->getColumnMeta($columna);
+        } else {
+            return false;
+        }
     }
     /**
      * Chequea si la sesion se ha iniciado
@@ -143,7 +164,13 @@ final class Cni
             session_start();
         }
     }
-    
+    /**
+     * Formatea el campo dependiendo del tipo que sea en la base de datos
+     * 
+     * @param unknown_type $valor
+     * @param string $tipo
+     * @return string
+     */
     public static function formateaCampo($valor, $tipo)
     {
         switch ($tipo) {
@@ -165,6 +192,74 @@ final class Cni
     public static function clase($celda)
     {
         return ( $celda % 2 == 0)? 'par': 'impar';
+    }
+    /**
+     * Genera la tabla de resultados pasandole la consulta Sql
+     * 
+     * @param unknown_type $sql
+     * @param unknown_type $titulo
+     * @param unknown_type $subtitulo
+     * @return string $tabla
+     */
+    public static function generaTablaDatos($sql, $titulo = null)
+    {
+        $resultados = self::consulta($sql);
+        $totalResultados = self::totalDatosConsulta();
+        $totalColumnas = self::totalColumnasConsulta();
+        $tabla = "";
+        $datosCabezera = "<tr>";
+        $datosCuerpo = "";
+        $datosPie = "";
+        $celda = 0;
+        $totalColumna = array_fill(0, $totalColumnas - 1, null);
+        $cabezera = true;
+        if ( $totalResultados > 0 ) {
+	        foreach ($resultados as $resultado) {
+		        $datosCuerpo .= "<tr class='".self::clase($celda++)."'>";
+		        foreach ($resultado as $key => $var) {
+		            if ( $cabezera && !is_numeric($key) ) {
+		                $datosCabezera .="<th>".$key."</th>";
+		            }
+		            if ( is_numeric($key) ) {
+		                $datosColumna = self::datosColumna($key);
+		                $datosCuerpo .="<td>".
+		                    self::formateaCampo(
+		                        $var, 
+		                        $datosColumna['native_type']
+		                        )
+		                ."</td>";
+		                if ( is_numeric($var) ) {
+		                    $totalColumna[$key] = $totalColumna[$key] + $var;
+		                }
+		            }
+		        }
+		        $cabezera = false;
+		        $datosCuerpo .= "</tr>";
+		    }
+        } else {
+		    $datosCabezera .="<th>No Hay Resultados</th>";
+	    }
+	    $datosCabezera .= "</tr>";
+	    // Ponemos los datos del pie de la tabla
+	    $datosPie .= "<tr>";
+	    for ($i = 0; $i < $totalColumnas; $i++) {
+	        $datosPie .= "<th>";
+	        if ( !is_null($totalColumna[$i]) ) {
+	            $datosPie .= Cni::formateaNumero($totalColumna[$i]);
+	        }
+	        $datosPie .= "</th>";
+	    }
+	    $datosPie .= "</tr>";
+	    // Guardamos la tabla final
+	    $tabla .= "
+	        <table class='tabla' width='100%'>
+	            <caption>".$titulo."</caption>
+	            <thead>".$datosCabezera."</thead>
+	            <tbody>".$datosCuerpo."</tbody>
+	            <tfoot>".$datosPie."</tfoot>
+	        </table>";
+
+	    return $tabla;
     }
     
     
