@@ -34,8 +34,7 @@ var imgCarga = "<center><img src='imagenes/loading.gif' alt='cargando' /></cente
  */
 var procesaAjax = function (pars, divPrecarga, divCarga, callback) {
     "use strict";
-    var myAjax;
-    myAjax = new Ajax.Request(url,
+    new Ajax.Request(url,
         {
             method: 'post',
             parameters: pars,

@@ -77,7 +77,7 @@ function clientes()
         if ( trim( $resultado [1] ) != "" ) {
             $form .= "<option value='".$resultado[0]."' $marcado >" .
             $resultado [1] ."</option>";
-        } 
+        }
     }
     $form .= "</select>";
 
@@ -96,7 +96,7 @@ function categorias()
     $form .= "<option value='0'>-Categorias-</option>";
     foreach ($resultados as $resultado) {
         if (trim ( $resultado [0] ) != "") {
-            $form .= "<option value='" . $resultado [0] . "' >" . 
+            $form .= "<option value='" . $resultado [0] . "' >" .
             $resultado [0] . "</option>";
         }
     }
@@ -229,7 +229,7 @@ function servicios()
     $form = "<select id='servicios' name='servicios'>";
     $form .= "<option value='0'>-Servicios-</option>";
     foreach ($resultados as $resultado) {
-        $form .= "<option value='".trim($resultado[0])."' >". 
+        $form .= "<option value='".trim($resultado[0])."' >".
             trim($resultado[0])."</option>";
     }
     $form .= "</select>";
@@ -240,10 +240,11 @@ function servicios()
  * Se genera el formulario para la consulta por cliente
  *
  * @param array $vars
+ * @todo Cyclomatic 11
  */
 function formulario($vars)
 {
-    //Este al ser entre fechas por cliente en formulario 
+    //Este al ser entre fechas por cliente en formulario
     //tenemos fechas y clientes
     //y devolvera servicios
     $cadena = "
@@ -252,40 +253,17 @@ function formulario($vars)
             <input type='hidden' name='formu' id='formu' 
                 value='".$vars['form']."'>";
     $inicioFin = "Inicio:".fecha(0)."Fin:".fecha(1);
-    switch ($vars['form']) {
-        //Entre Fechas por cliente
-        case(0):
-            $cadena.=clientes().$inicioFin;
-        break;
-        //Entre Fechas por categoria
-        case(1):
-            $cadena.=categorias().$inicioFin;
-        break;
-        //Entre Fechas por servicios
-        case(2):
-            $cadena.=servicios()."Inicio:".$inicioFin;
-        break;
-        //Entre Fechas por cliente/servicios
-        case(3):
-            $cadena.=clientes().servicios()."<br/>".$inicioFin;
-        break;
-        //Entre Fechas por categoria/servicios
-        case(4):
-            $cadena.=categorias().servicios()."<br/>".$inicioFin;
-        break;
-        //Servicios por volumen de facturacion entre fechas
-        case(5):
-            $cadena.=servicios()."<br/>".$inicioFin;
-        break;
-        //Clientes por volumen de facturacion entre fechas
-        case(6):
-            $cadena.=clientes()."<br/>".$inicioFin;
-        break;
-        //Comparativas
-        case(7):
-            $cadena.= comparativas( $vars );
-        break;
-    }
+    $formulario = array(
+            0 => clientes().$inicioFin,
+            1 => categorias().$inicioFin,
+            2 => servicios()."Inicio:".$inicioFin,
+            3 => clientes().servicios()."<br/>".$inicioFin,
+            4 => categorias().servicios()."<br/>".$inicioFin,
+            5 => servicios()."<br/>".$inicioFin,
+            6 => clientes()."<br/>".$inicioFin,
+            7 => comparativas( $vars )
+            );
+    $cadena .= $formulario[$vars['form']];
     if ($vars['form'] !=7) {
         $cadena.="<br /><input type='radio' name='tipo' value='acumulado'
             checked='checked'> Acumulado
@@ -293,7 +271,7 @@ function formulario($vars)
             <input type='radio' name='tipo' value='comparativa'>Comparativa
             &nbsp;&nbsp;Limite Comparativa:";
         $cadena.="<select name='limite'>";
-        for ($i=10; $i<=90; $i=$i+10) {
+        for ($i=10; $i<=90; $i=$i + 10) {
             $cadena.="<option value=".$i.">".$i."</option>";
         }
         $cadena.="<option value=0>Todos</option>";
@@ -364,7 +342,6 @@ function comparativas($vars)
             </button>";
         $cadena.=$cadenaFechas."<input type='submit' value='Comparar' />";
     }
-    
     return $cadena;
 }
 /**
@@ -376,52 +353,28 @@ function comparativas($vars)
 function respuesta($vars)
 {
     $titulo = "Consumo mensual y acumulado entre fechas por";
-    switch ($vars ['formu']) {
-        case (0) :
-            $vars ['titulo'] = $titulo." cliente";
-            $cadena = consulta ( $vars );
-            break;
-        case (1) :
-            $vars ['titulo'] = $titulo." categoria";
-            $cadena = consulta ( $vars );
-            break;
-        case (2) :
-            $vars ['titulo'] = $titulo." servicios";
-            $cadena = consulta ( $vars );
-            break;
-        case (3) :
-            $vars ['titulo'] = $titulo." cliente/servicio";
-            $cadena = consulta ( $vars );
-            break;
-        case (4) :
-            $vars ['titulo'] = $titulo." categoria/servicio";
-            $cadena = consulta ( $vars );
-            break;
-        case (5) :
-            $vars ['titulo'] = "Servicios mas facturados";
-            $cadena = consulta ( $vars );
-            break;
-        case (6) :
-            $vars ['titulo'] = "Clientes con mas facturacion";
-            $cadena = consulta ( $vars );
-            break;
-        case (7) :
-            $vars ['titulo'] = "Comparativas";
-            $cadena = consulta ( $vars );
-            break;
-    }
-
-    return $cadena;
+    $titulos = array(
+            0 => $titulo." cliente",
+            1 => $titulo." categoria",
+            2 => $titulo." servicios",
+            3 => $titulo." clientes/servicio",
+            4 => $titulo." categoria/servicio",
+            5 => "Servicios mas facturados",
+            6 => "Clientes con mas facturación",
+            7 => "Comparativas",
+            );
+    $vars['titulo'] = $titulos[$vars['formu']];
+    return consulta($vars);
 }
 /**
  * Consultas en pruebas //O cogemos del global de globales
  * 
  * @todo: Revisar las consultas
+ * @todo: Cyclomatic 44
  */
 function consulta($vars)
 {
     var_dump($vars);
-    
     $print = true;
     $conFecha = "";
     $limite = "";
@@ -457,12 +410,11 @@ function consulta($vars)
                 FROM `historico` as h
                 INNER JOIN `regfacturas` AS c on h.factura = c.codigo
                 INNER JOIN `clientes` AS l ON c.id_cliente = l.Id ";
-    
     /**
      * Comprobamos si la consulta tiene rangos de fechas
      */
     if ( consultaFecha($vars) != "" && $vars['formu'] != 5 ) {
-        $conFecha = " AND ". consultaFecha($vars);   
+        $conFecha = " AND ". consultaFecha($vars);
     } elseif ( $vars['formu'] == 5 ) {
         $conFecha = consultaFecha($vars);
     }
@@ -477,7 +429,7 @@ function consulta($vars)
      */
     /**
      * Filtro de la categoria de la consulta
-     */    
+     */
     if ($vars['formu'] == 0) {
         if ($vars['tipo'] == "acumulado") {
             $sql .= "
@@ -787,8 +739,8 @@ function consulta($vars)
                 	$grupo = " GROUP BY l.Nombre";
             	} else {
                 	$sql = preg_replace(
-                			"#l.Nombre AS Cliente,#", 
-                		    " 1 ,", 
+                			"#l.Nombre AS Cliente,#",
+                		    " 1 ,",
                 		    $sql
                 		    );
                 	$filtro = " ";
@@ -844,8 +796,8 @@ function consulta($vars)
                 	$grupo = " GROUP BY l.Categoria";
             	} else {
                		$sql = preg_replace(
-               		        "#l.Categoria as Categoria,#", 
-               		        " 1 ,", 
+               		        "#l.Categoria as Categoria,#",
+               		        " 1 ,",
                		        $sql
                		        );
                 	$filtro = "  ";
@@ -860,7 +812,7 @@ function consulta($vars)
 		 * Rango de las fechas de la comparativa
          */
         $rangoA = generaConsultas(
-        	$vars['fecha_inicio_a'], 
+        	$vars['fecha_inicio_a'],
         	$vars['fecha_fin_a']
         	);
 	    $subtitulo = "Datos del ".$vars['fecha_inicio_a']." al ".
@@ -902,7 +854,7 @@ function consulta($vars)
         	$print = false;
     	} else {
         	$cadena = Cni::generaTablaDatos(
-        	        $sql, 
+        	        $sql,
         	        $vars['titulo']." - ".$subtitulo
         	    );
     	}
@@ -914,16 +866,16 @@ function consulta($vars)
 	} else {
     	if ( is_array($esql) ) {
         	$cadena .= generaTablaComparativasMejorada(
-        	        $esql, 
-        	        $vars, 
+        	        $esql,
+        	        $vars,
         	        $subtitulo
         	        );
         	$print = false;
         	if ( is_array($esql2) ) {
         		$cadena.="</tr></table><br/>";
         		$cadena.=generaTablaComparativasMejorada(
-        		        $esql2, 
-        		        $vars, 
+        		        $esql2,
+        		        $vars,
         		        $subtitulo2
         		        );
         		$print = false;
@@ -941,10 +893,6 @@ function consulta($vars)
 	}
     return $cadena;
 }
-
- /*
-  * Funcion genera consultas, otra que genera bucles
-  */
 /**
  * Genera consultas.
  * 
@@ -986,6 +934,7 @@ function generaConsultas($inicio, $fin)
  * 
  * @param array $vars
  * @return array
+ * @todo: Cyclomatic 8
  */
 function arrayRangos($vars)
 {
@@ -1033,7 +982,8 @@ function arrayRangos($vars)
  * 
  * @param array $vars
  * @return string
- */ 
+ * @todo: Cyclomatic 16
+ */
 function consultaFecha($vars)
 {
     $check = 0;
@@ -1092,10 +1042,16 @@ function consultaFecha($vars)
 
     return $cadena;
 }
-/*
+/**
  * Generacion de las tablas de las comparativas
+ * 
+ * @param unknown_type $sql
+ * @param unknown_type $vars
+ * @param unknown_type $subtitulo
+ * @return string
+ * @todo: Cyclomatic 16
  */
-function generaTablaComparativas($sql,$vars,$subtitulo)
+function generaTablaComparativas($sql, $vars, $subtitulo)
 {
     $clavesAnteriores = null;
     $estadoAnterior = null;
@@ -1155,7 +1111,7 @@ function generaTablaComparativas($sql,$vars,$subtitulo)
         /**
          * Llegamos al valor 10 y saltamos
          */
-        if ($j%10 == 0 || $j == count($dato)) { 
+        if ($j%10 == 0 || $j == count($dato)) {
             $cadena.="</tr><tr>";
             /**
              * Aqui recorremos 10 veces la tabla que almacena las claves
@@ -1186,8 +1142,8 @@ function generaTablaComparativas($sql,$vars,$subtitulo)
              */
             for ($l = $j -$ciclos; $l <= $j - 1; $l++) {
                 $posicion = diferencia(
-                        $claves[$l + 1], 
-                        $estadoAnterior, 
+                        $claves[$l + 1],
+                        $estadoAnterior,
                         $estad
                     );
                 $cadena .= "<td class='par'>".$posicion."</td>";
@@ -1198,8 +1154,8 @@ function generaTablaComparativas($sql,$vars,$subtitulo)
             $cadena .= "</tr><tr>";
             for ($l = $j - $ciclos; $l <= $j - 1; $l++) {
                 $posicion = posicion(
-                        $l + 1, 
-                        $clavesAnteriores, 
+                        $l + 1,
+                        $clavesAnteriores,
                         $claves[ $l + 1]
                     );
                 $cadena .= "<td class='impar'>".$posicion."</td>";
@@ -1219,11 +1175,6 @@ function generaTablaComparativas($sql,$vars,$subtitulo)
 
     return $cadena;
 }
-
-/*
- * Posiciona los valores en el array para su comparacion
- * 
- */
 /**
  * Posiciona los valores en el array para su comparacion
  * 
@@ -1232,7 +1183,7 @@ function generaTablaComparativas($sql,$vars,$subtitulo)
  * @param string $clave valor de clave en la pos
  * @return Ambigous <number, string>
  */
-function posicion($l,$claves,$clave)
+function posicion($l, $claves, $clave)
 {
     if ( is_array($claves)) {
     	$pos = array_search($clave, $claves) - $l;
@@ -1269,7 +1220,7 @@ function diferencia($aguja, $pajarAnt, $pajar)
     $valor = 0;
     $color = false;
     if ( is_array($pajarAnt) && is_array($pajar) ) {
-        if ( array_key_exists($aguja, $pajarAnt) 
+        if ( array_key_exists($aguja, $pajarAnt)
             && array_key_exists($aguja, $pajar) ) {
             $valor = $pajar[$aguja] - $pajarAnt[$aguja];
             if ( $valor > 0 ) {
@@ -1307,7 +1258,6 @@ function generamosTitulo($sql)
     } else {
         $titulo = $terceraParte[0];
     }
-  
     return $titulo;
 }
 /**
@@ -1317,6 +1267,7 @@ function generamosTitulo($sql)
  * @param array $vars
  * @param string $subtitulo
  * @return string
+ * @todo: Cyclomatic 14
  */
 function generaTablaComparativasMejorada($sql, $vars, $subtitulo)
 {
@@ -1360,7 +1311,6 @@ function generaTablaComparativasMejorada($sql, $vars, $subtitulo)
                 $porcentaje = Cni::formateaNumero(
                         ($dato * 100 / $_SESSION ['datos_ant'] [$l]) - 100
                     );
-               
                 if ($porcentaje > 0) {
                     $mmi = "<font color='green'>" . $porcentaje . "%</font>";
                 } elseif ($porcentaje == 0) {
@@ -1384,7 +1334,7 @@ function generaTablaComparativasMejorada($sql, $vars, $subtitulo)
         <div class='tit_compa'>
             <div class='titulo'>Acumulado</div>
                 <div class='dato_impar'>" .
-                    Cni::formateaNumero($acumulado, true) . 
+                    Cni::formateaNumero($acumulado, true) .
                 "</div>";
     if (isset ( $_SESSION ['acumulado'] )) {
         $total = Cni::formateaNumero($acumulado - $_SESSION ['acumulado']);
@@ -1419,7 +1369,7 @@ function generaTablaComparativasMejorada($sql, $vars, $subtitulo)
  * @param string $sql
  * @return string
  */
-function generamosTituloComparativa( $sql )
+function generamosTituloComparativa($sql)
 {
     $cadena = explode ( "year('", $sql );
     $cadena1 = explode ( "-1')", $cadena [1] );
@@ -1427,3 +1377,4 @@ function generamosTituloComparativa( $sql )
     $cadena3 = explode ( "-", $cadena2 );
     return Cni::$meses[$cadena3 [1]] . " / " . $cadena3 [2];
 }
+

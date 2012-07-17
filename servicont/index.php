@@ -14,7 +14,8 @@
  *           3.0 Unported
  * @link     https://github.com/independenciacn/cni
  */
-require_once '../inc/variables.php'; 
+require_once '../inc/variables.php';
+$tituloGeneral = APLICACION. " - ". VERSION;
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
 "http://www.w3.org/TR/html4/loose.dtd">
@@ -28,7 +29,7 @@ require_once '../inc/variables.php';
 	<script type='text/javascript' src='../js/lang/calendar-es.js'></script>
 	<script type='text/javascript' src='../js/calendar-setup.js'></script>
 	<script type='text/javascript' src='js/servicont.js' ></script>
-	<title>Informes - <?php echo APLICACION; ?> - <?php echo VERSION; ?></title>
+	<title>Informes - <?= $tituloGeneral; ?></title>
 </head>
 <body>
 	<div id='titulo'>
@@ -70,3 +71,5 @@ require_once '../inc/variables.php';
 	</div>
 	<div id='formulario'></div>
 </body>
+<?php
+ 

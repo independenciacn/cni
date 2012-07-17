@@ -50,9 +50,9 @@ final class CniDB
         if ( is_null( self::$_handle ) ) {
             try {
                 self::$_handle = new PDO(
-                        self::$_dsn, 
-                        self::$_user, 
-                        self::$_password, 
+                        self::$_dsn,
+                        self::$_user,
+                        self::$_password,
                         self::$_options
                 );
             } catch ( PDOException $error ) {
@@ -62,3 +62,4 @@ final class CniDB
         return self::$_handle;
     }
 }
+ 

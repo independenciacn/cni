@@ -2,7 +2,7 @@
 require_once 'CniDB.php';
 /** 
  * @author ruben
- * 
+ * 33 Metric Weightered Method per Class
  */
 final class Cni
 {
@@ -10,21 +10,19 @@ final class Cni
     private static $_query = null;
     private static $_type = PDO::FETCH_BOTH;
     public static $meses = array (
-        1=>"Enero", 
-        "Febrero", 
-        "Marzo", 
-        "Abril", 
+        1=>"Enero",
+        "Febrero",
+        "Marzo",
+        "Abril",
         "Mayo",
-        "Junio", 
-        "Julio", 
-        "Agosto", 
-        "Septiembre", 
+        "Junio",
+        "Julio",
+        "Agosto",
+        "Septiembre",
         "Octubre",
-        "Noviembre", 
-        "Diciembre" 
+        "Noviembre",
+        "Diciembre"
         );
-    
-    
     /**
      * Para una fecha en un formato y devuelve la fecha con el año y dia
      * cambiado de sitio MySql - Normal , Normal - MySql
@@ -41,7 +39,6 @@ final class Cni
         // La fecha final
         return $partesFecha[2] ."-".$partesFecha[1]."-".$partesFecha[0];
     }
-    
     /**
      * Devuelve el importe con el iva
      *
@@ -71,7 +68,7 @@ final class Cni
      * 
      * @param number|null $type
      */
-    private static function setType ( $type ) 
+    private static function setType ($type = null)
     {
         if ( !is_null($type) ) {
             $self::$_type = $type;
@@ -84,7 +81,7 @@ final class Cni
      * @param integer $type PDO::FETCH_BOTH, PDO::FETCH_ASSOC
      * @return resource
      */
-    public static function consulta( $sql, $type = null )
+    public static function consulta($sql, $type = null)
     {
         try {
             self::setType($type);
@@ -102,7 +99,7 @@ final class Cni
      * @param array $params
      * @param int $type
      */
-    public static function consultaPreparada($sql, $params, $type = null )
+    public static function consultaPreparada($sql, $params, $type = null)
     {
         try {
             self::setType($type);
@@ -203,7 +200,7 @@ final class Cni
      */
     public static function generaTablaDatos($sql, $titulo = null)
     {
-        $resultados = self::consulta($sql);
+        $resultados = self::consulta($sql, PDO::FETCH_NUM);
         $totalResultados = self::totalDatosConsulta();
         $totalColumnas = self::totalColumnasConsulta();
         $tabla = "";
@@ -217,50 +214,53 @@ final class Cni
 	        foreach ($resultados as $resultado) {
 		        $datosCuerpo .= "<tr class='".self::clase($celda++)."'>";
 		        foreach ($resultado as $key => $var) {
-		            if ( $cabezera && !is_numeric($key) ) {
+		            if ( $cabezera) {
 		                $datosCabezera .="<th>".$key."</th>";
 		            }
-		            if ( is_numeric($key) ) {
-		                $datosColumna = self::datosColumna($key);
-		                $datosCuerpo .="<td>".
-		                    self::formateaCampo(
-		                        $var, 
+		            $datosColumna = self::datosColumna($key);
+		            $datosCuerpo .= "<td>".
+		                self::formateaCampo(
+		                        $var,
 		                        $datosColumna['native_type']
-		                        )
+		                    )
 		                ."</td>";
-		                if ( is_numeric($var) ) {
-		                    $totalColumna[$key] = $totalColumna[$key] + $var;
-		                }
+		            if ( is_numeric($var) ) {
+		                $totalColumna[$key] = $totalColumna[$key] + $var;
 		            }
 		        }
 		        $cabezera = false;
 		        $datosCuerpo .= "</tr>";
 		    }
         } else {
-		    $datosCabezera .="<th>No Hay Resultados</th>";
+		    $datosCabezera .= "<th>No Hay Resultados</th>";
 	    }
 	    $datosCabezera .= "</tr>";
-	    // Ponemos los datos del pie de la tabla
-	    $datosPie .= "<tr>";
-	    for ($i = 0; $i < $totalColumnas; $i++) {
-	        $datosPie .= "<th>";
-	        if ( !is_null($totalColumna[$i]) ) {
-	            $datosPie .= Cni::formateaNumero($totalColumna[$i]);
-	        }
-	        $datosPie .= "</th>";
-	    }
-	    $datosPie .= "</tr>";
 	    // Guardamos la tabla final
 	    $tabla .= "
 	        <table class='tabla' width='100%'>
 	            <caption>".$titulo."</caption>
 	            <thead>".$datosCabezera."</thead>
 	            <tbody>".$datosCuerpo."</tbody>
-	            <tfoot>".$datosPie."</tfoot>
+	            <tfoot>".self::pieTabla($totalColumna)."</tfoot>
 	        </table>";
 
 	    return $tabla;
     }
-    
-    
+    /**
+     * Generamos el pie de la  tabla
+     * @param unknown_type $totalColumna
+     * @return string $datosPie
+     */
+    private static function pieTabla($totalColumna)
+    {
+        $datosPie = "<tr>";
+        foreach ($totalColumna as $total) {
+            $datosPie .= "<th>";
+            $datosPie .= is_null($total) ? "" : self::formateaNumero($total);
+            $datosPie .= "</th>";
+        }
+        $datosPie .= "</tr>";
+        return $datosPie;
+    }
 }
+

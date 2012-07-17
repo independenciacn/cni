@@ -20,7 +20,7 @@ Cni::chequeaSesion();
 $tabla = "";
 if ( isset($_SESSION['titulo']) ) {
 	$tabla = Cni::generaTablaDatos(
-	        $_SESSION['sqlQuery'], 
+	        $_SESSION['sqlQuery'],
 	        $_SESSION['titulo']
 	    );
 }
@@ -37,3 +37,5 @@ if ( isset($_SESSION['titulo']) ) {
 	<?php echo $tabla; ?>
 </body>
 </html>
+<?php
+ 

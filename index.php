@@ -2,6 +2,7 @@
 require_once 'inc/variables.php';
 require_once 'inc/Cni.php';
 Cni::chequeaSesion();
+$tituloGeneral = APLICACION. " - ". VERSION;
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
 "http://www.w3.org/TR/html4/loose.dtd">
@@ -15,7 +16,7 @@ Cni::chequeaSesion();
 <script type="text/javascript" src="js/lang/calendar-es.js"></script>
 <script type="text/javascript" src="js/calendar-setup.js"></script>
 <script type="text/javascript" src='js/independencia.js'></script>
-<title>Principal - <?php echo APLICACION; ?> - <?php echo VERSION; ?></title>
+<title>Principal - <?= $tituloGeneral; ?></title>
 </head>
 <body>
 <div id='cuerpo'>
@@ -83,7 +84,7 @@ if (isset($_SESSION['usuario']) ) {
     </center>
     </div>
     <?php 
-} 
+}
 ?>
 </div>
 <div id='datos_interesantes'></div>
@@ -102,3 +103,5 @@ if (isset($_SESSION['usuario'])) {
 ?>
 </body>
 </html>
+<?php
+ 
