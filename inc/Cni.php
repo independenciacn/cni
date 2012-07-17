@@ -71,7 +71,7 @@ final class Cni
     private static function setType ($type = null)
     {
         if ( !is_null($type) ) {
-            $self::$_type = $type;
+            self::$_type = $type;
         }
     }
     /**
@@ -214,10 +214,10 @@ final class Cni
 	        foreach ($resultados as $resultado) {
 		        $datosCuerpo .= "<tr class='".self::clase($celda++)."'>";
 		        foreach ($resultado as $key => $var) {
-		            if ( $cabezera) {
-		                $datosCabezera .="<th>".$key."</th>";
-		            }
 		            $datosColumna = self::datosColumna($key);
+		            if ( $cabezera) {
+		                $datosCabezera .="<th>".$datosColumna['name']."</th>";
+		            }
 		            $datosCuerpo .= "<td>".
 		                self::formateaCampo(
 		                        $var,

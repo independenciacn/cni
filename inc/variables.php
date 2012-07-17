@@ -18,8 +18,8 @@
 error_reporting(E_ALL);
 /**
  * Establecemos la zona horaria 
- */ 
-date_default_timezone_set('Europe/Madrid'); 
+ */
+date_default_timezone_set('Europe/Madrid');
 /**
  * Version de la aplicación
  * 
@@ -56,7 +56,7 @@ mysql_set_charset('utf8', $con);
  * @deprecated - establecerlo dentro de la funcion mysql_select_db
  * @var string
  */
-$dbname = "centro"; 
+$dbname = "centro";
 mysql_select_db($dbname, $con);
 /**
  * Imagen en el mensaje de correcto
@@ -86,7 +86,7 @@ setlocale(LC_NUMERIC, 'es_ES');
  * @deprecated formateaNumero($numero,$moneda)
  * @param integer $number
  */
-function formatoDinero( $number ) 
+function formatoDinero($number)
 {
     if ( SISTEMA == "windows" ) {
         $number = number_format($number, 2, ',', '.')."&euro;";
@@ -100,7 +100,7 @@ function formatoDinero( $number )
  * @deprecated cambiar por formateaNumero($numero,$moneda)
  * @param unknown_type $number
  */
-function formatoNoDinero( $number ) 
+function formatoNoDinero($number)
 {
     $number = number_format($number, 2, ',', '.');
     return $number;
@@ -134,7 +134,7 @@ function clase($k)
  * @param mixed $vars
  *
  */
-function sanitize( &$vars ) 
+function sanitize(&$vars)
 {
     global $con;
     if ( is_array( $vars ) ) {
@@ -200,3 +200,4 @@ function ejecutaConsulta($sql)
 
     return $resultado;
 }
+ 

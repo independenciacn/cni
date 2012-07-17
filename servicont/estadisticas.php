@@ -375,6 +375,7 @@ function respuesta($vars)
 function consulta($vars)
 {
     var_dump($vars);
+    $esql = null;
     $print = true;
     $conFecha = "";
     $limite = "";
