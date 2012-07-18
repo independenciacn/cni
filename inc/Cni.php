@@ -197,10 +197,16 @@ final class Cni
      * @param unknown_type $titulo
      * @param unknown_type $subtitulo
      * @return string $tabla
+     * @todo NO hacer que ejecute la consulta, sino que solo procese los datos
      */
-    public static function generaTablaDatos($sql, $titulo = null)
+    public static function generaTablaDatos($sql, $params = false, $titulo = null)
     {
-        $resultados = self::consulta($sql, PDO::FETCH_NUM);
+        $type = PDO::FETCH_NUM;
+    	if ($params) {
+        	$resultados = self::consultaPreparada($sql, $params, $type);
+        } else {
+    		$resultados = self::consulta($sql, $type);
+        }
         $totalResultados = self::totalDatosConsulta();
         $totalColumnas = self::totalColumnasConsulta();
         $tabla = "";
@@ -208,9 +214,9 @@ final class Cni
         $datosCuerpo = "";
         $datosPie = "";
         $celda = 0;
-        $totalColumna = array_fill(0, $totalColumnas - 1, null);
+        $totalColumna = array_fill(0, $totalColumnas, null);
         $cabezera = true;
-        if ( $totalResultados > 0 ) {
+        if ( $totalResultados > 0 && $totalResultados < 2000) {
 	        foreach ($resultados as $resultado) {
 		        $datosCuerpo .= "<tr class='".self::clase($celda++)."'>";
 		        foreach ($resultado as $key => $var) {
@@ -232,10 +238,12 @@ final class Cni
 		        $datosCuerpo .= "</tr>";
 		    }
         } else {
-		    $datosCabezera .= "<th>No Hay Resultados</th>";
+		    $datosCabezera .=
+		    "<th>Total Resultados ".$totalResultados."</th>";
 	    }
 	    $datosCabezera .= "</tr>";
 	    // Guardamos la tabla final
+	    var_dump($totalColumna);
 	    $tabla .= "
 	        <table class='tabla' width='100%'>
 	            <caption>".$titulo."</caption>
@@ -243,7 +251,6 @@ final class Cni
 	            <tbody>".$datosCuerpo."</tbody>
 	            <tfoot>".self::pieTabla($totalColumna)."</tfoot>
 	        </table>";
-
 	    return $tabla;
     }
     /**

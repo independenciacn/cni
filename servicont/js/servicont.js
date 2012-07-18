@@ -56,7 +56,7 @@ var procesaAjax = function (pars, divPrecarga, divCarga, callback) {
 var menu = function (form) {
     "use strict";
     var pars;
-	pars = "opcion=0&form=" + form;
+    pars = "opcion=0&form=" + form;
     procesaAjax(pars, 'formulario', 'formulario', false);
 };
 /**
@@ -67,7 +67,7 @@ var menu = function (form) {
 var procesa = function () {
     "use strict";
     var pars;
-	pars = "opcion=1&" + Form.serialize($('consulta'));
+    pars = "opcion=1&" + Form.serialize($('consulta'));
     procesaAjax(pars, 'resultados', 'resultados', false);
 };
 /**
@@ -97,6 +97,6 @@ var camposFecha = function () {
 var comparativa = function () {
     "use strict";
     var pars;
-	pars = "opcion=2&tipo=" + $F('tipo_comparativa');
+    pars = "opcion=2&tipo=" + $F('tipo_comparativa');
     procesaAjax(pars, 'comparativas', 'comparativas', camposFecha);
 };
