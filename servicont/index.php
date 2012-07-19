@@ -17,57 +17,71 @@
 require_once '../inc/variables.php';
 $tituloGeneral = APLICACION. " - ". VERSION;
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
-"http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="es">
 <head>
-	<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
-	<link href='../estilo/calendario.css' rel='stylesheet' type='text/css'>
-<!-- 	<link href='estilo/servicont.css' rel='stylesheet' type='text/css'> -->
-	<script type='text/javascript' src='../js/prototype.js' ></script>
-	<script type='text/javascript' src='../js/calendar.js'></script>
-	<script type='text/javascript' src='../js/lang/calendar-es.js'></script>
-	<script type='text/javascript' src='../js/calendar-setup.js'></script>
+	<meta charset="utf-8">
+	<link href='../estilo/calendario.css' rel='stylesheet'>
+	<link href='estilo/servicont.css' rel='stylesheet' type='text/css'>
+	<script src='../js/prototype.js' ></script>
+	<script src='../js/calendar.js'></script>
+	<script src='../js/lang/calendar-es.js'></script>
+	<script src='../js/calendar-setup.js'></script>
+	<link href='../bootstrap/css/bootstrap.min.css' rel="stylesheet" />
+	<script src='../bootstrap/js/bootstrap.min.js'></script>
 	<script type='text/javascript' src='js/servicont.js' ></script>
 	<title>Informes - <?= $tituloGeneral; ?></title>
 </head>
 <body>
-	<div id='titulo'>
-    	Informes y busquedas de Consumos *Datos desde el
-    	1 de Julio de 2007 obtenidos de la facturación
+	<div class='header'>
+    	<span class="label label-info">
+    	<strong>
+    		Informes y busquedas de Consumos *Datos desde el
+    		1 de Julio de 2007 obtenidos de la facturación
+    	</strong>
+    	</span>
+    	<div class="btn-group pull-right">
+			<button class='btn btn-info' onclick='window.history.go(0)'>
+	        	<i class='icon-refresh icon-white'></i> Recargar
+	    	</button>
+	    	<button class='btn btn-danger' onclick='window.close(this)'>
+	        	<i class='icon-remove icon-white'></i> Cerrar
+	    	</button>
+		</div>  
 	</div>
-	<div id='botones'>
-	    <button class='boton' onclick='menu(0)'>
-	        Por cliente
-	    </button>
-	    <button class='boton' onclick='menu(1)'>
-	        Por categoria de cliente
-	    </button>
-	    <button class='boton' onclick='menu(2)'>
-	        Por servicios
-	    </button>
-	    <button class='boton' onclick='menu(3)'>
-	        Por cliente / servicios
-	    </button>
-	    <button class='boton' onclick='menu(4)'>
-	        Por categoria de cliente / servicios
-	    </button>
-	    <button class='boton' onclick='menu(5)'>
-	        Servicios por volumen de facturacion
-	    </button>
-	    <button class='boton' onclick='window.history.go(0)'>
-	        Limpiar
-	    </button>
-	    <button class='boton' onclick='window.close(this)'>
-	        [X]Cerrar
-	    </button>
-	    <br/>
-	    <button class='boton' onclick='menu(6)'>
-	        Clientes por volumen de facturacion
-	    </button>
-	    <button class='boton' onclick='menu(7)'>
-	        Comparativas
-	    </button>
+	<div class="btn-toolbar well">
+		<div class="btn-group">
+  			<button class="btn" onclick='menu(0)'>
+  				Por Clientes
+  			</button>
+  			<button class="btn" onclick='menu(3)'>
+  				Por cliente / servicios
+  			</button>
+  			<button class="btn" onclick='menu(6)'>
+  				Clientes por volumen de Facturación
+  			</button>
+		</div>
+		<div class="btn-group">
+			<button class='btn' onclick='menu(1)'>
+	        	Por categoria de cliente
+	    	</button>
+	    	<button class='btn' onclick='menu(4)'>
+	        	Por categoria de cliente / servicios
+	    	</button>
+		</div>
+		<div class="btn-group">
+			<button class='btn' onclick='menu(2)'>
+	        	Por servicios
+	    	</button>
+	    	<button class='btn' onclick='menu(5)'>
+	        	Servicios por volumen de facturacion
+	    	</button>	
+		</div>
+		<div class="btn-group">
+			<button class='btn' onclick='menu(7)'>
+	        	Comparativas
+	        </button>
+	    </div>	 		
 	</div>
 	<div id='formulario'></div>
 </body>

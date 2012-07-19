@@ -199,7 +199,7 @@ final class Cni
      * @return string $tabla
      * @todo NO hacer que ejecute la consulta, sino que solo procese los datos
      */
-    public static function generaTablaDatos($sql, $params = false, $titulo = null)
+    public static function generaTablaDatos($sql, $params, $titulo = null)
     {
         $type = PDO::FETCH_NUM;
     	if ($params) {
@@ -218,7 +218,7 @@ final class Cni
         $cabezera = true;
         if ( $totalResultados > 0 && $totalResultados < 2000) {
 	        foreach ($resultados as $resultado) {
-		        $datosCuerpo .= "<tr class='".self::clase($celda++)."'>";
+		        $datosCuerpo .= "<tr>";
 		        foreach ($resultado as $key => $var) {
 		            $datosColumna = self::datosColumna($key);
 		            if ( $cabezera) {
@@ -243,10 +243,9 @@ final class Cni
 	    }
 	    $datosCabezera .= "</tr>";
 	    // Guardamos la tabla final
-	    var_dump($totalColumna);
 	    $tabla .= "
-	        <table class='tabla' width='100%'>
-	            <caption>".$titulo."</caption>
+	        <table class='table table-striped table-condensed'>
+	            <caption><strong>".$titulo."</strong></caption>
 	            <thead>".$datosCabezera."</thead>
 	            <tbody>".$datosCuerpo."</tbody>
 	            <tfoot>".self::pieTabla($totalColumna)."</tfoot>

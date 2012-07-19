@@ -17,6 +17,11 @@
 require_once '../inc/variables.php';
 require_once '../inc/Cni.php';
 Cni::chequeaSesion();
+$imprimir = "<div class='pull-right'>
+		<button class='btn btn-primary'
+		onclick='window.open(\"print.php\",\"_self\")'>
+		<i class='icon-print icon-white'></i>
+		Imprimir</button></div>";
 if ( isset( $_SESSION['usuario']) ) {
     if ( isset( $_POST['opcion'] ) ) {
         switch ($_POST['opcion']) {
@@ -24,7 +29,7 @@ if ( isset( $_SESSION['usuario']) ) {
                 $cadena = formulario( $_POST );
                 break;//Generamos el formulario
             case(1):
-                $cadena = respuesta( $_POST );
+                $cadena = respuesta( $_POST ).$imprimir;
                 break;//Generamos la respuesta
             case(2):
                 $cadena = comparativas( $_POST );
@@ -46,14 +51,15 @@ if ( isset( $_SESSION['usuario']) ) {
  */
 function nombreCliente($cliente)
 {
-    if ($cliente) {
+    $nombreCliente = "Cliente no especificado";
+	if ($cliente) {
         $sql = "SELECT Nombre FROM clientes WHERE id LIKE :idcliente";
         $params = array(':idcliente' => $cliente);
         $resultado = Cni::consultaPreparada($sql, $params);
-        return $resultado[0]['Nombre'];
-    } else {
-        return "Cliente No especificado";
+        $nombreCliente = $resultado[0]['Nombre'];
     }
+
+    return $nombreCliente;
 }
 /**
  * Listado de Clientes
@@ -62,20 +68,13 @@ function nombreCliente($cliente)
  */
 function clientes()
 {
-    if (isset ( $_GET ['emp'] )) {
-        $_SESSION ['wcliente'] = $_GET ['emp'];
-        $cliente = $_SESSION ['cliente'];
-    } else {
-        $cliente = 0;
-    }
     $sql = "SELECT id, Nombre FROM clientes ORDER BY Nombre";
     $resultados = Cni::consulta($sql);
-    $form = "<select id='cliente' name='cliente'>";
+    $form = "<select id='cliente' name='cliente' class='span4'>";
     $form .= "<option value='0'>-Cliente-</option>";
     foreach ($resultados as $resultado) {
-        $marcado = ($cliente == $resultado [0]) ? "selected" : "";
         if ( trim( $resultado [1] ) != "" ) {
-            $form .= "<option value='".$resultado[0]."' $marcado >" .
+            $form .= "<option value='".$resultado[0]."'>" .
             $resultado [1] ."</option>";
         }
     }
@@ -92,7 +91,7 @@ function categorias()
 {
     $sql = "SELECT categoria FROM clientes GROUP BY categoria";
     $resultados = Cni::consulta($sql);
-    $form = "<select id='categoria' name='categoria'>";
+    $form = "<select id='categoria' name='categoria' class='span4'>";
     $form .= "<option value='0'>-Categorias-</option>";
     foreach ($resultados as $resultado) {
         if (trim ( $resultado [0] ) != "") {
@@ -142,7 +141,7 @@ function dias($modo)
             $tipo = "rdiaf";
             break;
     }
-    $select = "<select id='". $tipo ."' name='". $tipo ."'>";
+    $select = "<select id='". $tipo ."' name='". $tipo ."' class='span1'>";
     $select .= "<option value='0'>-Dia-</option>";
     for ($i = 1; $i <= 31; $i ++) {
         $select .= "<option value='".$i."'>".$i."</option>";
@@ -173,7 +172,7 @@ function mes($modo)
             $tipo = "rmesf";
             break;
     }
-    $select = "<select id='". $tipo ."' name='". $tipo ."'>";
+    $select = "<select id='". $tipo ."' name='". $tipo ."' class='span1'>";
     $select .= "<option value=0>-Mes-</option>";
     foreach (Cni::$meses as $key => $mes) {
         $select .= "<option value='". $key ."'>". $mes ."</option>";
@@ -205,7 +204,7 @@ function anyo($modo)
             $tipo = "ranof";
             break;
     }
-    $select .= "<select id='" . $tipo . "' name='" . $tipo . "'>";
+    $select .= "<select id='" . $tipo . "' name='" . $tipo . "' class='span1'>";
     $select .= "<option value='0'>-A&ntilde;o-</option>";
     $select .= "<option value='2007'>2007</option>";
     for ($i = 2008; $i <= date('Y'); $i++) {
@@ -226,7 +225,7 @@ function servicios()
     $sql = "SELECT TRIM(servicio) FROM historico
     group by TRIM(servicio) ORDER BY TRIM(servicio)";
     $resultados = Cni::consulta($sql);
-    $form = "<select id='servicios' name='servicios'>";
+    $form = "<select id='servicios' name='servicios' class='span4'>";
     $form .= "<option value='0'>-Servicios-</option>";
     foreach ($resultados as $resultado) {
         $form .= "<option value='".trim($resultado[0])."' >".
@@ -248,11 +247,13 @@ function formulario($vars)
     //tenemos fechas y clientes
     //y devolvera servicios
     $cadena = "
-        <form name='consulta' id='consulta' method='post'
+        <form name='consulta' class='form-inline' id='consulta' method='post'
             onsubmit='procesa();return false'>
             <input type='hidden' name='formu' id='formu' 
                 value='".$vars['form']."'>";
-    $inicioFin = "Inicio:".fecha(0)."Fin:".fecha(1);
+    $inicioFin = "
+    		<label> Inicio:</label>".fecha(0).
+    		"<label> Fin:</label>".fecha(1);
     $formulario = array(
             0 => clientes().$inicioFin,
             1 => categorias().$inicioFin,
@@ -265,18 +266,27 @@ function formulario($vars)
             );
     $cadena .= $formulario[$vars['form']];
     if ($vars['form'] !=7) {
-        $cadena.="<br /><input type='radio' name='tipo' value='acumulado'
+        $cadena.="
+        		<div class='controls'>
+        		<label class='radio'>
+        		<input type='radio' name='tipo' value='acumulado'
             checked='checked'> Acumulado
-            <input type='radio' name='tipo' value='detallado'> Detallado
-            <input type='radio' name='tipo' value='comparativa'>Comparativa
-            &nbsp;&nbsp;Limite Comparativa:";
-        $cadena.="<select name='limite'>";
-        for ($i=10; $i<=90; $i=$i + 10) {
+        		</label>
+        		<label class='radio'>
+            	<input type='radio' name='tipo' value='detallado'> Detallado
+           		</label>
+        		<label class='select'>
+        		Limitar Resultados:</label>";
+        $cadena.="<select name='limite' class='span1'>";
+        for ($i = 10; $i <= 90; $i = $i + 10) {
             $cadena.="<option value=".$i.">".$i."</option>";
         }
         $cadena.="<option selected value=0>Todos</option>";
         $cadena.="</select>";
-        $cadena.="<input type='submit' class='boton' value='Buscar'>";
+        $cadena.="
+        		<button type='submit' class='btn btn-primary'>
+        		<i class='icon-search icon-white'></i> Buscar
+        		</button></div>";
     }
     $cadena.="</form>";
     $cadena.="<div id='resultados'></div>";
@@ -296,7 +306,7 @@ function comparativas($vars)
         $cadena =
         "<input type='hidden' name='formu' id='formu' value='7' />
         <label for='tipo_comparativa'>Comparacion de:</label>
-        <select name='tipo_comparativa' id='tipo_comparativa' 
+        <select name='tipo_comparativa' id='tipo_comparativa' class='span2' 
             onchange='comparativa()'>
             <option value='0'>-- Opcion --</option>
             <option value='1'>Clientes</option>
@@ -410,7 +420,6 @@ function procesaParams($vars)
  */
 function procesaConsultas($vars)
 {
-	var_dump($vars);
 	$filtroFecha = "";
 	$limite = "";
 	$opcion = $vars['formu'];
@@ -491,7 +500,10 @@ function procesaConsultas($vars)
 	/**
 	 * Comprobamos el tipo de consulta y la devolvemos preparada
 	 */
-	var_dump($sql);
+	$_SESSION['sqlQuery'] = $sql;
+	$_SESSION['vars'] = $params['vars'];
+	$_SESSION['titulo'] = $params['titulo'];
+
 	return Cni::generaTablaDatos(
 			$sql,
 			$params['vars'],
@@ -965,7 +977,6 @@ function generaTablaComparativasMejorada($sql, $vars, $subtitulo)
         $_SESSION ['datos_ant'] = $datos_ant;
     }
     $cadena .= "</div>";
-
     return $cadena;
 }
 /**
@@ -983,4 +994,4 @@ function generamosTituloComparativa($sql)
     $cadena3 = explode ( "-", $cadena2 );
     return Cni::$meses[$cadena3 [1]] . " / " . $cadena3 [2];
 }
-
+ 

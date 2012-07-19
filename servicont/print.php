@@ -21,19 +21,22 @@ $tabla = "";
 if ( isset($_SESSION['titulo']) ) {
 	$tabla = Cni::generaTablaDatos(
 	        $_SESSION['sqlQuery'],
+			$_SESSION['vars'],
 	        $_SESSION['titulo']
 	    );
 }
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
-"http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="es">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link href="estilo/print.css" rel="stylesheet" type="text/css"></link>
-<title>Aplicacion Gestion Independencia Centro Negocios </title>
-<body>
-	<span class='volver' onclick='window.history.back()'>&larr; Volver</span>
+	<meta charset="utf-8">
+	<link href='../bootstrap/css/bootstrap.min.css' rel="stylesheet" />
+	<script src='../bootstrap/js/bootstrap.min.js'></script>
+	<title>Aplicacion Gestion Independencia Centro Negocios </title>
+	<body>
+		<span class='volver' onclick='window.history.back()'>
+			&larr; Volver
+		</span>
 	<?php echo $tabla; ?>
 </body>
 </html>
