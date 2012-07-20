@@ -11,12 +11,7 @@
 /*jslint plusplus: true, undef: true, indent: 4, maxlen: 120*/
 /*global $, Ajax, Form, $F, Calendar*/
 
-/**
- * Url de destino de las peticiones
- * 
- * @type {String}
- */
-var url = "estadisticas.php";
+
 /**
  * Imagen de Cargando...
  * 
@@ -30,34 +25,59 @@ var imgCarga = "<center><img src='imagenes/loading.gif' alt='cargando' /></cente
  * @param  {String}   divPrecarga div donde se ejecuta la precarga
  * @param  {String}   divCarga    div donde se carga el resultado
  * @param  {Function} callback    funcion que se ejecuta o false si no ha funcion
- * 
+ * @todo Agregar a funciones generales
  */
 var procesaAjax = function (pars, divPrecarga, divCarga, callback) {
     "use strict";
-    new Ajax.Request(url,
-        {
-            method: 'post',
-            parameters: pars,
-            onCreate: $(divPrecarga).innerHTML = imgCarga,
-            onComplete: function gen(respuesta) {
-                $(divCarga).innerHTML = respuesta.responseText;
-                if (callback) {
-                    callback();
-                }
+    $.ajax({
+        url: 'estadisticas.php',
+        type: 'POST',
+        dataType: 'html',
+        data: pars,
+        beforeSend: function() {
+            $('#' + divPrecarga).html(imgCarga)
+        },
+        success: function(data) {
+            $('#' + divCarga).html(data);
+            if (callback) {
+                callback();
             }
-        });
+        }
+    });
 };
+/**
+ * Genera el datepicker
+ * 
+ * @return {[type]} [description]
+ * @todo Agregar a funciones generales
+ */
+var datePicker = function() {
+    $('.datepicker').datepicker({
+        dateFormat: "dd-mm-yy",
+        changeYear: true,
+        changeMonth: true,
+        firstDay: 1,
+        dayNamesMin: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"],
+        dayNamesShort: ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"],
+        monthNames: 
+            ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio",
+            "Agosto","Septiembre","Octubre","Noviembre","Diciembre"],
+        monthNamesShort: 
+            ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"],
+        yearRange: "2007:nnnn",
+    });  
+}
 /**
  * Funcion que envia la peticion y genera el formulario
  * 
  * @param  {String} form [description]
  * 
  */
-var menu = function (form) {
+var menu = function (formulario) {
     "use strict";
     var pars;
-    pars = "opcion=0&form=" + form;
-    procesaAjax(pars, 'formulario', 'formulario', false);
+    pars = {opcion:0,form:formulario};
+    procesaAjax(pars, 'formulario', 'formulario', datePicker);
 };
 /**
  * Funcion que recibe la peticion procesa y muestra la respuesta
@@ -67,28 +87,8 @@ var menu = function (form) {
 var procesa = function () {
     "use strict";
     var pars;
-    pars = "opcion=1&" + Form.serialize($('consulta'));
+    pars = "opcion=1" + "&" + $('#consulta').serialize();
     procesaAjax(pars, 'resultados', 'resultados', false);
-};
-/**
- * Genera los datepickers
- * 
- */
-var camposFecha = function () {
-    "use strict";
-    var fields, buttons, i;
-    fields = ['fecha_inicio_a', 'fecha_fin_a', 'fecha_inicio_b', 'fecha_fin_b'];
-    buttons = ['boton_fecnicio_a', 'boton_fecha_fin_a', 'boton_fecha_inicio_b', 'boton_fecha_fin_b'];
-    for (i = 0; i < fields.length; i++) {
-        Calendar.setup({
-            inputField  :    fields[i],  // id of the input field
-            ifFormat    :    '%d-%m-%Y', // format of the input field
-            showsTime   :    true,       // will display a time selector
-            buttons     :    buttons[i], // trigger for the calendar (button ID)
-            singleClick :    false,// double-click mode
-            step        :    1   // show all years in drop-down boxes (instead of every other year as default)
-        });
-    }
 };
 /**
  * Segun el tipo de comparativa muestra una cosa u otra
@@ -97,6 +97,6 @@ var camposFecha = function () {
 var comparativa = function () {
     "use strict";
     var pars;
-    pars = "opcion=2&tipo=" + $F('tipo_comparativa');
-    procesaAjax(pars, 'comparativas', 'comparativas', camposFecha);
+    pars = {opcion:2,tipo:$('tipo_comparativa').val()};
+    procesaAjax(pars, 'comparativas', 'comparativas', datePicker);
 };

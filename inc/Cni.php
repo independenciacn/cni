@@ -1,8 +1,24 @@
 <?php
+/**
+ * Cni File Doc Comment
+ *
+ * Clase y Metodos Estaticos de la Aplicacion
+ *
+ *
+ * PHP Version 5.2.6
+ *
+ * @author  Ruben Lacasa <ruben@ensenalia.com>
+ * @package cniEstable/inc
+ * @license Creative Commons Atribución-NoComercial-SinDerivadas 3.0 Unported
+ * @version 2.0e Estable
+ * @link    https://github.com/sbarrat/cniEstable
+ */
 require_once 'CniDB.php';
-/** 
- * @author ruben
- * 33 Metric Weightered Method per Class
+/**
+ * Cni Class Doc Comment
+ *
+ * Funciones estaticas de la aplicación
+ *
  */
 final class Cni
 {
@@ -64,17 +80,6 @@ final class Cni
         return $numero;
     }
     /**
-     * Establece el tipo de devolucion de datos
-     * 
-     * @param number|null $type
-     */
-    private static function setType ($type = null)
-    {
-        if ( !is_null($type) ) {
-            self::$_type = $type;
-        }
-    }
-    /**
      * Ejecuta la consulta y devuelve los resultados
      *
      * @param string $sql
@@ -84,7 +89,9 @@ final class Cni
     public static function consulta($sql, $type = null)
     {
         try {
-            self::setType($type);
+            if (!is_null($type)) {
+                self::$_type = $type;
+            }
             self::$_con = CniDB::connect();
             self::$_query = self::$_con->query($sql, self::$_type);
             return self::$_query;
@@ -102,7 +109,9 @@ final class Cni
     public static function consultaPreparada($sql, $params, $type = null)
     {
         try {
-            self::setType($type);
+            if (!is_null($type)) {
+                self::$_type = $type;
+            }
             self::$_con = CniDB::connect();
             self::$_query = self::$_con->prepare($sql);
             self::$_query->execute($params);
@@ -175,8 +184,6 @@ final class Cni
             break;
             case 'LONG': $valor = self::formateaNumero($valor);
             break;
-            case 'DATE': $valor = self::cambiaFormatoFecha($valor);
-            break;
         }
         return $valor;
     }
@@ -212,8 +219,6 @@ final class Cni
         $tabla = "";
         $datosCabezera = "<tr>";
         $datosCuerpo = "";
-        $datosPie = "";
-        $celda = 0;
         $totalColumna = array_fill(0, $totalColumnas, null);
         $cabezera = true;
         if ( $totalResultados > 0 && $totalResultados < 2000) {
