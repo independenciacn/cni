@@ -376,7 +376,7 @@ function procesaConsultas($vars)
     $sql .= $options[$opcion];
     $sql .= filtrosConsulta($vars);
     $sql .= $agrupamiento;
-    $sql .= ($vars['formu'] == 5 || $vars['formu'] == 6) ? 
+    $sql .= ($vars['formu'] == 5 || $vars['formu'] == 6) ?
     	"ORDER BY Total DESC " : " ";
     $sql .= ($vars['limite'] != 0) ? " LIMIT ".$vars['limite']." ": " ";
 	/**
