@@ -35,10 +35,11 @@ if ( isset( $_SESSION['usuario']) ) {
                 $cadena = formulario( $_POST );
                 break;//Generamos el formulario
             case(1):
-                $cadena = respuesta( $_POST ).$imprimir;
+                $cadena = respuesta( $_POST );
+                $cadena .= ($_POST['formu'] != 7) ? $imprimir : "";
                 break;//Generamos la respuesta
             case(2):
-                $cadena = comparativas( $_POST );
+                $cadena = opcionComparativas( $_POST );
                 break;//Genera la pantalla de comparativa
         }
         echo $cadena;
@@ -224,8 +225,8 @@ function formulario($vars)
                 </button>
                 </div>";
     } else {
-        //$cadena .= comparativas( $vars );
-        $cadena .= "Las comparativas estan deshabilitadas";
+        $cadena .= formularioComparativas( $vars );
+        // $cadena .= "Las comparativas estan deshabilitadas";
     }
     $cadena .= "</fieldset></form>";
     $cadena .= "<div id='resultados'></div>";
@@ -252,7 +253,11 @@ function respuesta($vars)
             7 => "Comparativas",
             );
     $vars['titulo'] = $titulos[$vars['formu']];
-    return procesaConsultas($vars);
+    if ($vars['formu'] == 7) {
+        return procesaComparativas($vars);
+    } else {
+        return procesaConsultas($vars);
+    }
 }
 /**
  * Procesa y devuelve el subtitulo

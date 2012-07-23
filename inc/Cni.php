@@ -273,5 +273,30 @@ final class Cni
         $datosPie .= "</tr>";
         return $datosPie;
     }
+    /**
+     * [mensajeError description]
+     * 
+     * @param  [type] $mensaje [description]
+     * 
+     * @return [type]          [description]
+     */
+    public static function mensajeError($mensaje)
+    {
+        $html = "<span class='alert alert-danger'><strong>Error:</strong> ".
+            $mensaje."</span>";
+        return $html;
+    }
+    /**
+     * [mensajeExito description]
+     * 
+     * @param  [type] $mensaje [description]
+     * 
+     * @return [type]          [description]
+     */
+    public static function mensajeExito($mensaje)
+    {
+        $html = "<span class='alert alert-success'>".$mensaje."</span>";
+        return $html;
+    }
 }
 

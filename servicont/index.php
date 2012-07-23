@@ -52,7 +52,8 @@ $tituloGeneral = APLICACION. " - ". VERSION;
 	    		<!-- dropdown menu links -->
 	    		<li><a href='javascript:menu(0)'>Por Cliente</a></li>
 	    		<li><a href='javascript:menu(3)'>Por Cliente / Servicio</a></li>
-	    		<li><a href='javascript:menu(6)'>Por Volumen de Facturación</a></li>
+	    		<li><a href='javascript:menu(6)'>Por Volumen de Facturación</a>
+	    		</li>
 	  		</ul>
 	  	</div>
 	  	<div class="btn-group">
@@ -62,8 +63,10 @@ $tituloGeneral = APLICACION. " - ". VERSION;
 	  		</button>
 	  		<ul class="dropdown-menu">
 	    		<!-- dropdown menu links -->
-	    		<li><a href='javascript:menu(1)'>Por categoria de cliente</a></li>
-	    		<li><a href='javascript:menu(4)'>Por categoria de cliente / servicios</a></li>
+	    		<li><a href='javascript:menu(1)'>
+	    		Por categoria de cliente</a></li>
+	    		<li><a href='javascript:menu(4)'>
+	    		Por categoria de cliente / servicios</a></li>
 	  		</ul>
 	  	</div>
 	  	<div class="btn-group">
@@ -74,7 +77,8 @@ $tituloGeneral = APLICACION. " - ". VERSION;
 	  		<ul class="dropdown-menu">
 	    		<!-- dropdown menu links -->
 	    		<li><a href='javascript:menu(2)'>Por Servicios</a></li>
-	    		<li><a href='javascript:menu(5)'>Por Volumen de facturación</a></li>
+	    		<li><a href='javascript:menu(5)'>
+	    		Por Volumen de facturación</a></li>
 	  		</ul>
 	  	</div>
 	  	<div class="btn-group">

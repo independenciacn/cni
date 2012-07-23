@@ -4,7 +4,8 @@
  * @package  cni/servicont
  * @author   Ruben Lacasa Mas <ruben@ensenalia.com> 
  * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/ 
- *           Creative Commons Reconocimiento-NoComercial-SinObraDerivada 3.0 Unported
+ *           Creative Commons Reconocimiento-NoComercial-SinObraDerivada 
+ *           3.0 Unported
  * @link     https://github.com/independenciacn/cni
  */
 
@@ -17,14 +18,15 @@
  * 
  * @type {String}
  */
-var imgCarga = "<center><img src='imagenes/loading.gif' alt='cargando' /></center>";
+var imgCarga = "<center><img src='imagenes/loading.gif' alt='cargando' />" +
+		"</center>";
 /**
  * Procesa la peticion Ajax
  * 
  * @param  {String}   pars        parametros
  * @param  {String}   divPrecarga div donde se ejecuta la precarga
  * @param  {String}   divCarga    div donde se carga el resultado
- * @param  {Function} callback    funcion que se ejecuta o false si no ha funcion
+ * @param  {Function} callback    funcion que se ejecuta o false
  * @todo Agregar a funciones generales
  */
 var procesaAjax = function (pars, divPrecarga, divCarga, callback) {
@@ -34,10 +36,10 @@ var procesaAjax = function (pars, divPrecarga, divCarga, callback) {
         type: 'POST',
         dataType: 'html',
         data: pars,
-        beforeSend: function() {
-            $('#' + divPrecarga).html(imgCarga)
+        beforeSend: function () {
+            $('#' + divPrecarga).html(imgCarga);
         },
-        success: function(data) {
+        success: function (data) {
             $('#' + divCarga).html(data);
             if (callback) {
                 callback();
@@ -51,7 +53,7 @@ var procesaAjax = function (pars, divPrecarga, divCarga, callback) {
  * @return {[type]} [description]
  * @todo Agregar a funciones generales
  */
-var datePicker = function() {
+var datePicker = function () {
     $('.datepicker').datepicker({
         dateFormat: "dd-mm-yy",
         changeYear: true,
@@ -60,13 +62,14 @@ var datePicker = function() {
         dayNamesMin: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"],
         dayNamesShort: ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"],
         monthNames: 
-            ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio",
-            "Agosto","Septiembre","Octubre","Noviembre","Diciembre"],
+            ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio",
+            "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
         monthNamesShort: 
-            ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"],
-        yearRange: "2007:nnnn",
+            ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul",
+             "Ago", "Sep", "Oct", "Nov", "Dic"],
+        yearRange: "2007:nnnn"
     });  
-}
+};
 /**
  * Funcion que envia la peticion y genera el formulario
  * 
@@ -76,7 +79,7 @@ var datePicker = function() {
 var menu = function (formulario) {
     "use strict";
     var pars;
-    pars = {opcion:0,form:formulario};
+    pars = {opcion: 0, form: formulario};
     procesaAjax(pars, 'formulario', 'formulario', datePicker);
 };
 /**
@@ -97,6 +100,6 @@ var procesa = function () {
 var comparativa = function () {
     "use strict";
     var pars;
-    pars = {opcion:2,tipo:$('tipo_comparativa').val()};
+    pars = {opcion: 2, tipo: $('#tipoComparativa').val()};
     procesaAjax(pars, 'comparativas', 'comparativas', datePicker);
 };
