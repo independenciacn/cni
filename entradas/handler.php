@@ -1,16 +1,17 @@
 <?php
 /**
- * Handler File Doc Comment
- * 
+ * handler.php File Doc Comment
+ *
  * Manejador de la aplicacion
- * 
+ *
  * PHP Version 5.2.6
- * 
- * @category Handler
- * @package  cni/entradas/
- * @author   Ruben Lacasa Mas <ruben@ensenalia.com> 
- * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/ 
- * Creative Commons Reconocimiento-NoComercial-SinObraDerivada 3.0 Unported
+ *
+ * @category entradas
+ * @package  cni/entradas
+ * @author   Ruben Lacasa Mas <ruben@ensenalia.com>
+ * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/
+ *           Creative Commons Reconocimiento-NoComercial-SinObraDerivada
+ *           3.0 Unported
  * @link     https://github.com/independenciacn/cni
  */
 /**
@@ -26,21 +27,21 @@ if (isset($_POST['inicio'])) {
     $entradasSalidas->setAnyos();
     $entradasSalidas->setTipoVista( $_POST['vista'] );
     $entradasSalidas->setTipoDato( $_POST['datos'] );
-    echo "<h3>{$entradasSalidas->titulo()}</h3>"; 
+    echo "<h3>{$entradasSalidas->titulo()}</h3>";
     switch ($_POST['vista']) {
         case 1:
-            ($_POST['datos'] == '1') ? 
-             $html = $entradasSalidas->listadoAcumuladoClientes() : 
+            ($_POST['datos'] == '1') ?
+             $html = $entradasSalidas->listadoAcumuladoClientes() :
              $html = $entradasSalidas->listadoAcumuladoServicios();
             break;
         case 2:
-            ($_POST['datos'] == '1') ? 
-             $html = $entradasSalidas->listadoDetalladoClientes() : 
+            ($_POST['datos'] == '1') ?
+             $html = $entradasSalidas->listadoDetalladoClientes() :
              $html = $entradasSalidas->listadoDetalladoServicios();
             break;
         case 3:
-            ($_POST['datos'] == '1') ? 
-             $html = $entradasSalidas->graficaClientes() : 
+            ($_POST['datos'] == '1') ?
+             $html = $entradasSalidas->graficaClientes() :
              $html = $entradasSalidas->graficaServicios();
             break;
         default:
@@ -49,3 +50,4 @@ if (isset($_POST['inicio'])) {
     }
     echo $html;
 }
+ 

@@ -111,7 +111,7 @@ function generador($vars)
 			$tabla.="&nbsp;<input class='boton' type=submit 
 			onclick=popUp('agenda/index.php') value = 'Agenda' />";
 			$tabla.="&nbsp;<input class='boton' type=submit 
-			onclick=popUp('entradas2/index.php') value = 'Entradas' />";
+			onclick=popUp('entradas/index.php') value = 'Entradas' />";
 		}
 		$tabla .= "</div>";
 	}

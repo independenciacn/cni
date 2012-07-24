@@ -39,6 +39,20 @@ final class Cni
         "Noviembre",
         "Diciembre"
         );
+    public static $mesesCortos = array (
+    	1=>"Ene",
+    	"Feb",
+    	"Mar",
+    	"Abr",
+    	"May",
+    	"Jun",
+    	"Jul",
+    	"Ago",
+    	"Sep",
+    	"Oct",
+    	"Nov",
+    	"Dic"
+    	);
     /**
      * Para una fecha en un formato y devuelve la fecha con el año y dia
      * cambiado de sitio MySql - Normal , Normal - MySql
@@ -54,6 +68,36 @@ final class Cni
         $partesFecha = explode ( "-", $partesStamp[0] );
         // La fecha final
         return $partesFecha[2] ."-".$partesFecha[1]."-".$partesFecha[0];
+    }
+    /**
+     * Funcion Auxiliar que devuelve el dia pasado por parametro
+     * 
+     * @param string $fecha
+     * @return string
+     */
+    public static function verDia ($fecha)
+    {
+        return date( "j", strtotime( $fecha ) );
+    }
+    /**
+     * Funcion Auxiliar que devuelve el mes pasado por parametro
+     * 
+     * @param string $fecha
+     * @return string
+     */
+    public static function verMes ($fecha)
+    {
+        return date( "n", strtotime( $fecha ) );
+    }
+    /**
+     * Funcion Auxiliar que devuelve el año pasado como parametro
+     * 
+     * @param string $fecha
+     * @return string
+     */
+    public static function verAnyo ($fecha)
+    {
+        return date( 'Y', strtotime( $fecha ) );
     }
     /**
      * Devuelve el importe con el iva

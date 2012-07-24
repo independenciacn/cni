@@ -1,16 +1,17 @@
 <?php
 /**
- * Graph File Doc Comment
- * 
+ * graph.php File Doc Comment
+ *
  * Grafica de movimientos de clientes
- * 
+ *
  * PHP Version 5.2.6
- * 
- * @category Graph
- * @package  cni/entradas/
- * @author   Ruben Lacasa Mas <ruben@ensenalia.com> 
- * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/ 
- * Creative Commons Reconocimiento-NoComercial-SinObraDerivada 3.0 Unported
+ *
+ * @category entradas
+ * @package  cni/entradas
+ * @author   Ruben Lacasa Mas <ruben@ensenalia.com>
+ * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/
+ *           Creative Commons Reconocimiento-NoComercial-SinObraDerivada
+ *           3.0 Unported
  * @link     https://github.com/independenciacn/cni
  */
 require_once 'jpgraph/jpgraph.php';
@@ -32,8 +33,9 @@ $graph->SetScale( 'textint' );
 $graph->img->SetMargin( 80, 30, 30, 40 );
 $graph->SetShadow();
 $graph->SetFrame( false );
-$graph->title->Set( 
-"Cuadro de Entradas y Salidas {$datos[1]} de {$datos[2]} a {$datos[3]}" );
+$graph->title->Set(
+	"Cuadro de Entradas y Salidas {$datos[1]} de {$datos[2]} a {$datos[3]}"
+);
 $graph->title->SetFont( FF_DEFAULT, FS_BOLD, 10 );
 $graph->xaxis->title->Set( '(Meses)' );
 $graph->xaxis->SetTickLabels( $meses );
@@ -46,3 +48,4 @@ $barplotB->SetLegend( "Salidas" );
 $gbplot = new GroupBarPlot( array($barplotA, $barplotB) );
 $graph->Add( $gbplot );
 $graph->Stroke();
+ 

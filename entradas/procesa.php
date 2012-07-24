@@ -1,17 +1,18 @@
 <?php
 /**
- * Procesa File Doc Comment
- * 
+ * procesa.php File Doc Comment
+ *
  * Representacion del listado de los detallados cuando se hace clic en la vista
  * de acumulados
- * 
+ *
  * PHP Version 5.2.6
- * 
- * @category Index
- * @package  cni/entradas/
- * @author   Ruben Lacasa Mas <ruben@ensenalia.com> 
- * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/ 
- * Creative Commons Reconocimiento-NoComercial-SinObraDerivada 3.0 Unported
+ *
+ * @category entradas
+ * @package  cni/entradas
+ * @author   Ruben Lacasa Mas <ruben@ensenalia.com>
+ * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/
+ *           Creative Commons Reconocimiento-NoComercial-SinObraDerivada
+ *           3.0 Unported
  * @link     https://github.com/independenciacn/cni
  */
 require_once "clases/EntradasSalidas.php";
@@ -22,7 +23,7 @@ if (isset( $_POST['datos'] )) {
     $entradas->anyoInicial = $datos[2];
     $entradas->anyoFinal = $datos[3];
     $entradas->setAnyos();
-    ($datos[0] != "servicios") ? $descripcion = $datos[0] . "s" : $descripcion = $datos[0];
+    $descripcion = ($datos[0] != "servicios") ? $datos[0] . "s" : $datos[0];
     if ($datos[0] != "servicios") {
         echo "<table class='listaacumulada'>";
     } else {
@@ -41,9 +42,9 @@ if (isset( $_POST['datos'] )) {
     }
     foreach ($listado as $entrada) {
         if ($datos[0] != "servicios") {
-            $dia = $entradas->fecha->verDia( $entrada[$datos[0]] );
-            $dmes = $entradas->fecha->verMes( $entrada[$datos[0]] );
-            $anyo = $entradas->fecha->verAnyo( $entrada[$datos[0]] );
+            $dia = Cni::verDia( $entrada[$datos[0]] );
+            $dmes = Cni::verMes( $entrada[$datos[0]] );
+            $anyo = Cni::verAnyo( $entrada[$datos[0]] );
             if ($datos[0] == 'salida') {
                 if ($dia >= 16) {
                     if ($dmes == 12) {
@@ -55,9 +56,9 @@ if (isset( $_POST['datos'] )) {
                 }
             }
         } else {
-            $dia = $entradas->fecha->verDia( $entrada["fecha"] );
-            $dmes = $entradas->fecha->verMes( $entrada["fecha"] );
-            $anyo = $entradas->fecha->verAnyo( $entrada["fecha"] );
+            $dia = Cni::verDia( $entrada["fecha"] );
+            $dmes = Cni::verMes( $entrada["fecha"] );
+            $anyo = Cni::verAnyo( $entrada["fecha"] );
         }
         if ($dmes != $mes || $inicio == 0) {
             if ($inicio != 0) {
@@ -68,7 +69,7 @@ if (isset( $_POST['datos'] )) {
                  </tr>";
             }
             echo "<tr class=''>
-             <th colspan='{$columnas}'>{$entradas->meses[$dmes]} {$anyo}</th>
+             <th colspan='{$columnas}'>".Cni::$meses[$dmes]." {$anyo}</th>
              </tr>";
             if ($datos[0] != "servicios") {
                 echo "<tr class=''>
@@ -95,14 +96,14 @@ if (isset( $_POST['datos'] )) {
             echo "<tr class='ui-widget-content'>
             <td>{$cont}</td>
             <td>{$nombreEntrada}</td>
-            <td>{$entradas->fecha->cambiaf($entrada["entrada"])}</td>
-            <td>{$entradas->fecha->cambiaf($entrada["salida"])}</td>
+            <td>".Cni::cambiaFormatoFecha($entrada["entrada"])."</td>
+            <td>".Cni::cambiaFormatoFecha($entrada["salida"])."</td>
             </tr>";
         } else {
             echo "<tr class='ui-widget-content'>
             <td>{$cont}</td>
             <td>{$nombreEntrada}</td>
-            <td>{$entradas->fecha->cambiaf($entrada["fecha"])}</td>
+            <td>".Cni::cambiaFormatoFecha($entrada["fecha"])."</td>
             </tr>";
         }
     }
@@ -122,8 +123,11 @@ if (isset( $_POST['servicio'] )) {
     if (! isset( $dato[3] )) {
         $html .= "<tr><td> No hay datos </td></tr>";
     } else {
-        $detalles = $entradas->detallesServiciosExternos( 
-        utf8_decode( urldecode( $dato[1] ) ), $dato[2], $dato[3] );
+        $detalles = $entradas->detallesServiciosExternos(
+        	urldecode( $dato[1] ),
+        	$dato[2],
+        	$dato[3]
+        );
         $html .= "
         <tr>
          <th class='acumulada'>Cliente</th>
@@ -131,24 +135,24 @@ if (isset( $_POST['servicio'] )) {
         </tr>";
         foreach ($detalles as $detalle) {
             $nombre = $detalle['Nombre'];
-            $fecha = $entradas->fecha->cambiaf( $detalle['fecha'] );
+            $fecha = Cni::cambiaFormatoFecha( $detalle['fecha'] );
             $html .= "
             <tr class='celdadialog'>
-             <td>{$nombre}</td>
-             <td>{$fecha}</td>
+             <td>".$nombre."</td>
+             <td>".$fecha."</td>
             </tr>";
         }
     }
     $html .= "</table>";
     echo $html;
 }
-/*
- * FIXME!: no salen los datos de las categorias con acento 
+/**
+ * @fixme no salen los datos de las categorias con acento 
  */
 if (isset( $_POST['cliente'] )) {
     $dato = explode( '#', urldecode( $_POST['cliente'] ) );
     $html = "<table class='listaacumulada'>";
-    $detalles = $entradas->detalleClienteMes( $dato[0], $dato[1], $dato[2], 
+    $detalles = $entradas->detalleClienteMes( $dato[0], $dato[1], $dato[2],
     $dato[3] );
     if (count( $detalles ) > 0) {
         $html .= "
@@ -159,8 +163,8 @@ if (isset( $_POST['cliente'] )) {
         </tr>";
         foreach ($detalles as $detalle) {
             $nombre = $detalle['Nombre'];
-            $fechaEntrada = $entradas->fecha->cambiaf( $detalle['entrada'] );
-            $fechaSalida = $entradas->fecha->cambiaf( $detalle['salida'] );
+            $fechaEntrada = Cni::cambiaFormatoFecha( $detalle['entrada'] );
+            $fechaSalida = Cni::cambiaFormatoFecha( $detalle['salida'] );
             $html .= "
             <tr class='celdadialog'>
              <td>{$nombre}</td>
@@ -195,7 +199,7 @@ if (isset( $_POST['ocupacion'] )) {
         $anyoFinal = $_POST['fin'];
         $class = "ui-widget-content";
     }
-    $detalles = $entradas->detallesOcupacionHoras( $mes, $anyo, $dato[0], 
+    $detalles = $entradas->detallesOcupacionHoras( $mes, $anyo, $dato[0],
     $dato[1], $anyoFinal );
     $i = 0;
     $mes = 0;
@@ -212,8 +216,8 @@ if (isset( $_POST['ocupacion'] )) {
     foreach ($detalles as $detalle) {
         $nombre = $detalle['Nombre'];
         $servicio = $detalle['Servicio'];
-        $fecha = $entradas->fecha->cambiaf( $detalle['fecha'] );
-        if ($mes != $entradas->fecha->verMes( $detalle["fecha"] )) {
+        $fecha = Cni::cambiaFormatoFecha( $detalle['fecha'] );
+        if ($mes != Cni::verMes( $detalle["fecha"] )) {
             if ($inicio != 0) {
                 $html .= "<tr class='ui-widget-content'>
                  <td colspan='4'>
@@ -223,10 +227,10 @@ if (isset( $_POST['ocupacion'] )) {
                 $total += $i;
                 $i = 0;
             }
-            $mes = $entradas->fecha->verMes( $detalle["fecha"] );
-            $anyo = $entradas->fecha->verAnyo( $detalle["fecha"] );
+            $mes = Cni::verMes( $detalle["fecha"] );
+            $anyo = Cni::verAnyo( $detalle["fecha"] );
             $html .= "<tr class=''>
-                 <th colspan='4'>{$entradas->meses[$mes]} {$anyo}</th>
+                 <th colspan='4'>".Cni::$meses[$mes]." {$anyo}</th>
                  </tr>";
             $inicio = 1;
         }
@@ -250,3 +254,4 @@ if (isset( $_POST['ocupacion'] )) {
     $html .= "<a href='#arriba' class='enlacedetallada'>Ir Arriba</a>";
     echo $html;
 }
+ 

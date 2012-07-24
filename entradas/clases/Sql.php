@@ -83,7 +83,6 @@ class Sql
     {
         return mysql_affected_rows();
     }
-    
     /**
      * Destructor, cierra la conexion
      */
