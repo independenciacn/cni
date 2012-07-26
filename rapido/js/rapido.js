@@ -158,10 +158,10 @@ function ver_frm_agregar_servicio(cliente)
 }
 function dame_el_valor()
 {
-		var url='datos.php'
-		var servicio = $('servicios').value
-		var pars='opcion=8&servicio='+servicio
-		var myAjax = new Ajax.Request(url,
+	var url ='datos.php';
+	var servicio = $('servicios').value;
+	var pars='opcion=8&servicio='+servicio;
+	new Ajax.Request(url,
 		{
 		method: 'post',
 		parameters: pars,
@@ -176,20 +176,25 @@ function dame_el_valor()
 		});
 }
 //funcion de recalculo de campos en el formulario de altas**************************************
+var formateaNumero = function (numero, decimal, ver) {
+	var num = new NumberFormat();
+	num.setInputDecimal(decimal);
+	num.setNumber(numero);
+	num.setPlaces('2', true);
+	num.setSeparators(ver, decimal, decimal);
+	return num.toFormatted();
+};
+
 function recalcula()
 {
-	iva = $F("iva")
-	cantidad = $F("cantidad")
-	precio = $F("precio")
-	importe = eval(precio) * eval(cantidad)
-	total =  eval(importe) + (eval(importe)*eval(iva)/100)
-	original=parseFloat(total);
-	result=Math.round(original*100)/100
-	originala=parseFloat(importe);
-	resulta=Math.round(originala*100)/100
-	$("total").innerHTML = result
-	$("importe").innerHTML = resulta
-	
+	var iva = 0, cantidad = 0, precio = 0, importe = 0, total = 0;
+	iva = formateaNumero($F("iva"), ",", false);
+	cantidad = formateaNumero($F("cantidad"), ",", false);
+	precio = formateaNumero($F("precio"), ",", false);
+	importe = precio * cantidad;
+	total =  importe + (importe * iva / 100);
+	$("importe").innerHTML = formateaNumero(importe, '.', true);
+	$("total").innerHTML = formateaNumero(total, '.', true);	
 }
 //Pasamos los datos del formulario a la pagina de datos para agregar el servicio y mostramos la respuesta.
 function agrega_servicio()
@@ -625,13 +630,4 @@ function envia_la_factura(numero,dup)
 			$('linea_generacion').innerHTML = linea
 		}
 	});
-}
-/*var t
-var c=0
-function timedCount()
-{
-$F('tiempo').value=c;
-c=c+1;
-t=setTimeout("timedCount()",1000);
-}*/
-	    
+}   

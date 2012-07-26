@@ -23,7 +23,7 @@ Zend_Loader_Autoloader::getInstance();
  * @param string $dup
  * @return string
  */
-function envia( $fichero, $numeroFactura, $dup ) {
+function envia($fichero, $numeroFactura, $dup) {
 	global $con;
 	$erroneas = '';
 	$correctas = '';
@@ -132,7 +132,7 @@ que la ley lo exija expresamente.
 		'username' => 'admon%independenciacn.com',
 		'password' => 'independencia');
 	$transport = new Zend_Mail_Transport_Smtp('mail.independenciacn.com', $config);
-	foreach( $correos as $correo ) {
+	foreach ($correos as $correo) {
 		$mail = new Zend_Mail();
 		$mail->setBodyHtml($htmlText);
 		$mail->setFrom('admon@independenciacn.com', 'Independencia Centro de Negocios');
@@ -148,7 +148,7 @@ que la ley lo exija expresamente.
 		echo "<div class='span-24 success'>Factura ".$numeroFactura." Enviada a ".$correo['destinatario']."</div>";
 		if ( $mail->send($transport) ) {
 			 $correctas .= "<div class='span-24 success'>Factura ".$numeroFactura." Enviada</div>";
-		} 
+		}
 		echo $correctas."<br/>".$erroneas;
 	}
 }

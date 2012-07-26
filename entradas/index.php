@@ -14,7 +14,9 @@
  *           3.0 Unported
  * @link     https://github.com/independenciacn/cni
  */
-$anyo = date('Y');
+require_once '../inc/Cni.php';
+$anyo = Cni::verAnyo();
+Cni::chequeaSesion();
 ?>
 <!DOCTYPE html>
 <html lang="es">

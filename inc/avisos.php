@@ -1,6 +1,6 @@
 <?php
 /**
- * Avisos File Doc Comment
+ * avisos.php File Doc Comment
  *
  * Muestra el cartel de avisos
  *

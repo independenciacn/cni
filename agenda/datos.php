@@ -12,7 +12,7 @@ if(isset($_POST['opcion']))
 	switch($_POST['opcion'])
 	{
 		case 0:$respuesta=formulario_despacho($_POST);break;
-		case 1:$respuesta=cuca($_POST);break;
+		case 1:$respuesta=buscaCliente($_POST);break;
 		case 2:$respuesta=dame_nombre_cliente($_POST);break;
 		case 3:$respuesta=informacion_despacho($_POST);break;
 		case 4:$respuesta=guarda_despacho($_POST);break;
@@ -155,7 +155,7 @@ return $cadena;
 /*
  * FUNCION QUE MUESTA EL LISTADO DE CLIENTES EN EL BUSCADOR
  */
-function cuca($vars)
+function buscaCliente($vars)
 {
 	global $con;
 	if($vars[texto] == "")

@@ -1,6 +1,7 @@
 <!--Listado de los servicios contradados por el cliente en el mes seleccionado. Realizado por Ruben Lacasa Mas ruben@ensenalia.com 2006-2007 -->
 <?php 
 require_once '../inc/variables.php';
+require_once '../inc/Cni.php';
 include_once 'datos.php';
 ?>
 <html>
@@ -14,9 +15,9 @@ if (isset($_GET['mes']) && isset($_GET['cliente'])) {
     $j = 0;
     $celdas = 0;
     $vars = array("mes"=>$_GET['mes'],"cliente"=>$_GET['cliente']);
-    $mes_servicios = dame_el_mes($vars['mes']);
+    $mes_servicios = Cni::$meses($vars['mes']);
     $mes2 = $_GET['mes']-1;
-    $mes_fijos = dame_el_mes($mes2);
+    $mes_fijos = Cni::$meses($mes2);
     $cliente_servicios = explode(";",dame_nombre_cliente($vars));
 //echo ver_servicios_contratados($vars);<= Version Rapida OK
 //Version retocada estilo

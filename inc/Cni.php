@@ -53,6 +53,18 @@ final class Cni
     	"Nov",
     	"Dic"
     	);
+    public static $cambiosIva = array(
+    		array(
+    				'fecha' => '2010-07-01',
+    				'ivaAnterior' => 16,
+    				'ivaGenerico' => 18
+    		),
+    		array(
+    				'fecha' => '2012-09-01',
+    				'ivaAnterior' => 18,
+    				'ivaGenerico' => 21
+    		)
+    );
     /**
      * Para una fecha en un formato y devuelve la fecha con el año y dia
      * cambiado de sitio MySql - Normal , Normal - MySql
@@ -95,10 +107,15 @@ final class Cni
      * @param string $fecha
      * @return string
      */
-    public static function verAnyo ($fecha)
+    public static function verAnyo ($fecha = false)
     {
-        return date( 'Y', strtotime( $fecha ) );
+        if ($fecha) {
+            return date( 'Y', strtotime( $fecha ) );
+        } else {
+            return date( 'Y' );
+        }
     }
+
     /**
      * Devuelve el importe con el iva
      *
@@ -148,7 +165,7 @@ final class Cni
      * 
      * @param string $sql
      * @param array $params
-     * @param int $type
+     * @param int $type PDO
      */
     public static function consultaPreparada($sql, $params, $type = null)
     {

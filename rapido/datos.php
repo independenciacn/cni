@@ -1,64 +1,56 @@
-<?php //datos.php  !!REVISION ENLACES ID PEDIDO E ID DE DETALLES
-//Fichero datos.php (muestra los datos del cliente el en mes actual). Realizado por Ruben Lacasa Mas ruben@ensenalia.com 2006-2007 
+<?php
+/**
+ * datos.php File Doc Comment
+ *
+ * Muestra los datos del cliente en el mes actual
+ * Realizado por Ruben Lacasa Mas ruben@ensenalia.com 2006-2012
+ *
+ * PHP Version 5.2.6
+ *
+ * @category rapido
+ * @package  cni/rapido
+ * @author   Ruben Lacasa Mas <ruben@ensenalia.com>
+ * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/
+ *           Creative Commons Reconocimiento-NoComercial-SinObraDerivada
+ *           3.0 Unported
+ * @link     https://github.com/independenciacn/cni
+ */
 require_once '../inc/variables.php';
-switch($_POST['opcion'])
+require_once '../inc/Cni.php';
+require_once '../inc/Servicio.php';
+require_once '../inc/Cliente.php';
+switch ($_POST['opcion'])
 {
-	case 1:$cadena = cuca($_POST);break;
-	case 2:$cadena = dame_nombre_cliente($_POST);break;
-	case 3:$cadena = ver_servicios_contratados($_POST);break;
-	case 4:$cadena = borra_servicio_contratado($_POST);break;
-	case 5:$cadena = frm_modificacion_servicio($_POST);break;
-	case 6:$cadena = modificacion_servicio($_POST);break;
-	case 7:$cadena = frm_alta_servicio($_POST);break;
-	case 8:$cadena = valor_del_servicio($_POST);break;
-	case 9:$cadena = agrega_el_servicio($_POST);break;
-	case 10:$cadena = ventana_observaciones($_POST);break;
-	case 11:$cadena = listado_facturas($_POST);break;
-	case 13:$cadena = borrar_factura($_POST);break;
-	case 14:$cadena = filtros($_POST);break;
-	case 15:$cadena = casos($_POST);break;
+	case 1:$cadena = buscaCliente($_POST);
+	break;
+	case 2:$cadena = dameNombreCliente($_POST);
+	break;
+	case 3:$cadena = verServiciosContratados($_POST);
+	break;
+	case 4:$cadena = borraServicioContratado($_POST);
+	break;
+	case 5:$cadena = frmModificacionServicio($_POST);
+	break;
+	case 6:$cadena = modificacionServicio($_POST);
+	break;
+	case 7:$cadena = frmAltaServicio($_POST);
+	break;
+	case 8:$cadena = valorDelServicio($_POST);
+	break;
+	case 9:$cadena = agregaServicio($_POST);
+	break;
+	case 10:$cadena = ventanaObservaciones($_POST);
+	break;
+	case 11:$cadena = listadoFacturas($_POST);
+	break;
+	case 13:$cadena = borrarFactura($_POST);
+	break;
+	case 14:$cadena = filtros($_POST);
+	break;
+	case 15:$cadena = casos($_POST);
+	break;
 }
 echo $cadena;
-/**
- * Cambia el formato de fecha a MySQL
- * 
- * @param string $stamp
- * @return string
- */
-function cambiaf($stamp)
-{
-	//formato en el que llega aaaa-mm-dd o al reves
-	$fdia = explode("-",$stamp);
-	$fecha = $fdia[2]."-".$fdia[1]."-".$fdia[0];
-	if($fecha == "--")
-	$fecha = "0000-00-00";
-	return $fecha;
-}
-/**
- * Llega el mes numero y devuelve el nombre de este
- * 
- * @param string $mes
- * @return string $marcado
- */
-function dame_el_mes($mes)
-{
-	switch($mes)
-	{
-		case 1: $marcado = "Enero";breaK;
-		case 2: $marcado = "Febrero";breaK;
-		case 3: $marcado = "Marzo";breaK;
-		case 4: $marcado = "Abril";breaK;
-		case 5: $marcado = "Mayo";breaK;
-		case 6: $marcado = "Junio";breaK;
-		case 7: $marcado = "Julio";breaK;
-		case 8: $marcado = "Agosto";breaK;
-		case 9: $marcado = "Septiembre";breaK;
-		case 10: $marcado = "Octubre";breaK;
-		case 11: $marcado = "Noviembre";breaK;
-		case 12: $marcado = "Diciembre";breaK;
-	}
-	return $marcado;
-}
 /**
  * Calcula lo que hay en el almacen y si hay que cobrarlo
  * 
@@ -67,52 +59,46 @@ function dame_el_mes($mes)
  * @param unknown_type $anyo
  * @return multitype:string number
  */
-function almacenaje($cliente,$mes,$anyo)
+function almacenaje($cliente, $mes, $anyo)
 {
-	global $con;
-	$j = 0;
-	$cadena = "";
-	$subtotales = 0;
-	$totales = 0;
-	$cantidad = 0;
-    $sql = "Select datediff('".$anyo."-".$mes."-01','2010-07-01')";
-    $consulta = mysql_query($sql,$con);
-    $diff = $resultado = mysql_fetch_array($consulta);
-    if($diff[0]>=0) {
-        $sql = "select PrecioEuro, iva from servicios2 
-        where nombre like '%Almacenaje%'";
-        $consulta = mysql_query($sql,$con);
-        $par_almacenaje = mysql_fetch_array($consulta);
-    } else {
-        $par_almacenaje = array('PrecioEuro'=>'0.70','iva'=>'16');
-    }
-    //Fin del calculo de los parametros del almacenaje dependiendo del valor que tiene en servicios
-	$sql = "Select bultos, datediff(fin,inicio) from z_almacen 
-	where cliente like ".$cliente." 
-	and month(fin) like ".$mes." and year(fin) like ".$anyo;
-	$consulta = mysql_query($sql,$con);
-	while (true == ($resultado = mysql_fetch_array($consulta))) {
-		$j++;
-		$color = "class='".clase( $j )."'";
-        /*Modificar ivas aqui*/
-		$subtotal = $resultado[0]*$resultado[1]*$par_almacenaje['PrecioEuro'];
-		$total = round($subtotal + ($subtotal * $par_almacenaje['iva'])/100,2);
-        /*Modificar ivas*/
-		$cadena .="<tr ".$color.">
-		<td>".$resultado[1]." Dias</td>
-		<td>&nbsp;</td><td>&nbsp;</td>
-		<td>&nbsp;Almacenaje</td>
-		<td>".$resultado[0]."</td>
-		<td>".$par_almacenaje['PrecioEuro']."&euro; Bultos Dia</td>
-		<td>".$subtotal."&euro;</td>
-		<td>".$par_almacenaje['iva']."</td>
-		<td>".number_format($total,2,",",".")."&euro;</td>
-		</tr>";
-		$totales = $totales + $total;
-		$subtotales = $subtotales + $subtotal;
-	}
-	$final = array($cadena,$subtotales,$totales);
-	return $final;
+	$sql = "SELECT bultos, 
+			DATEDIFF(fin,inicio) as dias 
+			FROM z_almacen 
+			WHERE cliente LIKE ? 
+			AND MONTH(fin) LIKE ? 
+			AND YEAR(fin) LIKE ?";
+	$resultados = Cni::consultaPreparada(
+			$sql,
+			array($cliente, $mes, $anyo),
+			PDO::FETCH_CLASS
+		);
+	return $resultados;
+}
+function servicioContratados($cliente, $mes, $anyo)
+{
+	$sql = "SELECT
+			d.Servicio AS Servicio,
+			d.Cantidad AS Cantidad,
+			date_format(c.fecha,'%d-%m-%Y') AS Fecha,
+			d.PrecioUnidadEuros AS Precio,
+			d.ImporteEuro AS Importe,
+			d.iva AS Iva,
+			c.`Id Pedido` AS IdPedido,
+			d.Observaciones AS Observaciones,
+			d.Id AS IdServicio
+			FROM `detalles consumo de servicios` AS d
+			INNER JOIN `consumo de servicios` AS c
+			ON c.`Id Pedido` = d.`Id Pedido`
+			WHERE c.Cliente like ?
+			AND ? LIKE DATE_FORMAT(c.fecha,'%c')
+			AND ? LIKE DATE_FORMAT(c.fecha,'%Y')
+			ORDER BY c.fecha ASC";
+	$resultados = Cni::consultaPreparada(
+			$sql,
+			array($cliente, $mes, $anyo),
+			PDO::FETCH_CLASS
+	);
+	return $resultados;
 }
 /**
  * Listado de servicios disponibles
@@ -121,18 +107,17 @@ function almacenaje($cliente,$mes,$anyo)
  */
 function servicios()
 {
-	global $con;
-	$sql = "Select id,Nombre from servicios2 
-	where `Estado_de_servicio` like '-1' 
-	or `Estado_de_servicio` like 'on' order by Nombre";
-	$consulta = mysql_query($sql,$con);
-	$texto = "<select name='servicios' id='servicios' onchange='dame_el_valor()'>";
-	$texto.="<option value=0>--Seleccione Servicio--</option>";
-	while(true == ($resultado = mysql_fetch_array($consulta))) {
-		$texto .= "<option value='".$resultado[0]."'>".$resultado[1]."</option>";
+	$servicios = New Servicio();
+	$resultados = $servicios->listadoServiciosActivos();
+	$html = "<select name='servicios' id='servicios' 
+			onchange='dame_el_valor()'>";
+	$html .= "<option value=0>--Seleccione Servicio--</option>";
+	foreach ($resultados as $resultado) {
+		$html .= "<option value='".$resultado->id."'>".
+			$resultado->Nombre."</option>";
 	}
-	$texto .= "</select>";
-	return $texto;
+	$html .= "</select>";
+	return $html;
 }
 /**
  * Funcion que busca y muestra el nombre del cliente
@@ -140,32 +125,28 @@ function servicios()
  * @param array $vars
  * @return string $muestra
  */
-function cuca($vars)
+function buscaCliente($vars)
 {
-	global $con;
 	$muestra = "";
-	if($vars['texto'] == "") {
-		$muestra = "";
-	} else {
-		$vars['texto'] = $vars['texto'];
-		$sql = "Select * from `clientes` 
-		where (Nombre like '%".$vars['texto']."%' 
-		or Contacto like '%".$vars['texto']."%') 
-		and `Estado_de_cliente` like '-1' order by Nombre ";
-		$consulta = mysql_query($sql,$con);
+	if ($vars['texto'] != "") {
+		$cliente = new Cliente();
+		$resultados = $cliente->buscaCliente($vars['texto']);
 		$muestra .="<ul>";
-		while(true == ($resultado = mysql_fetch_array($consulta))) {
-			$muestra .="<li><span class='lbl_clientes' 
-				onclick='marca(".$resultado[0].")' 
-				onmouseout='quitar_color(".$resultado[0].")' 
-				onmouseover='cambia_color(".$resultado[0].")'>
-				<p id='linea_".$resultado[0]."'>".
-					preg_replace(
-							"#".$vars['texto']."#i",
-							"<b><u>".strtoupper($vars['texto'])."</u></b>",
-							$resultado[1]
-							)
-				."</p></span></li>";
+		foreach ($resultados as $resultado) {
+			$texto = preg_replace(
+				"#".$vars['texto']."#i",
+				"<b><u>".strtoupper($vars['texto'])."</u></b>",
+				$resultado->Nombre
+			);
+			$muestra .="
+				<li>
+				<span class='lbl_clientes' 
+					onclick='marca(".$resultado->Id.")'
+					onmouseout='quitar_color(".$resultado->Id.")'
+					onmouseover='cambia_color(".$resultado->Id.")'
+					id='linea_".$resultado->Id."'>".$texto."
+				</span>
+				</li>";
 		}
 		$muestra .="</ul>";
 	}
@@ -177,14 +158,11 @@ function cuca($vars)
  * @param array $vars
  * @return string $cadena
  */
-function dame_nombre_cliente($vars)
+function dameNombreCliente($vars)
 {
-	global $con;
-	$sql = "Select * from `clientes` where id like ".$vars['cliente'];
-	$consulta = mysql_query($sql,$con);
-	$resultado = mysql_fetch_array($consulta);
-	$cadena = $resultado[0].";".$resultado[1];
-	return $cadena;
+	$cliente = New Cliente($vars['cliente']);
+	$html = $cliente->id.";".$cliente->nombre;
+	return $html;
 }
 /**
  * Funcion que muestra los datos de los servicios contratados del cliente en 
@@ -193,69 +171,112 @@ function dame_nombre_cliente($vars)
  * @param array $vars
  * @return string $cadena
  */
-function ver_servicios_contratados($vars)
+function verServiciosContratados($vars)
 {
-	global $con;
 	$j = 0;
 	$cadena = "";
 	$cantidad = 0;
-	$mes_buscado = ($vars['mes'] <= 9) ? "0".$vars['mes'] : $vars['mes'];
-	$sql = "Select d.Servicio, d.Cantidad, 
-	date_format(c.fecha,'%d-%m-%Y') as fecha, d.PrecioUnidadEuros, 
-	d.ImporteEuro, d.iva, c.`Id Pedido` ,d.Observaciones, d.Id 
-	from `detalles consumo de servicios` as d 
-	join `consumo de servicios` as c on c.`Id Pedido` = d.`Id Pedido` 
-	where c.Cliente like ".$vars['cliente']." and (
-	".$vars['anyo']." like date_format(c.fecha,'%Y') and '".$mes_buscado."' 
-	like date_format(c.fecha,'%m')) order by c.fecha asc"; 
-	//echo $sql;
-	$consulta = mysql_query($sql,$con);
-	$cadena .= "<span class='agregar' 
-		onclick='ver_frm_agregar_servicio(".$vars['cliente'].")'>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Agregar Servicio</span>
-		<div id='form_agregar'></div>";
-	$cadena .= "<table class='tabla' width='100%'>";
-	$cadena .= "<tr><th colspan=9>";
-	$cadena .= "<tr><th>Fecha</th><th>&nbsp;</th><th>&nbsp;</th>
-		<th>Servicio</th><th>Cantidad</th><th>Precio Unidad</th>
-		<th>Importe</th><th>Iva</th><th>Total</th></tr>";
-//almacenaje
-	//echo $sql;
-	$almacenaje = almacenaje($vars['cliente'],$mes_buscado,$vars['anyo']);
-	$cadena .= $almacenaje[0];
-	$subtotal = $almacenaje[1];
-	$total = $almacenaje[2];
-	
-//fin del almacenaje
-	while (true == ( $resultado=mysql_fetch_array( $consulta ) ) ) {
-		$subtotal = ($resultado[4]+($resultado[4]*$resultado[5])/100);	
-//acumulados
-		$total = $subtotal + $total;
-		$cantidad = $resultado[1] + $cantidad;
-//fin acumulados
-		$j++;
-		$clase = clase($j);
-		$color = "class = '".$clase."'";
-		$botoncico1 = "boton_borrar_".$clase;
-		$botoncico2 = "boton_editar_".$clase;
-		$modificar ="<input type='button' class='".$botoncico2."' 
-		onclick='modificar(".$resultado[8].")' />";
-		$cadena.= "<tr><td ".$color.">".$resultado[2]."</td>
-		<td ".$color." align='center'>
-		<input type='button' class='".$botoncico1."' onclick='borra(".$resultado[8].")' /></td>
-		<td ".$color." align='center'>".$modificar."</td>
-		<td ".$color.">&nbsp;".$resultado[0]." ".$resultado[7]."</td>
-		<td ".$color.">&nbsp;".$resultado[1]."</td>
-		<td ".$color.">&nbsp;".number_format($resultado[3],2,",",".")."&euro;</td>
-		<td ".$color.">&nbsp;".number_format($resultado[4],2,",",".")."&euro;</td>
-		<td ".$color.">&nbsp;".$resultado[5]."</td>
-		<td ".$color.">&nbsp;".number_format($subtotal,2,",",".")."&euro;</td></tr>";
+	$html = "
+			<span class='agregar' 
+			onclick='ver_frm_agregar_servicio(".$vars['cliente'].")'>
+					Agregar Servicio</span>
+			<div id='form_agregar'></div>";
+	$html .= "<table class='tabla' width='100%'>";
+	$html .= "<tr>
+				<th>Fecha</th>
+				<th>&nbsp;</th>
+				<th>&nbsp;</th>
+				<th>Servicio</th>
+				<th>Cantidad</th>
+				<th>Precio Unidad</th>
+				<th>Importe</th>
+				<th>Iva</th>
+				<th>Total</th>
+			</tr>";
+	$acumuladoSubtotal = 0;
+	$acumuladoTotal = 0;
+	$acumuladoCantidad = 0;
+	$subtotal = 0;
+	$total = 0;
+	$celda = 0;
+	/**
+	 * Almacenaje
+	 */
+	$servicio = new Servicio($vars['anyo']."-".$vars['mes']."-01");
+	$servicio->setServicioByName('Almacenaje');
+	$resultados = almacenaje($vars['cliente'], $vars['mes'], $vars['anyo']);
+	foreach ($resultados as $resultado) {
+		$subtotal = $resultado->bultos * $resultado->dias * $servicio->precio;
+		$total = Cni::totalconIva($subtotal, $servicio->iva);
+		$html .= "
+			<tr class='".Cni::clase($celda++)."'>
+			<td>".$resultado->dias." Días</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>Almacenaje</td>
+			<td>".Cni::formateaNumero($resultado->bultos)."</td>
+			<td>".Cni::formateaNumero($servicio->precio, true)." Bultos Dia</td>
+			<td>".Cni::formateaNumero($subtotal, true)."</td>
+			<td>".$servicio->iva."</td>
+			<td>".Cni::formateaNumero($total, true)."</td>
+			</tr>";
+		$acumuladoSubtotal += $subtotal;
+		$acumuladoTotal += $total;
+		$acumuladoCantidad += $resultado->bultos;
 	}
-	$cadena.= "<tr><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th>
-	<th>&nbsp;".$cantidad."</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th>
-	<th>".number_format($total,2,",",".")."&euro;</th>";
-	$cadena.= "</table>";
-	return $cadena;
+	/**
+	 * Resto Servicios
+	 */
+	$resultados = servicioContratados(
+			$vars['cliente'],
+			$vars['mes'],
+			$vars['anyo']
+			);
+	foreach ($resultados as $resultado) {
+		$subtotal = $resultado->Precio * $resultado->Cantidad;
+		$total = Cni::totalconIva($subtotal, $resultado->Iva);
+		$clase = Cni::clase($celda++);
+		$html .= "
+			<tr class='".$clase."'>
+			<td>".$resultado->Fecha."</td>
+			<td>
+				<input type='button' 
+					onclick='borra(".$resultado->IdServicio.")'
+					class='boton_borrar_".$clase."' />
+			</td>
+			<td>
+				<input type='button' 
+					onclick='modificar(".$resultado->IdServicio.")'
+					class='boton_editar_".$clase."' />
+			</td>
+			<td>".$resultado->Servicio." ".$resultado->Observaciones."</td>
+			<td>".Cni::formateaNumero($resultado->Cantidad)."</td>
+			<td>".Cni::formateaNumero($resultado->Precio, true)."</td>
+			<td>".Cni::formateaNumero($subtotal, true)."</td>
+			<td>".$resultado->Iva."</td>
+			<td>".Cni::formateaNumero($total, true)."</td>
+			</tr>";
+		$acumuladoSubtotal += $subtotal;
+		$acumuladoTotal += $total;
+		$acumuladoCantidad += $resultado->Cantidad;
+	}
+	/**
+	 * Linea de Totales
+	 */
+	$html.= "
+			<tr>
+			<th>&nbsp;</th>
+			<th>&nbsp;</th>
+			<th>&nbsp;</th>
+			<th>&nbsp;</th>
+			<th>".Cni::formateaNumero($acumuladoCantidad)."</th>
+			<th>&nbsp;</th>
+			<th>".Cni::formateaNumero($acumuladoSubtotal, true)."</th>
+			<th>&nbsp;</th>
+			<th>".Cni::formateaNumero($acumuladoTotal, true)."</th>
+			</tr>";
+	$html.= "</table>";
+	return $html;
 }
 /**
  * Borra el servicio contratado
@@ -263,7 +284,7 @@ function ver_servicios_contratados($vars)
  * @param array $vars
  * @return boolean
  */
-function borra_servicio_contratado($vars)
+function borraServicioContratado($vars)
 {
 	global $con;
 	$sql = "Select `Id Pedido` from `detalles consumo de servicios` 
@@ -288,7 +309,7 @@ function borra_servicio_contratado($vars)
  * @param array $vars
  * @return string $cadena
  */
-function frm_modificacion_servicio($vars)
+function frmModificacionServicio($vars)
 {
 	global $con;
 	$sql = "Select * from `detalles consumo de servicios` 
@@ -351,7 +372,7 @@ function frm_modificacion_servicio($vars)
  * 
  * @param array $vars
  */
-function modificacion_servicio($vars)
+function modificacionServicio($vars)
 {
 	global $con;
 	$subtotal = $vars['cantidad'] * $vars['precio'];
@@ -374,7 +395,7 @@ function modificacion_servicio($vars)
  * @param array $vars
  * @return string
  */
-function frm_alta_servicio($vars)
+function frmAltaServicio($vars)
 {
 	global $con;
 	$cadena ="<br/>
@@ -419,7 +440,8 @@ function frm_alta_servicio($vars)
 	<tr>
 	<th colspan='2'>Observaciones:</th>
 	<td colspan='2'>
-		<textarea id='observacion' name='observacion' rows='1' cols='50' tabindex='5'></textarea>
+		<textarea id='observacion' name='observacion' rows='1' 
+			cols='50' tabindex='5'></textarea>
 	</td>
 	<th colspan='2'>
 		<input type='submit' class='agregar' id='agregar' accesskey='a' 
@@ -435,14 +457,16 @@ function frm_alta_servicio($vars)
  * @param array $vars
  * @return string
  */
-function valor_del_servicio($vars)
+function valorDelServicio($vars)
 {
-	global $con;
 	$sql = "Select PrecioEuro,iva from servicios2 
-	where id like ".$vars['servicio'];
-	$consulta = mysql_query($sql,$con);
-	$resultado = mysql_fetch_array($consulta);
-	return round($resultado[0],2).";".$resultado[1];
+	where id like ?";
+	$resultados = Cni::consultaPreparada($sql, array($vars['servicio']));
+	foreach ($resultados as $resultado) {
+		$iva = (IVAVIEJO == $resultado[1]) ? IVANUEVO : $resultado[1];
+		$servicio = Cni::formateaNumero($resultado[0]).";".$iva;
+	}
+	return $servicio;
 }
 
 /**
@@ -450,7 +474,7 @@ function valor_del_servicio($vars)
  * 
  * @param array $vars
  */
-function agrega_el_servicio($vars)
+function agregaServicio($vars)
 {
 	global $con;
 	//parametros que llegan, cliente,fecha,servicio,precio,cantidad,iva,observaciones
@@ -485,7 +509,7 @@ function agrega_el_servicio($vars)
  * @param array $vars
  * @return string $cadena
  */
-function ventana_observaciones( $vars )
+function ventanaObservaciones( $vars )
 {
 	global $con;
 	$sql = "Select observaciones from `detalles consumo de servicios` 
@@ -503,7 +527,7 @@ function ventana_observaciones( $vars )
  * @param array $vars
  * @return string $cadena
  */
-function borrar_factura($vars)
+function borrarFactura($vars)
 {
 	global $con;
 	$sql = "Select codigo from regfacturas where id like ".$vars['factura'];
@@ -518,7 +542,7 @@ function borrar_factura($vars)
 	} else {
 		$cadena = "No se ha borrado la factura<p/>";
 	}
-	$cadena .= listado_facturas($vars);
+	$cadena .= listadoFacturas($vars);
 	return $cadena;
 }
 /**
@@ -527,7 +551,7 @@ function borrar_factura($vars)
  * @param array $vars
  * @return string $cadena
  */
-function listado_facturas($vars)
+function listadoFacturas($vars)
 {
 	//Las vars marcaran que hay ordenado y que no
 	$cadena =cabezera_pantalla(0,0,0,0,1);
@@ -607,7 +631,7 @@ function cabezera_pantalla($marca_cliente,$marca_factura,$marca_fecha,$marca_imp
 			<th>&nbsp;</th>
 		</tr>
 	</table>";
-	return $cadena;	
+	return $cadena;
 }
 /**
  * Muestra la seleccion x cliente o x mes y deja imprimirlas desde aqui

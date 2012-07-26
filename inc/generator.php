@@ -19,7 +19,7 @@ checkSession();
 sanitize($_POST);
 switch ($_POST['opcion']) {
 	case 0:$respuesta = generador($_POST);break;
-	case 1:$respuesta = cuca($_POST);break;
+	case 1:$respuesta = buscaCliente($_POST);break;
 	case 2:$respuesta = formulario($_POST);break;
 	case 3:$respuesta = subformulario($_POST);break;
 	case 4:$respuesta = actualiza($_POST);break;
@@ -124,7 +124,7 @@ function generador($vars)
  * @param array $vars
  * @return string $muestra
  */
-function cuca($vars)
+function buscaCliente($vars)
 {
 	global $con;
 	$i = 0;

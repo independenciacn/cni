@@ -36,18 +36,20 @@ define('APLICACION', 'Aplicación Gestión Independencia Centro Negocios');
  * Iva Generico a utilizar en la aplicación
  * @var integer
  */
-define('IVA', 18 );
+define('IVA', 21 );
+define('IVAVIEJO', 18);
+define('IVANUEVO', 21);
 /**
  * Precio Generico del almacenaje
  * @var integer
  */
 define('ALMACENAJE', 0.70);
+
 /**
  * Conexion a la base de datos
  * 
  * @var resource
  */
-
 $con = mysql_connect ("localhost", "cni", "inc") or die (mysql_error());
 mysql_set_charset('utf8', $con);
 /**
@@ -122,10 +124,11 @@ function checkSession()
  * 
  * @param integer $k
  * @return string
+ * @deprecated usar bootstrap table-stripped
  */
-function clase($k)
+function clase($tipo)
 {
-    $clase = ( $k%2 == 0)? 'par': 'impar';
+    $clase = ( $tipo % 2 == 0) ? 'par': 'impar';
     return $clase;
 }
 /**

@@ -9,9 +9,9 @@ Requeriments
 
 Libraries
 ---------
-*   Prototype (all sections except entradas2)
-*   jQuery 1.4.4 ( entradas2 )
-*   jQuery UI 1.8.8 ( entradas 2 )
+*   Prototype (all sections except entradas, servicont)
+*   jQuery 1.7.2 ( entradas, servicont )
+*   jQuery UI 1.8.8 ( entradas, servicont )
 *   jpgraph ( entradas 2)
 *   ezpdf
 *   Zend Framework 1.x ( rapido )
