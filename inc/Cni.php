@@ -175,8 +175,11 @@ final class Cni
             }
             self::$_con = CniDB::connect();
             self::$_query = self::$_con->prepare($sql);
-            self::$_query->execute($params);
-            return self::$_query->fetchAll(self::$_type);
+            if (self::$_query->execute($params)) {
+            	return self::$_query->fetchAll(self::$_type);
+            } else {
+            	return false;
+            }
         } catch (Exception $e) {
             var_dump($e->getMessage());
         }

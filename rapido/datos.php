@@ -54,10 +54,10 @@ echo $cadena;
 /**
  * Calcula lo que hay en el almacen y si hay que cobrarlo
  * 
- * @param unknown_type $cliente
- * @param unknown_type $mes
- * @param unknown_type $anyo
- * @return multitype:string number
+ * @param string $cliente
+ * @param string $mes
+ * @param string $anyo
+ * @return Array
  */
 function almacenaje($cliente, $mes, $anyo)
 {
@@ -74,6 +74,14 @@ function almacenaje($cliente, $mes, $anyo)
 		);
 	return $resultados;
 }
+/**
+ * Devuelve el array con los datos de los servicios contratados por el cliente
+ * 
+ * @param string $cliente
+ * @param string $mes
+ * @param string $anyo
+ * @return Array
+ */
 function servicioContratados($cliente, $mes, $anyo)
 {
 	$sql = "SELECT
@@ -123,22 +131,22 @@ function servicios()
  * Funcion que busca y muestra el nombre del cliente
  * 
  * @param array $vars
- * @return string $muestra
+ * @return string $html
  */
 function buscaCliente($vars)
 {
-	$muestra = "";
+	$html = "";
 	if ($vars['texto'] != "") {
 		$cliente = new Cliente();
 		$resultados = $cliente->buscaCliente($vars['texto']);
-		$muestra .="<ul>";
+		$html .="<ul>";
 		foreach ($resultados as $resultado) {
 			$texto = preg_replace(
 				"#".$vars['texto']."#i",
 				"<b><u>".strtoupper($vars['texto'])."</u></b>",
 				$resultado->Nombre
 			);
-			$muestra .="
+			$html .="
 				<li>
 				<span class='lbl_clientes' 
 					onclick='marca(".$resultado->Id.")'
@@ -148,9 +156,9 @@ function buscaCliente($vars)
 				</span>
 				</li>";
 		}
-		$muestra .="</ul>";
+		$html .="</ul>";
 	}
-	return $muestra;
+	return $html;
 }
 /**
  * Funcion que devuelve el nombre del cliente y lo pone en el campo de texto
@@ -173,32 +181,29 @@ function dameNombreCliente($vars)
  */
 function verServiciosContratados($vars)
 {
-	$j = 0;
-	$cadena = "";
-	$cantidad = 0;
-	$html = "
-			<span class='agregar' 
-			onclick='ver_frm_agregar_servicio(".$vars['cliente'].")'>
-					Agregar Servicio</span>
-			<div id='form_agregar'></div>";
-	$html .= "<table class='tabla' width='100%'>";
-	$html .= "<tr>
-				<th>Fecha</th>
-				<th>&nbsp;</th>
-				<th>&nbsp;</th>
-				<th>Servicio</th>
-				<th>Cantidad</th>
-				<th>Precio Unidad</th>
-				<th>Importe</th>
-				<th>Iva</th>
-				<th>Total</th>
-			</tr>";
 	$acumuladoSubtotal = 0;
 	$acumuladoTotal = 0;
 	$acumuladoCantidad = 0;
 	$subtotal = 0;
 	$total = 0;
 	$celda = 0;
+	$html = "
+		<span class='agregar' 
+			onclick='ver_frm_agregar_servicio(".$vars['cliente'].")'>
+			Agregar Servicio</span>
+		<div id='form_agregar'></div>
+		<table class='tabla' width='100%'>
+		<tr>
+			<th>Fecha</th>
+			<th>&nbsp;</th>
+			<th>&nbsp;</th>
+			<th>Servicio</th>
+			<th>Cantidad</th>
+			<th>Precio Unidad</th>
+			<th>Importe</th>
+			<th>Iva</th>
+			<th>Total</th>
+		</tr>";
 	/**
 	 * Almacenaje
 	 */
@@ -286,20 +291,16 @@ function verServiciosContratados($vars)
  */
 function borraServicioContratado($vars)
 {
-	global $con;
-	$sql = "Select `Id Pedido` from `detalles consumo de servicios` 
-	where `Id` like ".$vars['servicio'];
-	$consulta = mysql_query($sql,$con);
-	$resultado  = mysql_fetch_array($consulta);
-	$sql = "Delete from `consumo de servicios` 
-	where `Id Pedido` like ".$resultado[0];
-	if(mysql_query($sql,$con)) {
-		$sql = "Delete from `detalles consumo de servicios` 
-		where `Id` like ".$vars['servicio'];
-		$consulta = mysql_query($sql,$con);
+	$sql = "DELETE FROM `detalles consumo de servicios`, 
+			`consumo de servicios` 
+			USING `detalles consumo de servicios`
+			INNER JOIN `consumo de servicios` 
+			WHERE `detalles consumo de servicios`.`Id Pedido` = 
+			`consumo de servicios`.`Id Pedido` 
+			AND `detalles consumo de servicios`.`Id`= ?";
+	if (Cni::consultaPreparada($sql, array($vars['servicio']))) {
 		return true;
-	}
-	else {
+	} else {
 		return false;
 	}
 }
@@ -307,65 +308,90 @@ function borraServicioContratado($vars)
  * Formulario de modificacion de servicio
  * 
  * @param array $vars
- * @return string $cadena
+ * @return string
  */
 function frmModificacionServicio($vars)
 {
 	global $con;
 	$sql = "Select * from `detalles consumo de servicios` 
 	where `Id` like ".$vars['servicio'];
-	$consulta = mysql_query($sql,$con);
-	$resultado = mysql_fetch_array($consulta);
-	$cliente = $_GET['cmodi'];
-	$modi[0] = $_GET['modi'];//Id Pedido
-	$modi[1] = $resultado[5];//Cantidad
-	$modi[2] = round($resultado[7],2);//Precio Unidad Euros
-	$modi[3] = $resultado[9];//Importe Euros
-	$modi[3] = round($modi[3],2);
-	$modi[4] = $resultado[10];//Iva
-	$modi[5] = $resultado[11];//observaciones
-	$total = ($modi[3]+($modi[3]*$modi[4]/100))*$modi[1];//importe total
-	$total = round($total,2);
-	$cadena = "
-	<input type='button' class='boton_cerrar' 
-		onclick='cierra_frm_modificacion()' value='Cerrar'/>
-	<form id='modificacion' name='modificacion' method='post' 
-		onSubmit='modif(".$resultado[0]."); return false'>
-	<table cellpadding='1px' cellspacing='1px' width='100%'>
-	<tr>
-	<th align='center' colspan='6'> Servicio:".$resultado['Servicio']." </th>
-	</tr>
-	<tr>
-	<th align='left'>Precio:</th>
-	<td><input type='text' id='precio' name='precio' 
-	onkeyup='recalcula_modificacion()' 
-	value='".round($resultado['PrecioUnidadEuros'],2)."' size='8'/>&euro;</td>
-	<th align='left'>Cantidad:</th>
-	<td><input type='text' id='cantidad' name='cantidad'  
-		onkeyup='recalcula_modificacion()' value='".$resultado['Cantidad']."' 
-		size='3'/></td>
-	<th align='left'>IVA:</th>
-	<td><input type='text' id='iva'  name='iva' 
-		onkeyup='recalcula_modificacion()' value='".$resultado['iva']."' 
-		size='5'/></td>
-	</tr>
-	<tr>
-	<th align='left'>Importe:</th>
-	<td><span id='importe'>".$modi[3]."</span>&euro;</td>
-	<th align='left'>Total:</th>
-	<td><span id='total'>".$total."</span>&euro;</td>
-	<td></td>
-	<td></td>
-	</tr>
-	<tr>
-	<th valign='top' align='left'>Observaciones:</th>
-	<td colspan='3'><textarea id='observacion' name='observacion' 
-	cols='40' rows='2' >".$resultado[11]."</textarea></td>
-	<th colspan='2'><input class='boton_actualizar' type='submit' 
-	name='Modificar' value='Modificar' /></th></tr>
-	</table>
+	$resultados = Cni::consultaPreparada(
+			$sql,
+			array($vars['servicio']),
+			PDO::FETCH_CLASS
+		);
+	foreach ($resultados as $resultado) {
+		$html = "
+			<input type='button' class='boton_cerrar' 
+				onclick='cierra_frm_modificacion()' value='Cerrar'/>
+			<form id='modificacion' name='modificacion' method='post' 
+				onSubmit='modif(".$resultado->Id."); return false'>
+			<table cellpadding='1px' cellspacing='1px' width='100%'>
+			<tr>
+				<th align='center' colspan='6'>
+					Servicio:".$resultado->Servicio." 
+				</th>
+			</tr>
+			<tr>
+				<th align='left'>Precio:</th>
+				<td>
+					<input type='text' id='precio' name='precio' 
+						onkeyup='recalcula()' value='".
+						Cni::formateaNumero($resultado->PrecioUnidadEuros).
+						"' size='8'/>&euro;
+				</td>
+				<th align='left'>Cantidad:</th>
+				<td>
+					<input type='text' id='cantidad' name='cantidad'  
+						onkeyup='recalcula()' value='".
+						Cni::formateaNumero($resultado->Cantidad).
+						"' size='3'/>
+				</td>
+				<th align='left'>IVA:</th>
+				<td>
+					<input type='text' id='iva'  name='iva' 
+						onkeyup='recalcula()' value='".
+						$resultado->iva.
+						"' size='5'/>
+				</td>
+			</tr>
+			<tr>
+				<th align='left'>Importe:</th>
+				<td>
+					<span id='importe'>".
+						Cni::formateaNumero($resultado->ImporteEuro).
+					"</span>&euro;
+				</td>
+				<th align='left'>Total:</th>
+				<td>
+					<span id='total'>".
+						Cni::formateaNumero(
+							Cni::totalconIva(
+								$resultado->ImporteEuro,
+								$resultado->iva
+								)
+							)."</span>&euro;
+				</td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<th valign='top' align='left'>Observaciones:</th>
+				<td colspan='3'>
+					<textarea id='observacion' name='observacion' 
+						cols='40' rows='2' >".
+						$resultado->observaciones.
+					"</textarea>
+				</td>
+				<th colspan='2'>
+					<input class='boton_actualizar' type='submit' 
+						name='Modificar' value='Modificar' />
+				</th>
+			</tr>
+		</table>
 	</form>";
-	return $cadena;
+	}
+	return $html;
 }
 /**
  * Modificamos los datos recibidos
@@ -376,29 +402,37 @@ function modificacionServicio($vars)
 {
 	global $con;
 	$subtotal = $vars['cantidad'] * $vars['precio'];
-	$subtotal = round($subtotal,2);
+	$subtotal = Cni::formateaNumero($subtotal);
 	$sql = "Update `detalles consumo de servicios` 
-		set `Cantidad` = '".$vars['cantidad']."',
-			`PrecioUnidadEuros` = '".$vars['precio']."',
-			`ImporteEuro` = '$subtotal',
-			`iva` = '".$vars['iva']."',
-			`observaciones` = '".$vars['observacion']."' 
-		where `Id` like '".$vars['servicio']."'";
-	if ( mysql_query($sql,$con) ) {
-		return "<div class='success'>Servicio Actualizado</div>";
+		SET `Cantidad` = ?,
+			`PrecioUnidadEuros` = ?,
+			`ImporteEuro` = ?,
+			`iva` = ?,
+			`observaciones` = ? 
+		WHERE `Id` like ?";
+	$params = array(
+			$vars['cantidad'],
+			$vars['precio'],
+			$subtotal,
+			$vars['iva'],
+			$vars['observacion'],
+			$vars['servicio']
+			);
+	if (Cni::consultaPreparada($sql, $params)) {
+		return Cni::mensajeExito("Servicio Modificado");
 	} else {
-		return "<div class='error'>ERROR:Servicio No actualizado</div>";
+		return Cni::mensajeError("Servicio No Modificado");
 	}
 }
 /**
  * Formulario de Agregar el servicio al cliente
+ * 
  * @param array $vars
  * @return string
  */
 function frmAltaServicio($vars)
 {
-	global $con;
-	$cadena ="<br/>
+	$html ="<br/>
 	<form id='frm_alta' class='formulario'  method='post' 
 	onSubmit='agrega_servicio(); return false'>
 	<table width='100%' class='tabla'>
@@ -414,7 +448,7 @@ function frmAltaServicio($vars)
 	<th>Precio:</th>
 	<td>
 		<input type='text' name='precio' id='precio' size='8' 
-		value='0' onChange='recalcula()' tabindex='2'/>
+		value='0' onkeyup='recalcula()' tabindex='2'/>
 		&euro;
 	</td>
 	<th>Cantidad:</th>
@@ -449,11 +483,12 @@ function frmAltaServicio($vars)
 	</th>
 	</tr>
 	</table>";
-	return $cadena;
+	return $html;
 }
 /**
  * Funcion que devuelve el precio y el iva del servicio seleccionado
  * 
+ * @todo pasar la fecha
  * @param array $vars
  * @return string
  */
@@ -472,35 +507,38 @@ function valorDelServicio($vars)
 /**
  * Agrega el servicio
  * 
+ * @todo Falla la insercion
+ * @todo No se muestra el mensaje
  * @param array $vars
  */
 function agregaServicio($vars)
 {
-	global $con;
-	//parametros que llegan, cliente,fecha,servicio,precio,cantidad,iva,observaciones
-	//el servicio DEBE almacenarse como su valor en texto
-	$sql = "Select Nombre from servicios2 where id like ".$vars['servicios'];
-	$consulta = mysql_query($sql,$con);
-	$resultado = mysql_fetch_array($consulta);
-	$servicio = $resultado[0];
-	$fecha = cambiaf($vars['fecha']);
-	$subtotal = $vars['precio']*$vars['cantidad'];
-	$sql = "Insert into `consumo de servicios` (`Cliente`,`Fecha`) 
-		values ('".$vars['cliente']."','$fecha')";
-	if( mysql_query( $sql, $con ) ) {
-		$sql = "Insert into `detalles consumo de servicios` 
+	$servicio = new Servicio();
+	$servicio->setServicioById($vars['servicios']);
+	$sql = "INSERT INTO `consumo de servicios` 
+			(`Cliente`,`Fecha`) VALUES 
+			(?, STR_TO_DATE(?,'%d-%m-%Y')";
+	$params = array($vars['cliente'], $vars['fecha']);
+	if ( Cni::consultaPreparada($sql, $params)) {
+		$sql = "INSERT INTO `detalles consumo de servicios`
 			(`Id Pedido`,`Servicio`,`Cantidad`,`PrecioUnidadEuros`,
-			`ImporteEuro`,`iva`,`observaciones` )
-			values (LAST_INSERT_ID(),'".$servicio."','".$vars['cantidad']."',
-			'".$vars['precio']."','".$subtotal."','".$vars['iva']."',
-			'".$vars['observacion']."')";
-		if ( mysql_query( $sql, $con ) ) {
-			return "<div class='success'>Servicio Modificado</div>";
+			`ImporteEuro`,`iva`,`observaciones` ) VALUES 
+			(LAST_INSERT_ID(), ?, ?, ?, ?, ?, ?)";
+		$params = array(
+				$servicio->nombre,
+				$vars['cantidad'],
+				$vars['precio'],
+				$vars['precio'] * $vars['cantidad'],
+				$vars['iva'],
+				$vars['observacion']
+				);
+		if ( Cni::consultaPreparada($sql, $params)) {
+			return Cni::mensajeExito("Servicio Agregado");
 		} else {
-			return "<div class='error'>ERROR:No se ha modificado el servicio</div>";
+			return Cni::mensajeError("No se ha Agregado el servicio");
 		}
 	} else {
-		return "<div class='error'>ERROR:No se ha modificado el servicio</div>";
+		return Cni::mensajeError("No se ha Agregado el servicio");
 	}
 }
 /**
@@ -509,17 +547,21 @@ function agregaServicio($vars)
  * @param array $vars
  * @return string $cadena
  */
-function ventanaObservaciones( $vars )
+function ventanaObservaciones($vars)
 {
-	global $con;
 	$sql = "Select observaciones from `detalles consumo de servicios` 
-	where `Id Pedido` like ".$vars['servicio'];
-	$consulta = mysql_query($sql,$con);
-	$resultado = mysql_fetch_array($consulta);
-	$cadena = "<input type='button' class='boton_cerrar' 
-	onclick='cierra_ventana_observaciones()' value='Cerrar' /><br/>
-	".$resultado[0];
-	return $cadena;
+	where `Id Pedido` like ?";
+	$resultados = Cni::consultaPreparada(
+			$sql,
+			array($vars['servicio']),
+			PDO::FETCH_CLASS
+			);
+	foreach ($resultados as $resultado) {
+		$html = "<input type='button' class='boton_cerrar' 
+			onclick='cierra_ventana_observaciones()' value='Cerrar' /><br/>".
+			$resultado->observaciones;
+	}
+	return $html;
 }
 /**
  * Para borrar una factura seleccionada

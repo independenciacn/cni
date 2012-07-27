@@ -81,18 +81,18 @@ function borra(servicio)
 function modificar(servicio)
 {
 	//alert(servicio)
-	var estilo = $('modificar').style
-	estilo.visibility = "visible"
-	estilo.display = "block"
-	var url="datos.php"
-	var pars = "opcion=5&servicio="+servicio
-	var myAjax = new Ajax.Request(url,
+	var estilo = $('modificar').style;
+	estilo.visibility = "visible";
+	estilo.display = "block";
+	var url="datos.php";
+	var pars = "opcion=5&servicio="+servicio;
+	myAjax = new Ajax.Request(url,
 		{
 		method: 'post',
 		parameters: pars,
 		onComplete: function gen(t)
 			{
-				$('modificar').innerHTML = t.responseText
+				$('modificar').innerHTML = t.responseText;
 			}
 		});
 }
@@ -124,22 +124,7 @@ function cierra_frm_modificacion()
 	estilo.display = "none"
 	$('modificar').innerHTML = ""
 }
-//funcion de recalculo de campos en el formulario modificacion***************************************/
-function recalcula_modificacion()
-{
-	iva = $F("iva")
-	cantidad = $F("cantidad")
-	precio = $F("precio")
-	importe = eval(precio) * eval(cantidad)
-	total =  eval(importe) + (eval(importe)*eval(iva)/100)
-	original=parseFloat(total);
-	result=Math.round(original*100)/100
-	originala=parseFloat(importe);
-	resulta=Math.round(originala*100)/100
-	$("total").innerHTML = result
-	$("importe").innerHTML = resulta
-	
-}
+
 //creacion del formulario de asignacion de servicios
 function ver_frm_agregar_servicio(cliente)
 {
