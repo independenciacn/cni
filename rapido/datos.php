@@ -571,21 +571,18 @@ function ventanaObservaciones($vars)
  */
 function borrarFactura($vars)
 {
-	global $con;
-	$sql = "Select codigo from regfacturas where id like ".$vars['factura'];
-	$consulta = mysql_query($sql,$con);
-	$resultado = mysql_fetch_array($consulta);
-	$codigo = $resultado[0];
-	$sql = "Delete from regfacturas where id like ".$vars['factura'];
-	if( mysql_query( $sql, $con ) ) {
-		$sql = "Delete from historico where factura like ".$codigo;
-		$consulta = mysql_query($sql,$con);
-		$cadena = "Factura Borrada<p/>";
+	$sql = "DELETE FROM a1, a2 
+	USING regfacturas AS a1 
+	INNER JOIN historico AS a2
+	WHERE a1.codigo=a2.factura AND a1.id = ?";
+	$params = array($vars['factura']);
+	if (Cni::consultaPreparada($sql, $params)) {
+		$html = Cni::mensajeExito("Factura Borrada");
 	} else {
-		$cadena = "No se ha borrado la factura<p/>";
+		$html = Cni::mensajeError("No se ha borrado la Factura");
 	}
-	$cadena .= listadoFacturas($vars);
-	return $cadena;
+	$html .= listadoFacturas($vars);
+	return $html;
 }
 /**
  * Gestion del listado de facturas, funcion de generacion
@@ -610,7 +607,7 @@ function listadoFacturas($vars)
 		like '".$vars['cliente']."' order by r.fecha desc";
 	}
 	$cadena .="<div id='tabla_resultados'>";
-	$cadena .= dibuja_pantalla($sql,0,0,0,0);
+	$cadena .= dibujaPantalla($sql,0,0,0,0);
 	$cadena .= "</div>";
 	return $cadena;
 }
@@ -757,7 +754,14 @@ function casos($vars)
 			c.Nombre as nombre from regfacturas as r 
 			join clientes as c on r.id_cliente like c.id ";
 		$sql .= $orden;
-		$pantalla .= dibuja_pantalla($sql,$marca_cliente,$marca_factura,$marca_fecha,$marca_importe);
+		$params = array(
+				"sql" => $sql, 
+				"cliente" => $marca_cliente,
+				"factura" => $marca_factura,
+				"fecha"	  => $marca_fecha,
+				"importe" => $marca_importe
+				);
+		$pantalla .= dibujaPantalla($params);
 	return $pantalla;
 }
 /**
@@ -787,7 +791,14 @@ function filtros($vars)
 		c.Nombre as nombre from regfacturas as r join clientes as c 
 		on r.id_cliente like c.id";
 	$sql .= $cacho;
-	$pantalla .= dibuja_pantalla($sql,0,0,0,0);
+	$params = array(
+			'sql'	  => $sql, 
+			'cliente' => 0,
+			'factura' => 0,
+			'fecha'	  => 0,
+			'importe' => 0
+			)
+	$pantalla .= dibujaPantalla($params);
 	return $pantalla;
 }
 /**
@@ -815,7 +826,7 @@ function cambiab( $stamp )
  * @param string $marca_importe
  * @return string $cadena
  */
-function dibuja_pantalla($sql,$marca_cliente,$marca_factura,$marca_fecha,$marca_importe)
+function dibujaPantalla($params)
 {
 	global $con;
 	//Ordenes
@@ -825,6 +836,7 @@ function dibuja_pantalla($sql,$marca_cliente,$marca_factura,$marca_fecha,$marca_
 	<input type='hidden' id='marca_fecha' value='".$marca_fecha."' />
 	<input type='hidden' id='marca_importe' value='".$marca_importe."' />";
 	$cadena .="<table width='100%' class='tabla'>";
+	
 	$consulta = mysql_query($sql,$con);
 	if ( mysql_numrows( $consulta ) !=0 ) {
 		$k=0;
@@ -870,14 +882,21 @@ function dibuja_pantalla($sql,$marca_cliente,$marca_factura,$marca_fecha,$marca_
 	}
 	$cadena .= "</table>
 	<div class='linea_checks'>
-	<span class='boton' onclick='check_all()'>Marcar Todos</span>
-	<span class='boton' onclick='uncheck_all()'>Desmarcar Todos</span>
-	<span class='boton' onclick='guarda_check_pdf(0)'>Guardar seleccionados como PDF</span>
-	<span class='boton' onclick='envia_check_pdf(0)'>Enviar PDF's por email</span>
-	<span class='boton' onclick='guarda_check_pdf(1)'>Guardar seleccionados como Duplicados PDF</span>
-	<span class='boton' onclick='envia_check_pdf(1)'>Enviar Duplicados PDF's por email</span>
+		<span class='boton' onclick='check_all()'>
+			Marcar Todos</span>
+		<span class='boton' onclick='uncheck_all()'>
+			Desmarcar Todos</span>
+		<span class='boton' onclick='guarda_check_pdf(0)'>
+			Guardar seleccionados como PDF</span>
+		<span class='boton' onclick='envia_check_pdf(0)'>
+			Enviar PDF's por email</span>
+		<span class='boton' onclick='guarda_check_pdf(1)'>
+			Guardar seleccionados como Duplicados PDF</span>
+		<span class='boton' onclick='envia_check_pdf(1)'>
+			Enviar Duplicados PDF's por email</span>
 	</div>
 	</div>
 	<div id='linea_generacion'></div>";
 	return $cadena;
 }
+ 
