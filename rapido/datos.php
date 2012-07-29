@@ -592,22 +592,39 @@ function borrarFactura($vars)
  */
 function listadoFacturas($vars)
 {
-	//Las vars marcaran que hay ordenado y que no
-	$cadena =cabezera_pantalla(0,0,0,0,1);
-	if($vars['tipo'] == 1 ) {
-		$sql = "Select r.id as id,r.codigo as codigo,r.fecha as fecha,
-		r.importe as importe ,r.obs_alt as obs_alt, 
-		c.Nombre as nombre from regfacturas as r join clientes as c 
-		on r.id_cliente like c.id order by r.fecha desc";
-	} else {
-		$sql = "Select r.id as id,r.codigo as codigo,r.fecha as fecha,
-		r.importe as importe ,r.obs_alt as obs_alt, 
-		c.Nombre as nombre from regfacturas as r join clientes as c 
-		on r.id_cliente like c.id where r.id_cliente 
-		like '".$vars['cliente']."' order by r.fecha desc";
+	$params = array(
+	        'cliente' => 0,
+	        'factura' => 0,
+	        'fecha'   => 0,
+	        'importe' => 0,
+	        'tipo'    => 1
+	        );
+	$cadena =cabezeraPantalla($params);
+	$cliente = "";
+	if ($vars['tipo'] == 1 ) {
+	    $cliente = "
+	            WHERE r.id_cliente LIKE '".$vars['cliente']."' ";
 	}
+	$sql = "SELECT
+		        r.id AS id,
+		        r.codigo AS codigo,
+		        DATE_FORMAT(r.fecha, '%d-%m-%Y') AS fecha,
+				r.importe AS importe ,
+		        r.obs_alt AS obs_alt,
+				c.Nombre AS nombre
+		        FROM regfacturas AS r JOIN clientes AS c
+				ON r.id_cliente LIKE c.id
+	        	". $cliente ."
+		        ORDER BY r.fecha DESC";
 	$cadena .="<div id='tabla_resultados'>";
-	$cadena .= dibujaPantalla($sql,0,0,0,0);
+	$params = array(
+	        "sql" => $sql,
+	        "cliente" => 0,
+	        "factura" => 0,
+	        "fecha"	  => 0,
+	        "importe" => 0
+	);
+	$cadena .= dibujaPantalla($params);
 	$cadena .= "</div>";
 	return $cadena;
 }
@@ -622,32 +639,38 @@ function listadoFacturas($vars)
  * @param string $tipo
  * @return string $cadena
  */
-function cabezera_pantalla($marca_cliente,$marca_factura,$marca_fecha,$marca_importe,$tipo)
+function cabezeraPantalla($params)
 {
-	$cadena = "
+	$html = "
 	<table width='100%' class='tabla'>
+	     <colgroup>
+	     	<col width='280px' />
+	        <col width='50px' />
+	        <col width='70px' span='2' />
+	        <col width='100px' />   
+	     </colgroup>      
 		<tr>
 			<th colspan='6'>Listado de Facturas</th>
 		</tr>
 		<tr>
-			<th width='280px'>
+			<th>
 				<input type='text' id='filtro_0' autocomplete='off' 
 					onkeyup='filtro(0)' size='50'/>
 			</th>
-			<th width='50px'>
+			<th>
 				<input type='text' id='filtro_1' autocomplete='off' 
 					onkeyup='filtro(1)' size='6'/>
 			</th>
-			<th width='70px'>
+			<th>
 				<input type='text' id='filtro_2' autocomplete='off' 
 					onkeyup='filtro(2)' size='10'/>
 			</th>
-			<th width='70px' >
+			<th>
 				<input type='text' id='filtro_3' autocomplete='off' 
 					onkeyup='filtro(3)' size='10'/>
 			</th>
-			<th width='100px' >&nbsp;</th>
-			<th >&nbsp;</th>
+			<th>&nbsp;</th>
+			<th>&nbsp;</th>
 		</tr>";
 	//Cabezeras con filtro
 	//Valores de las marcas
@@ -797,9 +820,8 @@ function filtros($vars)
 			'factura' => 0,
 			'fecha'	  => 0,
 			'importe' => 0
-			)
-	$pantalla .= dibujaPantalla($params);
-	return $pantalla;
+			);
+	return dibujaPantalla($params);
 }
 /**
  * Cambia el formato de fecha especial para el filtro
@@ -830,13 +852,56 @@ function dibujaPantalla($params)
 {
 	global $con;
 	//Ordenes
-	$cadena ="
-	<input type='hidden' id='marca_cliente' value='".$marca_cliente."' />
-	<input type='hidden' id='marca_factura' value='".$marca_factura."' />
-	<input type='hidden' id='marca_fecha' value='".$marca_fecha."' />
-	<input type='hidden' id='marca_importe' value='".$marca_importe."' />";
-	$cadena .="<table width='100%' class='tabla'>";
-	
+	$html ="
+	<input type='hidden' id='marca_cliente' value='".$params['cliente']."' />
+	<input type='hidden' id='marca_factura' value='".$params['factura']."' />
+	<input type='hidden' id='marca_fecha' value='".$params['fecha']."' />
+	<input type='hidden' id='marca_importe' value='".$params['importe']."' />";
+	$html .="<table width='100%' class='tabla'>
+	        <colgroup>
+	        	<col width='280px' />
+	        	<col width='50px' />
+	        	<col span='2' width='70px' />
+	        	<col width='100px' />
+	        </colgroup>
+	        ";
+	$celda = 0;
+	$resultados = Cni::consulta($params['sql']);
+	foreach ($resultados as $resultado) {
+	    if ($resultado['codigo'] == 0) {
+	        $codigo = intval($resultado['id']) + 99;
+	    } else {
+	        $codigo = $resultado['codigo'];
+	    }
+	    $html .="<tr class='".Cni::clase($celda ++)."'>
+			<td>".$resultado['nombre']."</td>
+			<td>".$codigo."</td>
+			<td>".Cni::cambiaFormatoFecha($resultado['fecha'])."</td>
+				<td class='".clase($k)."' width='70px'>".
+	    				number_format($resultado['importe'],2,',','.')."</td>
+				<td class='".clase($k)."' width='100px'>&nbsp;".
+	    				$resultado['obs_alt']."</td>
+				<td class='".clase($k)."'>
+				<input class='boton' type='button'
+					onclick='borrar_factura(".$resultado['id'].")' value='Borrar' />
+				<input class='boton' type='button'
+					onclick='ver_factura(".$resultado['id'].")' value='Factura' />
+				<input class='boton' type='button'
+					onclick='duplicado_factura(".$resultado['id'].")' value='Duplicado' />
+				<input class='boton' type='button'
+					onclick='genera_recibo(".$resultado['id'].")' value='Recibo' />
+				<input class='boton' type='button'
+					onclick='window.open(\"facturapdf.php?factura=".$codigo."\",\"_blank\")'
+					value='PDF' />
+				<input class='boton' type='button'
+					onclick='window.open(\"facturapdf.php?factura=".$codigo."&dup=1\",\"_blank\")'
+					value='Duplicado PDF' />
+				<input type='checkbox' name='code' id='code' value='".$codigo."' />
+				<br/>
+				<div id='modificaciones_".$resultado['id']."'></td></tr>";
+	    $k++;
+	    
+	}
 	$consulta = mysql_query($sql,$con);
 	if ( mysql_numrows( $consulta ) !=0 ) {
 		$k=0;

@@ -41,10 +41,10 @@ if (isset($_SESSION['usuario']) ) {
         <center>
     <?php
 	if (isset($_GET["exit"])) {
-		echo "<span class='ok'>Sesion Cerrada</span>";
+		echo Cni::mensajeExito('Sesion Cerrada');
 	}
 	if (isset($_GET["error"])) {
-		echo "<span class='ko'>Usuario o Contrase&ntilde;a Incorrecta</span>";
+		echo Cni::mensajeError('Usuario/Contraseña Incorrecto');
 	}
     ?>
 	<form id='login_usuario' method='post' action='inc/valida.php'>
@@ -57,7 +57,7 @@ if (isset($_SESSION['usuario']) ) {
 	</td></tr>
 	<tr>
 	<td align='right'>
-	Contrase&ntilde;a:
+	Contraseña:
 	</td><td>
 	<input type='password' id="passwd" name="passwd" accesskey="c" 
 	    tabindex="2" />
@@ -93,8 +93,6 @@ if (isset($_SESSION['usuario']) ) {
 if (isset($_SESSION['usuario'])) {
 	echo "<div id='avisos'>";
 	include_once "inc/avisos.php";//Se muestran los avisos solo con el include
-	//echo "Eh co lets go";
-	//echo avisos();
 	echo "</div>";
 	echo "<div id='resultados'></div>";//linea de los resultados de busqueda
 	echo "<div id='formulario'></div>";//linea del formulario
