@@ -173,13 +173,28 @@ var formateaNumero = function (numero, decimal, ver) {
 function recalcula()
 {
 	var iva = 0, cantidad = 0, precio = 0, importe = 0, total = 0;
-	iva = formateaNumero($F("iva"), ",", false);
-	cantidad = formateaNumero($F("cantidad"), ",", false);
-	precio = formateaNumero($F("precio"), ",", false);
-	importe = precio * cantidad;
-	total =  importe + (importe * iva / 100);
-	$("importe").innerHTML = formateaNumero(importe, '.', true);
-	$("total").innerHTML = formateaNumero(total, '.', true);	
+	var url = '../inc/moneyHandler.php';
+	var pars = 'precio=' + $F('precio') +'&cantidad=' + $F('cantidad') +
+		'&iva=' + $F('iva');
+	new Ajax.Request(url, {
+		method: 'post',
+		parameters: pars,
+		onComplete: function gen(t) {
+			alert(t.responseText);
+		}
+	});
+//	iva = formateaNumero($F("iva"), ",", false);
+//	cantidad = formateaNumero($F("cantidad"), ",", false);
+//	precio = formateaNumero($F("precio"), ",", false);
+//	importe = precio * cantidad;
+//	total =  importe + (importe * iva / 100);
+//	console.log('Precio:' + precio);
+//	console.log('Cantidad:' + cantidad);
+//	console.log('Iva:' + iva);
+//	console.log('Importe:' + importe);
+//	console.log('Total:' + total);
+//	$("importe").innerHTML = formateaNumero(importe, '.', true);
+//	$("total").innerHTML = formateaNumero(total, '.', true);	
 }
 //Pasamos los datos del formulario a la pagina de datos para agregar el servicio y mostramos la respuesta.
 function agrega_servicio()
