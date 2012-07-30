@@ -1,201 +1,262 @@
-//PARTE NUEVA CON AJAX
-//Funciones ajax de la parte de asignacion de servicios. Realizado por Ruben Lacasa Mas ruben@ensenalia.com 2006-2007
-//Funcion que busca el cliente online
-function busca_cliente()
-{
-	var cadena = $F('cliente');
-	var url = "datos.php";
-	var pars = "opcion=1&texto="+cadena;
-	var myAjax = new Ajax.Request(url,
-	{
-		method: 'post',
-		parameters: pars,
-		onComplete: 
-			function gen(respuesta) 
-			{ 
-				$('listado_clientes').innerHTML = respuesta.responseText;
-			}
-	});
-}
-//Una vez seleccionamos el cliente lo muestra en el campo de texto y borra el listado*******************/
-function marca(id_cliente)
-{
-	var url = "datos.php";
-	var pars = "opcion=2&cliente="+id_cliente;
-	var myAjax = new Ajax.Request(url,
-	{
-		method: 'post',
-		parameters: pars,
-		onComplete: 
-			function gen(respuesta) 
-			{ 
-				var datos = new String(respuesta.responseText);
-				var finale = datos.split(';');
-				$('id_cliente').value = finale[0];
-				$('cliente').value = finale[1];
-				$('listado_clientes').innerHTML = "";
-			},
-		onSuccess: ver_servicios_contratados(id_cliente)
-	});
-}
-//Hacemos click en ver servicios y vemos que es lo que ha contratado ademas de poder editarlo************/
-function ver_servicios_contratados(id_cliente)
-{
-	var url= "datos.php";
-	if (id_cliente == null)
-	var id_cliente = $F('id_cliente');
-	var mes = $('meses').value
-	var pars = "opcion=3&cliente="+id_cliente+"&mes="+mes+"&anyo="+$('anyo').value;
-	var myAjax = new Ajax.Request(url,
-	{
-		method: 'post',
-		parameters: pars,
-		onComplete: 
-			function gen(respuesta) 
-			{ 
-				//alert(respuesta.responseText)
-				$('tabla').innerHTML = respuesta.responseText;
-			}
-	});
-}
-//Funcion que borra el servicio asignado al cliente****************************************************/
-function borra(servicio)
-{
-	//alert(servicio)
-	var respuesta = confirm("Borrar servicio?");
-	if (respuesta==true)
-	{
-		 
-		var url="datos.php";
-		var pars = "opcion=4&servicio="+servicio;
-		var myAjax = new Ajax.Request(url,
-		{
-		method: 'post',
-		parameters: pars,
-		onComplete: precarga
-		});							  
+/**
+ * Funciones Javascript de Asignacion de servicios
+ *
+ * @package  cni/rapido
+ * @author   Ruben Lacasa Mas <ruben@ensenalia.com> 
+ * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/ 
+ *           Creative Commons Reconocimiento-NoComercial-SinObraDerivada 
+ *           3.0 Unported
+ * @link     https://github.com/independenciacn/cni
+ */
+
+/*jslint plusplus: true, undef: true, indent: 4, maxlen: 120*/
+/*global $, Ajax, Form, $F, Calendar*/
+
+/**
+ * Url principal donde van las consultas Ajax
+ * 
+ * @type {String}
+ */
+var url = "datos.php";
+/**
+ * Imagen que muestra el cargando mientras carga datos
+ * 
+ * @type {String}
+ */
+var imgCarga = "<center>" +
+		"<img src='../estilo/custom-theme/images/ajax-loader.gif' " +
+		"alt='cargando' />" +
+		"</center>";
+/**
+ * Muestra el mensaje de error
+ * 
+ * @type {String}
+ */
+var msgError = "<center>" +
+		"<span class='alert alert-danger'>" + 
+		"<strong>Error</strong> Consulte Parametros</span>";
+/**
+ * Muestra la precarga de datos en el div especificado
+ * 
+ * @param  {[type]} div Capa especificada
+ * 
+ * @return {[type]}     [description]
+ */
+var precarga = function (div) {
+	if (div) {
+		$(div).innerHTML = imgCarga;
 	}
-}
-
-//Funcion que muestra el panel de modificacion de servicios*******************************************/
-function modificar(servicio)
-{
-	//alert(servicio)
-	var estilo = $('modificar').style;
-	estilo.visibility = "visible";
-	estilo.display = "block";
-	var url="datos.php";
-	var pars = "opcion=5&servicio="+servicio;
-	myAjax = new Ajax.Request(url,
-		{
-		method: 'post',
-		parameters: pars,
-		onComplete: function gen(t)
-			{
-				$('modificar').innerHTML = t.responseText;
-			}
-		});
-}
-//Recoge y manda los datos de modificacion del servicio***********************************************/
-function modif(servicio)
-{
-	//alert(servicio)
-	var url="datos.php"
-	var formulario = $('modificacion')
-	var pars = "opcion=6&servicio="+servicio+"&"+Form.serialize(formulario)
-	var myAjax = new Ajax.Request(url,
-		{
-		method: 'post',
-		parameters: pars,
-		onComplete: function gen(t)
-			{
-				precarga()
-				$('debug').innerHTML = t.responseText
-				
-			}
-		});
-	
-}
-//Cierra el formulario de modificacion****************************************************************/
-function cierra_frm_modificacion()
-{
-	var estilo = $('modificar').style
-	estilo.visibility = "hidden"
-	estilo.display = "none"
-	$('modificar').innerHTML = ""
-}
-
-//creacion del formulario de asignacion de servicios
-function ver_frm_agregar_servicio(cliente)
-{
-	var url='datos.php'
-	var pars='opcion=7&cliente='+cliente
-	var myAjax = new Ajax.Request(url,
-		{
-		method: 'post',
-		parameters: pars,
-		onComplete: function gen(t)
-			{
-				$('form_agregar').innerHTML = t.responseText
-			}
-		});
-	
-}
-function dame_el_valor()
-{
-	var url ='datos.php';
-	var servicio = $('servicios').value;
-	var pars='opcion=8&servicio='+servicio;
-	new Ajax.Request(url,
-		{
-		method: 'post',
-		parameters: pars,
-		onComplete: function gen(t)
-			{
-				var datos = new String(t.responseText)
-				var finale = datos.split(';')
-				$('precio').value = finale[0]
-				$('iva').value = finale[1]
-				recalcula()
-			}
-		});
-}
-//funcion de recalculo de campos en el formulario de altas**************************************
-var formateaNumero = function (numero, decimal, ver) {
-	var num = new NumberFormat();
-	num.setInputDecimal(decimal);
-	num.setNumber(numero);
-	num.setPlaces('2', true);
-	num.setSeparators(ver, decimal, decimal);
-	return num.toFormatted();
 };
-
-function recalcula()
+/**
+ * Muestra el mensaje de fallo en el div especificado
+ * 
+ * @param  {[type]} div capa
+ * 
+ * @return {[type]}     [description]
+ */
+var failure = function (div) {
+	if (div) {
+		$(div).innerHTML = msgError;
+	}
+};
+/**
+ * Cambia la visibilidad de la capa
+ * 
+ * @param  {[type]} div capa
+ * 
+ * @return {[type]}     [description]
+ */
+var cambiaVisibilidad = function (div) {
+	var estilo = $(div).style;
+	if (estilo.visibility == "visible") {
+		estilo.visibility = "hidden";
+		estilo.display = "none";
+	} else {
+		estilo.visibility = "visible";
+		estilo.display = "block";
+	}
+};
+/**
+ * [procesaAjax description]
+ * 
+ * @param  {[type]}   pars        [description]
+ * @param  {[type]}   div         [description]
+ * @param  {[type]}   divPrecarga [description]
+ * @param  {Function} callback    [description]
+ * @param  {[Type]}   params      callback params
+ * @return {[type]}               [description]
+ */
+var procesaAjax = function (pars, div, divPrecarga, callback, params) {
+	var options = {
+			method: 'post',
+			parameters: pars,
+			onSuccess: function (respuesta) {
+				$(div).innerHTML = respuesta.responseText;
+				if (callback) {
+					callback(params);
+				}
+			},
+			onFailure: failure(divPrecarga),
+			onCreate: precarga(divPrecarga)	
+		};
+	new Ajax.Request(url, options);
+};
+/**
+ * Busca el cliente que escribimos y muestra el listado en el 
+ * campo de texto
+ * 
+ * @return {[type]} [description]
+ */
+var buscaCliente = function ()
 {
-	var iva = 0, cantidad = 0, precio = 0, importe = 0, total = 0;
+	var pars = "opcion=1&texto=" + $F('cliente');
+	procesaAjax(pars, 'listado_clientes', false, false, false);
+};
+/**
+ * Una vez marcado el cliente borra el listado, y muestra la funcion de
+ * servicios contratados
+ * 
+ * @param  {[type]} idCliente [description]
+ * 
+ * @return {[type]}           [description]
+ */
+var marca = function (idCliente)
+{
+	var pars = "opcion=2&cliente=" + idCliente;
+	var myAjax = new Ajax.Request(url,
+	{
+		method: 'post',
+		parameters: pars,
+		onSuccess: function (respuesta) { 
+			var datos = respuesta.responseText.split('#');
+			$('id_cliente').value = datos[0];
+			$('cliente').value = datos[1];
+			$('listado_clientes').innerHTML = "";
+			verServiciosContratados(datos[0]);
+		}
+	});
+};
+/**
+ * Hacemos click en ver servicios y vemos que es lo que ha contratado
+ * ademas de poder editarlo
+ * 
+ * @param  {[type]} idCliente [description]
+ * 
+ * @return {[type]}           [description]
+ */
+var verServiciosContratados = function (idCliente)
+{
+	if (idCliente === false) {
+		idCliente = $F('id_cliente');
+	}
+	var pars = "opcion=3&cliente=" + idCliente + 
+		"&mes=" + $('meses').value + "&anyo=" + $('anyo').value;
+	procesaAjax(pars, 'tabla', 'tabla', false, false);
+};
+/**
+ * Borrra el servicio asignado al cliente
+ * 
+ * @param  {[type]} servicio [description]
+ * 
+ * @return {[type]}          [description]
+ */
+var borra = function (servicio)
+{
+	var respuesta = confirm("Borrar servicio?");
+	if (respuesta) {
+		var pars = "opcion=4&servicio=" + servicio;
+		procesaAjax(pars, 'tabla', 'tabla', verServiciosContratados, false);
+	}
+};
+/**
+ * Funcion que muestra el panel de modificacion de servicios
+ * 
+ * @param  {[type]} servicio [description]
+ * 
+ * @return {[type]}          [description]
+ */
+var modificar = function (servicio)
+{
+	cambiaVisibilidad('modificar');
+	var pars = "opcion=5&servicio=" + servicio;
+	procesaAjax(pars, 'modificar', 'modificar', false, false);
+};
+/**
+ * Recoge y manda los datos de modificación del servicio
+ * 
+ * @param  {[type]} servicio [description]
+ * 
+ * @return {[type]}          [description]
+ */
+var modifica = function (servicio)
+{
+	var pars = "opcion=6&servicio=" + servicio + 
+		"&" + Form.serialize($('modificacion'));
+	procesaAjax(pars, 'tabla', 'tabla', verServiciosContratados, false);
+};
+/**
+ * Cierra el formulario de modificacion
+ * 
+ * @return {[type]} [description]
+ */
+var cierraFrmModificacion = function ()
+{
+	cambiaVisibilidad('modificar');
+};
+/**
+ * Si modificamos el precio lo recalcula
+ * 
+ * @return {[type]} [description]
+ */
+var recalcula = function ()
+{
 	var url = '../inc/moneyHandler.php';
-	var pars = 'precio=' + $F('precio') +'&cantidad=' + $F('cantidad') +
+	var pars = 'precio=' + $F('precio') + '&cantidad=' + $F('cantidad') +
 		'&iva=' + $F('iva');
 	new Ajax.Request(url, {
 		method: 'post',
 		parameters: pars,
-		onComplete: function gen(t) {
-			alert(t.responseText);
+		onSuccess: function (respuesta) {
+			var datos = respuesta.responseText.split('#');
+			$('importe').innerHTML = datos[0];
+			$('total').innerHTML = datos[1];
+		}
+	});	
+};
+/**
+ * Creación del formulario de asignación de servicios
+ * 
+ * @param  {[type]} cliente [description]
+ * 
+ * @return {[type]}         [description]
+ */
+var frmAgregarServicio = function (cliente)
+{
+	var pars='opcion=7&cliente=' + cliente;
+	procesaAjax(pars,'form_agregar', 'form_agregar', false, false);
+};
+/**
+ * Segun el servicio seleccionado devuelve un valor u otro
+ * 
+ * @return {[type]} [description]
+ */
+var valorServicio = function ()
+{
+	var servicio = $('servicios').value;
+	var pars='opcion=8&servicio=' + $('servicios').value;
+	new Ajax.Request(url,
+	{
+		method: 'post',
+		parameters: pars,
+		onSuccess: function (respuesta) {
+			var datos = respuesta.responseText.split('#');
+			$('precio').value = datos[0];
+			$('iva').value = datos[1];
+			recalcula();
 		}
 	});
-//	iva = formateaNumero($F("iva"), ",", false);
-//	cantidad = formateaNumero($F("cantidad"), ",", false);
-//	precio = formateaNumero($F("precio"), ",", false);
-//	importe = precio * cantidad;
-//	total =  importe + (importe * iva / 100);
-//	console.log('Precio:' + precio);
-//	console.log('Cantidad:' + cantidad);
-//	console.log('Iva:' + iva);
-//	console.log('Importe:' + importe);
-//	console.log('Total:' + total);
-//	$("importe").innerHTML = formateaNumero(importe, '.', true);
-//	$("total").innerHTML = formateaNumero(total, '.', true);	
-}
+};
+
 //Pasamos los datos del formulario a la pagina de datos para agregar el servicio y mostramos la respuesta.
 function agrega_servicio()
 {
@@ -216,13 +277,13 @@ function agrega_servicio()
 	
 }
 //precarga de actualizacion de datos*****************************************************************/
-function precarga()
-{
-	var t
-	$("tabla").innerHTML='Actualizando Datos ... <p/><img src="../imagenes/loader.gif" alt="Actualizando Datos.." />';
-	//mes(mes_actual)
-	t = setTimeout("ver_servicios_contratados()",1)
-}
+// function precarga()
+// {
+// 	var t
+// 	$("tabla").innerHTML='Actualizando Datos ... <p/><img src="../imagenes/loader.gif" alt="Actualizando Datos.." />';
+// 	//mes(mes_actual)
+// 	t = setTimeout("ver_servicios_contratados()",1)
+// }
 
 
 //muestra las observaciones del servicio*********************************************************

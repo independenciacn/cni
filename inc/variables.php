@@ -80,8 +80,13 @@ define("NOK", "imagenes/error.png");
  * @var unknown_type
  */
 define("SISTEMA", "windows");
-setlocale(LC_ALL, 'es_ES');
-setlocale(LC_NUMERIC, 'es_ES');
+if (PHP_OS == 'Linux') {
+    setlocale(LC_ALL, 'es_ES.UTF-8');
+    setlocale(LC_NUMERIC, 'es_ES.UTF-8');
+} else {
+    setlocale(LC_ALL, 'es_ES');
+    setlocale(LC_NUMERIC, 'es_ES');
+}
 /**
  * Devuelve el precio formateado con 2 decimales separados por , miles . y
  * el simbolo del Euro;

@@ -24,19 +24,6 @@ $tituloGeneral = APLICACION. " - ". VERSION;
  * @param integer $cliente
  * @return string
  */
-// function clientes($cliente = null)
-// {
-// 	$sql = "Select Id,Nombre from clientes
-// 	where `Estado_de_cliente` like '-1'
-// 	or `Estado_de_cliente` like 'on' order by Nombre";
-// 	$resultados = Cni::consulta($sql);
-// 	foreach ($resultados as $resultado) {
-// 		$seleccionado = ( $cliente == $resultado[0]) ? "selected" : "";
-// 		$texto .= "<option ".$seleccionado." value='".$resultado[0]."'>"
-// 		. $resultado[1] . "</option>";
-// 	}
-// 	return $texto;
-// }
 /**
  * Muestra el select de los meses
  * 
@@ -92,7 +79,7 @@ function seleccionMeses($mesMarcado = null)
 		</th>
 		<td>
 			<input type='text' name='cliente' id='cliente' 
-				 onkeyup='busca_cliente()' size='60'/>
+				 onkeyup='buscaCliente()' size='60'/>
 		</td>
 		<th>
 			<img src='../iconos/date.png' alt='Mes' />&nbsp;Mes:
@@ -112,7 +99,7 @@ for ($i = 2007; $i <= date('Y') + 2; $i++) {
 	</td>
 	<td>
 		<input type='button' class='ver_servicios' 
-			onclick='ver_servicios_contratados()' value='Ver Servicios' />
+			onclick='verServiciosContratados(false)' value='Ver Servicios' />
 	</td>
 	<td>
 		<input type='reset' class='limpiar' value='Limpiar' />
@@ -134,6 +121,7 @@ for ($i = 2007; $i <= date('Y') + 2; $i++) {
 </tr>
 </table>
 </form>
+<div id='precargaDatos'></div>
 <div id='parametros_facturacion'></div>
 <br/>
 <div id='listado_clientes'></div>

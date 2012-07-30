@@ -33,7 +33,7 @@ switch ($_POST['opcion'])
 	break;
 	case 6:$cadena = modificacionServicio($_POST);
 	break;
-	case 7:$cadena = frmAltaServicio($_POST);
+	case 7:$cadena = frmAltaServicio();
 	break;
 	case 8:$cadena = valorDelServicio($_POST);
 	break;
@@ -118,7 +118,7 @@ function servicios()
 	$servicios = New Servicio();
 	$resultados = $servicios->listadoServiciosActivos();
 	$html = "<select name='servicios' id='servicios' 
-			onchange='dame_el_valor()'>";
+			onchange='valorServicio()'>";
 	$html .= "<option value=0>--Seleccione Servicio--</option>";
 	foreach ($resultados as $resultado) {
 		$html .= "<option value='".$resultado->id."'>".
@@ -169,7 +169,7 @@ function buscaCliente($vars)
 function dameNombreCliente($vars)
 {
 	$cliente = New Cliente($vars['cliente']);
-	$html = $cliente->id.";".$cliente->nombre;
+	$html = $cliente->id."#".$cliente->nombre;
 	return $html;
 }
 /**
@@ -188,11 +188,13 @@ function verServiciosContratados($vars)
 	$total = 0;
 	$celda = 0;
 	$html = "
-		<span class='agregar' 
-			onclick='ver_frm_agregar_servicio(".$vars['cliente'].")'>
-			Agregar Servicio</span>
+		<button class='agregar' 
+			onclick='frmAgregarServicio(".$vars['cliente'].")'>
+			Agregar Servicio
+		</button>
 		<div id='form_agregar'></div>
 		<table class='tabla' width='100%'>
+		<thead>
 		<tr>
 			<th>Fecha</th>
 			<th>&nbsp;</th>
@@ -203,10 +205,8 @@ function verServiciosContratados($vars)
 			<th>Importe</th>
 			<th>Iva</th>
 			<th>Total</th>
-		</tr>";
-	/**
-	 * Almacenaje
-	 */
+		</tr>
+		</thead>";
 	$servicio = new Servicio($vars['anyo']."-".$vars['mes']."-01");
 	$servicio->setServicioByName('Almacenaje');
 	$resultados = almacenaje($vars['cliente'], $vars['mes'], $vars['anyo']);
@@ -229,14 +229,12 @@ function verServiciosContratados($vars)
 		$acumuladoTotal += $total;
 		$acumuladoCantidad += $resultado->bultos;
 	}
-	/**
-	 * Resto Servicios
-	 */
 	$resultados = servicioContratados(
 			$vars['cliente'],
 			$vars['mes'],
 			$vars['anyo']
 			);
+	$html .= "<tbody>";
 	foreach ($resultados as $resultado) {
 		$subtotal = $resultado->Precio * $resultado->Cantidad;
 		$total = Cni::totalconIva($subtotal, $resultado->Iva);
@@ -265,10 +263,7 @@ function verServiciosContratados($vars)
 		$acumuladoTotal += $total;
 		$acumuladoCantidad += $resultado->Cantidad;
 	}
-	/**
-	 * Linea de Totales
-	 */
-	$html.= "
+	$html.= "</tbody><tfoot>
 			<tr>
 			<th>&nbsp;</th>
 			<th>&nbsp;</th>
@@ -279,8 +274,8 @@ function verServiciosContratados($vars)
 			<th>".Cni::formateaNumero($acumuladoSubtotal, true)."</th>
 			<th>&nbsp;</th>
 			<th>".Cni::formateaNumero($acumuladoTotal, true)."</th>
-			</tr>";
-	$html.= "</table>";
+			</tr>
+			</tfoot></table>";
 	return $html;
 }
 /**
@@ -312,7 +307,6 @@ function borraServicioContratado($vars)
  */
 function frmModificacionServicio($vars)
 {
-	global $con;
 	$sql = "Select * from `detalles consumo de servicios` 
 	where `Id` like ".$vars['servicio'];
 	$resultados = Cni::consultaPreparada(
@@ -323,9 +317,9 @@ function frmModificacionServicio($vars)
 	foreach ($resultados as $resultado) {
 		$html = "
 			<input type='button' class='boton_cerrar' 
-				onclick='cierra_frm_modificacion()' value='Cerrar'/>
+				onclick='cierraFrmModificacion()' value='Cerrar'/>
 			<form id='modificacion' name='modificacion' method='post' 
-				onSubmit='modif(".$resultado->Id."); return false'>
+				onSubmit='modifica(".$resultado->Id."); return false'>
 			<table cellpadding='1px' cellspacing='1px' width='100%'>
 			<tr>
 				<th align='center' colspan='6'>
@@ -397,10 +391,10 @@ function frmModificacionServicio($vars)
  * Modificamos los datos recibidos
  * 
  * @param array $vars
+ * @return String Mensaje de Resultado
  */
 function modificacionServicio($vars)
 {
-	global $con;
 	$subtotal = $vars['cantidad'] * $vars['precio'];
 	$subtotal = Cni::formateaNumero($subtotal);
 	$sql = "Update `detalles consumo de servicios` 
@@ -426,11 +420,10 @@ function modificacionServicio($vars)
 }
 /**
  * Formulario de Agregar el servicio al cliente
- * 
- * @param array $vars
+ *
  * @return string
  */
-function frmAltaServicio($vars)
+function frmAltaServicio()
 {
 	$html ="<br/>
 	<form id='frm_alta' class='formulario'  method='post' 
@@ -482,7 +475,8 @@ function frmAltaServicio($vars)
 			value='Agregar' tabindex='6'/>
 	</th>
 	</tr>
-	</table>";
+	</table>
+	</form>";
 	return $html;
 }
 /**
@@ -498,8 +492,9 @@ function valorDelServicio($vars)
 	where id like ?";
 	$resultados = Cni::consultaPreparada($sql, array($vars['servicio']));
 	foreach ($resultados as $resultado) {
-		$iva = (IVAVIEJO == $resultado[1]) ? IVANUEVO : $resultado[1];
-		$servicio = Cni::formateaNumero($resultado[0]).";".$resultado[1];
+		// $iva = (IVAVIEJO == $resultado[1]) ? IVANUEVO : $resultado[1];
+		$servicio = Cni::formateaNumero($resultado[0])."#" . 
+			Cni::formateaNumero($resultado[1]);
 	}
 	return $servicio;
 }
@@ -604,17 +599,7 @@ function listadoFacturas($vars)
 	    $cliente = "
 	            WHERE r.id_cliente LIKE '".$vars['cliente']."' ";
 	}
-	$sql = "SELECT
-		        r.id AS id,
-		        r.codigo AS codigo,
-		        DATE_FORMAT(r.fecha, '%d-%m-%Y') AS fecha,
-				r.importe AS importe ,
-		        r.obs_alt AS obs_alt,
-				c.Nombre AS nombre
-		        FROM regfacturas AS r JOIN clientes AS c
-				ON r.id_cliente LIKE c.id
-	        	". $cliente ."
-		        ORDER BY r.fecha DESC";
+	$sql = $cliente ."ORDER BY r.fecha DESC";
 	$cadena .="<div id='tabla_resultados'>";
 	$params = array(
 	        "sql" => $sql,
@@ -623,7 +608,7 @@ function listadoFacturas($vars)
 	        "fecha"	  => 0,
 	        "importe" => 0
 	);
-	$cadena .= dibujaPantalla($params, TRUE);
+	$cadena .= dibujaPantalla($params, true);
 	$cadena .= "</div>";
 	return $cadena;
 }
@@ -631,14 +616,9 @@ function listadoFacturas($vars)
  * Genera la cabezera del listado
  * Medidas Fijas cliente='285px,factura='50px,70px,70px,100px'
  * 
- * @param string $marca_cliente
- * @param string $marca_factura
- * @param string $marca_fecha
- * @param string $marca_importe
- * @param string $tipo
  * @return string $cadena
  */
-function cabezeraPantalla($params)
+function cabezeraPantalla()
 {
 	$html = "
 	    <caption>Listado de Facturas</caption>  
@@ -662,11 +642,7 @@ function cabezeraPantalla($params)
 			</th>
 			<th>&nbsp;</th>
 			<th>&nbsp;</th>
-		</tr>";
-	//Cabezeras con filtro
-	//Valores de las marcas
-	//0=asc y 1=desc
-	$html .= "
+		</tr>
 		<tr>
 			<th>
 				<a href='javascript:sort(0)'>Cliente</a>
@@ -688,11 +664,12 @@ function cabezeraPantalla($params)
 }
 /**
  * Muestra la seleccion x cliente o x mes y deja imprimirlas desde aqui
+ * 
  * @param array $vars
  * @return string $cadena
  */
 function casos($vars)
-{	
+{
     $params = array(
             "sql" => "",
             "cliente" => 0,
@@ -713,7 +690,7 @@ function casos($vars)
 			$orden = " ORDER BY r.codigo ";
 			if ($vars['marca_factura']==0 ) {
 				$sort = " ASC ";
-				$params['factura'] = 1;	
+				$params['factura'] = 1;
 			}
 			break;
 		case 2:
@@ -734,21 +711,13 @@ function casos($vars)
 			$orden = " ORDER BY r.codigo";
 		break;
 	}
-	$sql = "Select 
-		    r.id AS id,
-	        r.codigo AS codigo,
-	        DATE_FORMAT(r.fecha, '%d-%m-%Y') AS fecha,
-			r.importe AS importe ,
-	        r.obs_alt AS obs_alt, 
-			c.Nombre AS nombre 
-	        FROM regfacturas AS r 
-			INNER JOIN clientes AS c ON r.id_cliente LIKE c.id ";
-	$sql .= $orden.$sort;
+	$sql = $orden.$sort;
 	$params['sql'] = $sql;
 	return dibujaPantalla($params);
 }
 /**
  * Filtros de texto
+ * 
  * @param array $vars
  * @return string $pantalla
  */
@@ -769,17 +738,9 @@ function filtros($vars)
 			$filtro=" WHERE r.importe LIKE '".$vars['texto']."%'";
 		break;
 	}
-	$sql = "Select r.id AS id,
-	        r.codigo AS codigo,
-	        DATE_FORMAT(r.fecha, '%d-%m-%Y') AS fecha,
-			r.importe AS importe,
-	        r.obs_alt AS obs_alt, 
-			c.Nombre AS nombre 
-	        FROM regfacturas AS r 
-	        INNER JOIN clientes AS c ON r.id_cliente LIKE c.id";
-	$sql .= $filtro;
+	$sql = $filtro;
 	$params = array(
-			'sql'	  => $sql, 
+			'sql'	  => $sql,
 			'cliente' => 0,
 			'factura' => 0,
 			'fecha'	  => 0,
@@ -788,58 +749,41 @@ function filtros($vars)
 	return dibujaPantalla($params);
 }
 /**
- * Cambia el formato de fecha especial para el filtro
- * 
- * @param string $stamp
- * @return string $fecha
+ * Base de la consulta del listado de Facturas
+ *
+ * @return string
  */
-function cambiab( $stamp )
+function consultaFacturas()
 {
-	//formato en el que llega aaaa-mm-dd o al reves
-	$fdia = explode("-",$stamp);
-	if ($fdia[2]=='') { 
-	    $fdia[2]='%'; 
-	}
-	if ($fdia[1]=='') { 
-	    $fdia[1]='%'; 
-	}
-	$fecha = $fdia[2]."-".$fdia[1]."-".$fdia[0];
-	return $fecha;
+	$sql = "SELECT
+	r.id AS id,
+	r.codigo AS codigo,
+	DATE_FORMAT(r.fecha, '%d-%m-%Y') AS fecha,
+	r.importe AS importe ,
+	r.obs_alt AS obs_alt,
+	c.Nombre AS nombre
+	FROM regfacturas AS r INNER JOIN clientes AS c
+	ON r.id_cliente LIKE c.id ";
+	return $sql;
 }
 /**
- * Aqui llega la sentencia la ejecuta y la visualiza
+ * Aqui llega la sentencia la ejecuta y la muestra por pantalla
  * 
- * @param string $sql
- * @param string $marca_cliente
- * @param string $marca_factura
- * @param string $marca_fecha
- * @param string $marca_importe
- * @return string $cadena
+ * @param array $params
+ * @param mixed boolean|string $cabezera
+ * @return string
  */
-function dibujaPantalla($params, $cabezera = FALSE)
+function dibujaPantalla($params)
 {
-	//Ordenes
 	$html ="
 	<input type='hidden' id='marca_cliente' value='".$params['cliente']."' />
 	<input type='hidden' id='marca_factura' value='".$params['factura']."' />
 	<input type='hidden' id='marca_fecha' value='".$params['fecha']."' />
 	<input type='hidden' id='marca_importe' value='".$params['importe']."' />";
 	$html .= "<table width='100%' class='tabla'>";
-	$html .= cabezeraPantalla($params);
-// 	if ($cabezera) {
-// 	    $html .= cabezeraPantalla($params);
-// 	} else {
-// 		$html .="
-// 	        <colgroup>
-// 	        	<col width='280px' />
-// 	        	<col width='50px' />
-// 	        	<col span='2' width='70px' />
-// 	        	<col width='100px' />
-// 	        </colgroup>
-// 	        ";
-// 	}
+	$html .= cabezeraPantalla();
 	$celda = 0;
-	$resultados = Cni::consulta($params['sql']);
+	$resultados = Cni::consulta(consultaFacturas() . $params['sql']);
 	$html .= "<tbody>";
 	if (Cni::totalDatosConsulta() > 0 ) {
 		foreach ($resultados as $resultado) {

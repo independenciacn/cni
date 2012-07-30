@@ -140,6 +140,11 @@ final class Cni
         $numero .= ( $moneda ) ? "&euro;" : "";
         return $numero;
     }
+    public static function cambiaFormatoNumerico($numero)
+    {
+        $numero = str_replace('.', '', $numero);
+        return str_replace(',', '.', $numero);
+    }
     /**
      * Ejecuta la consulta y devuelve los resultados
      *
