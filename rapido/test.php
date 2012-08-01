@@ -1,4 +1,4 @@
-// <?
+<?
 // $Texto="Hola soy un texto de prueba";
 // if(require_once("Mail.php"))
 // {
@@ -20,32 +20,45 @@
 // else
 // echo "Error en la carga";
 // ?>
-<html>
+<!DOCTYPE html>
+<html lang="es">
 <head>
+    <meta charset="utf-8">
     <title>Prueba</title>
     <script src='../js/jquery-1.7.2.min.js'></script>
 </head>
-<body><input type='button' onclick='cargaTexto()' value='hazclick'/>
-    <div id='texto'>A</div>
-    <div id='prueba'>B</div>
-    <div id='load'>C</div>
-    <script>
+<body>
+<?php
+    function print_line($fd, $events, $arg)
+{
+    static $max_requests = 0;
 
-    
+    $max_requests++;
 
-     
-    var cargaTexto = function () {
-        
-            setTimeout(function(){
-                $.post('tick.php', function(data) {
-                    $('#texto').append(data);
-                });
-            },2000);
-        
-    };
-    for ( var i = 0; i <= 10; i ++ ) {
-        setTimeout("cargaTexto", 2000);
+    if ($max_requests == 10) {
+        // Salir del bucle después que escriba 10 veces
+        event_base_loopexit($arg[1]);
     }
-    </script>
+
+    // Imprimir o mostrar la línea actual
+    echo  fgets($fd);
+}
+
+// crear la base y el evento
+    $base = event_base_new();
+    $event = event_new();
+
+    $fd = STDIN;
+
+// Colocar las banderas del evento
+    event_set($event, $fd, EV_READ | EV_PERSIST, "print_line", array($event, $base));
+// Colocar la base del evento
+    event_base_set($event, $base);
+
+// Habilitar el evento
+    event_add($event);
+// Iniciar el bucle del evento
+    event_base_loop($base);
+?>
 </body>
 </html>

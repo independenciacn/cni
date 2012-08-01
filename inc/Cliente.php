@@ -19,7 +19,7 @@ class Cliente {
 	public $idCliente = false;
 	public $nombre = null;
 	public $nif = null;
-	public $direcion = null;
+	public $direccion = null;
 	public $ciudad = null;
 	public $cp = null;
 	public $pais = null;
@@ -53,6 +53,7 @@ class Cliente {
 					PDO::FETCH_CLASS
 					);
 			foreach ($resultados as $resultado) {
+				$this->id = $resultado->Id;
 				$this->nombre = $resultado->Nombre;
 				$this->nif = $resultado->NIF;
 				$this->direccion = $resultado->Direccion;

@@ -10,7 +10,8 @@
  * @package  cni/rapido
  * @author   Ruben Lacasa Mas <ruben@ensenalia.com> 
  * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/ 
- *           Creative Commons Reconocimiento-NoComercial-SinObraDerivada 3.0 Unported
+ *           Creative Commons Reconocimiento-NoComercial-SinObraDerivada 
+ *           3.0 Unported
  * @link     https://github.com/independenciacn/cni
  */
 require_once 'Zend/Loader/Autoloader.php';
@@ -24,7 +25,8 @@ require_once '../inc/Cni.php';
  * @param string $dup
  * @return string
  */
-function envia($fichero, $numeroFactura, $dup = false) {
+function envia($fichero, $numeroFactura, $dup = false)
+{
 	$erroneas = '';
 	$correctas = '';
 	$fecha = false;
@@ -41,8 +43,8 @@ function envia($fichero, $numeroFactura, $dup = false) {
 	INNER JOIN facturacion AS f ON r.id_cliente = f.idemp 
 	WHERE r.codigo lIKE ?";
 	$resultados = Cni::consultaPreparada(
-		$sql, 
-		array($numeroFactura), 
+		$sql,
+		array($numeroFactura),
 		PDO::FETCH_CLASS
 		);
 	foreach ($resultados as $resultado) {
@@ -55,11 +57,11 @@ function envia($fichero, $numeroFactura, $dup = false) {
 		if (filter_var($direccion, FILTER_VALIDATE_EMAIL)) {
 			$correos[] = array(
 				'destinatario' => $cliente,
-				'email' => $direccion	
+				'email' => $direccion
 			);
 		} else {
 			$erroneas .= "
-			<div id='error'>Direccion " . $resultado['cliente'] 
+			<div id='error'>Direccion " . $resultado['cliente']
 			." Incorrecta o nula. No se enviara la factura - ".
 			$direccion . "</div>";
 		}
@@ -73,11 +75,17 @@ function envia($fichero, $numeroFactura, $dup = false) {
 		'auth' => 'login',
 		'username' => 'admon%independenciacn.com',
 		'password' => 'independencia');
-	$transport = new Zend_Mail_Transport_Smtp('mail.independenciacn.com', $config);
-	// foreach ($correos as $correo) {
+	$transport = new Zend_Mail_Transport_Smtp(
+			'mail.independenciacn.com',
+			$config
+			);
+	foreach ($correos as $correo) {
 		$mail = new Zend_Mail();
 		$mail->setBodyHtml($htmlText);
-		$mail->setFrom('admon@independenciacn.com', 'Independencia Centro de Negocios');
+		$mail->setFrom(
+				'admon@independenciacn.com',
+				'Independencia Centro de Negocios'
+				);
 		// $mail->addTo( $correo['email'], $correo['destinatario'] );
 		$mail->addTo('ruben@ensenalia.com', 'Ruben Lacasa');
 		$mail->setSubject( $dupli."Factura ".$numeroFactura." de ".$fecha);
@@ -88,11 +96,12 @@ function envia($fichero, $numeroFactura, $dup = false) {
 			Zend_Mime::ENCODING_BASE64,
 		    "factura-".$numeroFactura.".pdf"
 		);
-		if ( $mail->send($transport) ) {
-			 $correctas .= "<div class='span-24 success'>Factura ".$numeroFactura." Enviada</div>";
+		if ($mail->send($transport)) {
+			 $correctas .= "<div class='span-24 success'>Factura " .
+			 	$numeroFactura." Enviada</div>";
 		}
+	}
 		echo $correctas."<br/>".$erroneas;
-	// }
 }
 /**
  * [textoEmail description]
@@ -167,11 +176,11 @@ function textoEmail($dupli, $duplicado, $fecha)
 	contener información privilegiada o confidencial.
 	</p>
 	<p>
-	Si no es Usted el destinatario indicado, habrá de saber que la utilización, 
-	divulgación y/o copia sin autorización está prohibida en virtud de la 
-	legislación vigente. Si ha recibido este mensaje por error, le rogamos que
-	nos lo comunique inmediatamente por esta misma vía y proceda
-	a su destrucción.
+	Si no es Usted el destinatario indicado, habrá de saber que la 
+	utilización, divulgación y/o copia sin autorización está prohibida 
+	en virtud de la legislación vigente. Si ha recibido este mensaje 
+	por error, le rogamos que nos lo comunique inmediatamente por esta 
+	misma vía y proceda a su destrucción.
 	</p>
 	<p>
 	De acuerdo con lo establecido en la Ley Orgánica 15/1999,
@@ -199,3 +208,4 @@ function textoEmail($dupli, $duplicado, $fecha)
 EOF;
 	return $htmlText;
 }
+ 

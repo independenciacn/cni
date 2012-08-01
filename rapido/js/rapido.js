@@ -209,10 +209,10 @@ var cierraFrmModificacion = function ()
  */
 var recalcula = function ()
 {
-	var url = '../inc/moneyHandler.php';
+	var moneyUrl = '../inc/moneyHandler.php';
 	var pars = 'precio=' + $F('precio') + '&cantidad=' + $F('cantidad') +
 		'&iva=' + $F('iva');
-	new Ajax.Request(url, {
+	new Ajax.Request(moneyUrl, {
 		method: 'post',
 		parameters: pars,
 		onSuccess: function (respuesta) {
@@ -358,8 +358,8 @@ function genera_factura(codigo)
 	}
 	else
 	{
-		var fecha_inicial_factura = "0000-00-00";
-		var fecha_final_factura = "0000-00-00";
+		var fecha_inicial_factura = "00-00-0000";
+		var fecha_final_factura = "00-00-0000";
 	}
 	if(cliente != 0 || mes !=0)
 	{
@@ -383,8 +383,8 @@ function genera_factura_prueba(codigo)
 	}
 	else
 	{
-		var fecha_inicial_factura = "0000-00-00";
-		var fecha_final_factura = "0000-00-00";
+		var fecha_inicial_factura = "00-00-0000";
+		var fecha_final_factura = "00-00-0000";
 	}
 	if(cliente != 0 || mes !=0)
 	{

@@ -395,7 +395,7 @@ function frmModificacionServicio($vars)
  */
 function modificacionServicio($vars)
 {
-	$subtotal = Cni::cambiaFormatoNumerico($vars['cantidad']) * 
+	$subtotal = Cni::cambiaFormatoNumerico($vars['cantidad']) *
 		Cni::cambiaFormatoNumerico($vars['precio']);
 	$sql = "Update `detalles consumo de servicios` 
 		SET `Cantidad` = ?,
@@ -413,7 +413,7 @@ function modificacionServicio($vars)
 			$vars['servicio']
 			);
 	try {
-		Cni::consultaPreparada($sql, $params); 
+		Cni::consultaPreparada($sql, $params);
 		return Cni::mensajeExito("Servicio Modificado");
 	} catch (Exception $e) {
 		return Cni::mensajeError($e->getMessage());
@@ -494,7 +494,7 @@ function valorDelServicio($vars)
 	$resultados = Cni::consultaPreparada($sql, array($vars['servicio']));
 	foreach ($resultados as $resultado) {
 		// $iva = (IVAVIEJO == $resultado[1]) ? IVANUEVO : $resultado[1];
-		$servicio = Cni::formateaNumero($resultado[0])."#" . 
+		$servicio = Cni::formateaNumero($resultado[0]) . "#" .
 			Cni::formateaNumero($resultado[1]);
 	}
 	return $servicio;
@@ -533,7 +533,7 @@ function agregaServicio($vars)
 		);
 		Cni::consultaPreparada($sql, $params);
 		Cni::mensajeExito("Servicio Agregado");
-	} Catch(Exception $e) {
+	} catch (Exception $e) {
 		Cni::mensajeError($e->getMessage());
 	}
 }

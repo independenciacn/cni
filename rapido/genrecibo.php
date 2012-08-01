@@ -10,12 +10,13 @@
  * @package  cni/rapido
  * @author   Ruben Lacasa Mas <ruben@ensenalia.com> 
  * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/ 
- *           Creative Commons Reconocimiento-NoComercial-SinObraDerivada 3.0 Unported
+ *           Creative Commons Reconocimiento-NoComercial-SinObraDerivada 
+ *           3.0 Unported
  * @link     https://github.com/independenciacn/cni
  */
 require_once '../inc/variables.php';
 require_once '../inc/Cni.php';
-require_once '../inc/Cliente.php'; 
+require_once '../inc/Cliente.php';
 Cni::chequeaSesion();
 if (isset( $_SESSION['usuario'] ) && isset($_GET['id'])) {
 	$sql = "SELECT
@@ -28,8 +29,8 @@ if (isset( $_SESSION['usuario'] ) && isset($_GET['id'])) {
 	FROM regfacturas 
 	WHERE id LIKE ?";
 	$resultados = Cni::consultaPreparada(
-		$sql, 
-		array($_GET['id']), 
+		$sql,
+		array($_GET['id']),
 		PDO::FETCH_CLASS
 	);
 	foreach ($resultados as $resultado) {
@@ -47,9 +48,9 @@ if (isset( $_SESSION['usuario'] ) && isset($_GET['id'])) {
 	}
 	$cliente = new Cliente($idCliente);
 	?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
+	<!DOCTYPE html>
+	<html lang="es">
+	<head>
 	<meta charset="utf-8">
 	<link  href="../bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
 	<title>RECIBO</title>
@@ -64,9 +65,9 @@ if (isset( $_SESSION['usuario'] ) && isset($_GET['id'])) {
 		font-weight: bold;
 	}
 	</style>
-</head>
-<body>	
-<table class='table table-bordered'>
+	</head>
+	<body>	
+	<table class='table table-bordered'>
 	<col span='2' width='40%' />
 	<col width='20%' />
 	<thead>
@@ -138,7 +139,9 @@ if (isset( $_SESSION['usuario'] ) && isset($_GET['id'])) {
 			<td></td>
 		</tr>
 	</tbody>
-</table>
-</body>
-</html>
-<?php }
+	</table>
+	</body>
+	</html>
+	<?php 
+}
+

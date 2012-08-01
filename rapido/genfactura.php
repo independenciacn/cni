@@ -1,72 +1,63 @@
 <?php
-//Fichero genfactura.php (Genera la factura dependiendo de lo que se pida). Realizado por Ruben Lacasa Mas ruben@ensenalia.com 2006-2007 
-//error_reporting(E_ALL);//fichero genfactura.php le llegan el mes y el cliente y genera un word.
+/**
+ * genfactura.php File Doc Comment
+ * 
+ * Genera la factura dependiendo de lo que se pida
+ * 
+ * PHP Version 5.2.6
+ * 
+ * @category [categoria]
+ * @package  cni/[paquete]
+ * @author   Ruben Lacasa Mas <ruben@ensenalia.com> 
+ * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/ 
+ *           Creative Commons Reconocimiento-NoComercial-SinObraDerivada 
+ *           3.0 Unported
+ * @link     https://github.com/independenciacn/cni
+ */
 require_once '../inc/variables.php';
+require_once '../inc/Cni.php';
+require_once '../inc/Cliente.php';
 require_once 'telecos.php';
-/********************************************************************************************************************/
-//calculo del total con iva
+/**
+ * Calculo del total con iva
+ * @deprecated
+ * @param  [type] $importe [description]
+ * @param  [type] $iva     [description]
+ * 
+ * @return [type]          [description]
+ */
 function iva($importe,$iva)
 {
 	$total = round($importe + ($importe * $iva)/100,2);
 	return $total;
 }
-/*******************************************************************************************************************/
-//observaciones especiales 
-function observaciones_especiales($cliente,$factura)
-{
-	global $con;
-	$sql = "Select obs_alt from regfacturas 
-	where codigo like ".$factura." and obs_alt is not null";
-	//$sql = "Select obs_alt, fpago, obs_fpago from regfacturas where codigo like $factura";
-	$consulta = mysql_query($sql,$con);
-	if ( mysql_numrows($consulta) != 0 ) {
-		$resultado = mysql_fetch_array($consulta);
-		$obser = $resultado[0];
-		$pedidoCliente = "<br/>" . $resultado['pedidoCliente'];
-	} else {
-		$obser = "";
-		$pedidoCliente = "";
-	}
-	return $obser . $pedidoCliente ;
-}
 /**
- * Pasando el numero nos devuelve el nombre del mes
+ * Devuelve las observaciones especiales en el caso de que las tenga
  * 
- * @param string $mes
- * @return string $marcado
+ * @param string $factura
+ * @return string
  */
-function dame_el_mes($mes)
+function observacionesEspeciales($factura)
 {
-	$marcado = "";
-    switch($mes)
-	{
-		case 1: $marcado = "Enero";breaK;
-		case 2: $marcado = "Febrero";breaK;
-		case 3: $marcado = "Marzo";breaK;
-		case 4: $marcado = "Abril";breaK;
-		case 5: $marcado = "Mayo";breaK;
-		case 6: $marcado = "Junio";breaK;
-		case 7: $marcado = "Julio";breaK;
-		case 8: $marcado = "Agosto";breaK;
-		case 9: $marcado = "Septiembre";breaK;
-		case 10: $marcado = "Octubre";breaK;
-		case 11: $marcado = "Noviembre";breaK;
-		case 12: $marcado = "Diciembre";breaK;
+	$observacion = "";
+	$sql = "SELECT 
+			obs_alt AS observacion, 
+			pedidoCliente 
+			FROM regfacturas 
+			WHERE codigo LIKE ?
+			AND obs_alt IS NOT NULL";
+	$resultados = Cni::consultaPreparada(
+			$sql,
+			array($factura),
+			PDO::FETCH_CLASS
+			);
+	if (Cni::totalDatosConsulta() > 0) {
+		foreach ($resultados as $resultado) {
+			$observacion = $resultado->observacion .
+				"<br/>" . $resultado->pedidoCliente;
+		}
 	}
-	return $marcado;
-}
-/**
- * Cambia el formato de la fecha en un sentido u otro
- * 
- * @param string $stamp
- * @return string $fecha
- */
-function cambiaf($stamp)
-{
-	//formato en el que llega aaaa-mm-dd o al reves
-	$fdia = explode("-",$stamp);
-	$fecha = $fdia[2]."-".$fdia[1]."-".$fdia[0];
-	return $fecha;
+	return $observacion;
 }
 /**
  * Para distintas fechas de facturacion
@@ -77,11 +68,11 @@ function cambiaf($stamp)
  * @param string $final
  * @return string $cadena
  */
-function consultaFecha($cliente,$mes,$inicial,$final) //consulta los rangos de la fecha
+function consultaFecha($cliente, $mes, $inicial, $final)
 {
 	global $con;
-	$check1=$inicial{4};
-	$check2=$final{4};
+	$check1 = $inicial{4};
+	$check2 = $final{4};
 	if($check1!='-')
 	$inicial=cambiaf($inicial);
 	if($check2!='-')
@@ -187,43 +178,57 @@ function consulta_agrupado($cliente)
 /**
  * Generamos la cabezera de la factura
  * 
- * @param string $nombre_fichero
- * @param string $fecha_factura
+ * @param string $nombreFichero
+ * @param string $fechaFactura
  * @param string $codigo
  * @param string $cliente
  * @return string $cabezera
  */
-function cabezera_factura( $nombre_fichero, $fecha_factura, $codigo, $cliente )
+function cabezeraFactura($nombreFichero, $fechaFactura, $codigo, $cliente)
 {
-	global $con;
-	$fecha_factura = explode("-",$fecha_factura);
-	$fecha_de_factura = $fecha_factura[0]." de ".dame_el_mes( $fecha_factura[1] )
-	." de ". $fecha_factura[2];
-	$sql = "Select * from clientes where id like " .$cliente;
-	$consulta = mysql_query($sql,$con);
-	$resultado = mysql_fetch_array($consulta);
-	$cabezera = "
-	<br/><br/><br/>
-	<div class='titulo'>".strtoupper($nombre_fichero)."</div><br/>
-	<div class='cabezera'>
-	<table width='100%'>
-	<tr>
-		<td  align='left' class='celdilla_sec'>
-		<br/>FECHA:". $fecha_de_factura . "
-		<br/>";
-	if ( $nombre_fichero =='PROFORMA' ) {
-		$cabezera .= "<br/>" . $nombre_fichero;	
-	} else {
-		$cabezera .= "<br/>N&deg;" . $nombre_fichero.":".$codigo;
+	$mes = Cni::$meses[Cni::verMes($fechaFactura)];
+	$dia = Cni::verDia($fechaFactura);
+	$anyo = Cni::verAnyo($fechaFactura);
+	$fechaDeFactura = $dia . " de ". $mes . " de " . $anyo;
+	$cliente = new Cliente($cliente);
+	$tituloFichero = "N&deg;" . $nombreFichero . ":" . $codigo;
+	if ($nombreFichero == 'PROFORMA') {
+		$tituloFichero = $nombreFichero;
 	}
-	$cabezera .= "
-	</td>
-	<td  class='celdilla_imp'>".strtoupper($resultado[1])."<br>
-	".$resultado[6]."<br>
-	".$resultado[8]."&nbsp;&nbsp;-&nbsp;&nbsp;".$resultado[7]."<br>
-	NIF:".$resultado[5]."
-	</td></tr></table></div><br/>";
-	return $cabezera;
+	$html = "
+	<br/>
+	<br/>
+	<br/>
+	<div class='titulo'>
+			".strtoupper($nombreFichero)."
+	</div>
+	<br/>
+	<div class='cabezera'>
+		<table width='100%'>
+		<tr>
+			<td  align='left' class='celdilla_sec'>
+				<br/>
+				FECHA:". $fechaDeFactura . "
+				<br/>
+				<br/>
+				" . $tituloFichero . "
+			</td>
+			<td  class='celdilla_imp'>" .
+				strtoupper($cliente->nombre) .
+				"<br/>" .
+				$cliente->direccion .
+				"<br/>" .
+				$cliente->cp .
+				"&nbsp;&nbsp; - &nbsp;&nbsp;" .
+				$cliente->ciudad .
+				"<br/>
+				NIF:". $cliente->nif .
+			"</td>
+		</tr>
+		</table>
+	</div>
+	<br/>";
+	return $html;
 }
 /**
  * Genera el Pie de la factura
@@ -292,7 +297,7 @@ function pie_factura( $cliente, $observaciones, $codigo )
 		Forma de pago: ". $valoresPie['fpago'] ."<br/>" .
 	    $valoresPie['obs_fpago']."<br/>" .
 	    $valoresPie['pedidoCliente'] . 
-	    observaciones_especiales( $cliente, $codigo ) .
+	    observacionesEspeciales( $codigo ) .
 		"</div>";
 	}
 	return $pie_factura;
@@ -356,20 +361,58 @@ function consulta_almacenaje($cliente,$mes,$inicial,$final)
 	return $sql;
 }
 /**
- * Consulta si la factura esta en el historico devuelve ok o ko
+ * Consulta si la factura esta en el historico, si no esta devuelve false
+ * si esta devuelve los datos
  * 
- * @param string $factura
- * @return string 
+ * @param Integer $factura
+ * @return mixed boolean|resource
  */
 function historico($factura)
 {
-	global $con;
-	$sql = "Select * from historico where factura like " . $factura;
-	$consulta = mysql_query( $sql, $con);
-	if ( mysql_numrows( $consulta )!=0 ) {
-		return "ok";
+	$sql = "SELECT * FROM historico 
+			WHERE factura LIKE ?";
+	$resultados = Cni::consultaPreparada(
+			$sql,
+			array($factura),
+			PDO::FETCH_CLASS
+			);
+	if (Cni::totalDatosConsulta() > 0 ) {
+		return $resultados;
 	} else {
-		return "ko";
+		return false;
+	}
+}
+/**
+ * Comprueba la factura, si no existe devuelve true y si existe la actualiza
+ * y devuelve false
+ * 
+ * @param Integer $cliente
+ * @param Integer $codigo
+ * @param date $fecha
+ * @param float $iva
+ * @param float $total
+ * @return boolean
+ */
+function compruebaFactura($cliente, $codigo, $fecha, $iva, $total)
+{
+	$sql = "SELECT * 
+			FROM regfacturas 
+			WHERE id_cliente LIKE ?
+			AND codigo LIKE ? 
+			AND fecha LIKE ?";
+	$params = array($cliente, $codigo, $fecha);
+	$resultados = Cni::consultaPreparada($sql, $params, PDO::FETCH_CLASS);
+	if (Cni::totalDatosConsulta() == 0) {
+		return true;
+	} else {
+		$sql = "UPDATE regfacturas SET
+			iva =  ?, importe = ?
+			WHERE id_cliente LIKE ? 
+			AND codigo LIKE ? 
+			AND fecha like STR_TO_DATE(?)";
+		$params = array($iva, $total, $cliente, $codigo, $fecha);
+		$resultados = Cni::consultaPreparada($sql, $params);
+		return false;
 	}
 }
 /**
@@ -382,15 +425,15 @@ function historico($factura)
  * @param string $iva
  * @param string $obs
  */
-function agrega_historico( $factura, $servicio, $cantidad, $unitario, $iva, $obs )
+function agregaHistorico($factura, $servicio, $cantidad, $unitario, $iva, $obs)
 {
-	global $con;
 	$servicio = trim($servicio);
-	$sql = "Insert into historico (factura,servicio,cantidad,unitario,iva,obs) 
-	values
-	('".$factura."','".$servicio."','".$cantidad."',
-	'".$unitario."','".$iva."','".$obs."')";
-	$consulta = mysql_query($sql,$con);
+	$sql = "
+	Insert into historico (factura, servicio, cantidad, unitario, iva, obs) 
+	values (?, ?, ?, ?, ?, ?)";
+	$params = array($factura, $servicio, $cantidad, $unitario, $iva, $obs);
+	Cni::consultaPreparada($sql, $params);
+	return true;
 }
 /**
  * Funcion Principal - Obligatorio el cliente
@@ -398,163 +441,191 @@ function agrega_historico( $factura, $servicio, $cantidad, $unitario, $iva, $obs
  * En puntual: fecha_inicial_factura, fecha_final_factura para filtrado
  * Proforma: prueba = 1
  */
-if( isset( $_GET['cliente'] ) ) {
-	$ano_factura = explode( "-", $_GET['fecha_factura'] );
+if (isset($_GET['cliente'])) {
 	$cliente = $_GET['cliente'];
-	$mes = $_GET['mes'];
-	$ano = $ano_factura[0];
+	$fechaFactura = $_GET['fecha_factura'];
 	$codigo = $_GET['codigo'];
-	$historico = historico($codigo); // llamamos a la funcion historico
-	$fecha_factura = $_GET['fecha_factura'];
-	$fecha_inicial_factura = $_GET['fecha_inicial_factura'];
-	$fecha_final_factura = $_GET['fecha_final_factura'];
+	$fechaInicial= $_GET['fecha_inicial_factura'];
+	$fechaFinal = $_GET['fecha_final_factura'];
 	$observaciones = $_GET['observaciones'];
-	//Filtro 1, clic en proforma
-	if ( isset( $_GET['prueba'] ) ) {
+	$pedidoCliente = "";
+	$anoFactura = Cni::verAnyo($_GET['fecha_factura']);
+	$mesFactura = $_GET['mes'];
+	$fichero = "FACTURA";
+	$titulo = $fichero;
+	/**
+	 * Clic en Proforma
+	 */
+	if ( isset($_GET['prueba'])) {
 		$fichero = "PROFORMA";
-		$titulo = "FACTURA<BR/>PROFORMA";//Guardamos datos en profroma
-	} else {
-		$fichero = "FACTURA";
-		$titulo = $fichero;
-		//Guardamos datos en factura
+		$titulo = "FACTURA<BR/>PROFORMA";
 	}
 }
-//CASOS DE Imprimir factura generada o ver el duplicado
-if( isset( $_GET['factura'] ) || isset( $_GET['duplicado'] ) ) {
-	if(isset($_GET['factura'])) {
-		$datos = "Select * from regfacturas where id like " . $_GET['factura'];		
-	} else {
-		$datos = "Select * from regfacturas where id like " . $_GET['duplicado'];
-	}
-	$consulta = mysql_query( $datos, $con);
-	$resultado = mysql_fetch_array( $consulta ); // resultado de la consulta
-	$cliente = $resultado['id_cliente'];
-	$fecha_factura = cambiaf( $resultado['fecha'] );
-	$ano_factura = explode( "-", $fecha_factura );
-	$mes = intval( $resultado['mes'] );
-	$codigo = $resultado['codigo'];
-	$historico = historico($codigo); // devuelve ok o ko
-	$fecha_inicial_factura = $resultado['fecha_inicial'];
-	$fecha_final_factura = $resultado['fecha_final'];
-	$observaciones = $resultado['obs_alt'];
-	$pedidoCliente = $resultado['pedidoCliente'];
-	// Si establecemos que la factura es duplicado
-	if( isset( $_GET['duplicado'] ) ) {
-		$fichero = "FACTURA (DUPLICADO)";
-		$titulo = "FACTURA<BR/>DUPLICADO";//Guardamos datos en profroma
-	} else {
-		$fichero = "FACTURA";
-		$titulo = $fichero;
-		//Guardamos datos en factura
-	}
-}
-
-$nombre_fichero = "<span style='font-size:16.0pt'>" . $titulo . "</span>";
 /**
- * Cabezera de la factura - $ficher, $fecha_factura, $codigo, $cliente
+ * Casos de Imprimir factura generada o ver el duplicado
  */
-$cabezera_factura = cabezera_factura($fichero,$fecha_factura,$codigo,$cliente);
+if (isset($_GET['factura']) || isset($_GET['duplicado'])) {
+	$param = (isset($_GET['factura'])) ? $_GET['factura'] : $_GET['duplicado'];
+	$sql = "SELECT 
+			id_cliente AS idCliente, 
+			DATE_FORMAT(fecha, '%d-%m-%Y') AS fecha,
+			codigo,
+			DATE_FORMAT(fecha_inicial, '%d-%m-%Y') AS fechaInicial,
+			DATE_FORMAT(fecha_final, '%d-%m-%Y') AS fechaFinal,
+			obs_alt AS observaciones,
+			pedidoCliente
+			FROM regfacturas 
+			WHERE id LIKE ?";
+	$resultados = Cni::consultaPreparada($sql, array($param), PDO::FETCH_CLASS);
+	foreach ($resultados as $resultado) {
+		$cliente = $resultado->idCliente;
+		$fechaFactura = $resultado->fecha;
+		$codigo = $resultado->codigo;
+		$fechaInicial = $resultado->fechaInicial;
+		$fechaFinal = $resultado->fechaFinal;
+		$observaciones = $resultado->observaciones;
+		$pedidoCliente = $resultado->pedidoCliente;
+		$anoFactura = Cni::verAnyo($fechaFactura);
+		$mesFactura = Cni::verMes($fechaFactura);
+		$fichero = "FACTURA";
+		$titulo = $fichero;
+	}
+	/**
+	 * Si la factura es un duplicado
+	 */
+	if (isset($_GET['duplicado'])) {
+		$fichero = "FACTURA (DUPLICADO)";
+		$titulo = "FACTURA<BR/>DUPLICADO";
+	}
+}
+$nombreFichero = "<span style='font-size:16.0pt'>" . $titulo . "</span>";
+
+
 //PRESENTACION************************************************************************/
 //CASOS POSIBLES, MENSUAL y PUNTUAL en puntual hay que pasar los limites
 //fecha_inicial_factura y fecha_final_factura
-if(($fecha_inicial_factura != '0000-00-00') && ($fecha_final_factura != '0000-00-00')){
-	$inicio = $fecha_inicial_factura;
-	$final = $fecha_final_factura;
+if (($fechaInicial != '00-00-0000') && ($fechaFinal != '00-00-0000')) {
+	$inicio = $fechaInicial;
+	$final = $fechaFinal;
 } else {
-	$inicio = "0000-00-00";
-	$final = "0000-00-00";
+	$inicio = "00-00-0000";
+	$final = "00-00-0000";
 }
-$tituloPagina = ( $inicio!= "0000-00-00") ? "ocupacion puntual" : dame_el_mes( "m" );
+/**
+ * Titulo de la pagina
+ */
+$tituloPagina =
+	( $inicio!= "00-00-0000") ? "ocupacion puntual" : Cni::$meses["m"];
+/**
+ * Cabezera de la factura - $ficher, $fecha_factura, $codigo, $cliente
+ */
+$cabezeraFactura = cabezeraFactura($fichero, $fechaFactura, $codigo, $cliente);
 ?>
-<html>
+<!-- Pagina de la factura -->
+<!DOCTYPE html>
+<html lang="es">
 <head>
-<title><?php echo $fichero . " " . $tituloPagina; ?></title>
-<link rel="stylesheet" type='text/css' href="estilo.css" />
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta charset="utf-8">
+	<link  href="../bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+	<title><?php echo $fichero . " " . $tituloPagina; ?></title>
 </head>
 <body>
 <?php
+	var_dump($_GET);
 	$celdas = 0;
 	$cantidad = 0;
 	$total = 0;
 	$bruto = 0;
-	echo $cabezera_factura;
-	echo "
-	<table cellpadding='2px' cellspacing='0px' width='100%' id='tabloide'>
-	<tr>
-	<th align='center' width='48%' >Servicio</th>
-	<th align='center' width='8%' >Cant.</th>
-	<th align='center' width='12%' >P/Unitario</th>
-	<th align='center' width='12%' >IMPORTE</th>
-	<th align='center' width='8%' >IVA</th>
-	<th align='center' width='12%' >TOTAL</th>
-	</tr>";
-//PARTE DEL CONTRATO Y DEL ALMACENAJE SI PROCEDE cuidado con el mes
-//la primera linea tiene que ser el importe del mes del tipo de cliente
-//VALIDO DESDE MAYO DEL 07
-//DATOS SERVICIOS FIJOS**********************************************************/
-//solo se cargan los fijos si no son ocupacion puntual
-/*CHEQUEO DE HISTORICO, si no esta en el historico se agrega*/
-if($historico == "ok") {
-	$sql = "Select * from historico where factura like ".$codigo;
-	$consulta = mysql_query($sql,$con);
-	while ( true == ($resultado = mysql_fetch_array($consulta))) {
-		$importe_sin_iva = $resultado['cantidad']*$resultado['unitario'];
-		echo "<tr>
-		<td><p class='texto'>".ucfirst($resultado[2])." ".ucfirst($resultado[6])."</td>
-		<td align='right'>".number_format($resultado['cantidad'],2,',','.')."&nbsp;</td>
-		<td align='right'>".number_format($resultado['unitario'],2,',','.')."&euro;&nbsp;</td>
-		<td align='right'>".number_format($importe_sin_iva,2,',','.')."&euro;&nbsp;</td>
-		<td align='right'>".$resultado['iva']."%&nbsp;</td>
-		<td align='right'>".
-			number_format(iva($importe_sin_iva,$resultado['iva']),2,',','.')."&euro;&nbsp;
-		</td></tr>";
-		$total = $total + iva($importe_sin_iva,$resultado[5]);
-		$bruto = $bruto + $importe_sin_iva;
+	$resultadosHistorico =
+		(isset($_GET['factura'])) ? historico($_GET['factura']) : false;
+	$html =
+	$cabezeraFactura.
+	"
+ 	<table class = 'table table-bordered table-striped'>
+ 	<colgroup width = '48%' />
+ 	<colgroup width = '8%' />
+ 	<colgroup width = '12%' span='2'/>
+ 	<colgroup width = '8%' />
+ 	<colgroup width = '12%' />
+ 	<thead>
+ 		<tr>
+		<th>Servicio</th>
+		<th>Cant.</th>
+		<th>P/Unitario</th>
+		<th>IMPORTE</th>
+		<th>IVA</th>
+		<th>TOTAL</th>
+	</tr>
+ 	</thead>";
+	$html .= "<tbody>";
+if ($resultadosHistorico) {
+	foreach ($resultadosHistorico as $resultado) {
+		$importe = $resultado->cantidad * $resultado->unitario;
+		$totalConIva = Cni::totalconIva($importe, $resultado->iva);
+		$html .= "
+ 			<tr>
+			<td>".ucfirst($resultado->servicio)." 
+ 				".ucfirst($resultado->obs)."
+			</td>
+			<td>".Cni::formateaNumero($resultado->cantidad)."</td>
+			<td>".Cni::formateaNumero($resultado->unitario, true)."</td>
+			<td>".Cni::formateaNumero($importe, true)."</td>
+			<td>".Cni::formateaNumero($resultado->iva)."%</td>
+			<td>".Cni::formateaNumero($totalConIva, true)."</td>
+			</td>
+			</tr>";
+		$total += $totalConIva;
+		$bruto += $importe;
+		$cantidad += $resultado->cantidad;
 		$celdas++;
-		$cantidad++;
-	}	
+	}
 } else {
-	/*echo $ano_factura[2];
-	echo $inicio;
-	echo $final;*/
-	if(((($mes >= 3) && ($ano_factura[2] == 2007))
-			||(($ano_factura[2]>= 2008)) && ($inicio == "0000-00-00")) 
+	if (((($mesFactura >= 3) && ($anoFactura == 2007))
+			||(($anoFactura >= 2008)) && ($inicio == "00-00-0000"))
 			&& ($final == "0000-00-00")) {
-		$sql = "Select * from tarifa_cliente 
-		where ID_Cliente like ".$cliente." order by Imp_Euro desc";
-		//echo $sql;/*PUNTO DE CONTROL*/
-		$consulta = mysql_query( $sql, $con );
 		/**
 		 * Acumulado del total de servicios fijos
 		 * @var float $importeServiciosFijos
 		 */
+		$sql = "Select * 
+ 		FROM tarifa_cliente 
+		WHERE ID_Cliente LIKE ? 
+ 		ORDER BY Imp_Euro DESC";
+		$resultados = Cni::consultaPreparada(
+			$sql,
+			array($cliente),
+			PDO::FETCH_CLASS
+		);
 		$importeServiciosFijos = 0;
-		while ( true == ($resultado = mysql_fetch_array($consulta))) {
-			$importe_sin_iva = $resultado[7]*$resultado[4];
-			$importeServiciosFijos += $importe_sin_iva; 
-			echo "<tr>
-			<td>
-			<p class='texto'>".ucfirst($resultado[2])." ".ucfirst($resultado[6])."</p>
+		foreach ($resultados as $resultado) {
+			$importe = $resultado->unidades * $resultado->Imp_Euro;
+			$importeServiciosFijos += $importe;
+			$totalConIva = Cni::totalconIva($importe, $resultado->iva);
+			$html .= "
+ 			<tr>
+			<td>".ucfirst($resultado->Servicio)."
+ 				".ucfirst($resultado->observaciones)."
 			</td>
-			<td align='right'>".number_format($resultado[7],2,',','.')."&nbsp;</td>
-			<td align='right'>".number_format($resultado[4],2,',','.')."&euro;&nbsp;</td>
-			<td align='right'>".number_format($importe_sin_iva,2,',','.')."&euro;&nbsp;</td>
-			<td align='right'>".$resultado[5]."%&nbsp;</td>
-			<td align='right'>".
-				number_format(iva($importe_sin_iva,$resultado[5]),2,',','.')."&euro;&nbsp;
-			</td></tr>";
-			$total = $total + iva($importe_sin_iva,$resultado[5]);
-			
-			$bruto = $bruto + $importe_sin_iva;
-			$celdas++;
-			$cantidad++;
-			/*ALERTA LINEA A MODIFICAR EN EL CAMBIO*/
-			$servicio_desc = ucfirst($resultado[2]);//." ".ucfirst(codifica($resultado[6]));
-			if(($historico == "ko")&& (!isset($_GET['prueba']))) {
-			//Agregamos al historico
-				agrega_historico($codigo,$servicio_desc,$resultado[7],
-						$resultado[4],$resultado[5],ucfirst($resultado[6]));
+			<td>".Cni::formateaNumero($resultado->unidades)."</td>
+			<td>".Cni::formateaNumero($resultado->Imp_Euro, true)."</td>
+			<td>".Cni::formateaNumero($importe, true)."</td>
+			<td>".Cni::formateaNumero($resultado->iva)."%</td>
+			<td>".Cni::formateaNumero($totalConIva, true)."</td>
+			</td>
+			</tr>";
+			$total += $totalConIva;
+			$bruto += $importe;
+			$cantidad += $resultado->unidades;
+			$celdas ++;
+			if (!isset($_GET['prueba'])) {
+				agregaHistorico(
+					$codigo,
+					ucfirst($resultado->Servicio),
+					$resultados->unidades,
+					$resultados->Imp_Euro,
+					$resultados->iva,
+					$resultados->observaciones
+				);
 			}
 		}
 	}
@@ -562,7 +633,7 @@ if($historico == "ok") {
 //Devuelve la consulta para generar el almacenaje
 /*Parte de consulta de importe e iva de almacenaje*/
     /*Buscamos los datos de importe e iva de almacenaje*/
-    $sql = "Select datediff('".cambiaf($fecha_factura)."','2010-07-01')";
+    $sql = "Select datediff('".cambiaf($fechaFactura)."','2010-07-01')";
     //echo $sql;
     $consulta = mysql_query($sql,$con);
     $diff = mysql_fetch_array($consulta);
@@ -597,7 +668,7 @@ if($historico == "ok") {
 		$celdas++;
 		$cadena_texto = " del  ".cambiaf($resultado[2])." al ".cambiaf($resultado[3]);
 		if(($historico == "ko")&& (!isset($_GET['prueba']))) { //Agregamos al historico
-			agrega_historico($codigo,"Bultos Almacenados",$resultado[0],
+			agregaHistorico($codigo,"Bultos Almacenados",$resultado[0],
 					$subtotala,$par_almacenaje['iva'],$cadena_texto);
 		}
 	}
@@ -633,7 +704,7 @@ if($historico == "ok") {
 		$celdas++;
 		//$servicio_desc = ucfirst($resultado[0])." ".codifica(ucfirst($resultado[7]));
 		if(($historico == "ko")&& (!isset($_GET['prueba']))) { //Agregamos al historico
-			agrega_historico($codigo,$resultado[0],$resultado[1],$resultado[3],$resultado[5],$resultado[7]);
+			agregaHistorico($codigo,$resultado[0],$resultado[1],$resultado[3],$resultado[5],$resultado[7]);
 		}
 	}
 //#####################################Parte agrupada###############################################
@@ -664,7 +735,7 @@ if($historico == "ok") {
 		$celdas++;
 		//$servicio_desc = ucfirst($resultado[0])." ".codifica(ucfirst($resultado[7]));
 		if(($historico == "ko")&& (!isset($_GET['prueba']))) { //Agregamos al historico
-			agrega_historico($codigo,ucfirst($resultado[0]),$resultado[1],
+			agregaHistorico($codigo,ucfirst($resultado[0]),$resultado[1],
 					$resultado[3],$resultado[5],ucfirst($resultado[7]));
 		}
 	}
@@ -689,7 +760,7 @@ if($historico == "ok") {
 			<td align='right'>-".number_format($descuento_con_iva,2,',','.')."&euro;&nbsp;</td></tr>";
 			$descuento_historico = "-".$descuento;
 			if(($historico == "ko")&& (!isset($_GET['prueba']))){ //Agregamos al historico
-				agrega_historico($codigo,"Descuento","1",$descuento_historico,"18", "del ".$porcentaje[0]);
+				agregaHistorico($codigo,"Descuento","1",$descuento_historico,"18", "del ".$porcentaje[0]);
 			}
 		} else {
 			$descuento = 0;
@@ -704,23 +775,29 @@ if($historico == "ok") {
 
 //Compensacion de diseño
 	$coeficiente = 432 - ($celdas-1) * 18;
-	if($coeficiente >= 1) {
-		echo "<tr><td height='".$coeficiente."px'>&nbsp;</td>
-		<td align='center'>&nbsp;</th>
-		<td align='center'>&nbsp;</th>
-		<td align='center'>&nbsp;</th>
-		<td align='center'>&nbsp;</th>
-		<td align='center'>&nbsp;</th>
-		</tr>";
-	}
+if ($coeficiente >= 1) {
 	echo "<tr>
-	<th align='center'>&nbsp;</th>
-	<th align='right'>&nbsp;".$cantidad."&nbsp;</th>
-	<th align='center'>&nbsp;</th>
-	<th align='right'>".number_format($bruto,2,',','.')."&euro;&nbsp;</th>
-	<th align='center'>&nbsp;</th>
-	<th align='right'>".number_format($total,2,',','.')."&euro;&nbsp;</th>";
-	echo "</table>";
+			<td height='".$coeficiente."px'>&nbsp;</td>
+			<td>&nbsp;</th>
+			<td>&nbsp;</th>
+			<td>&nbsp;</th>
+			<td>&nbsp;</th>
+			<td>&nbsp;</th>
+		 </tr>";
+}
+$html .= "
+	</tbody>
+	<tfoot>
+		<tr>
+		<th>&nbsp;</th>
+		<th>".Cni::formateaNumero($cantidad)."</th>
+		<th>&nbsp;</th>
+		<th>".Cni::formateaNumero($bruto, true)."</th>
+		<th></th>
+		<th>".Cni::formateaNumero($total, true)."</th>
+	</tfoot>
+	</table>";
+echo $html;
 //RESUMEN
 	$total_iva = $total - $bruto;
 	echo "<br/><table width='100%' cellpadding='2px' cellspacing='2px' style='font-size:10.0pt'><tr>
@@ -746,7 +823,7 @@ if($historico == "ok") {
 //echo "COOOOOOOOOOOO".$inicio;
 	//echo $final;
 if(($fichero!="PROFORMA") && (!isset($_GET['duplicado']))) {
-	$fecha = cambiaf($fecha_factura);
+	$fecha = cambiaf($fechaFactura);
 	if (isset($inicio) && ($final != '0000-00-00')) {
 		$puntual = 1;
 		$fecha_inicial = cambiaf($inicio);
@@ -756,7 +833,7 @@ if(($fichero!="PROFORMA") && (!isset($_GET['duplicado']))) {
 	$importe_total = number_format($total,2,'.','');
 	//estamos en Factura si es repetida no se agrega
 	//Linea de teste de fechas
-	if(comprueba_la_factura($cliente,$codigo,$fecha,$total_iva,$total)) { //no existe
+	if(compruebaFactura($cliente,$codigo,$fechaFactura,$total_iva,$total)) { //no existe
 		if ($puntual == 1) {
 			$esecuele = "Insert into regfacturas (id_cliente,codigo,fecha,
 			iva,importe,obs_alt,fecha_inicial,fecha_final,mes,ano) 
@@ -776,27 +853,7 @@ if(($fichero!="PROFORMA") && (!isset($_GET['duplicado']))) {
 	//else
 		//echo comprueba_la_factura($cliente,$codigo,$fecha,$total_iva,$total);
 }
-/******************COMPROBAMOS SI EXISTE LA FACTURA PARA NO CREARLA********************/
-function comprueba_la_factura($cliente,$codigo,$fecha,$total_iva,$total)
-{
-	global $con;
-	$sql = "Select * from regfacturas where id_cliente like ".$cliente." 
-	and codigo like ".$codigo." and fecha like '".$fecha."'";
-	$consulta = mysql_query($sql,$con);
-	if (mysql_numrows($consulta)==0) {
-		return true;
-	} else {//existe
-		$resultado = mysql_fetch_array($consulta);
-		if(($resultado['iva']!=$total_iva) && ($resultado['importe']!=$total)) {
-			$sql = "Update regfacturas set 
-			iva='".$total_iva."',importe='".$total."' 
-			where id_cliente like '".$cliente."' and codigo 
-			like '".$codigo."' and fecha like '".$fecha."'";
-			$consulta = mysql_query($sql,$con);
-		}
-		return false;
-	}
-}	
+
 /**************************************************************************************/	
 //PIE FACTURA*************************************************************************/
 echo pie_factura($cliente,$observaciones,$codigo);
@@ -804,3 +861,4 @@ echo pie_factura($cliente,$observaciones,$codigo);
 ?>
 </body></html>
 
+<!-- Linea final 807 -->

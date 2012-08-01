@@ -85,7 +85,7 @@ if(isset($_GET[cliente]))
 	$sql = "Select * from clientes where id like '$cliente'";
 	$consulta = mysql_query($sql,$con);
 	$resultado = mysql_fetch_array($consulta);
-	$nombre_fichero = "<span style='font-size:16.0pt'>Factura</span>";//.$resultado[1]." - ".$lista_meses[$mes]." - ". $ano_domini."</span>";
+	$nombreFichero = "<span style='font-size:16.0pt'>Factura</span>";//.$resultado[1]." - ".$lista_meses[$mes]." - ". $ano_domini."</span>";
 //cabezera de word ya bien
 	header("Content-type:  application/msword");
 	header("Content-Disposition: attachment; filename=Factura.doc");
@@ -98,7 +98,7 @@ $codigo_factura = genera_codigo_factura($cliente,$mes);
 	<br/><br/><br/><br/><br/><br/>
 	<table width='100%'  cellpadding='2px' cellspacing='2px' >
 	<tr>
-	<th colspan='2' align='right'>".strtoupper($nombre_fichero)."<br/><br/><br/><br/></th>
+	<th colspan='2' align='right'>".strtoupper($nombreFichero)."<br/><br/><br/><br/></th>
 	</tr>
 	<tr>
 	<th valing='top' align='left' width='25%'>
