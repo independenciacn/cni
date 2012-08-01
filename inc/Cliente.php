@@ -1,41 +1,74 @@
 <?php
 /**
- *
- * @author ruben
- *        
+ * Cliente.php File Doc Comment
+ * 
+ * [Descripcion]
+ * 
+ * PHP Version 5.2.6
+ * 
+ * @category inc
+ * @package  cni/inc
+ * @author   Ruben Lacasa Mas <ruben@ensenalia.com> 
+ * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/ 
+ *           Creative Commons Reconocimiento-NoComercial-SinObraDerivada 3.0 Unported
+ * @link     https://github.com/independenciacn/cni
  */
 require_once 'Cni.php';
 class Cliente {
-	// TODO - Insert your code here
-	/**
-	 */
 	private $_tabla = 'clientes';
-	public $id = false;
+	public $idCliente = false;
 	public $nombre = null;
-	public function __construct($id = false)
+	public $nif = null;
+	public $direcion = null;
+	public $ciudad = null;
+	public $cp = null;
+	public $pais = null;
+
+	/**
+	 * [__construct description]
+	 * 
+	 * @param boolean $idCliente [description]
+	 */
+	public function __construct($idCliente = false)
 	{
-		if ( $id ) {
-			$this->id = $id;
+		if ( $idCliente ) {
+			$this->idCliente = $idCliente;
 			$this->datosCliente();
 		}
 	}
-
+	/**
+	 * [datosCliente description]
+	 * 
+	 * @return [type] [description]
+	 */
 	public function datosCliente()
 	{
-		if ( $this->id ) {
+		if ( $this->idCliente ) {
 			$sql = "Select *
 					FROM ".$this->_tabla."
 					WHERE id LIKE ?";
 			$resultados = Cni::consultaPreparada(
 					$sql,
-					array($this->id),
+					array($this->idCliente),
 					PDO::FETCH_CLASS
 					);
 			foreach ($resultados as $resultado) {
 				$this->nombre = $resultado->Nombre;
+				$this->nif = $resultado->NIF;
+				$this->direccion = $resultado->Direccion;
+				$this->ciudad = $resultado->Ciudad;
+				$this->cp = $resultado->CP;
+				$this->pais = $resultado->Pais;
 			}
 		}
 	}
+	/**
+	 * [buscaCliente description]
+	 * 
+	 * @param  [type] $var [description]
+	 * 
+	 * @return [type]      [description]
+	 */
 	public function buscaCliente($var)
 	{
 		$sql = "SELECT * FROM ".$this->_tabla."
@@ -49,6 +82,28 @@ class Cliente {
 				PDO::FETCH_CLASS
 		);
 		return $resultados;
+	}
+	/**
+	 * [formaPagoCliente description]
+	 * 
+	 * @return [type] [description]
+	 */
+	public function formaPagoCliente()
+	{
+		if ($this->idCliente) {
+			$sql = "SELECT fpago 
+			FROM facturacion 
+			WHERE idemp LIKE ?";
+			$resultados = Cni::consultaPreparada(
+				$sql,
+				array($this->idCliente),
+				PDO::FETCH_CLASS
+				);
+			foreach ($resultados as $resultado) {
+				$formaPago = $resultado->fpago;
+			}
+			return $formaPago;
+		}
 	}
 }
 

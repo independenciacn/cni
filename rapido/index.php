@@ -56,7 +56,6 @@ function seleccionMeses($mesMarcado = null)
 	<script src="../js/calendar.js"></script>
 	<script src="../js/lang/calendar-es.js"></script>
 	<script src="../js/calendar-setup.js"></script>
-	<script src="../js/NumberFormat154.js"></script>
 	<script src="js/rapido.js" ></script>
 	<title>Servicios - <?= $tituloGeneral ?></title>
 </head>
@@ -106,17 +105,19 @@ for ($i = 2007; $i <= date('Y') + 2; $i++) {
 	</td>
 </tr>
 <tr>
-	<td colspan='2'>
-		<input type='button' onclick='cliente_rango(0)' 
-			value='>Facturacion Mensual' />
-		<input type='button' onclick='cliente_rango(1)' 
-			value='>Facturacion Puntual' />
-		<input type='button' onclick='gestion_facturas(0)' 
-			value='>Gesti&oacute;n Facturas'/>
-		<input type='button' onclick='oculta_parametros()' 
-			value='>Ocultar Ventana' />
-		<input type='button' onclick='gestion_facturas(1)' 
-			value='>Listar todas las facturas' />
+	<td colspan = '2'>
+		<input class='boton' type = 'button' onclick = 'cliente_rango(0)' 
+			value = '>Facturacion Mensual' />
+		<input class='boton' type = 'button' onclick = 'cliente_rango(1)' 
+			value ='>Facturacion Puntual' />
+		<input class='boton' type = 'button' onclick ='gestionFacturas(0)'
+			title = 'Muestra las facturas del cliente en el año marcado' 
+			value = '>Gesti&oacute;n Facturas'/>
+		<input class='boton' type = 'button' onclick = 'oculta_parametros()' 
+			value = '>Ocultar Ventana' />
+		<input class='boton' type = 'button' onclick = 'gestionFacturas(1)'
+			title = 'Muestra todas las facturas en el año marcado' 
+			value = '>Listar todas las facturas' />
 	</td>
 </tr>
 </table>

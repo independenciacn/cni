@@ -395,8 +395,8 @@ function frmModificacionServicio($vars)
  */
 function modificacionServicio($vars)
 {
-	$subtotal = $vars['cantidad'] * $vars['precio'];
-	$subtotal = Cni::formateaNumero($subtotal);
+	$subtotal = Cni::cambiaFormatoNumerico($vars['cantidad']) * 
+		Cni::cambiaFormatoNumerico($vars['precio']);
 	$sql = "Update `detalles consumo de servicios` 
 		SET `Cantidad` = ?,
 			`PrecioUnidadEuros` = ?,
@@ -405,17 +405,18 @@ function modificacionServicio($vars)
 			`observaciones` = ? 
 		WHERE `Id` like ?";
 	$params = array(
-			$vars['cantidad'],
-			$vars['precio'],
+			Cni::cambiaFormatoNumerico($vars['cantidad']),
+			Cni::cambiaFormatoNumerico($vars['precio']),
 			$subtotal,
-			$vars['iva'],
+			Cni::cambiaFormatoNumerico($vars['iva']),
 			$vars['observacion'],
 			$vars['servicio']
 			);
-	if (Cni::consultaPreparada($sql, $params)) {
+	try {
+		Cni::consultaPreparada($sql, $params); 
 		return Cni::mensajeExito("Servicio Modificado");
-	} else {
-		return Cni::mensajeError("Servicio No Modificado");
+	} catch (Exception $e) {
+		return Cni::mensajeError($e->getMessage());
 	}
 }
 /**
@@ -427,7 +428,7 @@ function frmAltaServicio()
 {
 	$html ="<br/>
 	<form id='frm_alta' class='formulario'  method='post' 
-	onSubmit='agrega_servicio(); return false'>
+	onSubmit='agregaServicio(); return false'>
 	<table width='100%' class='tabla'>
 	<tr>
 	<th>Fecha:</th>
@@ -512,28 +513,28 @@ function agregaServicio($vars)
 	$servicio->setServicioById($vars['servicios']);
 	$sql = "INSERT INTO `consumo de servicios` 
 			(`Cliente`,`Fecha`) VALUES 
-			(?, STR_TO_DATE(?,'%d-%m-%Y')";
+			(?, STR_TO_DATE(?,'%d-%m-%Y'))";
 	$params = array($vars['cliente'], $vars['fecha']);
-	if ( Cni::consultaPreparada($sql, $params)) {
+	$subtotal = Cni::cambiaFormatoNumerico($vars['precio']) *
+		Cni::cambiaFormatoNumerico($vars['cantidad']);
+	try {
+		Cni::consultaPreparada($sql, $params);
 		$sql = "INSERT INTO `detalles consumo de servicios`
 			(`Id Pedido`,`Servicio`,`Cantidad`,`PrecioUnidadEuros`,
 			`ImporteEuro`,`iva`,`observaciones` ) VALUES 
 			(LAST_INSERT_ID(), ?, ?, ?, ?, ?, ?)";
 		$params = array(
-				$servicio->nombre,
-				$vars['cantidad'],
-				$vars['precio'],
-				$vars['precio'] * $vars['cantidad'],
-				$vars['iva'],
-				$vars['observacion']
-				);
-		if ( Cni::consultaPreparada($sql, $params)) {
-			return Cni::mensajeExito("Servicio Agregado");
-		} else {
-			return Cni::mensajeError("No se ha Agregado el servicio");
-		}
-	} else {
-		return Cni::mensajeError("No se ha Agregado el servicio");
+			$servicio->nombre,
+			Cni::cambiaFormatoNumerico($vars['cantidad']),
+			Cni::cambiaFormatoNumerico($vars['precio']),
+			$subtotal,
+			Cni::cambiaFormatoNumerico($vars['iva']),
+			$vars['observacion']
+		);
+		Cni::consultaPreparada($sql, $params);
+		Cni::mensajeExito("Servicio Agregado");
+	} Catch(Exception $e) {
+		Cni::mensajeError($e->getMessage());
 	}
 }
 /**
@@ -553,7 +554,7 @@ function ventanaObservaciones($vars)
 			);
 	foreach ($resultados as $resultado) {
 		$html = "<input type='button' class='boton_cerrar' 
-			onclick='cierra_ventana_observaciones()' value='Cerrar' /><br/>".
+			onclick='cierraVentanaObservaciones()' value='Cerrar' /><br/>".
 			$resultado->observaciones;
 	}
 	return $html;
@@ -594,13 +595,12 @@ function listadoFacturas($vars)
 	        'importe' => 0,
 	        'tipo'    => 1
 	        );
-	$cliente = "";
-	if ($vars['tipo'] == 1 ) {
-	    $cliente = "
-	            WHERE r.id_cliente LIKE '".$vars['cliente']."' ";
+	$cliente = " WHERE YEAR(r.fecha) LIKE '".$vars['anyo']."' ";
+	if ($vars['tipo'] == 0 ) {
+	    $cliente .= " AND r.id_cliente LIKE '".$vars['cliente']."' ";
 	}
-	$sql = $cliente ."ORDER BY r.fecha DESC";
-	$cadena .="<div id='tabla_resultados'>";
+	$sql = $cliente ." ORDER BY r.fecha DESC ";
+	$html ="<div id='tabla_resultados'>";
 	$params = array(
 	        "sql" => $sql,
 	        "cliente" => 0,
@@ -608,9 +608,9 @@ function listadoFacturas($vars)
 	        "fecha"	  => 0,
 	        "importe" => 0
 	);
-	$cadena .= dibujaPantalla($params, true);
-	$cadena .= "</div>";
-	return $cadena;
+	$html .= dibujaPantalla($params, true);
+	$html .= "</div>";
+	return $html;
 }
 /**
  * Genera la cabezera del listado
@@ -756,14 +756,14 @@ function filtros($vars)
 function consultaFacturas()
 {
 	$sql = "SELECT
-	r.id AS id,
-	r.codigo AS codigo,
-	DATE_FORMAT(r.fecha, '%d-%m-%Y') AS fecha,
-	r.importe AS importe ,
-	r.obs_alt AS obs_alt,
-	c.Nombre AS nombre
-	FROM regfacturas AS r INNER JOIN clientes AS c
-	ON r.id_cliente LIKE c.id ";
+	id AS id,
+	codigo AS codigo,
+	DATE_FORMAT(fecha, '%d-%m-%Y') AS fecha,
+	importe AS importe ,
+	obs_alt AS obs_alt,
+	(SELECT Nombre FROM clientes 
+		WHERE id = id_cliente) as nombre
+	FROM regfacturas as r ";
 	return $sql;
 }
 /**

@@ -20,3 +20,32 @@
 // else
 // echo "Error en la carga";
 // ?>
+<html>
+<head>
+    <title>Prueba</title>
+    <script src='../js/jquery-1.7.2.min.js'></script>
+</head>
+<body><input type='button' onclick='cargaTexto()' value='hazclick'/>
+    <div id='texto'>A</div>
+    <div id='prueba'>B</div>
+    <div id='load'>C</div>
+    <script>
+
+    
+
+     
+    var cargaTexto = function () {
+        
+            setTimeout(function(){
+                $.post('tick.php', function(data) {
+                    $('#texto').append(data);
+                });
+            },2000);
+        
+    };
+    for ( var i = 0; i <= 10; i ++ ) {
+        setTimeout("cargaTexto", 2000);
+    }
+    </script>
+</body>
+</html>

@@ -123,7 +123,7 @@ var buscaCliente = function ()
 var marca = function (idCliente)
 {
 	var pars = "opcion=2&cliente=" + idCliente;
-	var myAjax = new Ajax.Request(url,
+	new Ajax.Request(url,
 	{
 		method: 'post',
 		parameters: pars,
@@ -162,8 +162,7 @@ var verServiciosContratados = function (idCliente)
  */
 var borra = function (servicio)
 {
-	var respuesta = confirm("Borrar servicio?");
-	if (respuesta) {
+	if (confirm("Borrar servicio?")) {
 		var pars = "opcion=4&servicio=" + servicio;
 		procesaAjax(pars, 'tabla', 'tabla', verServiciosContratados, false);
 	}
@@ -232,7 +231,7 @@ var recalcula = function ()
  */
 var frmAgregarServicio = function (cliente)
 {
-	var pars='opcion=7&cliente=' + cliente;
+	var pars = 'opcion=7&cliente=' + cliente;
 	procesaAjax(pars,'form_agregar', 'form_agregar', false, false);
 };
 /**
@@ -243,7 +242,7 @@ var frmAgregarServicio = function (cliente)
 var valorServicio = function ()
 {
 	var servicio = $('servicios').value;
-	var pars='opcion=8&servicio=' + $('servicios').value;
+	var pars ='opcion=8&servicio=' + $('servicios').value;
 	new Ajax.Request(url,
 	{
 		method: 'post',
@@ -256,63 +255,93 @@ var valorServicio = function ()
 		}
 	});
 };
-
-//Pasamos los datos del formulario a la pagina de datos para agregar el servicio y mostramos la respuesta.
-function agrega_servicio()
+/**
+ * Pasamos los datos del formulario a la pagina de datos para agregar el
+ * servicio y mostramos la respuesta
+ * 
+ * @return {[type]} [description]
+ */
+var agregaServicio = function ()
 {
-	var url='datos.php'
-	var cliente = $F('id_cliente')
-	var formulario = $('frm_alta')
-	var pars='opcion=9&cliente='+cliente+'&'+Form.serialize(formulario)
-	var myAjax = new Ajax.Request(url,
-		{
-		method: 'post',
-		parameters: pars,
-		onComplete: function gen(t)
-			{
-				precarga()
-				$('debug').innerHTML = t.responseText
-			}
-		});
+	var pars = 'opcion=9&cliente=' + $F('id_cliente') + '&' + 
+		Form.serialize($('frm_alta'));
+	procesaAjax(pars, 'tabla', 'tabla', verServiciosContratados, false);
+};
+/**
+ * Muestra las observaciones del servicio
+ * 
+ * @param  {[type]} servicio [description]
+ * 
+ * @return {[type]}          [description]
+ */
+var observaciones = function (servicio)
+{
+	var pars = 'opcion=10&servicio=' + servicio;
+	cambiaVisibilidad('observa');
+	procesaAjax(pars, 'observa', 'observa', false, false);	
+};
+/**
+ * [cierraVentanaObservaciones description]
+ * 
+ * @return {[type]} [description]
+ */
+var cierraVentanaObservaciones = function ()
+{
+	cambiaVisibilidad('observa');
+};
+/**
+ * Genera el listado de facturas
+ * 
+ * @param  {[type]} tipo Tipo de gestion de facturas 0 Puntual, 1 listado
+ * 
+ * @return {[type]}      [description]
+ */
+var gestionFacturas = function (tipo)
+{
+	var pars = 'opcion=11&anyo=' + $('anyo').value;
+	if (tipo == 0) {
+		pars += '&cliente=' + $('id_cliente').value +
+		 '&mes=' + $('meses').value;
+	}
+	pars += '&tipo=' + tipo;
 	
-}
-//precarga de actualizacion de datos*****************************************************************/
-// function precarga()
-// {
-// 	var t
-// 	$("tabla").innerHTML='Actualizando Datos ... <p/><img src="../imagenes/loader.gif" alt="Actualizando Datos.." />';
-// 	//mes(mes_actual)
-// 	t = setTimeout("ver_servicios_contratados()",1)
-// }
-
-
-//muestra las observaciones del servicio*********************************************************
-function observaciones(servicio)
+	procesaAjax(pars, 'tabla', 'tabla', false, false);
+};
+//Genera el listado de las facturas del cliente en tiempo que hemos marcado
+function listado_facturas()
 {
 	var url="datos.php"
-	var pars='opcion=10&servicio='+servicio
-	var estilo = $('observa').style
-	estilo.display='block'
-	estilo.visibility='visible'
+	var cliente = $F('id_cliente')
+	var mes = $('meses').value
+	var pars='opcion=12&cliente='+ cliente +'&mes='+ mes
 	var myAjax = new Ajax.Request(url,
 		{
 		method: 'post',
 		parameters: pars,
 		onComplete: function gen(t)
 			{
-				$('observa').innerHTML = t.responseText
+				$('facturacion').innerHTML = t.responseText
 			}
 		});
-	
+		
 }
-//cierra la ventana de observaciones***************************************************************
-function cierra_ventana_observaciones()
+//Borra una factura , pregunta y lo del contador como lo hacemos
+function borrar_factura(factura)
 {
-	var estilo = $('observa').style
-	estilo.display = "none";
-	estilo.visibility = "hidden";
+	var url="datos.php"
+	var cliente = $F('id_cliente')
+	var mes = $('meses').value
+	var pars='opcion=13&cliente='+ cliente +'&mes='+ mes +'&factura='+factura
+	var myAjax = new Ajax.Request(url, {
+		method: 'post',
+		parameters: pars,
+		//onComplete: 
+		onComplete: listado_facturas()
+		//onCreate:$('tabla_resultados').innerHTML = "Cargando...<p/><img src='loader.gif' alt='Cargando...'/>"
+	
+	});
+		
 }
-
 //LANZA LA FUNCION DE GENFACTURA****************************************************************
 function genera_factura(codigo)
 {
@@ -393,71 +422,6 @@ function generar_excel()
 	}
 	else
 	alert("Debe seleccionar un cliente y Mes");
-}
-//GESTION DE FACTURAS - PRINCIPAL*************************************************************
-function gestion_facturas(tipo) //ya genera el listado
-{
-	var url="datos.php"
-	var pars
-	tipo = eval(tipo)
-	if(tipo == 1)
-	{
-		pars='opcion=11&tipo=1'
-		
-	}
-	else
-	{
-		var cliente = $F('id_cliente')
-		var mes = $('meses').value
-		pars='opcion=11&cliente='+ cliente +'&mes='+ mes + '&tipo=0'
-	}
-	var estilo = $('tabla').style
-	estilo.display='block'
-	estilo.visibility='visible'
-	var myAjax = new Ajax.Request(url,
-		{
-		method: 'post',
-		parameters: pars,
-		onComplete: function gen(t)
-			{
-				$('tabla').innerHTML = t.responseText
-			}
-		});
-}
-//Genera el listado de las facturas del cliente en tiempo que hemos marcado
-function listado_facturas()
-{
-	var url="datos.php"
-	var cliente = $F('id_cliente')
-	var mes = $('meses').value
-	var pars='opcion=12&cliente='+ cliente +'&mes='+ mes
-	var myAjax = new Ajax.Request(url,
-		{
-		method: 'post',
-		parameters: pars,
-		onComplete: function gen(t)
-			{
-				$('facturacion').innerHTML = t.responseText
-			}
-		});
-		
-}
-//Borra una factura , pregunta y lo del contador como lo hacemos
-function borrar_factura(factura)
-{
-	var url="datos.php"
-	var cliente = $F('id_cliente')
-	var mes = $('meses').value
-	var pars='opcion=13&cliente='+ cliente +'&mes='+ mes +'&factura='+factura
-	var myAjax = new Ajax.Request(url, {
-		method: 'post',
-		parameters: pars,
-		//onComplete: 
-		onComplete: listado_facturas()
-		//onCreate:$('tabla_resultados').innerHTML = "Cargando...<p/><img src='loader.gif' alt='Cargando...'/>"
-	
-	});
-		
 }
 function ver_factura(id)
 {

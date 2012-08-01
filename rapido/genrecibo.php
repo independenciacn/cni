@@ -1,90 +1,144 @@
 <?php
-require_once '../inc/variables.php'; 
-//genrecibo.php. Fichero que genera el Recibo para el cliente. Realizado por Ruben Lacasa Mas ruben@ensenalia.com 2006-2007
-if (isset($_GET['id'])) {
-	function cambiaf($stamp) //funcion del cambio de fecha
-	{
-		//formato en el que llega aaaa-mm-dd o al reves
-		$fdia = explode("-",$stamp);
-		$fecha = $fdia[2]."-".$fdia[1]."-".$fdia[0];
-		return $fecha;
+/**
+ * genrecibo.php File Doc Comment
+ * 
+ * Fichero que genera el Recibo para el cliente.
+ * 
+ * PHP Version 5.2.6
+ * 
+ * @category rapido
+ * @package  cni/rapido
+ * @author   Ruben Lacasa Mas <ruben@ensenalia.com> 
+ * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/ 
+ *           Creative Commons Reconocimiento-NoComercial-SinObraDerivada 3.0 Unported
+ * @link     https://github.com/independenciacn/cni
+ */
+require_once '../inc/variables.php';
+require_once '../inc/Cni.php';
+require_once '../inc/Cliente.php'; 
+Cni::chequeaSesion();
+if (isset( $_SESSION['usuario'] ) && isset($_GET['id'])) {
+	$sql = "SELECT
+	id_cliente as cliente,
+	codigo, 
+	fpago as formaPago,
+	importe,
+	DATE_FORMAT(fecha, '%d-%m-%Y') as fecha,
+	obs_alt as obs
+	FROM regfacturas 
+	WHERE id LIKE ?";
+	$resultados = Cni::consultaPreparada(
+		$sql, 
+		array($_GET['id']), 
+		PDO::FETCH_CLASS
+	);
+	foreach ($resultados as $resultado) {
+		$idCliente = $resultado->cliente;
+		$codigo = $resultado->codigo;
+		$formaPago = $resultado->formaPago;
+		$importe = Cni::formateaNumero($resultado->importe, true);
+		$fecha = $resultado->fecha;
+		$vto = strtok($resultado->obs, "VTO ");
+		if (isset($vto[1])) {
+			$vencimiento = $vto;
+		} else {
+			$vencimiento = $fecha;
+		}
 	}
-	
-	function ficha_cliente($cliente)
-	{
-		global $con;
-		$sql = "Select * from clientes where id like ".$cliente;
-		$consulta = mysql_query($sql,$con);
-		$resultado = mysql_fetch_array($consulta);
-		$cadena = strtoupper($resultado[1])."<br>
-				".$resultado[6]."<br>
-				".$resultado[8]."&nbsp;&nbsp;-&nbsp;&nbsp;".$resultado[7]."<br>
-				NIF:".$resultado[5];
-		return $cadena;
-	}
-	
-	function forma_pago($cliente)
-	{
-		global $con;
-		$sql = "SELECT fpago from facturacion where idemp like ".$cliente;
-		$consulta = mysql_query($sql,$con);
-		$resultado = mysql_fetch_array($consulta);
-		return $resultado['fpago'];
-	}
-
-$sql = "Select * from regfacturas where id like ".$_GET['id'];
-$consulta = mysql_query($sql,$con);
-$resultado = mysql_fetch_array($consulta);
-/* Analisis de las observaciones para fijar vencimiento*/
-$vto = strtok($resultado['obs_alt'],"VTO ");
-if(isset($vto[1])) {
-	$vencimiento = $vto;
-} else {
-	$vencimiento = cambiaf($resultado['fecha']);
-}
-?>
-<html>
+	$cliente = new Cliente($idCliente);
+	?>
+<!DOCTYPE html>
+<html lang="es">
 <head>
-<title>RECIBO</title>
-<link rel="stylesheet" type='text/css' href="estilo.css" />
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta charset="utf-8">
+	<link  href="../bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+	<title>RECIBO</title>
+	<style>
+	th {
+		background-color:#eee;
+	}
+	.concepto {
+		height:6.25em;
+	}
+	.marca {
+		font-weight: bold;
+	}
+	</style>
 </head>
-<body>
-<table cellpadding='2px' cellspacing='0px' width='100%' id='tabloide'>
-<tr>
-	<th align='left'>NUMERO FACTURA</th>
-	<th align='left'>FORMA PAGO</th>
-	<th align='left'>IMPORTE</th>
-</tr>
-<tr>
-	<td><? echo $resultado['codigo']; ?></td>
-	<td><? echo forma_pago($resultado['id_cliente']);?></td>
-	<td><? echo number_format($resultado['importe'],2,',','.'); ?></td>
-</tr>
-<tr>
-	<th align='left'>FECHA FACTURA</th>
-	<th align='left'>VENCIMIENTO</th>
-	<th>&nbsp;</th>
-</tr>
-<tr>
-	<td><? echo cambiaf($resultado['fecha']); ?></td>
-	<td><? echo $vencimiento; ?></td>
-	<td>&nbsp;</td>
-</tr>
-<tr>
-	<th colspan='3' align='left'>CONCEPTO:</th>
-</tr>
-<tr>
-	<td colspan='3' height='100px'>&nbsp;</td>
-</tr>
-<tr>
-	<th colspan='2' align='left'>CLIENTE</th>
-	<th align='left'>FIRMA</th>
-</tr>
-<tr>
-	<td colspan='2'><?php echo ficha_cliente( $resultado['id_cliente'] ); ?></td>
-	<td>&nbsp;</td>
-</tr>
+<body>	
+<table class='table table-bordered'>
+	<col span='2' width='40%' />
+	<col width='20%' />
+	<thead>
+		<tr>
+			<th>NUMERO FACTURA</th>
+			<th>FORMA PAGO</th>
+			<th>IMPORTE</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td><?= $codigo; ?></td>
+			<td><?= $formaPago; ?></td>
+			<td><?= $importe; ?></td>
+		</tr>
+	</tbody>
+	<thead>
+		<tr>
+			<th>FECHA FACTURA</th>
+			<th>VENCIMIENTO</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td><?= $fecha; ?></td>
+			<td><?= $vencimiento; ?></td>
+			<td></td>
+		</tr>
+	</tbody>
+	<thead>
+		<tr>
+			<th colspan='3'>CONCEPTO:</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td colspan='3' class='concepto'></td>
+		</tr>
+	</tbody>
+	<thead>
+		<tr>
+			<th colspan='2'>DATOS CLIENTE</th>
+			<th>FIRMA</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td colspan='2'>
+				<div class='row-fluid span8'>
+					<div class='span2 marca'>
+						NOMBRE:<br/>
+						NIF:<br/>
+						DIRECCIÓN:<br/>
+						CP:<br/>
+						CIUDAD:<br/>
+						PAIS:
+					</div>
+					<div>
+						<?= $cliente->nombre; ?><br/>
+						<?= $cliente->nif; ?><br/>
+						<?= $cliente->direccion; ?><br/>
+						<?= $cliente->cp; ?><br/>
+						<?= $cliente->ciudad; ?><br/>
+						<?= $cliente->pais; ?>
+					</div>
+				</div>	
+			</td>
+			<td></td>
+		</tr>
+	</tbody>
 </table>
-</body></html>
+</body>
+</html>
 <?php }
