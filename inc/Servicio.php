@@ -28,9 +28,9 @@ class Servicio
 		} else {
 			$this->fecha = date_create();
 		}
-		// TODO - Insert your code here
 	}
 	/**
+	 * Busca el servicios por el id y establece los datos
 	 * 
 	 * @param unknown_type $id
 	 */
@@ -42,6 +42,7 @@ class Servicio
 		$this->setDatosServicio($sql, $pars);
 	}
 	/**
+	 * Busca el servicio por el nombre y establece los datos
 	 * 
 	 * @param unknown_type $name
 	 */
@@ -53,6 +54,7 @@ class Servicio
 		$this->setDatosServicio($sql, $pars);
 	}
 	/**
+	 * Establece los datos del serivicio
 	 * 
 	 * @param unknown_type $sql
 	 * @param unknown_type $pars
@@ -89,6 +91,11 @@ class Servicio
 			}
 		}
 	}
+	/**
+	 * Devuelve el listados de los servicios activos
+	 * 
+	 * @return boolean
+	 */
 	public function listadoServiciosActivos()
 	{
 		$sql = "SELECT * 
@@ -99,6 +106,11 @@ class Servicio
 				ORDER BY Nombre";
 		return Cni::consultaPreparada($sql, array(), PDO::FETCH_CLASS);
 	}
+	/**
+	 * Devuelve el listado de todos los servicios
+	 * 
+	 * @return boolean
+	 */
 	public function listadoServicios()
 	{
 		$sql = "SELECT *

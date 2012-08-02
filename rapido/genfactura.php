@@ -17,20 +17,8 @@
 require_once '../inc/variables.php';
 require_once '../inc/Cni.php';
 require_once '../inc/Cliente.php';
+require_once '../inc/Servicio.php';
 require_once 'telecos.php';
-/**
- * Calculo del total con iva
- * @deprecated
- * @param  [type] $importe [description]
- * @param  [type] $iva     [description]
- * 
- * @return [type]          [description]
- */
-function iva($importe,$iva)
-{
-	$total = round($importe + ($importe * $iva)/100,2);
-	return $total;
-}
 /**
  * Devuelve las observaciones especiales en el caso de que las tenga
  * 
@@ -70,109 +58,96 @@ function observacionesEspeciales($factura)
  */
 function consultaFecha($cliente, $mes, $inicial, $final)
 {
-	global $con;
-	$check1 = $inicial{4};
-	$check2 = $final{4};
-	if($check1!='-')
-	$inicial=cambiaf($inicial);
-	if($check2!='-')
-	$final=cambiaf($final);
-	if($inicial!='0000-00-00') {
-		if(($final!="0000-00-00") && ($final!="--") && ($final!="")) {
-			$cadena .= " and datediff(c.fecha,'".$inicial."') >= 0 
-			and datediff(c.fecha,'".$final."') <=0 ";
+	$cadena = "";
+	if ($inicial != '00-00-0000') {
+		if ($final != '00-00-0000') {
+			$cadena = " AND DATEDIFF(
+						c.fecha,
+						STR_TO_DATE('".$inicial."', '%d-%m-%Y')
+					) >= 0 
+					AND DATEDIFF(
+						c.fecha,
+						STR_TO_DATE('".$final."', '%d-%m-%Y')
+					) <=0 ";
 		} else {
-			$cadena = " and c.fecha like '".$inicial."' ";
+			$cadena = " AND c.fecha LIKE 
+					STR_TO_DATE('".$inicial."', '%d-%m-%Y') ";
 		}
 	} else {
-		$sql = "Select valor from agrupa_factura 
-		where idemp like ".$cliente." and concepto like 'dia'";
-		$consulta = mysql_query($sql,$con);
-		if(mysql_numrows($consulta)!=0) {
-			$resultado = mysql_fetch_array($consulta);
-			if($resultado[0]!="") {
-				$mes_ant = $mes - 1;
-				$fecha_inicial = date('Y')."-".$mes_ant."-".$resultado[0];
-				$fecha_final = date('Y')."-".$mes."-".$resultado[0];
-				$cadena =" and (c.fecha > '".$fecha_inicial."' 
-				and c.fecha <= '".$fecha_final."')";
-			} else {
-				$cadena =" and (date_format(curdate(),'%Y') 
-				like date_format(c.fecha,'%Y') 
-				and '".$mes."' like date_format(c.fecha,'%c')) ";
+		/**
+		 * Para los que tienen dia de facturacion
+		 */
+		$sql = "SELECT 
+				valor as dia 
+				FROM agrupa_factura 
+				WHERE idemp LIKE ?
+				AND concepto LIKE 'dia'
+				AND valor NOT LIKE ''";
+		$resultados = Cni::consultaPreparada(
+						$sql,
+						array($cliente),
+						PDO::FETCH_CLASS
+						);
+		if (Cni::totalDatosConsulta() > 0) {
+			$anyo = date('Y');
+			foreach ($resultados as $resultado) {
+				$fecha = $anyo."-".$mes."-".$resultado->dia;
+				$cadena = " AND (
+						c.fecha > DATE_SUB('','".$fecha."', INTERVAL 1 MONTH)
+						AND c.fecha <= '".$fecha."')";
 			}
 		} else {
-		$cadena=" and (date_format(curdate(),'%Y') 
-	like date_format(c.fecha,'%Y') and '$mes' like date_format(c.fecha,'%c')) ";
+			$cadena = "AND YEAR(curdate()) LIKE YEAR(c.fecha)
+					AND '".$mes."' LIKE MONTH(c.fecha)";
 		}
 	}
-	//echo "Punto de control consulta_fecha valor cadena:".$cadena;
 	return $cadena;
 }
 /**
- * Generacion de los no agrupados
+ * Generacion de la parte de la consutla de lso no Agrupados y no agrupados
  * 
- * @param string $cliente
- */
-function consulta_no_agrupado($cliente)
-{
-	global $con;
-	$pila = array(
-			"Franqueo","Consumo Tel%fono",
-			"Material de oficina","Secretariado","Ajuste");
-	$i=5;
-	$sql = "Select s.Nombre,a.valor from 
-	agrupa_factura as a join servicios2 as s on a.valor = s.id 
-	where a.idemp like ".$cliente." and a.concepto like 'servicio'";
-	$consulta = mysql_query($sql,$con);
-	if(mysql_numrows($consulta)!=0) {
-		while(true == ($resultado = mysql_fetch_array($consulta))) {
-			$pila[]=$resultado[0];
-			$i++;
-		}
-	}
-	$cadena = "and (";
-	for($j=0;$j<=count($pila)-1;$j++) {
-		$cadena .= " d.Servicio like '".$pila[$j]."' ";
-		if ($j!=count($pila)-1) {
-			$cadena .= " or ";
-		}
-	}
-	$cadena .=") order by d.ImporteEuro desc , d.Servicio asc";
-	return $cadena;
-}
-/**
- * Generacion de consulta de los agrupamientos
+ * @param unknown_type $cliente
+ * @param boolean $agrupado true = agrupado, false = no agrupado
  * 
- * @param string $cliente
  * @return string
  */
-function consulta_agrupado($cliente)
+function consultaAgrupado($cliente, $agrupado = false)
 {
-	global $con;
-	$pila = array(
-			"Franqueo","Consumo Tel%fono","Material de oficina",
-			"Secretariado","Ajuste");
-	$i=5;
-	$sql = "Select s.Nombre,a.valor from agrupa_factura as a 
-	join servicios2 as s on a.valor = s.id where a.idemp like ".$cliente."
-	 and a.concepto like 'servicio'";
-	$consulta = mysql_query($sql,$con);
-	if(mysql_numrows($consulta)!=0) {
-		while(true == ($resultado = mysql_fetch_array($consulta))) {
-			$pila[]=$resultado[0];
-			$i++;
+	$union = "OR";
+	$like = "LIKE";
+	$groupBy = "";
+	if ($agrupado) {
+		$union = "AND";
+		$like = "NOT LIKE";
+		$groupBy = "GROUP BY d.Servicio";
+	}
+	$noAgrupados = array(
+			"Franqueo","Consumo Tel%fono",
+			"Material de oficina","Secretariado","Ajuste");
+	$sql = "SELECT 
+			s.Nombre AS nombre,
+			FROM agrupa_factura AS a 
+			INNER JOIN servicios2 AS s 
+			ON a.valor = s.id 
+			WHERE a.idemp LIKE ?".$cliente." 
+			AND a.concepto LIKE 'servicio'";
+	$resultados = Cni::consultaPreparada(
+			$sql,
+			array($cliente),
+			PDO::FETCH_CLASS
+			);
+	if (Cni::totalDatosConsulta() > 0) {
+		foreach ($resultados as $resultado) {
+			$noAgrupados[] = $resulado->nombre;
 		}
 	}
 	$cadena = "and (";
-	for($j=0;$j<=count($pila)-1;$j++) {
-		$cadena .= " d.Servicio not like '".$pila[$j]."' ";
-		if ($j!=count($pila)-1) {
-			$cadena .= " and ";
-		}
+	foreach ($noAgrupados as $noAgrupado) {
+		$cadena .= " d.Servicio ".$like." '".$noAgrupado."' ".$union." ";
 	}
-	$cadena .=") group by d.Servicio 
-	order by d.ImporteEuro desc, d.Servicio asc";
+	$cadena = substr($cadena, 0, strlen($cadena) - (strlen($union) + 1));
+	$cadena .=") ".$groupBy."  
+			ORDER BY d.ImporteEuro DESC , d.Servicio ASC";
 	return $cadena;
 }
 /**
@@ -238,72 +213,107 @@ function cabezeraFactura($nombreFichero, $fechaFactura, $codigo, $cliente)
  * @param string $codigo
  * @return string $pie_factura;
  */
-function pie_factura( $cliente, $observaciones, $codigo )
+function pieFactura($cliente, $observaciones, $codigo)
 {
-	global $con;
-	$pie_factura = "";
+	$html = "";
 	// Con estos tipos de formas de pago aparecera
 	$pagoCC = array("Cheque","Contado","Tarjeta credito","Liquidación");
 	$pagoNCC = array("Cheque");
-	/* 
+	$faltan = false;
+	/** 
 	 * Comprobamos si esta metido dentro de regfacturas,
 	 * si no lo consultamos, lo metemos y lo mostramos
 	 */
-	$sql="Select * from regfacturas where codigo like '" . $codigo ."'";
-	$consulta = mysql_query( $sql, $con );
-	$resultado = mysql_fetch_array( $consulta );
-	$camposPie = array( 0=>'fpago', 1=>'obs_fpago', 2=>'obs', 3=>'pedidoCliente');
-	//$camposPieFac = array( 0=>'fpago', 1=>'cc', 2=>'obs', 3=>'dpago');
-	// Si es 1 la factura esta dada de alta
-	if ( mysql_num_rows( $consulta )!= 0 ) {
-		foreach( $resultado as $key => $row ) {
-			if ( in_array( $key, $camposPie ) ) {
-				if ( !is_null( $row ) && $row != "" ) {
-					$valoresPie[$key] = $row;
-				}
+	$sql = "SELECT 
+		fpago AS formaPago,
+		obs_fpago AS obsFormaPago,
+		pedidoCliente
+		FROM regfacturas 
+		WHERE codigo LIKE ?";
+	$resultados = Cni::consultaPreparada(
+			$sql,
+			array($codigo),
+			PDO::FETCH_CLASS
+			);
+	if (Cni::totalDatosConsulta() > 0) {
+		foreach ($resultados as $resultado) {
+			$valoresPie['formaPago'] = $resultado->formaPago;
+			$valoresPie['obsFormaPago'] = $resultado->obsFormaPago;
+			$valoresPie['pedidoCliente'] = $resultado->pedidoCliente;
+		}
+		/**
+		 * Comprobamos si alguno de los datos almacenados no tienen datos
+		 */
+		foreach ($valoresPie as $valor) {
+			if ( is_null($valor) || $valor == "") {
+				$faltan = true;
+				break;
 			}
 		}
-		if ( is_null( $resultado['fpago'] ) || is_null( $resultado['obs_fpago'] )
-		 || is_null( $resultado['pedidoCliente'] ) ) {
-		    // Si no esta dada de alta consultamos los datos de facturacion
-		    $sql = "SELECT fpago, cc as obs_fpago, dpago as pedidoCliente 
-		    from facturacion where idemp like " . $cliente;
-		    $consulta = mysql_query( $sql, $con );
-		    $resultado = mysql_fetch_array( $consulta );
-		    if ( mysql_num_rows( $consulta ) != 0  ) {
-			    foreach( $resultado as $key => $row ) {
-				    if ( in_array( $key, $camposPie ) ) {
-					    if ( !is_null( $row ) && $row != "" ) {
-					        $valoresPie[$key] = $row;
-					    }
-				    }
-			    }
-			    if ( !in_array( $valoresPie['fpago'], $pagoCC ) ) {
-				    $valoresPie['obs_fpago']="Cuenta: ". $valoresPie['obs_fpago'];
-			    } elseif ( in_array( $valoresPie['fpago'], $pagoNCC ) && $valoresPie['cc']!="" ) {
-				    $valoresPie['obs_fpago']="Vencimiento: ". $valoresPie['obs_fpago'];
-			    }
-			    // Actualizamos regfacturas
-			    $sql = "Update regfacturas set 
-				fpago ='" . $valoresPie['fpago'] . "', 
-				obs_fpago ='" . $valoresPie['obs_fpago'] . "',
-				pedidoCliente ='". $valoresPie['pedidoCliente'] ." '   
-				where codigo like " . $codigo;
-			    mysql_query( $sql , $con );
-		    }
-	    }
-	    $pie_factura = "<br/>
+		/**
+		 * Ni no existe algun dato lo consultamos y lo agregamos
+		 */
+		if ($faltan) {
+			$sql = "SELECT 
+				fpago AS formaPago, 
+				cc AS obsFormaPago, 
+				dpago AS pedidoCliente 
+		    	FROM facturacion 
+				WHERE idemp LIKE ?";
+			$resultados = Cni::consultaPreparada(
+					$sql,
+					array($cliente),
+					PDO::FETCH_CLASS
+					);
+			foreach ($resultados as $resultado) {
+				$valoresPie['formaPago'] = $resultado->formaPago;
+				$valoresPie['obsFormaPago'] = $resultado->obsFormaPago;
+				$valoresPie['pedidoCliente'] = $resultado->pedidCliente;
+			}
+			/**
+			 * Reescribimos valores si se aplica
+			 */
+			if (!in_array($valoresPie['formaPago'], $pagoCC)) {
+				$valoresPie['formaPago'] =
+					"Cuenta: ". $valoresPie['formaPago'];
+			} elseif (in_array($valoresPie['formaPago'], $pagoNCC)
+					&& $valoresPie['cc'] != "" ) {
+				$valoresPie['obsFormaPago'] =
+					"Vencimiento: ". $valoresPie['obsFormaPago'];
+			}
+			/**
+			 * Actualizamos regfacturas
+			 */
+			$sql = "Update regfacturas set
+				fpago = ?, 
+				obs_fpago = ?,
+				pedidoCliente = ?,
+				WHERE codigo LIKE ?";
+			$params = array(
+					$valoresPie['formaPago'],
+					$valoresPie['obsFormaPago'],
+					$valoresPie['pedidoCliente'],
+					$codigo
+					);
+			Cni::consultaPreparada($sql, $params);
+		}
+		/**
+		 * Construimos el pie y lo devolvemos
+		 */
+		$html = "
+		<br/>
 		<div class='celdia_sec'>
-		Forma de pago: ". $valoresPie['fpago'] ."<br/>" .
-	    $valoresPie['obs_fpago']."<br/>" .
-	    $valoresPie['pedidoCliente'] . 
-	    observacionesEspeciales( $codigo ) .
+			Forma de pago: ". $valoresPie['formPago'] ."<br/>" .
+				$valoresPie['obsFormaPago']."<br/>" .
+				$valoresPie['pedidoCliente'] .
+				observacionesEspeciales( $codigo ) .
 		"</div>";
 	}
-	return $pie_factura;
+	return $html;
 }
 /**
- * Genera la consulta del almacenaje dependiendo de los parametros de agrupa_factura
+ * Genera la consulta del almacenaje dependiendo de los 
+ * parametros de agrupa_factura
  * 
  * @param string $cliente
  * @param string $mes
@@ -311,51 +321,53 @@ function pie_factura( $cliente, $observaciones, $codigo )
  * @param string $final
  * @return string
  */
-function consulta_almacenaje($cliente,$mes,$inicial,$final)
+function consultaAlmacenaje($cliente, $mes, $inicial, $final)
 {
-	global $con;
-	$check1=$inicial{4};
-	$check2=$final{4};
-	if ($check1!='-') {
-        $inicial=cambiaf($inicial); 
-	}
-	if ($check2!='-') {
-        $final=cambiaf($final);
-	}
-	if(($inicial == '0000-00-00') && ($final == '0000-00-00')) {
-		$sql = "Select * from agrupa_factura where concepto like 'dia' 
-		and idemp like ".$cliente." and valor not like ''" ;
-		$consulta = mysql_query($sql,$con);
-		if ( mysql_numrows( $consulta ) !=0 ) {
-			$resultado = mysql_fetch_array($consulta);
-			$sql .= "Select bultos, datediff(fin,inicio), inicio, fin  
-			from z_almacen where cliente like ".$cliente." 
-			and (month(inicio) like (".$mes."-1) and month(fin) like ".$mes." 
-			and day(inicio) >= ".$resultado['valor']."  and 
-			day(fin) <= ".$resultado['valor']." and year(inicio) 
-			like year(curdate()) and year(fin) like year(curdate()))";
+	if (($inicial == '00-00-0000') && ($final == '00-00-0000')) {
+		/**
+		 * Consultamos si hay datos agrupados
+		 */
+		$sql = "SELECT * 
+				FROM agrupa_factura 
+				WHERE concepto LIKE 'dia' 
+				AND idemp LIKE ? 
+				AND valor NOT LIKE ''" ;
+		$resultados = Cni::consultaPreparada(
+				$sql,
+				array($cliente),
+				PDO::FETCH_CLASS
+				);
+		/**
+		 * Consulta raiz del resto
+		 */
+		$sql = "SELECT 
+				bultos, 
+				datediff(fin,inicio), 
+				inicio, 
+				fin
+				FROM z_almacen 
+				WHERE cliente LIKE '".$cliente."' ";
+		if (Cni::totalDatosConsulta() > 0) {
+			foreach ($resultados as $resultado) {
+				$sql.="AND (month(inicio) LIKE (".$mes."-1) 
+					AND month(fin) LIKE ".$mes."
+					AND DAY(inicio) >= ".$resultado->valor."  
+					AND DAY(fin) <= ".$resultado->valor." 
+					AND YEAR(inicio) LIKE YEAR(curdate()) 
+					AND YEAR(fin) LIKE YEAR(curdate()))";
+			}
 		} else {
-			$sql = "Select bultos, datediff(fin,inicio), inicio, fin  
-			from z_almacen where cliente like ".$cliente." 
-			and month(fin) like ".$mes." and year(fin) like year(curdate())";
+			$sql .= "AND MONTH(fin) LIKE ".$mes." 
+					AND YEAR(fin) LIKE year(curdate())";
 		}
 	} else {
-		$check1=$inicial{4};
-		$check2=$final{4};
-		if ($check1!='-') {
-			$inicial=cambiaf($inicial);
-		}
-		if ($check2!='-') {
-			$final=cambiaf($final);
-		}
-	 	if (($inicial != "" ) && ($final != "")) {
-			$sql = "Select bultos, datediff(fin,inicio), inicio, fin 
-			from z_almacen where cliente like ".$cliente." and month(fin) 
-			like month('".$final."') and year(fin) like year('".$final."')";
+	 	if (($inicial != "00-00-0000" ) && ($final != "00-00-0000")) {
+			$sql .= "AND MONTH(fin) LIKE 
+					MONTH(STR_TO_DATE('".$final."', '%d-%m-%Y')) 
+					AND YEAR(fin) LIKE 
+					YEAR(STR_TO_DATE('".$final."', '%d-%m-%Y))";
 	 	} else {
-			$sql = "Select bultos, datediff(fin,inicio), inicio, fin 
-			from z_almacen where cliente like ".$cliente." 
-			and fin <= '".$final."'";
+			$sql = "AND fin <= STR_TO_DATE('".$final."', %d-%m-%Y)";
 		}
 	}
 	return $sql;
@@ -435,6 +447,7 @@ function agregaHistorico($factura, $servicio, $cantidad, $unitario, $iva, $obs)
 	Cni::consultaPreparada($sql, $params);
 	return true;
 }
+
 /**
  * Funcion Principal - Obligatorio el cliente
  * Parametros del get cliente, mes, fecha_factura, codigo
@@ -499,11 +512,10 @@ if (isset($_GET['factura']) || isset($_GET['duplicado'])) {
 	}
 }
 $nombreFichero = "<span style='font-size:16.0pt'>" . $titulo . "</span>";
-
-
-//PRESENTACION************************************************************************/
-//CASOS POSIBLES, MENSUAL y PUNTUAL en puntual hay que pasar los limites
-//fecha_inicial_factura y fecha_final_factura
+/**
+ * Casos posibles, mensual y Puntual.
+ * En Puntual hay que pasar los limites fechaInicialFactura y FechaFinalFactura
+ */
 if (($fechaInicial != '00-00-0000') && ($fechaFinal != '00-00-0000')) {
 	$inicio = $fechaInicial;
 	$final = $fechaFinal;
@@ -629,10 +641,9 @@ if ($resultadosHistorico) {
 			}
 		}
 	}
-/************************************************************************************/
-//Devuelve la consulta para generar el almacenaje
-/*Parte de consulta de importe e iva de almacenaje*/
-    /*Buscamos los datos de importe e iva de almacenaje*/
+	/**
+	 * Seccion de almacenaje
+	 */
     $sql = "Select datediff('".cambiaf($fechaFactura)."','2010-07-01')";
     //echo $sql;
     $consulta = mysql_query($sql,$con);
@@ -646,7 +657,7 @@ if ($resultadosHistorico) {
         $par_almacenaje = array('PrecioEuro'=>'0.70','iva'=>'16');
     }
     /*Final datos de valores del almacenaje*/
-	$sql = consulta_almacenaje($cliente,$mes,$inicio,$final);
+	$sql = consultaAlmacenaje($cliente,$mes,$inicio,$final);
 	//echo $sql;/*PUNTO DE CONTROL*/
 	
 	$consulta = mysql_query($sql,$con);
@@ -683,7 +694,7 @@ if ($resultadosHistorico) {
 	on c.`Id Pedido` = d.`Id Pedido` where c.Cliente like ".$cliente;
 //consulta de fecha
 	$sql .= consultaFecha($cliente,$mes,$inicio,$final); //con esta miramos los rangos de la factura
-	$sql .= consulta_no_agrupado($cliente);
+	$sql .= consultaAgrupado($cliente, false);
 	//echo $sql;/*PUNTO DE CONTROL*/
 	$consulta = mysql_query($sql,$con);
 	while (true == ($resultado=mysql_fetch_array($consulta))) {
@@ -713,7 +724,7 @@ if ($resultadosHistorico) {
 	d.observaciones from `detalles consumo de servicios` as d join `consumo de servicios` as c 
 	on c.`Id Pedido` = d.`Id Pedido` where c.Cliente like $cliente";
 	$sql .= consultaFecha($cliente,$mes,$inicio,$final);
-	$sql .= consulta_agrupado($cliente);
+	$sql .= consultaAgrupado($cliente, true);
 	//echo $sql;//<- Punto de Control
 	//echo $cliente.",".$mes.",".$inicio.",".$final;
 	$consulta = mysql_query($sql,$con);
@@ -800,20 +811,32 @@ $html .= "
 echo $html;
 //RESUMEN
 	$total_iva = $total - $bruto;
-	echo "<br/><table width='100%' cellpadding='2px' cellspacing='2px' style='font-size:10.0pt'><tr>
-	<th width='15%'>&nbsp;</th>
-	<th  class='celdilla_tot' >TOTAL BRUTO</th>
-	<th width='15%'>&nbsp;</th>
-	<th  class='celdilla_tot' >IVA</th>
-	<th width='15%'>&nbsp;</th>
-	<th  class='celdilla_tot' >TOTAL</th></tr>
-	<tr>
-	<th width='15%'>&nbsp;</th>
-	<th  class='celdilla_tot' >".number_format($bruto,2,',','.')."&euro;</th>
-	<th width='15%'>&nbsp;</th>
-	<th  class='celdilla_tot' >".number_format($total_iva,2,',','.')."&euro;</th>
-	<th width='15%'>&nbsp;</th>
-	<th  class='celdilla_tot' >".number_format($total,2,',','.')."&euro;</th></tr>
+	echo "<br/>
+	<table class='table table-bordered table-striped'>
+	<colgroup width='15%' />
+	<colgroup />
+	<colgroup width='15%' />
+	<colgroup />
+	<colgroup width='15%' />
+	<colgroup />
+	<thead>
+		<tr>
+			<th>&nbsp;</th>
+			<th>TOTAL BRUTO</th>
+			<th>&nbsp;</th>
+			<th>IVA</th>
+			<th>&nbsp;</th>
+			<th>TOTAL</th>
+		</tr>
+ 		<tr>
+			<th>&nbsp;</th>
+			<th>".Cni::formateaNumero($bruto, true)."</th>
+			<th>&nbsp;</th>
+			<th>".Cni::formateaNumero($total_iva, true)."</th>
+			<th>&nbsp;</th>
+			<th>".Cni::formateaNumero($total, true)."</th>
+		</tr>
+	</thead>
 	</table>";
 	//$pie_factura .= "<br />".$bruto."-".iva($bruto,16)."<br />";
 //aqui insertaria la factura en la base de datos
@@ -856,7 +879,7 @@ if(($fichero!="PROFORMA") && (!isset($_GET['duplicado']))) {
 
 /**************************************************************************************/	
 //PIE FACTURA*************************************************************************/
-echo pie_factura($cliente,$observaciones,$codigo);
+echo pieFactura($cliente,$observaciones,$codigo);
 //echo $pie_factura;
 ?>
 </body></html>
