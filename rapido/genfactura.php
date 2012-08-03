@@ -18,7 +18,6 @@ require_once '../inc/variables.php';
 require_once '../inc/Cni.php';
 require_once '../inc/Cliente.php';
 require_once '../inc/Servicio.php';
-require_once 'telecos.php';
 /**
  * Devuelve las observaciones especiales en el caso de que las tenga
  * 
@@ -129,7 +128,7 @@ function consultaAgrupado($cliente, $agrupado = false)
 			FROM agrupa_factura AS a 
 			INNER JOIN servicios2 AS s 
 			ON a.valor = s.id 
-			WHERE a.idemp LIKE ?".$cliente." 
+			WHERE a.idemp LIKE ? 
 			AND a.concepto LIKE 'servicio'";
 	$resultados = Cni::consultaPreparada(
 			$sql,
@@ -268,7 +267,7 @@ function pieFactura($cliente, $observaciones, $codigo)
 			foreach ($resultados as $resultado) {
 				$valoresPie['formaPago'] = $resultado->formaPago;
 				$valoresPie['obsFormaPago'] = $resultado->obsFormaPago;
-				$valoresPie['pedidoCliente'] = $resultado->pedidCliente;
+				$valoresPie['pedidoCliente'] = $resultado->pedidoCliente;
 			}
 			/**
 			 * Reescribimos valores si se aplica
@@ -303,7 +302,7 @@ function pieFactura($cliente, $observaciones, $codigo)
 		$html = "
 		<br/>
 		<div class='celdia_sec'>
-			Forma de pago: ". $valoresPie['formPago'] ."<br/>" .
+			Forma de pago: ". $valoresPie['formaPago'] ."<br/>" .
 				$valoresPie['obsFormaPago']."<br/>" .
 				$valoresPie['pedidoCliente'] .
 				observacionesEspeciales( $codigo ) .
@@ -316,13 +315,20 @@ function pieFactura($cliente, $observaciones, $codigo)
  * parametros de agrupa_factura
  * 
  * @param string $cliente
- * @param string $mes
+ * @param string $mesFactura
  * @param string $inicial
  * @param string $final
  * @return string
  */
-function consultaAlmacenaje($cliente, $mes, $inicial, $final)
+function consultaAlmacenaje($cliente, $mesFactura, $inicial, $final)
 {
+	$sqlFinal = "SELECT
+				bultos,
+				datediff(fin,inicio) AS dias,
+				DATE_FORMAT(inicio, '%d-%m-%Y') as inicio,
+				DATE_FORMAT(fin, '%d-%m-%Y') as fin
+				FROM z_almacen
+				WHERE cliente LIKE '".$cliente."' ";
 	if (($inicial == '00-00-0000') && ($final == '00-00-0000')) {
 		/**
 		 * Consultamos si hay datos agrupados
@@ -331,46 +337,36 @@ function consultaAlmacenaje($cliente, $mes, $inicial, $final)
 				FROM agrupa_factura 
 				WHERE concepto LIKE 'dia' 
 				AND idemp LIKE ? 
-				AND valor NOT LIKE ''" ;
+				AND valor NOT LIKE '' " ;
 		$resultados = Cni::consultaPreparada(
 				$sql,
 				array($cliente),
 				PDO::FETCH_CLASS
 				);
-		/**
-		 * Consulta raiz del resto
-		 */
-		$sql = "SELECT 
-				bultos, 
-				datediff(fin,inicio), 
-				inicio, 
-				fin
-				FROM z_almacen 
-				WHERE cliente LIKE '".$cliente."' ";
 		if (Cni::totalDatosConsulta() > 0) {
 			foreach ($resultados as $resultado) {
-				$sql.="AND (month(inicio) LIKE (".$mes."-1) 
-					AND month(fin) LIKE ".$mes."
+				$sqlFinal .= "AND (month(inicio) LIKE (".$mesFactura."-1) 
+					AND month(fin) LIKE ".$mesFactura."
 					AND DAY(inicio) >= ".$resultado->valor."  
 					AND DAY(fin) <= ".$resultado->valor." 
 					AND YEAR(inicio) LIKE YEAR(curdate()) 
 					AND YEAR(fin) LIKE YEAR(curdate()))";
 			}
 		} else {
-			$sql .= "AND MONTH(fin) LIKE ".$mes." 
+			$sqlFinal .= "AND MONTH(fin) LIKE ".$mesFactura." 
 					AND YEAR(fin) LIKE year(curdate())";
 		}
 	} else {
 	 	if (($inicial != "00-00-0000" ) && ($final != "00-00-0000")) {
-			$sql .= "AND MONTH(fin) LIKE 
+			$sqlFinal .= "AND MONTH(fin) LIKE 
 					MONTH(STR_TO_DATE('".$final."', '%d-%m-%Y')) 
 					AND YEAR(fin) LIKE 
 					YEAR(STR_TO_DATE('".$final."', '%d-%m-%Y))";
 	 	} else {
-			$sql = "AND fin <= STR_TO_DATE('".$final."', %d-%m-%Y)";
+			$sqlFinal .= "AND fin <= STR_TO_DATE('".$final."', %d-%m-%Y)";
 		}
 	}
-	return $sql;
+	return $sqlFinal;
 }
 /**
  * Consulta si la factura esta en el historico, si no esta devuelve false
@@ -411,7 +407,7 @@ function compruebaFactura($cliente, $codigo, $fecha, $iva, $total)
 			FROM regfacturas 
 			WHERE id_cliente LIKE ?
 			AND codigo LIKE ? 
-			AND fecha LIKE ?";
+			AND fecha LIKE STR_TO_DATE(?, '%d-%m-%Y')";
 	$params = array($cliente, $codigo, $fecha);
 	$resultados = Cni::consultaPreparada($sql, $params, PDO::FETCH_CLASS);
 	if (Cni::totalDatosConsulta() == 0) {
@@ -421,7 +417,7 @@ function compruebaFactura($cliente, $codigo, $fecha, $iva, $total)
 			iva =  ?, importe = ?
 			WHERE id_cliente LIKE ? 
 			AND codigo LIKE ? 
-			AND fecha like STR_TO_DATE(?)";
+			AND fecha like STR_TO_DATE(?, '%d-%m-%Y')";
 		$params = array($iva, $total, $cliente, $codigo, $fecha);
 		$resultados = Cni::consultaPreparada($sql, $params);
 		return false;
@@ -527,7 +523,7 @@ if (($fechaInicial != '00-00-0000') && ($fechaFinal != '00-00-0000')) {
  * Titulo de la pagina
  */
 $tituloPagina =
-	( $inicio!= "00-00-0000") ? "ocupacion puntual" : Cni::$meses["m"];
+	( $inicio!= "00-00-0000") ? "ocupacion puntual" : Cni::$meses[$mesFactura];
 /**
  * Cabezera de la factura - $ficher, $fecha_factura, $codigo, $cliente
  */
@@ -543,7 +539,6 @@ $cabezeraFactura = cabezeraFactura($fichero, $fechaFactura, $codigo, $cliente);
 </head>
 <body>
 <?php
-	var_dump($_GET);
 	$celdas = 0;
 	$cantidad = 0;
 	$total = 0;
@@ -633,10 +628,10 @@ if ($resultadosHistorico) {
 				agregaHistorico(
 					$codigo,
 					ucfirst($resultado->Servicio),
-					$resultados->unidades,
-					$resultados->Imp_Euro,
-					$resultados->iva,
-					$resultados->observaciones
+					$resultado->unidades,
+					$resultado->Imp_Euro,
+					$resultado->iva,
+					$resultado->observaciones
 				);
 			}
 		}
@@ -644,147 +639,196 @@ if ($resultadosHistorico) {
 	/**
 	 * Seccion de almacenaje
 	 */
-    $sql = "Select datediff('".cambiaf($fechaFactura)."','2010-07-01')";
-    //echo $sql;
-    $consulta = mysql_query($sql,$con);
-    $diff = mysql_fetch_array($consulta);
-    if($diff[0]>=0)
-    {
-        $sql = "select PrecioEuro, iva from servicios2 where nombre like '%Almacenaje%'";
-        $consulta = mysql_query($sql,$con);
-        $par_almacenaje = mysql_fetch_array($consulta);
-    } else {
-        $par_almacenaje = array('PrecioEuro'=>'0.70','iva'=>'16');
-    }
-    /*Final datos de valores del almacenaje*/
-	$sql = consultaAlmacenaje($cliente,$mes,$inicio,$final);
-	//echo $sql;/*PUNTO DE CONTROL*/
-	
-	$consulta = mysql_query($sql,$con);
-	while (true == ($resultado = mysql_fetch_array($consulta))) {
-		$dias_almacen = $resultado[1];
-		$subtotala = $resultado[0]*$dias_almacen*$par_almacenaje['PrecioEuro'];
-        $totala = iva($subtotala,$par_almacenaje['iva']);
-		echo "<tr>
-		<td ><p class='texto'>Bultos Almacenados del  ".
-		cambiaf($resultado[2])." al ".cambiaf($resultado[3])."</p></td>
-		<td align='right'>".number_format($resultado[0],2,',','.')."&nbsp;</td>
-		<td align='right'>0,70&euro;&nbsp;</td>
-		<td align='right'>".number_format($subtotala,2,',','.')."&euro;&nbsp;</td>
-		<td align='right'>".$par_almacenaje['iva']."%&nbsp;</td>
-		<td align='right'>".number_format($totala,2,',','.')."&euro;&nbsp;</td></tr>";
-		$cantidad = $resultado[0] + $cantidad;
-		$bruto = $bruto + $subtotala;
-		$total = $totala + $total;
-		$celdas++;
-		$cadena_texto = " del  ".cambiaf($resultado[2])." al ".cambiaf($resultado[3]);
-		if(($historico == "ko")&& (!isset($_GET['prueba']))) { //Agregamos al historico
-			agregaHistorico($codigo,"Bultos Almacenados",$resultado[0],
-					$subtotala,$par_almacenaje['iva'],$cadena_texto);
+    $servicio = new Servicio($fechaFactura);
+    $servicio->setServicioByName('Almacenaje');
+    $sql = consultaAlmacenaje($cliente, $mesFactura, $inicio, $final);
+    $resultados = Cni::consultaPreparada($sql, array(), PDO::FETCH_CLASS);
+	foreach ($resultados as $resultado) {
+		$importe = $resultado->bultos * $resultado->dias * $servicio->precio;
+		$totalConIva = Cni::totalconIva($importe, $servicio->iva);
+		$html .= "
+ 			<tr>
+			<td>Bultos Almacenados del " . $resultado->inicio . " al 
+					" . $resultado->fin . "
+			</td>
+			<td>".Cni::formateaNumero($resultado->bultos)."</td>
+			<td>".Cni::formateaNumero($servicio->precio, true)."</td>
+			<td>".Cni::formateaNumero($importe, true)."</td>
+			<td>".Cni::formateaNumero($servicio->iva)."%</td>
+			<td>".Cni::formateaNumero($totalConIva, true)."</td>
+			</td>
+			</tr>";
+		$total += $totalConIva;
+		$bruto += $importe;
+		$cantidad += $resultado->bultos;
+		$celdas ++;
+		if (!isset($_GET['prueba'])) {
+			agregaHistorico(
+			$codigo,
+			"Bultos Almacenados",
+			$resultado->bultos,
+			$servicio->precio,
+			$servicio->iva,
+			" del " . $resultado->inicio . " al " . $resultado->fin
+			);
 		}
 	}
-//fin del almacenaje**********************************************************************/
-//FIN DE ESTA PARTE
-//Servicio contratado
-//#####################Servicios No agrupados#############################################
-//control de puntuales
-	$sql = "Select d.Servicio, d.Cantidad, date_format(c.fecha,'%d-%m-%Y') as fecha, 
-	d.PrecioUnidadEuros, d.ImporteEuro, d.iva, c.`Id Pedido` ,
-	d.observaciones from `detalles consumo de servicios` as d join `consumo de servicios` as c 
-	on c.`Id Pedido` = d.`Id Pedido` where c.Cliente like ".$cliente;
-//consulta de fecha
-	$sql .= consultaFecha($cliente,$mes,$inicio,$final); //con esta miramos los rangos de la factura
-	$sql .= consultaAgrupado($cliente, false);
-	//echo $sql;/*PUNTO DE CONTROL*/
-	$consulta = mysql_query($sql,$con);
-	while (true == ($resultado=mysql_fetch_array($consulta))) {
-		$subtotal = $resultado[4] + ($resultado[4]*$resultado[5])/100;
-//acumulados
-		$total = $subtotal + $total;
-		$cantidad = $resultado[1] + $cantidad;
-//fin acumulados
-		echo "<tr>
-		<td ><p class='texto'>".ucfirst($resultado[0])." 
-		".ucfirst($resultado[7])."</p></td>
-		<td align='right'>".number_format($resultado[1],2,',','.')."&nbsp;</td>
-		<td align='right'>".number_format($resultado[3],2,',','.')."&euro;&nbsp;</td>
-		<td align='right'>".number_format($resultado[4],2,',','.')."&euro;&nbsp;</td>
-		<td align='right'>".$resultado[5]."%&nbsp;</td>
-		<td align='right'>".number_format($subtotal,2,',','.')."&euro;&nbsp;</td></tr>";
-		$bruto = $bruto + $resultado[4];
-		$celdas++;
-		//$servicio_desc = ucfirst($resultado[0])." ".codifica(ucfirst($resultado[7]));
-		if(($historico == "ko")&& (!isset($_GET['prueba']))) { //Agregamos al historico
-			agregaHistorico($codigo,$resultado[0],$resultado[1],$resultado[3],$resultado[5],$resultado[7]);
+	/**
+ 	 * Servicios no Agrupados
+ 	 */
+	$sql = "SELECT 
+ 		d.Servicio AS Servicio, 
+ 		d.Cantidad AS unidades, 
+ 		date_format(c.fecha,'%d-%m-%Y') AS fecha, 
+		d.PrecioUnidadEuros AS precioUnidad, 
+ 		d.ImporteEuro AS importe, 
+ 		d.iva AS iva, 
+ 		c.`Id Pedido` AS idPedido,
+		d.observaciones AS observaciones 
+ 		FROM `detalles consumo de servicios` as d 
+ 		INNER JOIN `consumo de servicios` as c 
+		ON c.`Id Pedido` = d.`Id Pedido` 
+ 		WHERE c.Cliente like ? ";
+		$sql .= consultaFecha($cliente, $mesFactura, $inicio, $final);
+		$sql .= consultaAgrupado($cliente, false);
+		$resultados = Cni::consultaPreparada(
+					$sql,
+					array($cliente),
+					PDO::FETCH_CLASS
+					);
+	foreach ($resultados as $resultado) {
+		$importe = $resultado->unidades * $resultado->precioUnidad;
+		$totalConIva = Cni::totalconIva($importe, $resultado->iva);
+		$html .= "
+ 			<tr>
+			<td>".ucfirst($resultado->Servicio)."
+ 				".ucfirst($resultado->observaciones)."
+			</td>
+			<td>".Cni::formateaNumero($resultado->unidades)."</td>
+			<td>".Cni::formateaNumero($resultado->precioUnidad, true)."</td>
+			<td>".Cni::formateaNumero($importe, true)."</td>
+			<td>".Cni::formateaNumero($resultado->iva)."%</td>
+			<td>".Cni::formateaNumero($totalConIva, true)."</td>
+			</td>
+			</tr>";
+		$total += $totalConIva;
+		$bruto += $importe;
+		$cantidad += $resultado->unidades;
+		$celdas ++;
+		if (!isset($_GET['prueba'])) {
+			agregaHistorico(
+				$codigo,
+				ucfirst($resultado->Servicio),
+				$resultado->unidades,
+				$resultado->importe,
+				$resultado->iva,
+				$resultado->observaciones
+			);
 		}
 	}
-//#####################################Parte agrupada###############################################
-	$sql = "Select d.Servicio, sum(d.Cantidad), date_format(c.fecha,'%d-%m-%Y') as fecha, 
-	d.PrecioUnidadEuros, sum(d.ImporteEuro), d.iva, c.`Id Pedido` ,
-	d.observaciones from `detalles consumo de servicios` as d join `consumo de servicios` as c 
-	on c.`Id Pedido` = d.`Id Pedido` where c.Cliente like $cliente";
-	$sql .= consultaFecha($cliente,$mes,$inicio,$final);
+	/**
+ 	 * Servicios Agrupados
+ 	 */
+	$sql = "SELECT 
+		d.Servicio AS Servicio, 
+		sum(d.Cantidad) AS unidades,
+		date_format(c.fecha,'%d-%m-%Y') AS fecha, 
+		d.PrecioUnidadEuros AS precioUnidad, 
+		sum(d.ImporteEuro) AS importe, 
+		d.iva AS iva, 
+		c.`Id Pedido` AS idPedido,
+		d.observaciones AS observaciones 
+		FROM `detalles consumo de servicios` AS d 
+		INNER JOIN `consumo de servicios` AS c 
+		ON c.`Id Pedido` = d.`Id Pedido` 
+		WHERE c.Cliente LIKE ? ";
+	$sql .= consultaFecha($cliente, $mesFactura, $inicio, $final);
 	$sql .= consultaAgrupado($cliente, true);
-	//echo $sql;//<- Punto de Control
-	//echo $cliente.",".$mes.",".$inicio.",".$final;
-	$consulta = mysql_query($sql,$con);
-	while ( true == ($resultado=mysql_fetch_array($consulta))) {
-		$subtotal = $resultado[4]+ ($resultado[4]*$resultado[5])/100;
-//acumulados
-		$total = $subtotal + $total;
-		$cantidad = $resultado[1] + $cantidad;
-//fin acumulados
-		echo "<tr>
-		<td ><p class='texto'>".ucfirst($resultado[0])." 
-		".ucfirst($resultado[7])."</p></td>
-		<td align='right'>".number_format($resultado[1],2,',','.')."&nbsp;</td>
-		<td align='right'>".number_format($resultado[3],2,',','.')."&euro;&nbsp;</td>
-		<td align='right'>".number_format($resultado[4],2,',','.')."&euro;&nbsp;</td>
-		<td align='right'>".$resultado[5]."%&nbsp;</td>
-		<td align='right'>".number_format($subtotal,2,',','.')."&euro;&nbsp;</td></tr>";
-		$bruto = $bruto + $resultado[4];
-		$celdas++;
-		//$servicio_desc = ucfirst($resultado[0])." ".codifica(ucfirst($resultado[7]));
-		if(($historico == "ko")&& (!isset($_GET['prueba']))) { //Agregamos al historico
-			agregaHistorico($codigo,ucfirst($resultado[0]),$resultado[1],
-					$resultado[3],$resultado[5],ucfirst($resultado[7]));
+	$resultados = Cni::consultaPreparada(
+				$sql,
+				array($cliente),
+				PDO::FETCH_CLASS
+				);
+	foreach ($resultados as $resultado) {
+		$importe = $resultado->unidades * $resultado->precioUnidad;
+		$totalConIva = Cni::totalconIva($importe, $resultado->iva);
+		$html .= "
+ 			<tr>
+			<td>".ucfirst($resultado->Servicio)."
+ 				".ucfirst($resultado->observaciones)."
+			</td>
+			<td>".Cni::formateaNumero($resultado->unidades)."</td>
+			<td>".Cni::formateaNumero($resultado->precioUnidad, true)."</td>
+			<td>".Cni::formateaNumero($importe, true)."</td>
+			<td>".Cni::formateaNumero($resultado->iva)."%</td>
+			<td>".Cni::formateaNumero($totalConIva, true)."</td>
+			</td>
+			</tr>";
+		$total += $totalConIva;
+		$bruto += $importe;
+		$cantidad += $resultado->unidades;
+		$celdas ++;
+		if (!isset($_GET['prueba'])) {
+			agregaHistorico(
+			$codigo,
+			ucfirst($resultado->Servicio),
+			$resultado->unidades,
+			$resultado->importe,
+			$resultado->iva,
+			$resultado->observaciones
+			);
 		}
 	}
-//descuento si procede
-/**
- * El descuento se calcula del total de los servicios fijos
- * Esta como un servicio FIJO MENSUAL
- */
-		$esql = "Select razon from clientes where id like ".$cliente;
-		$consulta = mysql_query($esql,$con);
-		$resultado = mysql_fetch_array($consulta);
-		if(($resultado[0] != "") && ($resultado[0] != "")) {
-			$porcentaje = explode("%",$resultado[0]); // Porcentaje del descuento
-			$descuento = ($importeServiciosFijos * $porcentaje[0])/100;// @FIXME calculo en base al total de servicios fijos
-			$descuento_con_iva = $descuento * 1.18; 
-			echo "<tr>
-			<td ><p class='texto'>Descuento del ".$porcentaje[0]."%</p></td>
-			<td align='right'>1&nbsp;</td>
-			<td align='right'>-".number_format($descuento,2,',','.')."&euro;&nbsp;</td>
-			<td align='right'>-".number_format($descuento,2,',','.')."&euro;&nbsp;</td>
-			<td align='right'>18%&nbsp;</td>
-			<td align='right'>-".number_format($descuento_con_iva,2,',','.')."&euro;&nbsp;</td></tr>";
-			$descuento_historico = "-".$descuento;
-			if(($historico == "ko")&& (!isset($_GET['prueba']))){ //Agregamos al historico
-				agregaHistorico($codigo,"Descuento","1",$descuento_historico,"18", "del ".$porcentaje[0]);
+	/**
+ 	* El descuento se calcula del total de los servicios fijos
+ 	* Esta como un servicio FIJO MENSUAL
+ 	*/
+	$sql = "SELECT razon FROM clientes WHERE id like ? AND razon NOT LIKE ''";
+	$resultados = Cni::consultaPreparada(
+				$sql,
+				array($cliente),
+				PDO::FETCH_CLASS
+				);
+	if (Cni::totalDatosConsulta() > 0) {
+		foreach ($resultados as $resultado) {
+			$porcentaje = explode("%", $resultado->razon);
+			$descuento = ($importeServiciosFijos * $porcentaje[0]) / 100;
+			$descuentoConIva = Cni::totalconIva($descuento, IVA);
+			$html .= "
+ 			<tr>
+			<td>Descuento del ".$porcentaje[0]."%</td>
+			<td>1</td>
+			<td>".Cni::formateaNumero($descuento, true)."</td>
+			<td>".Cni::formateaNumero($descuento, true)."</td>
+			<td>".Cni::formateaNumero(IVA)."%</td>
+			<td>".Cni::formateaNumero($descuentoConIva, true)."</td>
+			</td>
+			</tr>";
+			if (!isset($_GET['prueba'])) {
+				agregaHistorico(
+				$codigo,
+				"Descuento",
+				"1",
+				"-".$descuento,
+				IVA,
+				"del " .$porcentaje[0]
+				);
 			}
-		} else {
-			$descuento = 0;
-			$descuento_con_iva = 0;
 		}
-		/**
-		 * Para el resultado de pie esta bien
-		 */
-		$bruto = $bruto - $descuento;
-		$total = $total - $descuento_con_iva;
-} //Cierre de las que no estan en historico
-
-//Compensacion de diseño
+	} else {
+		$descuento = 0;
+		$descuentoConIva = 0;
+	}
+	/**
+	 * Para el resultado de pie esta bien
+	 */
+	$bruto = $bruto - $descuento;
+	$total = $total - $descuentoConIva;
+}
+$totalIva = $total - $bruto;
+/**
+ * Compensacion del diseño para el llenado del A4
+ */
 	$coeficiente = 432 - ($celdas-1) * 18;
 if ($coeficiente >= 1) {
 	echo "<tr>
@@ -807,11 +851,8 @@ $html .= "
 		<th></th>
 		<th>".Cni::formateaNumero($total, true)."</th>
 	</tfoot>
-	</table>";
-echo $html;
-//RESUMEN
-	$total_iva = $total - $bruto;
-	echo "<br/>
+	</table>
+	<br/>
 	<table class='table table-bordered table-striped'>
 	<colgroup width='15%' />
 	<colgroup />
@@ -832,56 +873,52 @@ echo $html;
 			<th>&nbsp;</th>
 			<th>".Cni::formateaNumero($bruto, true)."</th>
 			<th>&nbsp;</th>
-			<th>".Cni::formateaNumero($total_iva, true)."</th>
+			<th>".Cni::formateaNumero($totalIva, true)."</th>
 			<th>&nbsp;</th>
 			<th>".Cni::formateaNumero($total, true)."</th>
 		</tr>
 	</thead>
 	</table>";
-	//$pie_factura .= "<br />".$bruto."-".iva($bruto,16)."<br />";
-//aqui insertaria la factura en la base de datos
-//campos a insertar id_cliente, codigo, fecha, consulta,importe
-//OPCIONES FACTURA NUEVA, PROFORMA, DUPLICADO o FACTURA
-//if(($fichero!="PROFORMA") && (!isset($_GET[factura])) && (!isset($_GET[duplicado])))
-//echo "COOOOOOOOOOOO".$inicio;
-	//echo $final;
-if(($fichero!="PROFORMA") && (!isset($_GET['duplicado']))) {
-	$fecha = cambiaf($fechaFactura);
-	if (isset($inicio) && ($final != '0000-00-00')) {
+$html .= pieFactura($cliente, $observaciones, $codigo);
+if (($fichero != "PROFORMA") && (!isset($_GET['duplicado']))) {
+	if (isset($inicio) && ($final != '00-00-0000')) {
 		$puntual = 1;
-		$fecha_inicial = cambiaf($inicio);
-		$fecha_final = cambiaf($final);
 	}
-	$importe_iva = number_format($total_iva,2,'.','');
-	$importe_total = number_format($total,2,'.','');
-	//estamos en Factura si es repetida no se agrega
-	//Linea de teste de fechas
-	if(compruebaFactura($cliente,$codigo,$fechaFactura,$total_iva,$total)) { //no existe
+	$importeIva = Cni::formateaNumero($totalIva);
+	$importeTotal = Cni::formateaNumero($total);
+	if (compruebaFactura($cliente, $codigo, $fechaFactura, $totalIva, $total)) {
+		$params = array(
+			$cliente,
+			$codigo,
+			$fechaFactura,
+			$importeIva,
+			$importeTotal,
+			$observaciones,
+			$mesFactura,
+			$anoFactura
+		);
+		$sql = "Insert into regfacturas (
+				id_cliente,
+				codigo,
+				fecha,
+				iva,
+				importe,
+				obs_alt,
+				mes,
+				ano
+				) values (
+				?, ?, STR_TO_DATE(?, '%d-%m-%Y'), ?, ?, ?, ?, ?)";
 		if ($puntual == 1) {
-			$esecuele = "Insert into regfacturas (id_cliente,codigo,fecha,
-			iva,importe,obs_alt,fecha_inicial,fecha_final,mes,ano) 
-			values ('".$cliente."','".$codigo."','".$fecha."','".$importe_iva."',
-			'".$importe_total."','".$observaciones."','".$fecha_inicial."',
-			'".$fecha_final."','".$mes."','".$ano."')";	
-		} else {
-			$esecuele = "Insert into regfacturas (id_cliente,codigo,fecha,
-			iva,importe,obs_alt,mes,ano) values ('".$cliente."','".$codigo."',
-			'".$fecha."','".$importe_iva."','".$importe_total."',
-			'".$observaciones."','".$mes."','".$ano."')";
+			$params[] = $fechaInicial;
+			$params[] = $fechaFinal;
+			$sql = substr($sql, 0, strlen($sql) - 1);
+			$sql .= ", STR_TO_DATE(?, '%d-%m-%Y'), STR_TO_DATE(?, '%d-%m-%Y) )";
 		}
-		$consulta=mysql_query($esecuele,$con);
+		Cni::consultaPreparada($sql, $params);
 	}
-	//echo $esecuele;/*LINEA DE TEST*/
-	
-	//else
-		//echo comprueba_la_factura($cliente,$codigo,$fecha,$total_iva,$total);
 }
-
-/**************************************************************************************/	
-//PIE FACTURA*************************************************************************/
-echo pieFactura($cliente,$observaciones,$codigo);
-//echo $pie_factura;
+echo $html;
 ?>
-</body></html>
-
+</body>
+</html>
 <!-- Linea final 807 -->

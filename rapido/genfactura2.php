@@ -224,7 +224,7 @@ $codigo_factura = genera_codigo_factura($cliente,$mes);
 	<th style='border-style:solid;border-width:1px;border-color:#000000;'>".round($total,2)."&euro;</th>";
 	echo "</table><br/><br/><br/>";
 //RESUMEN
-	$total_iva = $total - $bruto;
+	$totalIva = $total - $bruto;
 	echo "<table width='100%' cellpadding='0px' cellspacing='0px' style='font-size:10.0pt'><tr>
 	<th width='15%'>&nbsp;</th>
 	<th style='border-style:solid;border-width:1px;border-color:#000000;'>TOTAL BRUTO</th>
@@ -236,7 +236,7 @@ $codigo_factura = genera_codigo_factura($cliente,$mes);
 	<th width='15%'>&nbsp;</th>
 	<th style='border-style:solid;border-width:1px;border-color:#000000;'>".round($bruto,2)."&euro;</th>
 	<th width='15%'>&nbsp;</th>
-	<th style='border-style:solid;border-width:1px;border-color:#000000;'>".round($total_iva,2)."&euro;</th>
+	<th style='border-style:solid;border-width:1px;border-color:#000000;'>".round($totalIva,2)."&euro;</th>
 	<th width='15%'>&nbsp;</th>
 	<th style='border-style:solid;border-width:1px;border-color:#000000;'>".round($total,2)."&euro;</th></tr></table><br/>";
 	echo $pie_factura;

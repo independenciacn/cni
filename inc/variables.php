@@ -36,7 +36,7 @@ define('APLICACION', 'Aplicación Gestión Independencia Centro Negocios');
  * Iva Generico a utilizar en la aplicación
  * @var integer
  */
-define('IVA', 21 );
+define('IVA', 18 );
 define('IVAVIEJO', 18);
 define('IVANUEVO', 21);
 /**
