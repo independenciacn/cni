@@ -18,6 +18,7 @@ require_once '../inc/variables.php';
 require_once '../inc/Cni.php';
 require_once '../inc/Cliente.php';
 require_once '../inc/Servicio.php';
+require_once '../inc/Facturas.php';
 /**
  * Devuelve las observaciones especiales en el caso de que las tenga
  * 
@@ -443,6 +444,35 @@ function agregaHistorico($factura, $servicio, $cantidad, $unitario, $iva, $obs)
 	Cni::consultaPreparada($sql, $params);
 	return true;
 }
+/**
+ * Devuelve la linea de la tabla con los datos formateados
+ * 
+ * @param object $datosServicio
+ * @return string
+ */
+function lineaTabla($datosServicio) {
+    $html = "
+ 		<tr>
+		<td>".$datosServicio->servicio."</td>
+		<td>".Cni::formateaNumero($datosServicio->cantidad)."</td>
+		<td>".Cni::formateaNumero($datosServicio->unitario, true)."</td>
+		<td>".Cni::formateaNumero($datosServicio->importe, true)."</td>
+		<td>".Cni::formateaNumero($datosServicio->iva)."%</td>
+		<td>".Cni::formateaNumero($datosServicio->total, true)."</td>
+		</td>
+		</tr>";
+    return $html;
+}
+/**
+ * Creamos la clase estandar datosServicio, con la propiedades
+ */
+$datosServicio = new stdClass();
+$datosServicio->servicio = null;
+$datosServicio->cantidad = null;
+$datosServicio->unitario = null;
+$datosServicio->importe = null;
+$datosServicio->iva = null;
+$datosServicio->total = null;
 
 /**
  * Funcion Principal - Obligatorio el cliente
@@ -569,18 +599,14 @@ if ($resultadosHistorico) {
 	foreach ($resultadosHistorico as $resultado) {
 		$importe = $resultado->cantidad * $resultado->unitario;
 		$totalConIva = Cni::totalconIva($importe, $resultado->iva);
-		$html .= "
- 			<tr>
-			<td>".ucfirst($resultado->servicio)." 
- 				".ucfirst($resultado->obs)."
-			</td>
-			<td>".Cni::formateaNumero($resultado->cantidad)."</td>
-			<td>".Cni::formateaNumero($resultado->unitario, true)."</td>
-			<td>".Cni::formateaNumero($importe, true)."</td>
-			<td>".Cni::formateaNumero($resultado->iva)."%</td>
-			<td>".Cni::formateaNumero($totalConIva, true)."</td>
-			</td>
-			</tr>";
+		$datosServicio->servicio = ucfirst($resultado->servicio)." 
+ 				".ucfirst($resultado->obs);
+ 		$datosServicio->cantidad = $resultado->cantidad;
+ 		$datosServicio->unitario = $resultado->unitario;
+ 		$datosServicio->importe = $importe;
+ 		$datosServicio->iva = $resultado->iva;
+ 		$datosServicio->total = $totalConIva;
+		$html .= lineaTabla($datosServicio);
 		$total += $totalConIva;
 		$bruto += $importe;
 		$cantidad += $resultado->cantidad;
