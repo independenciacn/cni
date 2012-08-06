@@ -158,6 +158,7 @@ function consultaAgrupado($cliente, $agrupado = false)
  * @param string $codigo
  * @param string $cliente
  * @return string $cabezera
+ * @deprecated
  */
 function cabezeraFactura($nombreFichero, $fechaFactura, $codigo, $cliente)
 {
@@ -375,6 +376,7 @@ function consultaAlmacenaje($cliente, $mesFactura, $inicial, $final)
  * 
  * @param Integer $factura
  * @return mixed boolean|resource
+ * @deprecated
  */
 function historico($factura)
 {
@@ -433,6 +435,7 @@ function compruebaFactura($cliente, $codigo, $fecha, $iva, $total)
  * @param string $unitario
  * @param string $iva
  * @param string $obs
+ * @deprecated
  */
 function agregaHistorico($factura, $servicio, $cantidad, $unitario, $iva, $obs)
 {
@@ -449,8 +452,10 @@ function agregaHistorico($factura, $servicio, $cantidad, $unitario, $iva, $obs)
  * 
  * @param object $datosServicio
  * @return string
+ * @deprecated
  */
-function lineaTabla($datosServicio) {
+function lineaTabla($datosServicio)
+{
     $html = "
  		<tr>
 		<td>".$datosServicio->servicio."</td>

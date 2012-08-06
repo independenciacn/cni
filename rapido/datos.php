@@ -796,7 +796,7 @@ function dibujaPantalla($params)
 	    	$html .="
 	    	<tr class='".Cni::clase($celda ++)."'>
 			<td>".$resultado['nombre']."</td>
-			<td>".$codigo."</td>
+			<td>".$codigo." ".$resultado['id']."</td>
 			<td>".$resultado['fecha']."</td>
 			<td>".Cni::formateaNumero($resultado['importe'], true)."</td>
 			<td>".$resultado['obs_alt']."</td>

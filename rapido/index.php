@@ -106,9 +106,9 @@ for ($i = 2007; $i <= date('Y') + 2; $i++) {
 </tr>
 <tr>
 	<td colspan = '2'>
-		<input class='boton' type = 'button' onclick = 'cliente_rango(0)' 
+		<input class='boton' type = 'button' onclick = 'clienteRango(0)' 
 			value = '>Facturacion Mensual' />
-		<input class='boton' type = 'button' onclick = 'cliente_rango(1)' 
+		<input class='boton' type = 'button' onclick = 'clienteRango(1)' 
 			value ='>Facturacion Puntual' />
 		<input class='boton' type = 'button' onclick ='gestionFacturas(0)'
 			title = 'Muestra las facturas del cliente en el año marcado' 

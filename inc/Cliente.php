@@ -10,11 +10,13 @@
  * @package  cni/inc
  * @author   Ruben Lacasa Mas <ruben@ensenalia.com> 
  * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/ 
- *           Creative Commons Reconocimiento-NoComercial-SinObraDerivada 3.0 Unported
+ *           Creative Commons Reconocimiento-NoComercial-SinObraDerivada 
+ *           3.0 Unported
  * @link     https://github.com/independenciacn/cni
  */
 require_once 'Cni.php';
-class Cliente {
+class Cliente
+{
 	private $_tabla = 'clientes';
 	public $idCliente = false;
 	public $nombre = null;

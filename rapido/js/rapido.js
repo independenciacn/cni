@@ -232,7 +232,7 @@ var recalcula = function ()
 var frmAgregarServicio = function (cliente)
 {
 	var pars = 'opcion=7&cliente=' + cliente;
-	procesaAjax(pars,'form_agregar', 'form_agregar', false, false);
+	procesaAjax(pars, 'form_agregar', 'form_agregar', false, false);
 };
 /**
  * Segun el servicio seleccionado devuelve un valor u otro
@@ -242,7 +242,7 @@ var frmAgregarServicio = function (cliente)
 var valorServicio = function ()
 {
 	var servicio = $('servicios').value;
-	var pars ='opcion=8&servicio=' + $('servicios').value;
+	var pars = 'opcion=8&servicio=' + $('servicios').value;
 	new Ajax.Request(url,
 	{
 		method: 'post',
@@ -299,32 +299,45 @@ var cierraVentanaObservaciones = function ()
 var gestionFacturas = function (tipo)
 {
 	var pars = 'opcion=11&anyo=' + $('anyo').value;
-	if (tipo == 0) {
+	if (tipo === 0) {
 		pars += '&cliente=' + $('id_cliente').value +
-		 '&mes=' + $('meses').value;
+		'&mes=' + $('meses').value;
 	}
 	pars += '&tipo=' + tipo;
 	
 	procesaAjax(pars, 'tabla', 'tabla', false, false);
 };
-//Genera el listado de las facturas del cliente en tiempo que hemos marcado
-function listado_facturas()
+/**
+ * Genera la Factura
+ * 
+ * @param {boolean} codigo Si es prueba true si no false
+ */
+var generaFactura = function (prueba)
 {
-	var url="datos.php"
-	var cliente = $F('id_cliente')
-	var mes = $('meses').value
-	var pars='opcion=12&cliente='+ cliente +'&mes='+ mes
-	var myAjax = new Ajax.Request(url,
-		{
-		method: 'post',
-		parameters: pars,
-		onComplete: function gen(t)
-			{
-				$('facturacion').innerHTML = t.responseText
+	var cliente = $F('id_cliente');
+	var mes = $('meses').value;
+	var fechaFactura = $F('fechaFactura');
+	var observaciones = encodeURI($F('observaciones'));
+	var codigo = $F('codigo');
+	//parte nueva claseado
+	var fechaInicialFactura = $F('fechaInicialFactura');
+	var fechaFinalFactura = $F('fechaFinalFactura');
+	if(cliente != 0 || mes !=0 || cliente != "") {
+		var urlFactura = "generaFactura.php?mes=" + mes + "&cliente=" + cliente + 
+			"&fechaFactura=" + fechaFactura + "&codigo=" + codigo + 
+			"&fechaInicialFactura=" + fechaInicialFactura + 
+			"&fechaFinalFactura=" + fechaFinalFactura + 
+			"&observaciones=" + observaciones;
+			if (prueba) {
+				urlFactura += "&prueba=1";
 			}
-		});
-		
-}
+		window.open(urlFactura);
+	}
+	else {
+		alert("Debe seleccionar un cliente y Mes");
+	}
+};
+
 //Borra una factura , pregunta y lo del contador como lo hacemos
 function borrar_factura(factura)
 {
@@ -342,33 +355,7 @@ function borrar_factura(factura)
 	});
 		
 }
-//LANZA LA FUNCION DE GENFACTURA****************************************************************
-function genera_factura(codigo)
-{
-	var cliente = $F('id_cliente');
-	var mes=$('meses').value;
-	var fecha_factura = $F('fecha_factura');
-	var observaciones = encodeURI($F('observaciones'));
-	var codigo = $F('codigo');
-	//parte nueva claseado
-	if($F('tipo') == 1) //puntual
-	{
-	 	var fecha_inicial_factura = $F('fecha_inicial_factura');
-	 	var fecha_final_factura = $F('fecha_final_factura');
-	}
-	else
-	{
-		var fecha_inicial_factura = "00-00-0000";
-		var fecha_final_factura = "00-00-0000";
-	}
-	if(cliente != 0 || mes !=0)
-	{
-	var url = "genfactura.php?mes="+mes+"&cliente="+cliente+"&fecha_factura="+fecha_factura+"&codigo="+codigo+"&fecha_inicial_factura="+fecha_inicial_factura+"&fecha_final_factura="+fecha_final_factura+"&observaciones="+observaciones;
-	window.open(url);
-	}
-	else
-	alert("Debe seleccionar un cliente y Mes");
-}
+
 function genera_factura_prueba(codigo)
 {
 	var cliente = $F('id_cliente');
@@ -425,14 +412,13 @@ function generar_excel()
 }
 function ver_factura(id)
 {
-	
-	var url = "genfactura.php?factura="+id
+	var url = "generaFactura.php?factura=" + id;
 	window.open(url)
 }
 function duplicado_factura(id)
 {
 	
-	var url = "genfactura.php?duplicado="+id
+	var url = "generaFactura.php?duplicado=" + id;
 	window.open(url)
 }
 function genera_recibo(id)
@@ -441,29 +427,35 @@ function genera_recibo(id)
 	window.open(url)
 	
 }
-//###################################Nueva facturacion#########################################
-function cliente_rango(opcion)
+/**
+ * 
+ */
+var clienteRango = function(opcion)
 {
- 	var url='nufact.php'
-	var cliente = $F('id_cliente')	
-	var pars='opcion='+opcion+'&cliente='+cliente
-	var myAjax = new Ajax.Request(url,{
-	method: 'post',
-	parameters: pars,
-	onComplete: function gen(t)
-		{
-			$('parametros_facturacion').innerHTML = t.responseText
-			campos_fecha(opcion)
+ 	var url = 'nufact.php';
+	var cliente = $F('id_cliente');	
+	if (cliente != "" && cliente != 0) {
+		var pars = 'opcion=' + opcion + '&cliente=' + cliente;
+		new Ajax.Request(url,{
+			method: 'post',
+			parameters: pars,
+			onComplete: function gen(t)
+			{
+				$('parametros_facturacion').innerHTML = t.responseText;
+				campos_fecha(opcion);
 			
-		}
-	});
-}
+			}
+		});
+	} else {
+		alert('Debe seleccionar un cliente');
+	}
+};
 function campos_fecha(opcion)
 {
 	if(opcion==1)
 	{
 		Calendar.setup({
-		inputField     :    'fecha_inicial_factura',     
+		inputField     :    'fechaInicialFactura',     
 		ifFormat       :    '%d-%m-%Y',       
 		showsTime      :    true,            
 		button         :    'f_trigger_fecha_inicial_factura',   
@@ -471,7 +463,7 @@ function campos_fecha(opcion)
 		step           :    1                
 		})
 		Calendar.setup({
-		inputField     :    'fecha_final_factura',      
+		inputField     :    'fechaFinalFactura',      
 		ifFormat       :    '%d-%m-%Y',       
 		showsTime      :    true,            
 		button         :    'f_trigger_fecha_final_factura',   
@@ -480,7 +472,7 @@ function campos_fecha(opcion)
 		})
 	}
 	Calendar.setup({
-	inputField     :    'fecha_factura',      
+	inputField     :    'fechaFactura',      
 	ifFormat       :    '%d-%m-%Y',       
 	showsTime      :    true,            
 	button         :    'f_trigger_fecha_factura',   
