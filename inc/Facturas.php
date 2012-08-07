@@ -26,12 +26,17 @@ class Facturas
     public $totalGlobal = 0;
     public $totalBruto = 0;
     public $totalCantidad = 0;
+    public $totalFijos = 0;
     public $html = "";
+    private $fijos = false;
     private $historico = false;
     private $prueba = false;
     /**
+     * Constructor Clase, si se le pasa factura la coge del historico
+     * si se le pasa duplicado genera duplicado
      * 
-     * @param unknown_type $factura
+     * @param Integer $factura
+     * @param Bolean $duplicado
      */
     public function __construct($factura = null, $duplicado = false)
     {
@@ -153,6 +158,7 @@ class Facturas
  				FROM tarifa_cliente 
 				WHERE ID_Cliente LIKE ? 
  				ORDER BY Imp_Euro DESC";
+    	$this->fijos = true;
     	$this->procesaConsultaServicios($sql, array($this->idCliente));
     }
     /**
@@ -365,7 +371,7 @@ class Facturas
  		d.ImporteEuro AS importe,
  		d.iva AS iva,
  		c.`Id Pedido` AS idPedido,
-		d.observaciones AS observaciones
+		d.observaciones AS obs
  		FROM `detalles consumo de servicios` as d
  		INNER JOIN `consumo de servicios` as c
 		ON c.`Id Pedido` = d.`Id Pedido`
@@ -389,7 +395,7 @@ class Facturas
 		sum(d.ImporteEuro) AS importe,
 		d.iva AS iva,
 		c.`Id Pedido` AS idPedido,
-		d.observaciones AS observaciones
+		d.observaciones AS obs
 		FROM `detalles consumo de servicios` AS d
 		INNER JOIN `consumo de servicios` AS c
 		ON c.`Id Pedido` = d.`Id Pedido`
@@ -406,12 +412,30 @@ class Facturas
     private function serviciosDescuento()
     {
     	//TODO
-    	$sql = "SELECT razon FROM clientes WHERE id like ? AND razon NOT LIKE ''";
+    	$sql = "SELECT razon 
+    			FROM clientes 
+    			WHERE id like ? 
+    			AND razon NOT LIKE ''";
     	$resultados = Cni::consultaPreparada(
     			$sql,
     			array($this->idCliente),
     			PDO::FETCH_CLASS
     	);
+    	if (Cni::totalDatosConsulta() > 0 ) {
+    		foreach ($resultados as $resultado) {
+    			$porcentaje = explode("%", $resultado->razon);
+    			$importeDescuento = ($this->totalFijos * $porcentaje[0]) / 100;
+    			$descuento = new stdClass();
+    			$descuento->servicio = "Descuento del ".$porcentaje[0]."%";
+    			$descuento->cantidad = 1;
+    			$descuento->unitario = $importeDescuento;
+    			$descuento->importe = $importeDescuento;
+    			$descuento->iva = IVA;
+    			$descuento->obs = "";
+    		}
+    		$this->resultados = $descuento;
+    		$this->procesaFactura();
+    	}
     }
     /**
      * Agrega los datos al historico si no estan agregados
@@ -465,6 +489,7 @@ class Facturas
         $this->totalBruto += $importe;
         $this->totalCantidad += $this->cantidad;
         $this->totalGlobal += $total;
+        $this->totalFijos += ($this->fijos) ? $importe : 0;
         if (!$this->historico && !$this->prueba) {
             $this->agregaHistorico();
         }
@@ -506,6 +531,7 @@ class Facturas
             	$this->html .= $this->lineaFactura();
         	}
     	}
+    	$this->fijos = false;
     }
     /**
      * Devuelve la factura ya generada
