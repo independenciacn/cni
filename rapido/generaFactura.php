@@ -31,7 +31,7 @@ if (isset($_SESSION['usuario'])) {
 	<head>
 	<meta charset="utf-8">
 	<link  href="../bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
-	<title><?= $factura->tituloFactura;?></title>
+	<title><?= $factura->nombreFactura;?></title>
 	</head>
 	<body>
 	<?php var_dump($_GET);?>

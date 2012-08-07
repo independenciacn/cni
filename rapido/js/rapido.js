@@ -322,7 +322,7 @@ var generaFactura = function (prueba)
 	//parte nueva claseado
 	var fechaInicialFactura = $F('fechaInicialFactura');
 	var fechaFinalFactura = $F('fechaFinalFactura');
-	if(cliente != 0 || mes !=0 || cliente != "") {
+	if (cliente !== 0 || mes !== 0 || cliente !== "") {
 		var urlFactura = "generaFactura.php?mes=" + mes + "&cliente=" + cliente + 
 			"&fechaFactura=" + fechaFactura + "&codigo=" + codigo + 
 			"&fechaInicialFactura=" + fechaInicialFactura + 
@@ -344,7 +344,7 @@ function borrar_factura(factura)
 	var url="datos.php"
 	var cliente = $F('id_cliente')
 	var mes = $('meses').value
-	var pars='opcion=13&cliente='+ cliente +'&mes='+ mes +'&factura='+factura
+	var pars='opcion=13&cliente='+ cliente +'&mes='+ mes +'&factura=' + factura
 	var myAjax = new Ajax.Request(url, {
 		method: 'post',
 		parameters: pars,
