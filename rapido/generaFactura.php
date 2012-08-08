@@ -22,6 +22,7 @@ if (isset($_SESSION['usuario'])) {
 		 	$factura = new Facturas();
 		 	$factura->generacionFactura($_GET);
 	}
+	var_dump($factura);
 } else {
 	exit('Error, la solicitud no puede completarse');
 }
@@ -34,7 +35,6 @@ if (isset($_SESSION['usuario'])) {
 	<title><?= $factura->nombreFactura;?></title>
 	</head>
 	<body>
-	<?php var_dump($_GET);?>
 	<div class='container'>
 		<div class='header'>
 			<h1><?= $factura->tituloFactura; ?></h1>
@@ -94,16 +94,19 @@ if (isset($_SESSION['usuario'])) {
 				<th>&nbsp;</th>
 				<th><?= Cni::formateaNumero($factura->totalBruto, true) ?></th>
 				<th>&nbsp;</th>
-				<th><?= Cni::formateaNumero(
-						$factura->totalGlobal - $factura->totalBruto,
-						true
-						) ?>
+				<th><?= Cni::formateaNumero($factura->totalGlobal - $factura->totalBruto, true) ?>
 				</th>
 				<th>&nbsp;</th>
 				<th><?= Cni::formateaNumero($factura->totalGlobal, true) ?></th>
 		</tr>
 		</thead>
 		</table>
+		<div class='span4'>
+			<strong>Forma de pago: </strong><?= $factura->formaPago; ?><br/>
+			<?= $factura->obsFormaPago; ?><br/>
+			<?= $factura->pedidoCliente;?> <?= $factura->obs ?>
+		</div>
 	</div>
 	</body>
 </html>
+ 

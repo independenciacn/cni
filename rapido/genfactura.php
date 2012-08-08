@@ -13,6 +13,7 @@
  *           Creative Commons Reconocimiento-NoComercial-SinObraDerivada 
  *           3.0 Unported
  * @link     https://github.com/independenciacn/cni
+ * @deprecated Migrar a generaFactura.php
  */
 require_once '../inc/variables.php';
 require_once '../inc/Cni.php';

@@ -14,6 +14,8 @@ class Facturas
     public $fechaFinalFactura = '00-00-0000';
     public $diaFacturacion = false;
     public $obsFactura = null;
+    public $formaPago = null;
+    public $obsFormaPago = null;
     public $pedidoCliente = null;
     public $idFactura = null;
     public $servicio = null;
@@ -26,6 +28,7 @@ class Facturas
     public $totalGlobal = 0;
     public $totalBruto = 0;
     public $totalCantidad = 0;
+    public $totalDescuento = 0;
     public $totalFijos = 0;
     public $html = "";
     private $fijos = false;
@@ -78,6 +81,7 @@ class Facturas
     		$this->serviciosAgrupados();
     		$this->serviciosNoAgrupados();
     		$this->serviciosDescuento();
+    		$this->setDatosFormaPago();
     	} else {
     		die('Son necesarios los parametros');
     	}
@@ -105,6 +109,8 @@ class Facturas
 			DATE_FORMAT(fecha_inicial, '%d-%m-%Y') AS fechaInicial,
 			DATE_FORMAT(fecha_final, '%d-%m-%Y') AS fechaFinal,
 			obs_alt AS observaciones,
+    		fpago AS formaPago,
+			obs_fpago AS obsFormaPago,	
 			pedidoCliente
 			FROM regfacturas
 			WHERE id LIKE ?";
@@ -120,6 +126,8 @@ class Facturas
     		$this->fechaInicialFactura = $resultado->fechaInicial;
     		$this->fechaFinalFactura = $resultado->fechaFinal;
     		$this->obsFactura = $resultado->observaciones;
+    		$this->formaPago = $resultado->formaPago;
+    		$this->obsFormaPago = $resultado->obsFormaPago;
     		$this->pedidoCliente = $resultado->pedidoCliente;
     	}
     	$this->cliente = new Cliente($this->idCliente);
@@ -172,9 +180,9 @@ class Facturas
 				AND idemp LIKE ?
 				AND valor NOT LIKE '' " ;
     	$resultados = Cni::consultaPreparada(
-    			$sql,
-    			array($this->idCliente),
-    			PDO::FETCH_CLASS
+    		$sql,
+    		array($this->idCliente),
+    		PDO::FETCH_CLASS
     	);
     	if (Cni::totalDatosConsulta() > 0 ) {
     		foreach ($resultados as $resultado) {
@@ -264,7 +272,7 @@ class Facturas
 			$sql,
 			array($this->idCliente),
 			PDO::FETCH_CLASS
-			);
+		);
 		if (Cni::totalDatosConsulta() > 0) {
 			foreach ($resultados as $resultado) {
 				$noAgrupados[] = $resulado->nombre;
@@ -288,9 +296,9 @@ class Facturas
 	private function procesaConsultaServicios($sql, $params)
 	{
 		$resultados = Cni::consultaPreparada(
-				$sql,
-				$params,
-				PDO::FETCH_CLASS
+			$sql,
+			$params,
+			PDO::FETCH_CLASS
 		);
 		if (Cni::totalDatosConsulta() > 0 ) {
 			$this->resultados = $resultados;
@@ -411,15 +419,15 @@ class Facturas
      */
     private function serviciosDescuento()
     {
-    	//TODO
+    	//TODO Aplicar el descuento
     	$sql = "SELECT razon 
     			FROM clientes 
     			WHERE id like ? 
     			AND razon NOT LIKE ''";
     	$resultados = Cni::consultaPreparada(
-    			$sql,
-    			array($this->idCliente),
-    			PDO::FETCH_CLASS
+    		$sql,
+    		array($this->idCliente),
+    		PDO::FETCH_CLASS
     	);
     	if (Cni::totalDatosConsulta() > 0 ) {
     		foreach ($resultados as $resultado) {
@@ -433,9 +441,41 @@ class Facturas
     			$descuento->iva = IVA;
     			$descuento->obs = "";
     		}
+    		$this->totalDescuento = $importeDescuento;
     		$this->resultados = $descuento;
     		$this->procesaFactura();
     	}
+    }
+    /**
+     * Consulta los datos de Pago y los establece
+     */
+    private function setDatosFormaPago()
+    {
+		if (is_null($this->formaPago)) {
+	    	$sql = "SELECT
+					fpago AS formaPago,
+					cc AS obsFormaPago,
+					dpago AS pedidoCliente
+			    	FROM facturacion
+					WHERE idemp LIKE ?";
+	    	$resultados = Cni::consultaPreparada(
+	    		$sql,
+	    		array($this->idCliente),
+	    		PDO::FETCH_CLASS
+	    	);
+	    	foreach ($resultados as $resultado) {
+	    		$this->formaPago = $resultado->formaPago;
+	    		$this->obsFormaPago = $resultado->obsFormaPago;
+	    		$this->pedidoCliente = $resultado->pedidoCliente;
+	    	}
+	    	$pagoCC = array("Cheque","Contado","Tarjeta credito","Liquidación");
+	    	$pagoNCC = array("Cheque");
+	    	if (!in_array($this->formaPago, $pagoCC)) {
+	    		$this->formapago = "Cuenta: ". $this->formaPago;
+	    	} elseif (in_array($this->formaPago, $pagoNCC)) {
+	    		$this->obsFormaPago = "Vencimiento: ". $this->obsFormaPago;
+    		}
+		}
     }
     /**
      * Agrega los datos al historico si no estan agregados
@@ -544,3 +584,4 @@ class Facturas
     	return $this->html;
     }
 }
+ 
