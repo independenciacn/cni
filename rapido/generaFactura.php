@@ -42,7 +42,7 @@ if (isset($_SESSION['usuario'])) {
 		<table class='table table-bordered table-striped'>
 		<tr>
 			<td>
-				FECHA:<?= $factura->fechaDeFactura; ?><br/>
+				FECHA:<?= Cni::verFechaLarga($factura->fechaFactura); ?><br/>
 				<?= $factura->nombreFactura; ?> - 
 				<?= $factura->numeroFactura; ?><br/>
 			</td>
@@ -72,7 +72,17 @@ if (isset($_SESSION['usuario'])) {
 				<th>Total</th>
 			</tr>
 		</thead>
-		<?= $factura->presentaFactura(); ?>	
+		<?= $factura->presentaFactura(); ?>
+		<tfoot>
+    		<tr>
+    		<th></th>
+    		<th><?= Cni::formateaNumero($factura->totalCantidad, false); ?></th>
+    		<th></th>
+    		<th><?= Cni::formateaNumero($factura->totalBruto, true); ?></th>
+    		<th></th>
+    		<th><?= Cni::formateaNumero($this->totalGlobal, true); ?></th>
+    		</tr>
+		</tfoot>	
 		</table>
 		<table class='table table-bordered table-striped'>
 			<colgroup width='15%' />

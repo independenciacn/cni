@@ -53,6 +53,10 @@ final class Cni
     	"Nov",
     	"Dic"
     	);
+    /**
+     * [$cambiosIva description]
+     * @var array
+     */
     public static $cambiosIva = array(
     		array(
     				'fecha' => '2010-07-01',
@@ -115,7 +119,19 @@ final class Cni
             return date( 'Y' );
         }
     }
-
+    /**
+     * Devuelve la fecha en formato xx del nombreMes de xxxx
+     * @param  String $fecha La fecha pasada o si vacio el dia actual
+     * @return String        La fecha en formato largo
+     */
+    public static function verFechaLarga($fecha = false)
+    {
+        $fecha = ($fecha) ? $fecha : date('d-m-Y'); 
+    	$fechaLarga = Cni::verDia($fecha) .
+        " de ". Cni::$meses[Cni::verMes($fecha)] .
+        " de " . Cni::verAnyo($fecha);
+        return $fechaLarga;
+    }
     /**
      * Devuelve el importe con el iva
      *

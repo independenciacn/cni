@@ -17,7 +17,7 @@
 require_once 'Cni.php';
 class Cliente
 {
-	private $_tabla = 'clientes';
+	private $tabla = 'clientes';
 	public $idCliente = false;
 	public $nombre = null;
 	public $nif = null;
@@ -47,13 +47,13 @@ class Cliente
 	{
 		if ( $this->idCliente ) {
 			$sql = "Select *
-					FROM ".$this->_tabla."
+					FROM ".$this->tabla."
 					WHERE id LIKE ?";
 			$resultados = Cni::consultaPreparada(
-					$sql,
-					array($this->idCliente),
-					PDO::FETCH_CLASS
-					);
+				$sql,
+				array($this->idCliente),
+				PDO::FETCH_CLASS
+			);
 			foreach ($resultados as $resultado) {
 				$this->id = $resultado->Id;
 				$this->nombre = $resultado->Nombre;
@@ -74,15 +74,15 @@ class Cliente
 	 */
 	public function buscaCliente($var)
 	{
-		$sql = "SELECT * FROM ".$this->_tabla."
+		$sql = "SELECT * FROM ".$this->tabla."
 			WHERE (Nombre LIKE :texto
 			or Contacto LIKE :texto)
 			AND `Estado_de_cliente`
 			LIKE '-1' ORDER by Nombre ";
 		$resultados = Cni::consultaPreparada(
-				$sql,
-				array(':texto' => '%'.$var.'%'),
-				PDO::FETCH_CLASS
+			$sql,
+			array(':texto' => '%'.$var.'%'),
+			PDO::FETCH_CLASS
 		);
 		return $resultados;
 	}
@@ -101,12 +101,39 @@ class Cliente
 				$sql,
 				array($this->idCliente),
 				PDO::FETCH_CLASS
-				);
+			);
 			foreach ($resultados as $resultado) {
 				$formaPago = $resultado->fpago;
 			}
 			return $formaPago;
 		}
+	}
+	/**
+	 * Devuelve el dia de facturacion del cliente si tiene
+	 * 
+	 * @return Int|boolean
+	 */
+	public function diaFacturacionCliente()
+	{
+		$diaFacturacion = false;
+		if ($this->idCliente) {
+			$sql = "SELECT *
+				FROM agrupa_factura
+				WHERE concepto LIKE 'dia'
+				AND idemp LIKE ?
+				AND valor NOT LIKE '' " ;
+			$resultados = Cni::consultaPreparada(
+				$sql,
+				array($this->idCliente),
+				PDO::FETCH_CLASS
+			);
+			if (Cni::totalDatosConsulta() > 0 ) {
+				foreach ($resultados as $resultado) {
+					$diaFacturacion = $resultado->valor;
+				}
+			}
+		}
+		return $diaFacturacion;
 	}
 }
 

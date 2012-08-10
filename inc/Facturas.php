@@ -1,18 +1,30 @@
 <?php
+/**
+ * Facturas.php File Doc Comment
+ * 
+ * Clase encargada de la generacion y gestion de Facturas
+ * 
+ * PHP Version 5.2.6
+ * 
+ * @category inc
+ * @package  cni/inc
+ * @author   Ruben Lacasa Mas <ruben@ensenalia.com> 
+ * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/ 
+ *           Creative Commons Reconocimiento-NoComercial-SinObraDerivada 
+ *           3.0 Unported
+ * @link     https://github.com/independenciacn/cni
+ */
 require_once 'Cni.php';
 require_once 'Cliente.php';
 class Facturas
 {
     public $numeroFactura = null;
-    public $idCliente = null;
     public $nombreFactura = null;
     public $ficheroFactura = null;
     public $tituloFactura = null;
     public $fechaFactura = null;
-    public $fechaDeFactura = null;
     public $fechaInicialFactura = '00-00-0000';
     public $fechaFinalFactura = '00-00-0000';
-    public $diaFacturacion = false;
     public $obsFactura = null;
     public $formaPago = null;
     public $obsFormaPago = null;
@@ -34,6 +46,7 @@ class Facturas
     private $fijos = false;
     private $historico = false;
     private $prueba = false;
+    private $numeroLinea = 0;
     /**
      * Constructor Clase, si se le pasa factura la coge del historico
      * si se le pasa duplicado genera duplicado
@@ -52,8 +65,10 @@ class Facturas
         }
     }
     /**
-     * Generamos la factura en el caso que no halla sido creada
-     * @param array $vars
+     * Generamos la factura en el caso que no Creada
+     * 
+     * @param  Array $vars Array con todos los datos para la factura
+     * @return [type]       [description]
      */
     public function generacionFactura($vars)
     {
@@ -66,15 +81,12 @@ class Facturas
     			$this->nombreFactura = "FACTURA";
     			$this->tituloFactura = "FACTURA";
     		}
-    		$this->diaFacturacion();
-    		$this->idCliente = $vars['cliente'];
+    		$this->cliente = new Cliente($vars['cliente']);
     		$this->fechaFactura = $vars['fechaFactura'];
     		$this->numeroFactura = $vars['codigo'];
     		$this->fechaInicialFactura = $vars['fechaInicialFactura'];
     		$this->fechaFinalFactura = $vars['fechaFinalFactura'];
     		$this->obsFactura = $vars['observaciones'];
-    		$this->cliente = new Cliente($this->idCliente);
-    		$this->fechaDeFactura = $this->fechaDeFactura();
     		$this->resultados = false;
     		$this->serviciosFijos();
     		$this->serviciosAlmacenaje();
@@ -83,22 +95,11 @@ class Facturas
     		$this->serviciosDescuento();
     		$this->setDatosFormaPago();
     	} else {
-    		die('Son necesarios los parametros');
+    		return false;
     	}
     }
     /**
-     * Devuelve en modo presentacion la fecha de la factura
-     * 
-     * @return string
-     */
-    private function fechaDeFactura()
-    {
-    	return Cni::verDia($this->fechaFactura) .
-    	" de ". Cni::$meses[Cni::verMes($this->fechaFactura)] .
-    	" de " . Cni::verAnyo($this->fechaFactura);
-    }
-    /**
-     * Recuperamos los datos de una factura ya generada
+     * Recuperamos los datos de una factura ya generada Creada
      */
     private function datosFactura()
     {
@@ -115,12 +116,12 @@ class Facturas
 			FROM regfacturas
 			WHERE id LIKE ?";
     	$resultados = Cni::consultaPreparada(
-    			$sql,
-    			array($this->idFactura),
-    			PDO::FETCH_CLASS
-    			);
+    		$sql,
+    		array($this->idFactura),
+    		PDO::FETCH_CLASS
+    	);
     	foreach ($resultados as $resultado) {
-    		$this->idCliente = $resultado->idCliente;
+    		$this->cliente = new Cliente($resultado->idCliente);
     		$this->fechaFactura = $resultado->fecha;
     		$this->numeroFactura = $resultado->factura;
     		$this->fechaInicialFactura = $resultado->fechaInicial;
@@ -130,8 +131,6 @@ class Facturas
     		$this->obsFormaPago = $resultado->obsFormaPago;
     		$this->pedidoCliente = $resultado->pedidoCliente;
     	}
-    	$this->cliente = new Cliente($this->idCliente);
-    	$this->fechaDeFactura = $this->fechaDeFactura();
     	if ($this->duplicado) {
     		$this->nombreFactura = "FACTURA (DUPLICADO)";
     		$this->tituloFactura = "FACTURA<BR/>DUPLICADO";
@@ -167,87 +166,85 @@ class Facturas
 				WHERE ID_Cliente LIKE ? 
  				ORDER BY Imp_Euro DESC";
     	$this->fijos = true;
-    	$this->procesaConsultaServicios($sql, array($this->idCliente));
+    	$this->procesaConsultaServicios($sql, array($this->cliente->idCliente));
+    }
+    private function getCamposFecha($almacen)
+    {
+        $campoFecha = new stdClass();
+        // Caso almacenaje / servicios cont
+        $campoFecha->inicial = ($almacen) ? 'inicio' : 'c.fecha';
+        // Caso almacenaje / servicios cont
+        $campoFecha->final = ($almacen) ? 'fin' : 'c.fecha';
+        return $campoFecha;
     }
     /**
-     * Comprueba si el cliente tiene dia de facturacion
-     */
-    private function diaFacturacion()
-    {
-    	$sql = "SELECT *
-				FROM agrupa_factura
-				WHERE concepto LIKE 'dia'
-				AND idemp LIKE ?
-				AND valor NOT LIKE '' " ;
-    	$resultados = Cni::consultaPreparada(
-    		$sql,
-    		array($this->idCliente),
-    		PDO::FETCH_CLASS
-    	);
-    	if (Cni::totalDatosConsulta() > 0 ) {
-    		foreach ($resultados as $resultado) {
-    			$this->diaFacturacion = $resultado->valor ."-" .
+    * [consultaFecha description]
+    * @param  boolean $almacen [description]
+    * @return boolean|Array           [description]
+    */
+    private function consultaFecha($almacen = false)
+	{
+        $campoFecha = $this->getCamposFecha($almacen);
+        $sql = false;
+        $params = false;
+        $diaFacturacion = $this->cliente->diaFacturacionCliente();
+        if ($diaFacturacion) {
+        	$diaFacturacion = $diaFacturacion ."-" .
     					Cni::verMes($this->fechaFactura) ."-".
     					Cni::verAnyo($this->fechaFactura);
-    		}
-    	}
-    }
-    private function consultaFecha()
-	{
-		$sql = "";
-		/**
-		 * Si hay fecha inicial y final se factura en el rango
-		 */
-		if ($this->fechaInicialFactura != '00-00-0000') {
-			if ($this->fechaFinalFactura != '00-00-0000') {
-				$sql = " 
-					AND c.fecha
-					>= STR_TO_DATE(?, '%d-%m-%Y') 
-					AND c.fecha
-					<= STR_TO_DATE(?, '%d-%m-%Y')
-					";
-				$params = array(
-					$this->fechaInicialFactura,
-					$this->fechaFinalFactura
-					);
-			} else {
-				/**
-			 	 * Si esta la inicial se factura sol del dia
-			 	 */
-				$sql = " 
-					AND c.fecha LIKE 
-					STR_TO_DATE(?, '%d-%m-%Y') ";
-				$params = array($this->fechaInicialFactura);
-			}
-		} else {
-			/**
-			 * Si el cliente tiene dia de facturacion se calcula lo consumido
-			 * en ese periodo
-			 */
-			if ($this->diaFacturacion) {
-				$sql = "
-    				AND
-    				c.fecha > DATE_SUB(
-    					STR_TO_DATE(?, '%d-%m-%Y'),
-    					INTERVAL 1 MONTH
-    					)
-    				AND
-    				c.fecha <= STR_TO_DATE(?, '%d-%m-%Y')";
-				$params = array($this->diaFacturacion, $this->diaFacturacion);
-			} else {
-				/**
-				 * En cualquier otro caso
-				 */
-				$sql = "
-					AND MONTH(c.fecha) 
-    				LIKE MONTH( STR_TO_DATE(?, '%d-%m-%Y') )
-					AND YEAR(c.fecha) 
-    				LIKE YEAR( STR_TO_DATE(?, '%d-%m-%Y') ) ";
-				$params = array($this->fechaFactura, $this->fechaFactura);
-			}
-		}
-		return array('sql' => $sql, 'params' => $params);
+        	// Datos entre dia Facturacion del mes anterior y el de factura
+            $sql = " AND 
+                    ".$campoFecha->inicial." > 
+                    DATE_SUB( 
+                        STR_TO_DATE(?, '%d-%m-%Y'), 
+                        INTERVAL 1 MONTH
+                    ) AND 
+                    ".$campoFecha->final." <= 
+                    STR_TO_DATE(?, '%d-%m-%Y') ";
+            $params = array($diaFacturacion, $diaFacturacion);
+        } else {
+            if ($this->fechaFinalFactura == '00-00-0000') {
+                if ($this->fechaInicialFactura == '00-00-0000') {
+                	// Facturacion Normal Mes
+                    $sql = "
+                        AND MONTH(".$campoFecha->inicial.") 
+                        LIKE MONTH( STR_TO_DATE(?, '%d-%m-%Y') )
+                        AND YEAR(".$campoFecha->inicial.") 
+                        LIKE YEAR( STR_TO_DATE(?, '%d-%m-%Y') ) ";
+                    $params = array($this->fechaFactura, $this->fechaFactura);
+                } else {
+                	// Facturacion puntual dia unico
+                    $sql = " 
+                    AND ".$campoFecha->inicial." LIKE 
+                    STR_TO_DATE(?, '%d-%m-%Y') ";
+                    $params = array($this->fechaInicialFactura);
+                }
+            } else {
+                if ($this->fechaInicialFactura != '00-00-0000') {
+                    $sql = " 
+                        AND ".$campoFecha->inicial."
+                        >= STR_TO_DATE(?, '%d-%m-%Y') 
+                        AND ".$campoFecha->final."
+                        <= STR_TO_DATE(?, '%d-%m-%Y')
+                        ";
+                    $params = array(
+                        $this->fechaInicialFactura,
+                        $this->fechaFinalFactura
+                    );
+                }
+            }
+        }
+        if ($sql && $params) {
+		    return array('sql' => $sql, 'params' => $params);
+        } else {
+            return false;
+        }
 	}
+    /**
+     * Consulta si el servicio es o no agrupado
+     * @param  boolean $agrupado [description]
+     * @return String            [description]
+     */
 	private function consultaAgrupado($agrupado = false)
 	{
 		$union = "OR";
@@ -270,12 +267,12 @@ class Facturas
 				AND a.concepto LIKE 'servicio'";
 		$resultados = Cni::consultaPreparada(
 			$sql,
-			array($this->idCliente),
+			array($this->cliente->idCliente),
 			PDO::FETCH_CLASS
 		);
 		if (Cni::totalDatosConsulta() > 0) {
 			foreach ($resultados as $resultado) {
-				$noAgrupados[] = $resulado->nombre;
+				$noAgrupados[] = $resultado->nombre;
 			}
 		}
 		$cadena = "and (";
@@ -325,45 +322,14 @@ class Facturas
     				DATE_FORMAT(a.fin, '%d-%m-%Y')
     			) AS obs
      			FROM z_almacen AS a, servicios2 as s
-     			WHERE a.cliente LIKE 28
+     			WHERE a.cliente LIKE ?
      			AND s.Nombre like '%Almacenaje%' ";
-    	if (($this->fechaInicialFactura == '00-00-0000')
-    			&& ($this->fechaFinalFactura == '00-00-0000')) {
-    		if ($this->diaFacturacion) {
-    			$sql .= " 
-    				AND	
-    				inicio >= DATE_SUB(
-    					STR_TO_DATE(?, '%d-%m-%Y'),
-    					INTERVAL 1 MONTH
-    					) 
-    				AND
-    				fin <= STR_TO_DATE('?', '%d-%m-%Y')";
-    			$params = array($this->diaFacturacion, $this->diaFacturacion);
-    		} else {
-    			$sql .= "
-    				AND MONTH(fin) 
-    				LIKE MONTH( STR_TO_DATE(?, '%d-%m-%Y') )
-					AND YEAR(fin) 
-    				LIKE YEAR( STR_TO_DATE(?, '%d-%m-%Y') ) ";
-    			$params = array($this->fechaFactura, $this->fechaFactura);
-    		}
-    	} else {
-    		if (($this->fechaInicialFactura != '00-00-0000')
-    			&& ($this->fechaFinalFactura != '00-00-0000')) {
-    			$sql .= "
-    				AND MONTH(fin) 
-    				LIKE MONTH( STR_TO_DATE(?, '%d-%m-%Y') )
-					AND YEAR(fin) 
-    				LIKE YEAR( STR_TO_DATE(?, '%d-%m-%Y') ) ";
-    			$params = array(
-    					$this->fechaFinalFactura,
-    					$this->fechaFinalFactura
-    					);
-    		} else {
-    			$sql .= "AND fin <= STR_TO_DATE(?, %d-%m-%Y)";
-    			$params = array($this->fechaFinalFactura);
-    		}
-    	}
+        $filtroFecha = $this->consultaFecha(true);
+        $sql .= $filtroFecha['sql'];
+        $params = array_merge(
+        	array($this->cliente->idCliente),
+        	$filtroFecha['params']
+        );
     	$this->procesaConsultaServicios($sql, $params);
     }
     /**
@@ -387,7 +353,10 @@ class Facturas
     	$filtroFecha = $this->consultaFecha();
     	$sql .= $filtroFecha['sql'];
     	$sql .= $this->consultaAgrupado(false);
-    	$params = array_merge(array($this->idCliente), $filtroFecha['params']);
+    	$params = array_merge(
+    		array($this->cliente->idCliente),
+    		$filtroFecha['params']
+    	);
     	$this->procesaConsultaServicios($sql, $params);
     }
     /**
@@ -411,7 +380,10 @@ class Facturas
     	$filtroFecha = $this->consultaFecha();
     	$sql .= $filtroFecha['sql'];
     	$sql .= $this->consultaAgrupado(true);
-    	$params = array_merge(array($this->idCliente), $filtroFecha['params']);
+    	$params = array_merge(
+    		array($this->cliente->idCliente),
+    		$filtroFecha['params']
+    	);
     	$this->procesaConsultaServicios($sql, $params);
     }
     /**
@@ -426,7 +398,7 @@ class Facturas
     			AND razon NOT LIKE ''";
     	$resultados = Cni::consultaPreparada(
     		$sql,
-    		array($this->idCliente),
+    		array($this->cliente->idCliente),
     		PDO::FETCH_CLASS
     	);
     	if (Cni::totalDatosConsulta() > 0 ) {
@@ -448,6 +420,7 @@ class Facturas
     }
     /**
      * Consulta los datos de Pago y los establece
+     * @deprecated Usar datos de la clase cliente
      */
     private function setDatosFormaPago()
     {
@@ -460,7 +433,7 @@ class Facturas
 					WHERE idemp LIKE ?";
 	    	$resultados = Cni::consultaPreparada(
 	    		$sql,
-	    		array($this->idCliente),
+	    		array($this->cliente->idCliente),
 	    		PDO::FETCH_CLASS
 	    	);
 	    	foreach ($resultados as $resultado) {
@@ -504,7 +477,7 @@ class Facturas
      */
     private function agregaRegFacturas()
     {
-    	//TODO
+    	//TODO Agrega los datos de la factura a regfacturas
     }
     /**
      * Devuelve la linea de la factura y si no esta en historico
@@ -524,35 +497,16 @@ class Facturas
 		<td>".Cni::formateaNumero($importe, true)."</td>
 		<td>".Cni::formateaNumero($this->iva)."%</td>
 		<td>".Cni::formateaNumero($total, true)."</td>
-		</td>
 		</tr>";
         $this->totalBruto += $importe;
         $this->totalCantidad += $this->cantidad;
         $this->totalGlobal += $total;
         $this->totalFijos += ($this->fijos) ? $importe : 0;
+        $this->numeroLinea ++;
         if (!$this->historico && !$this->prueba) {
             $this->agregaHistorico();
         }
         return $html;
-    }
-    /**
-     * Genera la linea de los totales para la presentacion en pantalla
-     * 
-     * @return string
-     */
-    private function lineaTotales()
-    {
-    	$html = "<tfoot>
-    		<tr>
-    		<th></th>
-    		<th>" .Cni::formateaNumero($this->totalCantidad, false) ."</th>
-    		<th></th>
-    		<th>" .Cni::formateaNumero($this->totalBruto, true) ."</th>
-    		<th></th>
-    		<th>" .Cni::formateaNumero($this->totalGlobal, true)."</th>
-    		</tr>
-    		</tfoot>";
-    	return $html;
     }
     /**
      * Procesa las lineas de la factura
@@ -572,6 +526,27 @@ class Facturas
         	}
     	}
     	$this->fijos = false;
+        return true;
+    }
+    /**
+     * Compensacion del diseño para el llenado del A4
+     * 
+     * @return [type] [description]
+     */
+    private function compensacionEspacio()
+    {
+        $coeficiente = 432 - ( $this->numeroLinea - 1 ) * 18;
+        if ($coeficiente >= 1) {
+            $this->html .= "<tr>
+                <td height='".$coeficiente."px'>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>";
+        }
+        return true;
     }
     /**
      * Devuelve la factura ya generada
@@ -580,7 +555,7 @@ class Facturas
      */
     public function presentaFactura()
     {
-    	$this->html .= $this->lineaTotales();
+    	$this->html .= $this->compensacionEspacio();
     	return $this->html;
     }
 }
