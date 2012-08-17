@@ -33,7 +33,7 @@ var imgCarga = "<center>" +
  * @type {String}
  */
 var msgError = "<center>" +
-		"<span class='alert alert-danger'>" + 
+		"<span class='alert alert-danger'>" +
 		"<strong>Error</strong> Consulte Parametros</span>";
 /**
  * Muestra la precarga de datos en el div especificado
@@ -43,7 +43,8 @@ var msgError = "<center>" +
  * @return {[type]}     [description]
  */
 var precarga = function (div) {
-	if (div) {
+    "use strict";
+    if (div) {
 		$(div).innerHTML = imgCarga;
 	}
 };
@@ -55,7 +56,8 @@ var precarga = function (div) {
  * @return {[type]}     [description]
  */
 var failure = function (div) {
-	if (div) {
+    "use strict";
+    if (div) {
 		$(div).innerHTML = msgError;
 	}
 };
@@ -67,7 +69,8 @@ var failure = function (div) {
  * @return {[type]}     [description]
  */
 var cambiaVisibilidad = function (div) {
-	var estilo = $(div).style;
+    "use strict";
+    var estilo = $(div).style;
 	if (estilo.visibility == "visible") {
 		estilo.visibility = "hidden";
 		estilo.display = "none";
@@ -97,7 +100,7 @@ var procesaAjax = function (pars, div, divPrecarga, callback, params) {
 				}
 			},
 			onFailure: failure(divPrecarga),
-			onCreate: precarga(divPrecarga)	
+			onCreate: precarga(divPrecarga)
 		};
 	new Ajax.Request(url, options);
 };
@@ -138,18 +141,16 @@ var marca = function (idCliente)
 };
 /**
  * Hacemos click en ver servicios y vemos que es lo que ha contratado
- * ademas de poder editarlo
- * 
- * @param  {[type]} idCliente [description]
- * 
- * @return {[type]}           [description]
+ * @param idCliente
  */
 var verServiciosContratados = function (idCliente)
 {
-	if (idCliente === false) {
-		idCliente = $F('id_cliente');
-	}
-	var pars = "opcion=3&cliente=" + idCliente + 
+    "use strict";
+    var Cliente = idCliente;
+    if (Cliente === false) {
+        Cliente = $F('id_cliente');
+    }
+	var pars = "opcion=3&cliente=" + Cliente +
 		"&mes=" + $('meses').value + "&anyo=" + $('anyo').value;
 	procesaAjax(pars, 'tabla', 'tabla', false, false);
 };
@@ -507,7 +508,10 @@ function sort(seccion,valor,tipo)
 			{
 				$('tabla_resultados').innerHTML = t.responseText
 			},
-		onCreate:$('tabla_resultados').innerHTML = "Cargando...<p/><img src='loader.gif' alt='Cargando...'/>"
+		onCreate:function loader()
+            {
+                $('tabla_resultados').innerHTML = "Cargando...<p/><img src='loader.gif' alt='Cargando...'/>"
+            }
 		});
 }
 /**

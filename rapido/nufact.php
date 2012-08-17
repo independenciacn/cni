@@ -90,4 +90,3 @@ function ultimo_codigo()
 		$codigo = 2003;
 	return $codigo;
 }
-?>

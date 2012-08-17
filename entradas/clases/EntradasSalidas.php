@@ -180,17 +180,18 @@ class EntradasSalidas
      */
     public function valoresCategoriasAnyoCero ($categoria, $tipo)
     {
-        $sql = "SELECT Id 
+        $result = 0;
+        $sql = "SELECT Id
         		FROM `categorías clientes` 
         		WHERE Nombre LIKE '".$categoria."'";
         $this->_datos = Cni::consulta($sql, PDO::FETCH_ASSOC);
         foreach ($this->_datos as $dato) {
             if (array_key_exists( $dato['Id'], $this->_anyoCeroKeys )) {
-                return $this->_anyoCeroKeys[$dato['Id']][$tipo];
-            } else {
-                return 0;
+                $result =  $this->_anyoCeroKeys[$dato['Id']][$tipo];
+                break;
             }
         }
+        return $result;
     }
     /**
      * Devuelve los movimientos totales por categorias en un año

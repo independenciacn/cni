@@ -1,4 +1,8 @@
 <?php
+require_once '../inc/variables.php';
+require_once '../inc/Cni.php';
+require_once '../inc/Servicio.php';
+require_once '../inc/Cliente.php';
 /**
  * datos.php File Doc Comment
  *
@@ -15,10 +19,7 @@
  *           3.0 Unported
  * @link     https://github.com/independenciacn/cni
  */
-require_once '../inc/variables.php';
-require_once '../inc/Cni.php';
-require_once '../inc/Servicio.php';
-require_once '../inc/Cliente.php';
+$cadena = "";
 switch ($_POST['opcion'])
 {
 	case 1:$cadena = buscaCliente($_POST);
@@ -169,7 +170,7 @@ function buscaCliente($vars)
 function dameNombreCliente($vars)
 {
 	$cliente = New Cliente($vars['cliente']);
-	$html = $cliente->id."#".$cliente->nombre;
+	$html = $cliente->idCliente."#".$cliente->nombre;
 	return $html;
 }
 /**
@@ -314,8 +315,9 @@ function frmModificacionServicio($vars)
 			array($vars['servicio']),
 			PDO::FETCH_CLASS
 		);
+    $html = "";
 	foreach ($resultados as $resultado) {
-		$html = "
+		$html .= "
 			<input type='button' class='boton_cerrar' 
 				onclick='cierraFrmModificacion()' value='Cerrar'/>
 			<form id='modificacion' name='modificacion' method='post' 
@@ -491,10 +493,11 @@ function valorDelServicio($vars)
 {
 	$sql = "Select PrecioEuro,iva from servicios2 
 	where id like ?";
+    $servicio = "";
 	$resultados = Cni::consultaPreparada($sql, array($vars['servicio']));
 	foreach ($resultados as $resultado) {
 		// $iva = (IVAVIEJO == $resultado[1]) ? IVANUEVO : $resultado[1];
-		$servicio = Cni::formateaNumero($resultado[0]) . "#" .
+		$servicio .= Cni::formateaNumero($resultado[0]) . "#" .
 			Cni::formateaNumero($resultado[1]);
 	}
 	return $servicio;
@@ -552,8 +555,9 @@ function ventanaObservaciones($vars)
 			array($vars['servicio']),
 			PDO::FETCH_CLASS
 			);
+    $html = "";
 	foreach ($resultados as $resultado) {
-		$html = "<input type='button' class='boton_cerrar' 
+		$html .= "<input type='button' class='boton_cerrar'
 			onclick='cierraVentanaObservaciones()' value='Cerrar' /><br/>".
 			$resultado->observaciones;
 	}
@@ -723,7 +727,8 @@ function casos($vars)
  */
 function filtros($vars)
 {
-	switch ( $vars['filtro'] ) {
+	$filtro = "";
+    switch ( $vars['filtro'] ) {
 		case 0:
 			$filtro=" WHERE c.Nombre LIKE '".$vars['texto']."%'";
 		break;
@@ -766,11 +771,12 @@ function consultaFacturas()
 	FROM regfacturas as r ";
 	return $sql;
 }
+
 /**
  * Aqui llega la sentencia la ejecuta y la muestra por pantalla
- * 
+ *
  * @param array $params
- * @param mixed boolean|string $cabezera
+ * @internal param bool|string $mixed $cabezera
  * @return string
  */
 function dibujaPantalla($params)

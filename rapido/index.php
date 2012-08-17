@@ -19,37 +19,47 @@ require_once '../inc/variables.php';
 require_once '../inc/Cni.php';
 $tituloGeneral = APLICACION. " - ". VERSION;
 /**
- * Crea el option de clientes
- * 
- * @param integer $cliente
+ * Muestra el select de la seleccion de Meses
+ *
+ * @param null $mesMarcado
  * @return string
  */
-/**
- * Muestra el select de los meses
- * 
- * @param integer $mes
- */
-function seleccionMeses($mesMarcado = null)
+function selectMeses($mesMarcado = null)
 {
-	if ( $mesMarcado == null ) {
-		$mesMarcado = date("m");
-	}
-	$html = "<select name='meses' id='meses'>";
-	$html .= "<option value='0'>--Mes--</option>";
-	foreach (Cni::$meses as $key => $mes) {
-		$marcado = ($key == $mesMarcado) ? "selected" : "";
-		$html .= "<option value='".$key."' ".$marcado.">".$mes."</option>";
-	}
-	$html .= "</select>";
-	echo $html;
+    if ( $mesMarcado == null ) {
+        $mesMarcado = date("m");
+    }
+    $html = "<option value='0'>--Mes--</option>";
+    foreach (Cni::$meses as $key => $mes) {
+        $marcado = ($key == $mesMarcado) ? "selected" : "";
+        $html .= "<option value='".$key."' ".$marcado.">".$mes."</option>";
+    }
+    return $html;
+}
+
+/**
+ * Muestra el select de los años
+ *
+ * @param null $anyoMarcado
+ * @return string
+ */
+function selectAnyos($anyoMarcado = null)
+{
+    if ($anyoMarcado == null) {
+        $anyoMarcado = date('Y');
+    }
+    $html = "";
+    for ($i = 2007; $i <= date('Y') + 2; $i++) {
+        $marcado = ( $i == $anyoMarcado ) ? "selected":"";
+        $html.= "<option value='".$i."' ".$marcado.">".$i."</option>";
+    }
+    return $html;
 }
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
 	<meta charset="utf-8">
-	<meta http-equiv="cache-control" content="no-cache">
-	<meta http-equiv="pragma" content="no-cache">
 	<link  href="../estilo/cni.css" rel="stylesheet"/>
 	<link  href="../estilo/calendario.css"  rel="stylesheet"/>
 	<script src='../js/prototype.js'></script>
@@ -84,28 +94,27 @@ function seleccionMeses($mesMarcado = null)
 			<img src='../iconos/date.png' alt='Mes' />&nbsp;Mes:
 		</th>
 		<td>
-			<?= seleccionMeses() ?>
+			<select id='meses' name='meses'>
+                <?= selectMeses() ?>
+			</select>
+
 		</td>
 		<td>
-			<select id='anyo'>
-<?php 
-for ($i = 2007; $i <= date('Y') + 2; $i++) {
-	$selected = ( date('Y') == $i ) ? "selected":"";
-	echo "<option ".$selected." value='".$i."'>".$i."</option>";
-}
-?>
-		</select>
-	</td>
-	<td>
-		<input type='button' class='ver_servicios' 
-			onclick='verServiciosContratados(false)' value='Ver Servicios' />
-	</td>
-	<td>
-		<input type='reset' class='limpiar' value='Limpiar' />
-	</td>
-</tr>
-<tr>
-	<td colspan = '2'>
+			<select id='anyo' name='anyo'>
+                <?= selectAnyos() ?>
+		    </select>
+	    </td>
+	    <td>
+		    <input type='button' class='ver_servicios'
+			    onclick='verServiciosContratados(false)'
+                value='Ver Servicios' />
+	    </td>
+	    <td>
+		    <input type='reset' class='limpiar' value='Limpiar' />
+	    </td>
+    </tr>
+    <tr>
+	    <td colspan = '2'>
 		<input class='boton' type = 'button' onclick = 'clienteRango(0)' 
 			value = '>Facturacion Mensual' />
 		<input class='boton' type = 'button' onclick = 'clienteRango(1)' 

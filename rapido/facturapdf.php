@@ -139,7 +139,7 @@ sum(round((cantidad*unitario)*(iva/100),2)) as iva,
 sum((cantidad*unitario) + round((cantidad*unitario)*(iva/100),2)) as total
 from historico where factura like '$factura' group by factura";	
 	$consulta = mysql_query($sql,$con);
-	$resultado = @mysql_fetch_array($consulta);
+	$resultado = mysql_fetch_array($consulta);
 		$data[]=array("Servicio"=>'TOTALES',
 "Cant."=>number_format($resultado[0],2,',','.'),"P/Unitario"=>"","Importe"=>number_format($resultado[1],2,',','.')."!","IVA"=>"","TOTAL"=>number_format($resultado[3],2,',','.')."!");
 

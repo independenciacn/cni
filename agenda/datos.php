@@ -458,6 +458,7 @@ function comunicaciones($cliente,$seccion)
 function empleados($cliente)
 {
 	global $con;
+    $cadena = "";
 	$sql = "Select * from pempresa where idemp like $cliente";
 	$consulta=@mysql_query($sql,$con);
 	//echo $sql;//Depuracion
@@ -470,9 +471,9 @@ function empleados($cliente)
 			if($resultado[email]!="")
 			$cadena.="&nbsp;<a href=mailto:".$resultado[email]." alt=".$resultado[email]."><img src='../iconos/mail_generic.png' alt='Enviar e-mail'/></a>";
 			$cadena.="</p>";
-			return $cadena;
 		}
 	}
+    return $cadena;
 }
 
 /*
@@ -1172,4 +1173,4 @@ JOIN empleados AS e ON e.id = t.asignada where t.vencimiento like curdate() and 
 	
 	return $cadena;
 }
-?>
+

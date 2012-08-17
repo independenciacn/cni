@@ -54,7 +54,6 @@ function busca_valores($vars)
 	{
 		$vars['texto']=$token;
 	}
-    $vars['texto'] = $vars['texto']; //convertimos caracteres
 	$sql = "SELECT c.id, c.Nombre, c.Contacto, p.nombre, p.apellidos
 	FROM clientes AS c
 	JOIN pempresa AS p ON c.id = p.idemp

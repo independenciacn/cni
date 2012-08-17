@@ -91,12 +91,11 @@ class Servicio
 			}
 		}
 	}
-	/**
-	 * Devuelve el listados de los servicios activos
-	 * 
-	 * @return boolean
-	 */
-	public function listadoServiciosActivos()
+    /**
+     * Devuelve el listado de los servicios activos
+     * @return bool|object
+     */
+    public function listadoServiciosActivos()
 	{
 		$sql = "SELECT * 
 				FROM ".$this->_tabla." 

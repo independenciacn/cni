@@ -1,4 +1,5 @@
 <?php
+require_once 'variables.php';
 /**
  * Valida File Doc Comment
  *
@@ -15,7 +16,6 @@
  * @link     https://github.com/independenciacn/cni
  * @version  2.0e Estable
  */
-require_once 'variables.php';
 checkSession();
 sanitize($_POST);
 if (isset( $_POST['usuario'] ) && isset( $_POST['passwd'])) {

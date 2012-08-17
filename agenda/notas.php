@@ -55,4 +55,3 @@ function cambiaf($stamp)
 	return $fecha;
 }
 
-?>

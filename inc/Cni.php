@@ -135,8 +135,8 @@ final class Cni
     /**
      * Devuelve el importe con el iva
      *
-     * @param number $importe
-     * @param number $iva
+     * @param string | number $importe
+     * @param string | number $iva
      * @return number
      */
     public static function totalconIva($importe, $iva)
@@ -146,8 +146,8 @@ final class Cni
     }
     /**
      * Devuelve el numero formateado
-     * @param number $numero
-     * @param boolean $moneda si True devuelve como si fuera moneda
+     * @param string | number $numero
+     * @param bool $moneda si True devuelve como si fuera moneda
      * @return string
      */
     public static function formateaNumero($numero, $moneda = false)
@@ -176,17 +176,19 @@ final class Cni
             }
             self::$_con = CniDB::connect();
             self::$_query = self::$_con->query($sql, self::$_type);
-            return self::$_query;
         } catch (Exception $e) {
             var_dump($e->getMessage());
         }
+        return self::$_query;
     }
+
     /**
      * Ejecuta la consulta preparada, segura
-     * 
+     * @static
      * @param string $sql
      * @param array $params
-     * @param int $type PDO
+     * @param null | integer $type
+     * @return bool | object
      */
     public static function consultaPreparada($sql, $params, $type = null)
     {
@@ -197,13 +199,14 @@ final class Cni
             self::$_con = CniDB::connect();
             self::$_query = self::$_con->prepare($sql);
             if (self::$_query->execute($params)) {
-            	return self::$_query->fetchAll(self::$_type);
+                $results = self::$_query->fetchAll(self::$_type);
             } else {
-            	return false;
+                $results = false;
             }
         } catch (Exception $e) {
             var_dump($e->getMessage());
         }
+        return $results;
     }
     /**
      * Devuelve el numero de datos afectados en la consulta

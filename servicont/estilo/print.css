@@ -1,29 +1,25 @@
 body {
 	color: #333333;
 	text-decoration: none;
-	font-family: "Trebuchet MS";
+	font-family: "Trebuchet MS, Arial, sans-serif";
 	background-color: #ffffff;
 	font-size: small;
 }
-par
+.par
 {
-	background:#eeeeee;
+	background: #eeeeee;
 }
 .impar
 {
-	background:#dddddd;
+	background: #dddddd;
 }
 .tabla th
 {
-	border-bottom-style:solid;
-	border-bottom-width:2px;
-	border-bottom-color:#333333;
+    border-bottom: 2px solid #333333;
 }
 .tabla td
 {
-	border-bottom-style:dotted;
-	border-bottom-width:1px;
-	border-bottom-color:#333333;
+    border-bottom: 1px dotted #333333;
 }
 .volver
 {

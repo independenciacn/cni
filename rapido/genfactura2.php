@@ -242,5 +242,4 @@ $codigo_factura = genera_codigo_factura($cliente,$mes);
 	echo $pie_factura;
 }
 
-?>
 

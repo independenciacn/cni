@@ -18,3 +18,4 @@ tmp/*
 /build
 build/*
 /entradasOld
+.idea/*

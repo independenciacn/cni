@@ -190,4 +190,3 @@ function busqueda_avanzada()
 	return $cadena;
 }
 
-?>
