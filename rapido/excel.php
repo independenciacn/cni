@@ -28,7 +28,7 @@ if (isset($_GET['mes']) && isset($_GET['cliente'])) {
 			border-style:solid;
 			border-width:1px;
 			border-color:#333;
-			font-family: Tahoma, Verdana, Arial, Georgia;
+			font-family: Tahoma, Verdana, Arial, sans-serif;
 			font-style: normal;
 			font-size:12px;
 		}
@@ -39,7 +39,7 @@ if (isset($_GET['mes']) && isset($_GET['cliente'])) {
 			border-color:#333;
 			background:#aaa;
 			color:#fff;
-			font-family: Tahoma, Verdana, Arial, Georgia;
+			font-family: Tahoma, Verdana, Arial, sans-serif;
 			font-style: normal;
 			font-weight:bold;
 			font-size:12px;

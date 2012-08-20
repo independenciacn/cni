@@ -1,16 +1,16 @@
 <?php
 /**
  * envia.php File Doc Comment
- * 
+ *
  * Envia por email las facturas
- * 
+ *
  * PHP Version 5.2.6
- * 
+ *
  * @category rapido
  * @package  cni/rapido
- * @author   Ruben Lacasa Mas <ruben@ensenalia.com> 
- * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/ 
- *           Creative Commons Reconocimiento-NoComercial-SinObraDerivada 
+ * @author   Ruben Lacasa Mas <ruben@ensenalia.com>
+ * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/
+ *           Creative Commons Reconocimiento-NoComercial-SinObraDerivada
  *           3.0 Unported
  * @link     https://github.com/independenciacn/cni
  */
@@ -19,22 +19,22 @@ Zend_Loader_Autoloader::getInstance();
 require_once '../inc/Cni.php';
 /**
  * Funcion encargada del envio de facturas
- * 
- * @param string $fichero
- * @param string $numeroFactura
- * @param string $dup
+ *
+ * @param $fichero
+ * @param $numeroFactura
+ * @param bool $dup
  * @return string
  */
 function envia($fichero, $numeroFactura, $dup = false)
 {
-	$erroneas = '';
-	$correctas = '';
-	$fecha = false;
-	$cliente = false;
-	$direcciones = false;
-	$duplicado="";
-	$dupli="";
-	$sql = "SELECT 
+    $erroneas = '';
+    $correctas = '';
+    $fecha = false;
+    $cliente = false;
+    $direcciones = false;
+    $duplicado = "";
+    $dupli = "";
+    $sql = "SELECT
 	DATE_FORMAT(r.fecha,'%d-%m-%Y') AS fecha,
 	c.Nombre AS cliente,
 	f.direccion AS direccion
@@ -42,79 +42,80 @@ function envia($fichero, $numeroFactura, $dup = false)
 	INNER JOIN clientes AS c ON r.id_cliente = c.id
 	INNER JOIN facturacion AS f ON r.id_cliente = f.idemp 
 	WHERE r.codigo lIKE ?";
-	$resultados = Cni::consultaPreparada(
-		$sql,
-		array($numeroFactura),
-		PDO::FETCH_CLASS
-		);
-	foreach ($resultados as $resultado) {
-		$fecha = $resultado->fecha;
-		$cliente = $resultado->cliente;
-		$direcciones = $resultado->direccion;
-	}
-	$direcciones = explode(";", $resultado['direccion']);
-	foreach ($direcciones as $direccion) {
-		if (filter_var($direccion, FILTER_VALIDATE_EMAIL)) {
-			$correos[] = array(
-				'destinatario' => $cliente,
-				'email' => $direccion
-			);
-		} else {
-			$erroneas .= "
+    $resultados = Cni::consultaPreparada(
+        $sql,
+        array($numeroFactura),
+        PDO::FETCH_CLASS
+    );
+    foreach ($resultados as $resultado) {
+        $fecha = $resultado->fecha;
+        $cliente = $resultado->cliente;
+        $direcciones = $resultado->direccion;
+    }
+    $direcciones = explode(";", $resultado['direccion']);
+    foreach ($direcciones as $direccion) {
+        if (filter_var($direccion, FILTER_VALIDATE_EMAIL)) {
+            $correos[] = array(
+                'destinatario' => $cliente,
+                'email' => $direccion
+            );
+        } else {
+            $erroneas .= "
 			<div id='error'>Direccion " . $resultado['cliente']
-			." Incorrecta o nula. No se enviara la factura - ".
-			$direccion . "</div>";
-		}
-	}
-	if ( $dup ) {
-		$duplicado = "duplicado de";
-		$dupli = "Duplicado ";
-	}
-	$htmlText = textoEmail($dupli, $duplicado, $fecha);
-	$config = array(
-		'auth' => 'login',
-		'username' => 'admon%independenciacn.com',
-		'password' => 'independencia');
-	$transport = new Zend_Mail_Transport_Smtp(
-			'mail.independenciacn.com',
-			$config
-			);
-	foreach ($correos as $correo) {
-		$mail = new Zend_Mail();
-		$mail->setBodyHtml($htmlText);
-		$mail->setFrom(
-				'admon@independenciacn.com',
-				'Independencia Centro de Negocios'
-				);
-		// $mail->addTo( $correo['email'], $correo['destinatario'] );
-		$mail->addTo('ruben@ensenalia.com', 'Ruben Lacasa');
-		$mail->setSubject( $dupli."Factura ".$numeroFactura." de ".$fecha);
-		$mail->setDate(date('r'));
-		$mail->createAttachment($fichero,
-			'application/pdf',
-			Zend_Mime::DISPOSITION_ATTACHMENT,
-			Zend_Mime::ENCODING_BASE64,
-		    "factura-".$numeroFactura.".pdf"
-		);
-		if ($mail->send($transport)) {
-			 $correctas .= "<div class='span-24 success'>Factura " .
-			 	$numeroFactura." Enviada</div>";
-		}
-	}
-		echo $correctas."<br/>".$erroneas;
+                . " Incorrecta o nula. No se enviara la factura - " .
+                $direccion . "</div>";
+        }
+    }
+    if ($dup) {
+        $duplicado = "duplicado de";
+        $dupli = "Duplicado ";
+    }
+    $htmlText = textoEmail($dupli, $duplicado, $fecha);
+    $config = array(
+        'auth' => 'login',
+        'username' => 'admon%independenciacn.com',
+        'password' => 'independencia');
+    $transport = new Zend_Mail_Transport_Smtp(
+        'mail.independenciacn.com',
+        $config
+    );
+    foreach ($correos as $correo) {
+        $mail = new Zend_Mail();
+        $mail->setBodyHtml($htmlText);
+        $mail->setFrom(
+            'admon@independenciacn.com',
+            'Independencia Centro de Negocios'
+        );
+        $mail->addTo($correo['email'], $correo['destinatario']);
+        // $mail->addTo('ruben@ensenalia.com', 'Ruben Lacasa');
+        $mail->setSubject($dupli . "Factura " . $numeroFactura . " de " . $fecha);
+        $mail->setDate(date('r'));
+        $mail->createAttachment(
+            $fichero,
+            'application/pdf',
+            Zend_Mime::DISPOSITION_ATTACHMENT,
+            Zend_Mime::ENCODING_BASE64,
+            "factura-" . $numeroFactura . ".pdf"
+        );
+        if ($mail->send($transport)) {
+            $correctas .= "<div class='span-24 success'>Factura " .
+                $numeroFactura . " Enviada</div>";
+        }
+    }
+    return $correctas . "<br/>" . $erroneas;
 }
+
 /**
- * [textoEmail description]
- * 
- * @param  [type] $dupli     [description]
- * @param  [type] $duplicado [description]
- * @param  [type] $fecha     [description]
- * 
- * @return [type]            [description]
+ * Genera el texto del Email para el envio
+ *
+ * @param string $dupli
+ * @param string $duplicado
+ * @param string $fecha
+ * @return string
  */
 function textoEmail($dupli, $duplicado, $fecha)
 {
-	$htmlText = <<<EOF
+    $htmlText = <<<EOF
 	<html>
 		<head>
 			<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
@@ -206,6 +207,6 @@ function textoEmail($dupli, $duplicado, $fecha)
 	</body>
 	</html>
 EOF;
-	return $htmlText;
+    return $htmlText;
 }
- 
+

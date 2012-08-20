@@ -216,7 +216,8 @@ function check_fax($fax)
 //funcion que agrega el fax a la lista
 function agrega_fax($cliente,$fax)
 {
-	$previa = check_fax($fax);
+	global $con;
+    $previa = check_fax($fax);
 	if ($previa == "#00ff00") //el numero es correcto
 	{	
 		$sql = "Insert into z_sercont (servicio,idemp,valor) 

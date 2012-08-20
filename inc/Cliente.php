@@ -25,6 +25,7 @@ class Cliente
     public $ciudad = null;
     public $cp = null;
     public $pais = null;
+    public $diaFacturacion = null;
 
     /**
      * Contructor de la clase
@@ -35,6 +36,7 @@ class Cliente
         if ($idCliente) {
             $this->idCliente = $idCliente;
             $this->datosCliente();
+            $this->diaFacturacionCliente();
         }
     }
 
@@ -62,6 +64,8 @@ class Cliente
                 $this->ciudad = $resultado->Ciudad;
                 $this->cp = $resultado->CP;
                 $this->pais = $resultado->Pais;
+                $this->razon = $resultado->razon;
+                $this->diaFacturacionCliente();
             }
             return true;
         } else {
@@ -91,13 +95,10 @@ class Cliente
     }
 
     /**
-     * Devuelve el dia de facturacion del cliente si tiene
-     *
-     * @return number | bool
+     * Establece el dia de facturacion del cliente si tiene
      */
-    public function diaFacturacionCliente()
+    private function diaFacturacionCliente()
     {
-        $diaFacturacion = false;
         if ($this->idCliente) {
             $sql = "SELECT *
 				FROM agrupa_factura
@@ -111,11 +112,10 @@ class Cliente
             );
             if (Cni::totalDatosConsulta() > 0) {
                 foreach ($resultados as $resultado) {
-                    $diaFacturacion = $resultado->valor;
+                    $this->diaFacturacion = $resultado->valor;
                 }
             }
         }
-        return $diaFacturacion;
     }
 }
 

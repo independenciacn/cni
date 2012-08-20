@@ -38,40 +38,35 @@ var msgError = "<center>" +
 /**
  * Muestra la precarga de datos en el div especificado
  * 
- * @param  {[type]} div Capa especificada
- * 
- * @return {[type]}     [description]
+ * @param  {String} divName Capa especificada
+ *
  */
-var precarga = function (div) {
+var precarga = function (divName) {
     "use strict";
-    if (div) {
-		$(div).innerHTML = imgCarga;
+    if (divName) {
+		$(divName).innerHTML = imgCarga;
 	}
 };
 /**
  * Muestra el mensaje de fallo en el div especificado
  * 
- * @param  {[type]} div capa
- * 
- * @return {[type]}     [description]
+ * @param  {String} divName capa
  */
-var failure = function (div) {
+var failure = function (divName) {
     "use strict";
-    if (div) {
-		$(div).innerHTML = msgError;
+    if (divName) {
+		$(divName).innerHTML = msgError;
 	}
 };
 /**
  * Cambia la visibilidad de la capa
  * 
- * @param  {[type]} div capa
- * 
- * @return {[type]}     [description]
+ * @param  {String} div capa
  */
 var cambiaVisibilidad = function (div) {
     "use strict";
     var estilo = $(div).style;
-	if (estilo.visibility == "visible") {
+	if (estilo.visibility === "visible") {
 		estilo.visibility = "hidden";
 		estilo.display = "none";
 	} else {
@@ -79,22 +74,23 @@ var cambiaVisibilidad = function (div) {
 		estilo.display = "block";
 	}
 };
+
 /**
- * [procesaAjax description]
- * 
- * @param  {[type]}   pars        [description]
- * @param  {[type]}   div         [description]
- * @param  {[type]}   divPrecarga [description]
- * @param  {Function} callback    [description]
- * @param  {[Type]}   params      callback params
- * @return {[type]}               [description]
+ * Procesa las peticiones Ajax y devuelve los resultados
+ *
+ * @param {String} pars Parametros peticion
+ * @param {String} divName Div carga resultado
+ * @param {String|Boolean} divPrecarga Div de la precarga
+ * @param {String|Boolean} callback funcion callback al finalizar
+ * @param {String|Boolean} params parametros callback
  */
-var procesaAjax = function (pars, div, divPrecarga, callback, params) {
-	var options = {
+var procesaAjax = function (pars, divName, divPrecarga, callback, params) {
+    "use strict";
+    var options = {
 			method: 'post',
 			parameters: pars,
 			onSuccess: function (respuesta) {
-				$(div).innerHTML = respuesta.responseText;
+				$(divName).innerHTML = respuesta.responseText;
 				if (callback) {
 					callback(params);
 				}
@@ -102,7 +98,7 @@ var procesaAjax = function (pars, div, divPrecarga, callback, params) {
 			onFailure: failure(divPrecarga),
 			onCreate: precarga(divPrecarga)
 		};
-	new Ajax.Request(url, options);
+	Ajax.Request(url, options);
 };
 /**
  * Busca el cliente que escribimos y muestra el listado en el 
@@ -110,9 +106,9 @@ var procesaAjax = function (pars, div, divPrecarga, callback, params) {
  * 
  * @return {[type]} [description]
  */
-var buscaCliente = function ()
-{
-	var pars = "opcion=1&texto=" + $F('cliente');
+var buscaCliente = function () {
+    "use strict";
+    var pars = "opcion=1&texto=" + $F('cliente');
 	procesaAjax(pars, 'listado_clientes', false, false, false);
 };
 /**
@@ -123,8 +119,7 @@ var buscaCliente = function ()
  * 
  * @return {[type]}           [description]
  */
-var marca = function (idCliente)
-{
+var marca = function (idCliente) {
 	var pars = "opcion=2&cliente=" + idCliente;
 	new Ajax.Request(url,
 	{
@@ -293,9 +288,7 @@ var cierraVentanaObservaciones = function ()
 /**
  * Genera el listado de facturas
  * 
- * @param  {[type]} tipo Tipo de gestion de facturas 0 Puntual, 1 listado
- * 
- * @return {[type]}      [description]
+ * @param  {Number} tipo Tipo de gestion de facturas 0 Puntual, 1 listado
  */
 var gestionFacturas = function (tipo)
 {

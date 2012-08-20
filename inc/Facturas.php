@@ -65,6 +65,7 @@ class Facturas
             $this->datosHistorico(); //Carga los datos del historico
         }
     }
+
     /**
      * Carga los datos de la Factura
      */
@@ -102,6 +103,7 @@ class Facturas
             $this->tituloFactura = "FACTURA";
         }
     }
+
     /**
      * Consulta los datos del historico para comprobar si exsite o no
      * la factura si existe la procesa
@@ -114,6 +116,7 @@ class Facturas
                 LIKE ?";
         $this->procesaConsultaServicios($sql, array($this->numeroFactura));
     }
+
     /**
      * Procesa la consulta de Servicios y genera las lineas de la factura
      *
@@ -128,10 +131,11 @@ class Facturas
             PDO::FETCH_CLASS
         );
         if (Cni::totalDatosConsulta() > 0) {
-            $this->resultados = $resultados;
+            $this->setResultados($resultados);
             $this->procesaFactura();
         }
     }
+
     /**
      * Procesa las lineas de la factura
      *
@@ -139,8 +143,8 @@ class Facturas
      */
     private function procesaFactura()
     {
-        if (!empty($this->resultados)) {
-            foreach ($this->resultados as $resultado) {
+        if (!($this->getResultados())) {
+            foreach ($this->getResultados() as $resultado) {
                 $this->servicio = ucfirst(trim($resultado->servicio));
                 $this->cantidad = $resultado->cantidad;
                 $this->unitario = $resultado->unitario;
@@ -152,6 +156,7 @@ class Facturas
         $this->fijos = false;
         return true;
     }
+
     /**
      * Devuelve la linea de la factura y si no esta en historico
      * y no es una prueba lo agrega al historico
@@ -181,6 +186,7 @@ class Facturas
         }
         return $html;
     }
+
     /**
      * Agrega los datos al historico si no estan agregados
      *
@@ -203,6 +209,7 @@ class Facturas
         Cni::consultaPreparada($sql, $params);
         return true;
     }
+
     /**
      * Parte de la generacion de factura desde Cero
      * Generamos la factura en el caso de que no este creada
@@ -234,11 +241,13 @@ class Facturas
             $this->serviciosAgrupados();
             $this->serviciosNoAgrupados();
             $this->serviciosDescuento();
+            $this->agregaRegFacturas();
             return true;
         } else {
             return false;
         }
     }
+
     /**
      * Devuelve los servicios Fijos contratados por el cliente
      */
@@ -256,6 +265,7 @@ class Facturas
         $this->fijos = true;
         $this->procesaConsultaServicios($sql, array($this->cliente->idCliente));
     }
+
     /**
      * Comprueba los almacenajes contratados por el cliente
      */
@@ -286,6 +296,7 @@ class Facturas
         );
         $this->procesaConsultaServicios($sql, $params);
     }
+
     /**
      * Comprueba los servicios Agrupados
      */
@@ -313,6 +324,7 @@ class Facturas
         );
         $this->procesaConsultaServicios($sql, $params);
     }
+
     /**
      * Comprueba los servicios no Agrupados
      */
@@ -340,38 +352,29 @@ class Facturas
         );
         $this->procesaConsultaServicios($sql, $params);
     }
+
     /**
      * Comprueba el descuento del cliente
      */
     private function serviciosDescuento()
     {
         //TODO Aplicar el descuento
-        $sql = "SELECT razon
-    			FROM clientes
-    			WHERE id like ?
-    			AND razon NOT LIKE ''";
-        $resultados = Cni::consultaPreparada(
-            $sql,
-            array($this->cliente->idCliente),
-            PDO::FETCH_CLASS
-        );
-        if (Cni::totalDatosConsulta() > 0) {
-            foreach ($resultados as $resultado) {
-                $porcentaje = explode("%", $resultado->razon);
-                $importeDescuento = ($this->totalFijos * $porcentaje[0]) / 100;
-                $descuento = new stdClass();
-                $descuento->servicio = "Descuento del " . $porcentaje[0] . "%";
-                $descuento->cantidad = 1;
-                $descuento->unitario = $importeDescuento;
-                $descuento->importe = $importeDescuento;
-                $descuento->iva = IVA;
-                $descuento->obs = "";
-            }
+        if ($this->cliente->razon != '') {
+            $porcentaje = explode("%", $this->cliente->razon);
+            $importeDescuento = ($this->totalFijos * $porcentaje[0]) / 100;
+            $descuento = new StdClass();
+            $descuento->servicio = "Descuento del " . $porcentaje[0] . "%";
+            $descuento->cantidad = 1;
+            $descuento->unitario = $importeDescuento;
+            $descuento->importe = $importeDescuento;
+            $descuento->iva = IVA;
+            $descuento->obs = "";
             $this->totalDescuento = $importeDescuento;
-            $this->resultados = $descuento;
+            $this->setResultados($descuento);
             $this->procesaFactura();
         }
     }
+
     /**
      * @param $almacen
      * @return stdClass
@@ -396,7 +399,7 @@ class Facturas
         $campoFecha = $this->getCamposFecha($almacen);
         $sql = false;
         $params = false;
-        $diaFacturacion = $this->cliente->diaFacturacionCliente();
+        $diaFacturacion = $this->cliente->diaFacturacion;
         if ($diaFacturacion) {
             $diaFacturacion .= "-" .
                 Cni::verMes($this->fechaFactura) . "-" .
@@ -497,16 +500,6 @@ class Facturas
     }
 
 
-
-
-
-
-
-
-
-
-
-
     /**
      * Agrega la factura al registro de facturas
      */
@@ -533,21 +526,19 @@ class Facturas
             $this->cliente->idCliente,
             $this->numeroFactura,
             $this->fechaFactura,
-            $this->totalIva,
-            $this->totalBruto,
+            $this->totalGlobal - $this->totalBruto,
+            $this->totalGlobal,
             $this->obs,
-            $this->mes,
-            $this->anyo,
+            Cni::verMes($this->fechaFactura),
+            Cni::verAnyo($this->fechaFactura),
             $this->OpcionesPago->fpago,
             $this->OpcionesPago->obsFormaPago,
             $this->OpcionesPago->pedidoCliente,
             $this->fechaInicialFactura,
             $this->fechaFinalFactura
         );
-        Cni::consultaPreparada($sql, $params);
+        return Cni::consultaPreparada($sql, $params);
     }
-
-
 
 
     /**
@@ -580,6 +571,22 @@ class Facturas
     {
         $this->html .= $this->compensacionEspacio();
         return $this->html;
+    }
+
+    /**
+     * @param bool | Object $resultados
+     */
+    public function setResultados($resultados)
+    {
+        $this->resultados = $resultados;
+    }
+
+    /**
+     * @return bool | Object
+     */
+    public function getResultados()
+    {
+        return $this->resultados;
     }
 }
  

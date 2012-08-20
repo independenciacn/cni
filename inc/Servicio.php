@@ -41,12 +41,12 @@ class Servicio
 			FROM ".$this->_tabla." WHERE Id like ?";
 		$this->setDatosServicio($sql, $pars);
 	}
-	/**
-	 * Busca el servicio por el nombre y establece los datos
-	 * 
-	 * @param unknown_type $name
-	 */
-	public function setServicioByName($name)
+    /**
+     * Busca el servicio por el nombre y establece los datos
+     *
+     * @param string $name
+     */
+    public function setServicioByName($name)
 	{
 		$pars = array('%'.$name.'%');
 		$sql = "SELECT *

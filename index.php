@@ -4,19 +4,18 @@ require_once 'inc/Cni.php';
 Cni::chequeaSesion();
 $tituloGeneral = APLICACION. " - ". VERSION;
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
-"http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="es">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link href="estilo/cni.css" rel="stylesheet" type="text/css"></link>
-<link href="estilo/calendario.css" rel="stylesheet" type="text/css"></link>
-<script type="text/javascript" src='js/prototype.js'></script>
-<script type="text/javascript" src="js/calendar.js"></script>
-<script type="text/javascript" src="js/lang/calendar-es.js"></script>
-<script type="text/javascript" src="js/calendar-setup.js"></script>
-<script type="text/javascript" src='js/independencia.js'></script>
-<title>Principal - <?= $tituloGeneral; ?></title>
+    <meta charset="utf-8">
+    <link href="estilo/cni.css" rel="stylesheet" />
+    <link href="estilo/calendario.css" rel="stylesheet" />
+    <script src='js/prototype.js'></script>
+    <script src="js/calendar.js"></script>
+    <script src="js/lang/calendar-es.js"></script>
+    <script src="js/calendar-setup.js"></script>
+    <script src='js/independencia.js'></script>
+    <title>Principal - <?= $tituloGeneral; ?></title>
 </head>
 <body>
 <div id='cuerpo'>
@@ -25,81 +24,51 @@ $tituloGeneral = APLICACION. " - ". VERSION;
  * TODO: Que se pueda modificar la contraseña de acceso
  * TODO: Agregar un nuevo campo a la factura: Nº Pedido
  */
-if (isset($_SESSION['usuario']) ) {
-	include_once 'inc/menu.php';
-	echo "<div id='menu_general'>";
-	echo menu();
-	echo "</div>";
-} else {
+if (!isset($_SESSION['usuario'])) {
+    $mensaje = "";
+    if (isset($_GET['exit'])) {
+        $mensaje = Cni::mensajeExito('Sesion Cerrada');
+    }
+    if (isset($_GET['error'])) {
+        $mensaje = Cni::mensajeError('Usuario/Contraseña Incorrecto');
+    }
     ?>
     <div id='registro'>
-        <center>
-	        <img src='imagenes/logotipo2.png' width='538px' 
-	            alt='The Perfect Place' />
-        </center>
-        <p />
-        <center>
-    <?php
-	if (isset($_GET["exit"])) {
-		echo Cni::mensajeExito('Sesion Cerrada');
-	}
-	if (isset($_GET["error"])) {
-		echo Cni::mensajeError('Usuario/Contraseña Incorrecto');
-	}
-    ?>
-	<form id='login_usuario' method='post' action='inc/valida.php'>
-	<table width='30%' class="login">
-  	<tr>
-  	<td align='right'>
-	Usuario:
-	</td><td>
-	<input type='text' id="usuario" name="usuario" accesskey="u" tabindex="1" />
-	</td></tr>
-	<tr>
-	<td align='right'>
-	Contraseña:
-	</td><td>
-	<input type='password' id="passwd" name="passwd" accesskey="c" 
-	    tabindex="2" />
-	</td></tr>
-	<tr>
-	<td align='center' colspan="2">
-	<input type='submit' class='boton' accesskey="e" tabindex="3"  
-	    value = '[&raquo;]Entrar' />
-	</td></tr>
-	<tr><td colspan='2'></td></tr>
-	</table>
-	</form>
-    </center>
-    <p />
-    <center>
-    <p>
-  	<span class="etiqueta">Desarrollado por:</span>
-    </p>
-    <p>
-  	<a href='http://www.ensenalia.com'>
-  	    <img src='imagenes/ensenalia.jpg' width='128' />
-  	</a>
-    </p>
-    </center>
+        <img src='imagenes/logotipo2.png' width='538px' alt='The Perfect
+        Place' />
+        <?= $mensaje; ?>
+        <form id='login_usuario' method='post' action='inc/valida.php'>
+            <label for='usuario'>Usuario:</label>
+            <input type='text' id='usuario' name='usuario' tabindex="1" />
+            <label for='passwd'>Contraseña:</label>
+            <input type='password' id='passwd' name='passwd' tabindex="2" />
+            <input type='submit' class='boton' tabindex="3"
+                   value='[&raquo;]Entrar' />
+        </form>
+        <div class="etiqueta">
+            Desarrollado por:
+            <a href='http://www.ensenalia.com'>
+                <img src='imagenes/ensenalia.jpg' width='128' />
+            </a>
+        </div>
     </div>
-    <?php 
-}
-?>
-</div>
-<div id='datos_interesantes'></div>
-<div id='debug'></div>
-<?php 
-if (isset($_SESSION['usuario'])) {
-	echo "<div id='avisos'>";
-	include_once "inc/avisos.php";//Se muestran los avisos solo con el include
-	echo "</div>";
-	echo "<div id='resultados'></div>";//linea de los resultados de busqueda
-	echo "<div id='formulario'></div>";//linea del formulario
-	//echo "<div id='debug'></div>";//linea de depuracion
+    <?php
+} else {
+    require_once 'inc/menu.php';
+    require_once 'inc/avisos.php';
+    ?>
+    <div id='menu_general'>
+        <?= menu(); ?>
+    </div>
+    <div id='avisos'>
+        <?= avisos(); ?>
+    </div>
+    <div id='resultados'></div>
+    <div id='formulario'></div>
+    <div id='datos_interesantes'></div>
+    <div id='debug'></div>
+    <?php
 }
 ?>
 </body>
 </html>
-<?php
- 

@@ -386,5 +386,29 @@ final class Cni
         $html = "<span class='alert alert-success'>".$mensaje."</span>";
         return $html;
     }
+
+    /**
+     * Devuelve el nuevo codigo de factura
+     *
+     * @static
+     * @return int
+     */
+    public static function codigoNuevaFactura()
+    {
+        $sql = "
+        SELECT (codigo + 1) as newCodigo
+        FROM regfacturas
+        WHERE codigo != 0
+        ORDER BY codigo DESC limit 1 offset 0";
+        $resultados = self::consultaPreparada($sql, array(), PDO::FETCH_CLASS);
+        if (!empty($resultados)) {
+            foreach ($resultados as $resultado) {
+                $codigo = $resultado->newCodigo + 1;
+            }
+        } else {
+            $codigo = 2003;
+        }
+        return $codigo;
+    }
 }
 

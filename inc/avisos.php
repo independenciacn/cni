@@ -34,7 +34,7 @@ if(isset($_SESSION['usuario']))
 	} else {
 	    $cadena = avisos();
 	}
-echo $cadena;
+//echo $cadena;
 }
 /**
  * Funcion que muestra los avisos

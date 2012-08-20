@@ -20,41 +20,54 @@ require_once '../inc/Cliente.php';
  * @link     https://github.com/independenciacn/cni
  */
 $cadena = "";
-switch ($_POST['opcion'])
-{
-	case 1:$cadena = buscaCliente($_POST);
-	break;
-	case 2:$cadena = dameNombreCliente($_POST);
-	break;
-	case 3:$cadena = verServiciosContratados($_POST);
-	break;
-	case 4:$cadena = borraServicioContratado($_POST);
-	break;
-	case 5:$cadena = frmModificacionServicio($_POST);
-	break;
-	case 6:$cadena = modificacionServicio($_POST);
-	break;
-	case 7:$cadena = frmAltaServicio();
-	break;
-	case 8:$cadena = valorDelServicio($_POST);
-	break;
-	case 9:$cadena = agregaServicio($_POST);
-	break;
-	case 10:$cadena = ventanaObservaciones($_POST);
-	break;
-	case 11:$cadena = listadoFacturas($_POST);
-	break;
-	case 13:$cadena = borrarFactura($_POST);
-	break;
-	case 14:$cadena = filtros($_POST);
-	break;
-	case 15:$cadena = casos($_POST);
-	break;
+switch ($_POST['opcion']) {
+    case 1:
+        $cadena = buscaCliente($_POST);
+        break;
+    case 2:
+        $cadena = dameNombreCliente($_POST);
+        break;
+    case 3:
+        $cadena = verServiciosContratados($_POST);
+        break;
+    case 4:
+        $cadena = borraServicioContratado($_POST);
+        break;
+    case 5:
+        $cadena = frmModificacionServicio($_POST);
+        break;
+    case 6:
+        $cadena = modificacionServicio($_POST);
+        break;
+    case 7:
+        $cadena = frmAltaServicio();
+        break;
+    case 8:
+        $cadena = valorDelServicio($_POST);
+        break;
+    case 9:
+        $cadena = agregaServicio($_POST);
+        break;
+    case 10:
+        $cadena = ventanaObservaciones($_POST);
+        break;
+    case 11:
+        $cadena = listadoFacturas($_POST);
+        break;
+    case 13:
+        $cadena = borrarFactura($_POST);
+        break;
+    case 14:
+        $cadena = filtros($_POST);
+        break;
+    case 15:
+        $cadena = casos($_POST);
+        break;
 }
 echo $cadena;
 /**
  * Calcula lo que hay en el almacen y si hay que cobrarlo
- * 
+ *
  * @param string $cliente
  * @param string $mes
  * @param string $anyo
@@ -62,22 +75,23 @@ echo $cadena;
  */
 function almacenaje($cliente, $mes, $anyo)
 {
-	$sql = "SELECT bultos, 
+    $sql = "SELECT bultos,
 			DATEDIFF(fin,inicio) as dias 
 			FROM z_almacen 
 			WHERE cliente LIKE ? 
 			AND MONTH(fin) LIKE ? 
 			AND YEAR(fin) LIKE ?";
-	$resultados = Cni::consultaPreparada(
-			$sql,
-			array($cliente, $mes, $anyo),
-			PDO::FETCH_CLASS
-		);
-	return $resultados;
+    $resultados = Cni::consultaPreparada(
+        $sql,
+        array($cliente, $mes, $anyo),
+        PDO::FETCH_CLASS
+    );
+    return $resultados;
 }
+
 /**
  * Devuelve el array con los datos de los servicios contratados por el cliente
- * 
+ *
  * @param string $cliente
  * @param string $mes
  * @param string $anyo
@@ -85,7 +99,7 @@ function almacenaje($cliente, $mes, $anyo)
  */
 function servicioContratados($cliente, $mes, $anyo)
 {
-	$sql = "SELECT
+    $sql = "SELECT
 			d.Servicio AS Servicio,
 			d.Cantidad AS Cantidad,
 			date_format(c.fecha,'%d-%m-%Y') AS Fecha,
@@ -102,95 +116,99 @@ function servicioContratados($cliente, $mes, $anyo)
 			AND ? LIKE DATE_FORMAT(c.fecha,'%c')
 			AND ? LIKE DATE_FORMAT(c.fecha,'%Y')
 			ORDER BY c.fecha ASC";
-	$resultados = Cni::consultaPreparada(
-			$sql,
-			array($cliente, $mes, $anyo),
-			PDO::FETCH_CLASS
-	);
-	return $resultados;
+    $resultados = Cni::consultaPreparada(
+        $sql,
+        array($cliente, $mes, $anyo),
+        PDO::FETCH_CLASS
+    );
+    return $resultados;
 }
+
 /**
  * Listado de servicios disponibles
- * 
+ *
  * @return string $texto
  */
 function servicios()
 {
-	$servicios = New Servicio();
-	$resultados = $servicios->listadoServiciosActivos();
-	$html = "<select name='servicios' id='servicios' 
+    $servicios = New Servicio();
+    $resultados = $servicios->listadoServiciosActivos();
+    $html = "<select name='servicios' id='servicios'
 			onchange='valorServicio()'>";
-	$html .= "<option value=0>--Seleccione Servicio--</option>";
-	foreach ($resultados as $resultado) {
-		$html .= "<option value='".$resultado->id."'>".
-			$resultado->Nombre."</option>";
-	}
-	$html .= "</select>";
-	return $html;
+    $html .= "<option value=0>--Seleccione Servicio--</option>";
+    foreach ($resultados as $resultado) {
+        $html .= "<option value='" . $resultado->id . "'>" .
+            $resultado->Nombre . "</option>";
+    }
+    $html .= "</select>";
+    return $html;
 }
+
 /**
  * Funcion que busca y muestra el nombre del cliente
- * 
+ *
  * @param array $vars
  * @return string $html
  */
 function buscaCliente($vars)
 {
-	$html = "";
-	if ($vars['texto'] != "") {
-		$cliente = new Cliente();
-		$resultados = $cliente->buscaCliente($vars['texto']);
-		$html .="<ul>";
-		foreach ($resultados as $resultado) {
-			$texto = preg_replace(
-				"#".$vars['texto']."#i",
-				"<b><u>".strtoupper($vars['texto'])."</u></b>",
-				$resultado->Nombre
-			);
-			$html .="
+    $html = "";
+    if ($vars['texto'] != "") {
+        $cliente = new Cliente();
+        $resultados = $cliente->buscaCliente($vars['texto']);
+        $html .= "<ul>";
+        foreach ($resultados as $resultado) {
+            $texto = preg_replace(
+                "#" . $vars['texto'] . "#i",
+                "<b><u>" . strtoupper($vars['texto']) . "</u></b>",
+                $resultado->Nombre
+            );
+            $html .= "
 				<li>
 				<span class='lbl_clientes' 
-					onclick='marca(".$resultado->Id.")'
-					onmouseout='quitar_color(".$resultado->Id.")'
-					onmouseover='cambia_color(".$resultado->Id.")'
-					id='linea_".$resultado->Id."'>".$texto."
+					onclick='marca(" . $resultado->Id . ")'
+					onmouseout='quitar_color(" . $resultado->Id . ")'
+					onmouseover='cambia_color(" . $resultado->Id . ")'
+					id='linea_" . $resultado->Id . "'>" . $texto . "
 				</span>
 				</li>";
-		}
-		$html .="</ul>";
-	}
-	return $html;
+        }
+        $html .= "</ul>";
+    }
+    return $html;
 }
+
 /**
  * Funcion que devuelve el nombre del cliente y lo pone en el campo de texto
- * 
+ *
  * @param array $vars
  * @return string $cadena
  */
 function dameNombreCliente($vars)
 {
-	$cliente = New Cliente($vars['cliente']);
-	$html = $cliente->idCliente."#".$cliente->nombre;
-	return $html;
+    $cliente = New Cliente($vars['cliente']);
+    $html = $cliente->idCliente . "#" . $cliente->nombre;
+    return $html;
 }
+
 /**
- * Funcion que muestra los datos de los servicios contratados del cliente en 
+ * Funcion que muestra los datos de los servicios contratados del cliente en
  * el mes seleccionado
- * 
+ *
  * @param array $vars
  * @return string $cadena
  */
 function verServiciosContratados($vars)
 {
-	$acumuladoSubtotal = 0;
-	$acumuladoTotal = 0;
-	$acumuladoCantidad = 0;
-	$subtotal = 0;
-	$total = 0;
-	$celda = 0;
-	$html = "
+    $acumuladoSubtotal = 0;
+    $acumuladoTotal = 0;
+    $acumuladoCantidad = 0;
+    $subtotal = 0;
+    $total = 0;
+    $celda = 0;
+    $html = "
 		<button class='agregar' 
-			onclick='frmAgregarServicio(".$vars['cliente'].")'>
+			onclick='frmAgregarServicio(" . $vars['cliente'] . ")'>
 			Agregar Servicio
 		</button>
 		<div id='form_agregar'></div>
@@ -208,165 +226,167 @@ function verServiciosContratados($vars)
 			<th>Total</th>
 		</tr>
 		</thead>";
-	$servicio = new Servicio($vars['anyo']."-".$vars['mes']."-01");
-	$servicio->setServicioByName('Almacenaje');
-	$resultados = almacenaje($vars['cliente'], $vars['mes'], $vars['anyo']);
-	foreach ($resultados as $resultado) {
-		$subtotal = $resultado->bultos * $resultado->dias * $servicio->precio;
-		$total = Cni::totalconIva($subtotal, $servicio->iva);
-		$html .= "
-			<tr class='".Cni::clase($celda++)."'>
-			<td>".$resultado->dias." Días</td>
+    $servicio = new Servicio($vars['anyo'] . "-" . $vars['mes'] . "-01");
+    $servicio->setServicioByName('Almacenaje');
+    $resultados = almacenaje($vars['cliente'], $vars['mes'], $vars['anyo']);
+    foreach ($resultados as $resultado) {
+        $subtotal = $resultado->bultos * $resultado->dias * $servicio->precio;
+        $total = Cni::totalconIva($subtotal, $servicio->iva);
+        $html .= "
+			<tr class='" . Cni::clase($celda++) . "'>
+			<td>" . $resultado->dias . " Días</td>
 			<td>&nbsp;</td>
 			<td>&nbsp;</td>
 			<td>Almacenaje</td>
-			<td>".Cni::formateaNumero($resultado->bultos)."</td>
-			<td>".Cni::formateaNumero($servicio->precio, true)." Bultos Dia</td>
-			<td>".Cni::formateaNumero($subtotal, true)."</td>
-			<td>".$servicio->iva."</td>
-			<td>".Cni::formateaNumero($total, true)."</td>
+			<td>" . Cni::formateaNumero($resultado->bultos) . "</td>
+			<td>" . Cni::formateaNumero($servicio->precio, true) . " Bultos Dia</td>
+			<td>" . Cni::formateaNumero($subtotal, true) . "</td>
+			<td>" . $servicio->iva . "</td>
+			<td>" . Cni::formateaNumero($total, true) . "</td>
 			</tr>";
-		$acumuladoSubtotal += $subtotal;
-		$acumuladoTotal += $total;
-		$acumuladoCantidad += $resultado->bultos;
-	}
-	$resultados = servicioContratados(
-			$vars['cliente'],
-			$vars['mes'],
-			$vars['anyo']
-			);
-	$html .= "<tbody>";
-	foreach ($resultados as $resultado) {
-		$subtotal = $resultado->Precio * $resultado->Cantidad;
-		$total = Cni::totalconIva($subtotal, $resultado->Iva);
-		$clase = Cni::clase($celda++);
-		$html .= "
-			<tr class='".$clase."'>
-			<td>".$resultado->Fecha."</td>
+        $acumuladoSubtotal += $subtotal;
+        $acumuladoTotal += $total;
+        $acumuladoCantidad += $resultado->bultos;
+    }
+    $resultados = servicioContratados(
+        $vars['cliente'],
+        $vars['mes'],
+        $vars['anyo']
+    );
+    $html .= "<tbody>";
+    foreach ($resultados as $resultado) {
+        $subtotal = $resultado->Precio * $resultado->Cantidad;
+        $total = Cni::totalconIva($subtotal, $resultado->Iva);
+        $clase = Cni::clase($celda++);
+        $html .= "
+			<tr class='" . $clase . "'>
+			<td>" . $resultado->Fecha . "</td>
 			<td>
 				<input type='button' 
-					onclick='borra(".$resultado->IdServicio.")'
-					class='boton_borrar_".$clase."' />
+					onclick='borra(" . $resultado->IdServicio . ")'
+					class='boton_borrar_" . $clase . "' />
 			</td>
 			<td>
 				<input type='button' 
-					onclick='modificar(".$resultado->IdServicio.")'
-					class='boton_editar_".$clase."' />
+					onclick='modificar(" . $resultado->IdServicio . ")'
+					class='boton_editar_" . $clase . "' />
 			</td>
-			<td>".$resultado->Servicio." ".$resultado->Observaciones."</td>
-			<td>".Cni::formateaNumero($resultado->Cantidad)."</td>
-			<td>".Cni::formateaNumero($resultado->Precio, true)."</td>
-			<td>".Cni::formateaNumero($subtotal, true)."</td>
-			<td>".$resultado->Iva."</td>
-			<td>".Cni::formateaNumero($total, true)."</td>
+			<td>" . $resultado->Servicio . " " . $resultado->Observaciones . "</td>
+			<td>" . Cni::formateaNumero($resultado->Cantidad) . "</td>
+			<td>" . Cni::formateaNumero($resultado->Precio, true) . "</td>
+			<td>" . Cni::formateaNumero($subtotal, true) . "</td>
+			<td>" . $resultado->Iva . "</td>
+			<td>" . Cni::formateaNumero($total, true) . "</td>
 			</tr>";
-		$acumuladoSubtotal += $subtotal;
-		$acumuladoTotal += $total;
-		$acumuladoCantidad += $resultado->Cantidad;
-	}
-	$html.= "</tbody><tfoot>
+        $acumuladoSubtotal += $subtotal;
+        $acumuladoTotal += $total;
+        $acumuladoCantidad += $resultado->Cantidad;
+    }
+    $html .= "</tbody><tfoot>
 			<tr>
 			<th>&nbsp;</th>
 			<th>&nbsp;</th>
 			<th>&nbsp;</th>
 			<th>&nbsp;</th>
-			<th>".Cni::formateaNumero($acumuladoCantidad)."</th>
+			<th>" . Cni::formateaNumero($acumuladoCantidad) . "</th>
 			<th>&nbsp;</th>
-			<th>".Cni::formateaNumero($acumuladoSubtotal, true)."</th>
+			<th>" . Cni::formateaNumero($acumuladoSubtotal, true) . "</th>
 			<th>&nbsp;</th>
-			<th>".Cni::formateaNumero($acumuladoTotal, true)."</th>
+			<th>" . Cni::formateaNumero($acumuladoTotal, true) . "</th>
 			</tr>
 			</tfoot></table>";
-	return $html;
+    return $html;
 }
+
 /**
  * Borra el servicio contratado
- * 
+ *
  * @param array $vars
  * @return boolean
  */
 function borraServicioContratado($vars)
 {
-	$sql = "DELETE FROM `detalles consumo de servicios`, 
+    $sql = "DELETE FROM `detalles consumo de servicios`,
 			`consumo de servicios` 
 			USING `detalles consumo de servicios`
 			INNER JOIN `consumo de servicios` 
 			WHERE `detalles consumo de servicios`.`Id Pedido` = 
 			`consumo de servicios`.`Id Pedido` 
 			AND `detalles consumo de servicios`.`Id`= ?";
-	if (Cni::consultaPreparada($sql, array($vars['servicio']))) {
-		return true;
-	} else {
-		return false;
-	}
+    if (Cni::consultaPreparada($sql, array($vars['servicio']))) {
+        return true;
+    } else {
+        return false;
+    }
 }
+
 /**
  * Formulario de modificacion de servicio
- * 
+ *
  * @param array $vars
  * @return string
  */
 function frmModificacionServicio($vars)
 {
-	$sql = "Select * from `detalles consumo de servicios` 
-	where `Id` like ".$vars['servicio'];
-	$resultados = Cni::consultaPreparada(
-			$sql,
-			array($vars['servicio']),
-			PDO::FETCH_CLASS
-		);
+    $sql = "Select * from `detalles consumo de servicios`
+	where `Id` like " . $vars['servicio'];
+    $resultados = Cni::consultaPreparada(
+        $sql,
+        array($vars['servicio']),
+        PDO::FETCH_CLASS
+    );
     $html = "";
-	foreach ($resultados as $resultado) {
-		$html .= "
+    foreach ($resultados as $resultado) {
+        $html .= "
 			<input type='button' class='boton_cerrar' 
 				onclick='cierraFrmModificacion()' value='Cerrar'/>
 			<form id='modificacion' name='modificacion' method='post' 
-				onSubmit='modifica(".$resultado->Id."); return false'>
+				onSubmit='modifica(" . $resultado->Id . "); return false'>
 			<table cellpadding='1px' cellspacing='1px' width='100%'>
 			<tr>
 				<th align='center' colspan='6'>
-					Servicio:".$resultado->Servicio." 
+					Servicio:" . $resultado->Servicio . "
 				</th>
 			</tr>
 			<tr>
 				<th align='left'>Precio:</th>
 				<td>
 					<input type='text' id='precio' name='precio' 
-						onkeyup='recalcula()' value='".
-						Cni::formateaNumero($resultado->PrecioUnidadEuros).
-						"' size='8'/>&euro;
+						onkeyup='recalcula()' value='" .
+            Cni::formateaNumero($resultado->PrecioUnidadEuros) .
+            "' size='8'/>&euro;
 				</td>
 				<th align='left'>Cantidad:</th>
 				<td>
 					<input type='text' id='cantidad' name='cantidad'  
-						onkeyup='recalcula()' value='".
-						Cni::formateaNumero($resultado->Cantidad).
-						"' size='3'/>
+						onkeyup='recalcula()' value='" .
+            Cni::formateaNumero($resultado->Cantidad) .
+            "' size='3'/>
 				</td>
 				<th align='left'>IVA:</th>
 				<td>
 					<input type='text' id='iva'  name='iva' 
-						onkeyup='recalcula()' value='".
-						$resultado->iva.
-						"' size='5'/>
+						onkeyup='recalcula()' value='" .
+            $resultado->iva .
+            "' size='5'/>
 				</td>
 			</tr>
 			<tr>
 				<th align='left'>Importe:</th>
 				<td>
-					<span id='importe'>".
-						Cni::formateaNumero($resultado->ImporteEuro).
-					"</span>&euro;
+					<span id='importe'>" .
+            Cni::formateaNumero($resultado->ImporteEuro) .
+            "</span>&euro;
 				</td>
 				<th align='left'>Total:</th>
 				<td>
-					<span id='total'>".
-						Cni::formateaNumero(
-							Cni::totalconIva(
-								$resultado->ImporteEuro,
-								$resultado->iva
-								)
-							)."</span>&euro;
+					<span id='total'>" .
+            Cni::formateaNumero(
+                Cni::totalconIva(
+                    $resultado->ImporteEuro,
+                    $resultado->iva
+                )
+            ) . "</span>&euro;
 				</td>
 				<td></td>
 				<td></td>
@@ -375,9 +395,9 @@ function frmModificacionServicio($vars)
 				<th valign='top' align='left'>Observaciones:</th>
 				<td colspan='3'>
 					<textarea id='observacion' name='observacion' 
-						cols='40' rows='2' >".
-						$resultado->observaciones.
-					"</textarea>
+						cols='40' rows='2' >" .
+            $resultado->observaciones .
+            "</textarea>
 				</td>
 				<th colspan='2'>
 					<input class='boton_actualizar' type='submit' 
@@ -386,41 +406,43 @@ function frmModificacionServicio($vars)
 			</tr>
 		</table>
 	</form>";
-	}
-	return $html;
+    }
+    return $html;
 }
+
 /**
  * Modificamos los datos recibidos
- * 
+ *
  * @param array $vars
  * @return String Mensaje de Resultado
  */
 function modificacionServicio($vars)
 {
-	$subtotal = Cni::cambiaFormatoNumerico($vars['cantidad']) *
-		Cni::cambiaFormatoNumerico($vars['precio']);
-	$sql = "Update `detalles consumo de servicios` 
+    $subtotal = Cni::cambiaFormatoNumerico($vars['cantidad']) *
+        Cni::cambiaFormatoNumerico($vars['precio']);
+    $sql = "Update `detalles consumo de servicios`
 		SET `Cantidad` = ?,
 			`PrecioUnidadEuros` = ?,
 			`ImporteEuro` = ?,
 			`iva` = ?,
 			`observaciones` = ? 
 		WHERE `Id` like ?";
-	$params = array(
-			Cni::cambiaFormatoNumerico($vars['cantidad']),
-			Cni::cambiaFormatoNumerico($vars['precio']),
-			$subtotal,
-			Cni::cambiaFormatoNumerico($vars['iva']),
-			$vars['observacion'],
-			$vars['servicio']
-			);
-	try {
-		Cni::consultaPreparada($sql, $params);
-		return Cni::mensajeExito("Servicio Modificado");
-	} catch (Exception $e) {
-		return Cni::mensajeError($e->getMessage());
-	}
+    $params = array(
+        Cni::cambiaFormatoNumerico($vars['cantidad']),
+        Cni::cambiaFormatoNumerico($vars['precio']),
+        $subtotal,
+        Cni::cambiaFormatoNumerico($vars['iva']),
+        $vars['observacion'],
+        $vars['servicio']
+    );
+    try {
+        Cni::consultaPreparada($sql, $params);
+        return Cni::mensajeExito("Servicio Modificado");
+    } catch (Exception $e) {
+        return Cni::mensajeError($e->getMessage());
+    }
 }
+
 /**
  * Formulario de Agregar el servicio al cliente
  *
@@ -428,17 +450,17 @@ function modificacionServicio($vars)
  */
 function frmAltaServicio()
 {
-	$html ="<br/>
+    $html = "<br/>
 	<form id='frm_alta' class='formulario'  method='post' 
 	onSubmit='agregaServicio(); return false'>
 	<table width='100%' class='tabla'>
 	<tr>
 	<th>Fecha:</th>
 	<td colspan='2'>
-		<input type='text' name='fecha' size='10' value='".date("d-m-Y")."' />
+		<input type='text' name='fecha' size='10' value='" . date("d-m-Y") . "' />
 	</td>	
 	<th>Servicio:</th>
-	<td colspan='2'>".servicios()."</td>
+	<td colspan='2'>" . servicios() . "</td>
 	</tr>
 	<tr>
 	<th>Precio:</th>
@@ -480,151 +502,156 @@ function frmAltaServicio()
 	</tr>
 	</table>
 	</form>";
-	return $html;
+    return $html;
 }
+
 /**
  * Funcion que devuelve el precio y el iva del servicio seleccionado
- * 
+ *
  * @todo pasar la fecha
  * @param array $vars
  * @return string
  */
 function valorDelServicio($vars)
 {
-	$sql = "Select PrecioEuro,iva from servicios2 
+    $sql = "Select PrecioEuro,iva from servicios2
 	where id like ?";
     $servicio = "";
-	$resultados = Cni::consultaPreparada($sql, array($vars['servicio']));
-	foreach ($resultados as $resultado) {
-		// $iva = (IVAVIEJO == $resultado[1]) ? IVANUEVO : $resultado[1];
-		$servicio .= Cni::formateaNumero($resultado[0]) . "#" .
-			Cni::formateaNumero($resultado[1]);
-	}
-	return $servicio;
+    $resultados = Cni::consultaPreparada($sql, array($vars['servicio']));
+    foreach ($resultados as $resultado) {
+        // $iva = (IVAVIEJO == $resultado[1]) ? IVANUEVO : $resultado[1];
+        $servicio .= Cni::formateaNumero($resultado[0]) . "#" .
+            Cni::formateaNumero($resultado[1]);
+    }
+    return $servicio;
 }
 
 /**
  * Agrega el servicio
- * 
+ *
  * @todo Falla la insercion
  * @todo No se muestra el mensaje
  * @param array $vars
  */
 function agregaServicio($vars)
 {
-	$servicio = new Servicio();
-	$servicio->setServicioById($vars['servicios']);
-	$sql = "INSERT INTO `consumo de servicios` 
+    $servicio = new Servicio();
+    $servicio->setServicioById($vars['servicios']);
+    $sql = "INSERT INTO `consumo de servicios`
 			(`Cliente`,`Fecha`) VALUES 
 			(?, STR_TO_DATE(?,'%d-%m-%Y'))";
-	$params = array($vars['cliente'], $vars['fecha']);
-	$subtotal = Cni::cambiaFormatoNumerico($vars['precio']) *
-		Cni::cambiaFormatoNumerico($vars['cantidad']);
-	try {
-		Cni::consultaPreparada($sql, $params);
-		$sql = "INSERT INTO `detalles consumo de servicios`
+    $params = array($vars['cliente'], $vars['fecha']);
+    $subtotal = Cni::cambiaFormatoNumerico($vars['precio']) *
+        Cni::cambiaFormatoNumerico($vars['cantidad']);
+    try {
+        Cni::consultaPreparada($sql, $params);
+        $sql = "INSERT INTO `detalles consumo de servicios`
 			(`Id Pedido`,`Servicio`,`Cantidad`,`PrecioUnidadEuros`,
 			`ImporteEuro`,`iva`,`observaciones` ) VALUES 
 			(LAST_INSERT_ID(), ?, ?, ?, ?, ?, ?)";
-		$params = array(
-			$servicio->nombre,
-			Cni::cambiaFormatoNumerico($vars['cantidad']),
-			Cni::cambiaFormatoNumerico($vars['precio']),
-			$subtotal,
-			Cni::cambiaFormatoNumerico($vars['iva']),
-			$vars['observacion']
-		);
-		Cni::consultaPreparada($sql, $params);
-		Cni::mensajeExito("Servicio Agregado");
-	} catch (Exception $e) {
-		Cni::mensajeError($e->getMessage());
-	}
+        $params = array(
+            $servicio->nombre,
+            Cni::cambiaFormatoNumerico($vars['cantidad']),
+            Cni::cambiaFormatoNumerico($vars['precio']),
+            $subtotal,
+            Cni::cambiaFormatoNumerico($vars['iva']),
+            $vars['observacion']
+        );
+        Cni::consultaPreparada($sql, $params);
+        Cni::mensajeExito("Servicio Agregado");
+    } catch (Exception $e) {
+        Cni::mensajeError($e->getMessage());
+    }
 }
+
 /**
  * Visualizacion de la ventana de observaciones
- * 
+ *
  * @param array $vars
  * @return string $cadena
  */
 function ventanaObservaciones($vars)
 {
-	$sql = "Select observaciones from `detalles consumo de servicios` 
+    $sql = "Select observaciones from `detalles consumo de servicios`
 	where `Id Pedido` like ?";
-	$resultados = Cni::consultaPreparada(
-			$sql,
-			array($vars['servicio']),
-			PDO::FETCH_CLASS
-			);
+    $resultados = Cni::consultaPreparada(
+        $sql,
+        array($vars['servicio']),
+        PDO::FETCH_CLASS
+    );
     $html = "";
-	foreach ($resultados as $resultado) {
-		$html .= "<input type='button' class='boton_cerrar'
-			onclick='cierraVentanaObservaciones()' value='Cerrar' /><br/>".
-			$resultado->observaciones;
-	}
-	return $html;
+    foreach ($resultados as $resultado) {
+        $html .= "<input type='button' class='boton_cerrar'
+			onclick='cierraVentanaObservaciones()' value='Cerrar' /><br/>" .
+            $resultado->observaciones;
+    }
+    return $html;
 }
+
 /**
  * Para borrar una factura seleccionada
- * 
+ *
  * @param array $vars
  * @return string $cadena
  */
 function borrarFactura($vars)
 {
-	$sql = "DELETE FROM a1, a2 
+    $sql = "DELETE FROM a1, a2
 	USING regfacturas AS a1 
 	INNER JOIN historico AS a2
 	WHERE a1.codigo=a2.factura AND a1.id = ?";
-	$params = array($vars['factura']);
-	if (Cni::consultaPreparada($sql, $params)) {
-		$html = Cni::mensajeExito("Factura Borrada");
-	} else {
-		$html = Cni::mensajeError("No se ha borrado la Factura");
-	}
-	$html .= listadoFacturas($vars);
-	return $html;
+    $params = array($vars['factura']);
+    if (Cni::consultaPreparada($sql, $params)) {
+        $html = Cni::mensajeExito("Factura Borrada");
+    } else {
+        $html = Cni::mensajeError("No se ha borrado la Factura");
+    }
+    $html .= listadoFacturas($vars);
+    return $html;
 }
+
 /**
  * Gestion del listado de facturas, funcion de generacion
- * 
+ *
  * @param array $vars
  * @return string $cadena
  */
 function listadoFacturas($vars)
 {
-	$params = array(
-	        'cliente' => 0,
-	        'factura' => 0,
-	        'fecha'   => 0,
-	        'importe' => 0,
-	        'tipo'    => 1
-	        );
-	$cliente = " WHERE YEAR(r.fecha) LIKE '".$vars['anyo']."' ";
-	if ($vars['tipo'] == 0 ) {
-	    $cliente .= " AND r.id_cliente LIKE '".$vars['cliente']."' ";
-	}
-	$sql = $cliente ." ORDER BY r.fecha DESC ";
-	$html ="<div id='tabla_resultados'>";
-	$params = array(
-	        "sql" => $sql,
-	        "cliente" => 0,
-	        "factura" => 0,
-	        "fecha"	  => 0,
-	        "importe" => 0
-	);
-	$html .= dibujaPantalla($params, true);
-	$html .= "</div>";
-	return $html;
+    $params = array(
+        'cliente' => 0,
+        'factura' => 0,
+        'fecha' => 0,
+        'importe' => 0,
+        'tipo' => 1
+    );
+    $cliente = " WHERE YEAR(r.fecha) LIKE '" . $vars['anyo'] . "' ";
+    if ($vars['tipo'] == 0) {
+        $cliente .= " AND r.id_cliente LIKE '" . $vars['cliente'] . "' ";
+    }
+    $sql = $cliente . " ORDER BY r.fecha DESC ";
+    $html = "<div id='tabla_resultados'>";
+    $params = array(
+        "sql" => $sql,
+        "cliente" => 0,
+        "factura" => 0,
+        "fecha" => 0,
+        "importe" => 0
+    );
+    $html .= dibujaPantalla($params, true);
+    $html .= "</div>";
+    return $html;
 }
+
 /**
  * Genera la cabezera del listado
  * Medidas Fijas cliente='285px,factura='50px,70px,70px,100px'
- * 
+ *
  * @return string $cadena
  */
 function cabezeraPantalla()
 {
-	$html = "
+    $html = "
 	    <caption>Listado de Facturas</caption>  
 	    <thead>      
 		<tr>
@@ -664,95 +691,98 @@ function cabezeraPantalla()
 			<th>&nbsp;</th>
 		</tr>
 	    </thead>";
-	return $html;
+    return $html;
 }
+
 /**
  * Muestra la seleccion x cliente o x mes y deja imprimirlas desde aqui
- * 
+ *
  * @param array $vars
  * @return string $cadena
  */
 function casos($vars)
 {
     $params = array(
-            "sql" => "",
-            "cliente" => 0,
-            "factura" => 0,
-            "fecha"	  => 0,
-            "importe" => 0
+        "sql" => "",
+        "cliente" => 0,
+        "factura" => 0,
+        "fecha" => 0,
+        "importe" => 0
     );
     $sort = " DESC ";
-    switch ( $vars['seccion'] ) {
-		case 0:
-			$orden = " ORDER BY c.Nombre ";
-			if ( $vars['marca_cliente'] == 0 ) {
-				$sort = " ASC ";
-				$params['cliente'] = 1;
-			}
-			break;
-		case 1:
-			$orden = " ORDER BY r.codigo ";
-			if ($vars['marca_factura']==0 ) {
-				$sort = " ASC ";
-				$params['factura'] = 1;
-			}
-			break;
-		case 2:
-			$orden = " ORDER BY r.fecha ";
-			if ( $vars['marca_fecha'] == 0 ) {
-				$sort = " ASC ";
-				$params['fecha'] = 1;
-			}
-			break;
-		case 3:
-			$orden = " ORDER BY r.importe ";
-			if ( $vars['marca_importe'] == 0 ) {
-				$sort = " ASC ";
-				$params['importe'] = 1;
-			}
-			break;
-		default:
-			$orden = " ORDER BY r.codigo";
-		break;
-	}
-	$sql = $orden.$sort;
-	$params['sql'] = $sql;
-	return dibujaPantalla($params);
+    switch ($vars['seccion']) {
+        case 0:
+            $orden = " ORDER BY c.Nombre ";
+            if ($vars['marca_cliente'] == 0) {
+                $sort = " ASC ";
+                $params['cliente'] = 1;
+            }
+            break;
+        case 1:
+            $orden = " ORDER BY r.codigo ";
+            if ($vars['marca_factura'] == 0) {
+                $sort = " ASC ";
+                $params['factura'] = 1;
+            }
+            break;
+        case 2:
+            $orden = " ORDER BY r.fecha ";
+            if ($vars['marca_fecha'] == 0) {
+                $sort = " ASC ";
+                $params['fecha'] = 1;
+            }
+            break;
+        case 3:
+            $orden = " ORDER BY r.importe ";
+            if ($vars['marca_importe'] == 0) {
+                $sort = " ASC ";
+                $params['importe'] = 1;
+            }
+            break;
+        default:
+            $orden = " ORDER BY r.codigo";
+            break;
+    }
+    $sql = $orden . $sort;
+    $params['sql'] = $sql;
+    return dibujaPantalla($params);
 }
+
 /**
  * Filtros de texto
- * 
+ *
  * @param array $vars
  * @return string $pantalla
  */
 function filtros($vars)
 {
-	$filtro = "";
-    switch ( $vars['filtro'] ) {
-		case 0:
-			$filtro=" WHERE c.Nombre LIKE '".$vars['texto']."%'";
-		break;
-		case 1:
-			$filtro=" WHERE r.codigo LIKE '".$vars['texto']."%'";
-		break;
-		case 2:
-			$fecha = $vars['texto'];
-			$filtro=" WHERE r.fecha LIKE STR_TO_DATE('".$fecha."', '%d-%m-%Y')";
-		break;
-		case 3:
-			$filtro=" WHERE r.importe LIKE '".$vars['texto']."%'";
-		break;
-	}
-	$sql = $filtro;
-	$params = array(
-			'sql'	  => $sql,
-			'cliente' => 0,
-			'factura' => 0,
-			'fecha'	  => 0,
-			'importe' => 0
-			);
-	return dibujaPantalla($params);
+    $filtro = "";
+    switch ($vars['filtro']) {
+        case 0:
+            $filtro = " WHERE c.Nombre LIKE '" . $vars['texto'] . "%'";
+            break;
+        case 1:
+            $filtro = " WHERE r.codigo LIKE '" . $vars['texto'] . "%'";
+            break;
+        case 2:
+            $fecha = $vars['texto'];
+            $filtro = " WHERE r.fecha LIKE STR_TO_DATE('" . $fecha . "', '%d-%m-%Y')";
+            break;
+        case 3:
+            $filtro = " WHERE r.importe LIKE '" . $vars['texto'] . "%'";
+            break;
+    }
+    $sql = $filtro;
+    $params = array(
+        'sql' => $sql,
+        'cliente' => 0,
+        'factura' => 0,
+        'fecha' => 0,
+        'importe' => 0
+    );
+    return dibujaPantalla($params);
 }
+
 /**
  * Base de la consulta del listado de Facturas
  *
@@ -760,7 +790,7 @@ function filtros($vars)
  */
 function consultaFacturas()
 {
-	$sql = "SELECT
+    $sql = "SELECT
 	id AS id,
 	codigo AS codigo,
 	DATE_FORMAT(fecha, '%d-%m-%Y') AS fecha,
@@ -769,7 +799,7 @@ function consultaFacturas()
 	(SELECT Nombre FROM clientes 
 		WHERE id = id_cliente) as nombre
 	FROM regfacturas as r ";
-	return $sql;
+    return $sql;
 }
 
 /**
@@ -781,62 +811,62 @@ function consultaFacturas()
  */
 function dibujaPantalla($params)
 {
-	$html ="
-	<input type='hidden' id='marca_cliente' value='".$params['cliente']."' />
-	<input type='hidden' id='marca_factura' value='".$params['factura']."' />
-	<input type='hidden' id='marca_fecha' value='".$params['fecha']."' />
-	<input type='hidden' id='marca_importe' value='".$params['importe']."' />";
-	$html .= "<table width='100%' class='tabla'>";
-	$html .= cabezeraPantalla();
-	$celda = 0;
-	$resultados = Cni::consulta(consultaFacturas() . $params['sql']);
-	$html .= "<tbody>";
-	if (Cni::totalDatosConsulta() > 0 ) {
-		foreach ($resultados as $resultado) {
-	    	if ($resultado['codigo'] == 0) {
-	        	$codigo = intval($resultado['id']) + 99;
-	    	} else {
-	        	$codigo = $resultado['codigo'];
-	    	}
-	    	$urlFactura = "facturapdf.php?factura=".$codigo;
-	    	$html .="
-	    	<tr class='".Cni::clase($celda ++)."'>
-			<td>".$resultado['nombre']."</td>
-			<td>".$codigo." ".$resultado['id']."</td>
-			<td>".$resultado['fecha']."</td>
-			<td>".Cni::formateaNumero($resultado['importe'], true)."</td>
-			<td>".$resultado['obs_alt']."</td>
+    $html = "
+	<input type='hidden' id='marca_cliente' value='" . $params['cliente'] . "' />
+	<input type='hidden' id='marca_factura' value='" . $params['factura'] . "' />
+	<input type='hidden' id='marca_fecha' value='" . $params['fecha'] . "' />
+	<input type='hidden' id='marca_importe' value='" . $params['importe'] . "' />";
+    $html .= "<table width='100%' class='tabla'>";
+    $html .= cabezeraPantalla();
+    $celda = 0;
+    $resultados = Cni::consulta(consultaFacturas() . $params['sql']);
+    $html .= "<tbody>";
+    if (Cni::totalDatosConsulta() > 0) {
+        foreach ($resultados as $resultado) {
+            if ($resultado['codigo'] == 0) {
+                $codigo = intval($resultado['id']) + 99;
+            } else {
+                $codigo = $resultado['codigo'];
+            }
+            $urlFactura = "facturapdf.php?factura=" . $codigo;
+            $html .= "
+	    	<tr class='" . Cni::clase($celda++) . "'>
+			<td>" . $resultado['nombre'] . "</td>
+			<td>" . $codigo . " " . $resultado['id'] . "</td>
+			<td>" . $resultado['fecha'] . "</td>
+			<td>" . Cni::formateaNumero($resultado['importe'], true) . "</td>
+			<td>" . $resultado['obs_alt'] . "</td>
 			<td>
 				<input class='boton' type='button'
-					onclick='borrar_factura(".$resultado['id'].")' 
+					onclick='borrar_factura(" . $resultado['id'] . ")'
 					value='Borrar' />
 				<input class='boton' type='button'
-					onclick='ver_factura(".$resultado['id'].")' 
+					onclick='ver_factura(" . $resultado['id'] . ")'
 					value='Factura' />
 				<input class='boton' type='button'
-					onclick='duplicado_factura(".$resultado['id'].")' 
+					onclick='duplicado_factura(" . $resultado['id'] . ")'
 					value='Duplicado' />
 				<input class='boton' type='button'
-					onclick='genera_recibo(".$resultado['id'].")' 
+					onclick='genera_recibo(" . $resultado['id'] . ")'
 					value='Recibo' />
 				<input class='boton' type='button'
-					onclick='window.open(\"".$urlFactura."\",\"_blank\")'
+					onclick='window.open(\"" . $urlFactura . "\",\"_blank\")'
 					value='PDF' />
 				<input class='boton' type='button'
-					onclick='window.open(\"".$urlFactura."&dup=1\",\"_blank\")'
+					onclick='window.open(\"" . $urlFactura . "&dup=1\",\"_blank\")'
 					value='Duplicado PDF' />
 				<input type='checkbox' name='code' id='code' 
-					value='".$codigo."' />
+					value='" . $codigo . "' />
 				<br/>
-				<div id='modificaciones_".$resultado['id']."'>
+				<div id='modificaciones_" . $resultado['id'] . "'>
 			</td>
 			</tr>";
-		}
-	} else {
-	    $html .= "<tr><th colspan='5'>No hay facturas</th></tr>";
-	}
-	$html .= "</tbody>";
-	$html .= "</table>
+        }
+    } else {
+        $html .= "<tr><th colspan='5'>No hay facturas</th></tr>";
+    }
+    $html .= "</tbody>";
+    $html .= "</table>
 	<div class='linea_checks'>
 		<span class='boton' onclick='check_all()'>
 			Marcar Todos</span>
@@ -853,6 +883,5 @@ function dibujaPantalla($params)
 	</div>
 	</div>
 	<div id='linea_generacion'></div>";
-	return $html;
+    return $html;
 }
- 

@@ -1,92 +1,102 @@
-<?php 
-//nufact.php. FIchero para la creacion de los nuevos parametros de factura.Realizado por Ruben Lacasa Mas ruben@ensenalia.com 2006-2007
+<?php
 require_once '../inc/variables.php';
-if(isset($_POST)) {
-	switch($_POST['opcion']) {
-		case 0:
-		       $respuesta = cabezera("mensual",$_POST)."".
-		               generales()."".opciones(0)."".botones()."</table>";
-		break;
-		case 1:
-		       $respuesta = cabezera("puntual",$_POST)."".
-		               generales()."".opciones(1)."".botones()."</table>";
-		break;
-	}
-	echo $respuesta;
+require_once '../inc/Cni.php';
+require_once '../inc/Cliente.php';
+/**
+ * nufact.php File Doc Comment
+ *
+ * FIchero para la creacion de los nuevos parametros de factura.
+ * Creada en 2006-2007. Refractorizada en 2012
+ *
+ * PHP Version 5.2.6
+ *
+ * @category rapido
+ * @package  cni/rapido
+ * @author   Ruben Lacasa Mas <ruben@ensenalia.com>
+ * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/
+ *           Creative Commons Reconocimiento-NoComercial-SinObraDerivada
+ *           3.0 Unported
+ * @link     https://github.com/independenciacn/cni
+ */
+$html = Cni::mensajeError('Error en la solicitud');
+Cni::chequeaSesion();
+if (isset($_SESSION['usuario']) && isset($_POST['cliente']) && isset
+($_POST['opcion'])
+) {
+    $tipoFacturacion = ($_POST['opcion'] == 0) ? 'mensual' : 'puntual';
+    $fechaFactura = date('d-m-Y');
+    $cliente = new Cliente($_POST['cliente']);
+    ?>
+    <table width='100%' class='tabla'>
+    <tr>
+        <th>
+            Facturacion
+            <?= $tipoFacturacion; ?>
+            de
+            <?= $cliente->nombre; ?>
+        </th>
+    </tr>
+    <tr>
+        <th>Datos Generales de la Factura</th>
+    </tr>
+    <tr>
+        <td>
+            <label for='fecha_factura'>Fecha Factura:</label>
+            <input type='text' id='fecha_factura' name='fecha_factura'
+                value='" . $fechaFactura . "'/>
+            &nbsp;&nbsp;
+            <button TYPE='button' class='calendario'
+                    id='f_trigger_fecha_factura'></button>
+            &nbsp;&nbsp;
+            <label for='codigo'>Numero Factura:</label>
+            <input type='text' id='codigo'
+                   value='". Cni::codigoNuevaFactura() . "'  size='6'/>
+            &nbsp;&nbsp;
+            <label for='observaciones'>Observaciones:</label>
+            <input type='text' id='observaciones'
+                   name='observaciones' size='60px'/>
+        </td>
+    </tr>
+    <?php
+    if ($_POST['opcion'] == 1) {
+        ?>
+        <tr>
+            <th>Datos especificos facturación puntual</th>
+        </tr>
+        <tr>
+            <td>
+            <label for='fecha_inicial_factura'>Fecha a Facturar:</label>
+            <input type='text' id='fecha_inicial_factura'
+                   name='fechaInicialFactura' size = '10' value='00-00-0000'/>
+            &nbsp;&nbsp;
+            <button TYPE='button' class='calendario'
+                    id='f_trigger_fecha_inicial_factura'></button>
+            &nbsp;&nbsp;
+            <label for='fechaFinalFactura'>Fecha fin Rango:</label>
+            <input type='text' id='fechaFinalFactura'
+                   name='fecha_final_factura' size = '10' value='00-00-0000'/>
+            &nbsp;&nbsp;
+            <button TYPE='button' class='calendario'
+                    id='f_trigger_fecha_final_factura'></button>
+            </td>
+        </tr>
+    <?php
+    }
+    ?>
+    <tr>
+        <td align='left'>
+            <input type='hidden' id='tipo' value='<?= $_POST['opcion']; ?>'/>
+            <input type='button' onclick='generar_excel()'
+                   value='>Informe Gestion'/>
+            <input type='button' onclick='generaFactura(true)'
+                   value='>Generar Proforma' />
+            <input type='button' onclick='generaFactura(false)'
+            value='>Generar Factura' />
+        </td>
+    </tr>
+    </table>
+    <?php
+} else {
+    echo Cni::mensajeError('Error en la solicitud: Faltan Parametros');
 }
-else {
-	echo "<div class='error'>Error</div>";
-}
-//Funciones auxiliares**************************************************/
-function cabezera($valor,$vars)
-{
-	$cadena = "<table width='100%' class='tabla'>";
-	$cadena .= "<tr><th>Facturaci&oacute;n ".$valor." de ".
-	    nombre_cliente($vars)."</th></tr>";
-	return $cadena;
-	
-}
-function botones()
-{
-	$cadena = "<tr><td align='left'>
-	    <input type='button' onclick='generar_excel()' value='>Informe Gestion'/>";
-	$cadena .="<input type='button' 
-	    onclick='generaFactura(true)' value='>Generar Proforma' />";
-	$cadena .="<input type='button'  
-	    onclick='generaFactura(false)' value='>Generar Factura' /></td></tr>";
-	return $cadena;
-}
-//Obtiene el nombre del cliente de base
-function nombre_cliente($vars)
-{
-	global $con;
-	$sql = "Select Nombre from clientes where id like ".$vars['cliente'];
-	$consulta = mysql_query($sql,$con);
-	if (mysql_numrows($consulta)!=0) {
-	    $resultado = mysql_fetch_array($consulta);
-	    $cadena = $resultado[0];
-	} else {
-	    $cadena = "Debe seleccionar un cliente";
-	}
-	return $cadena;
-}
-function generales()
-{
-	$fecha = date("d-m-Y");
-	$cadena = "<tr><th>Datos generales de la Factura</th></tr>";
-	$cadena .= "<tr><td>&nbsp;Fecha Factura:<input type='text' id='fecha_factura' name='fecha_factura' size = '10' value='".date('d-m-Y')."'/>";
-	$cadena .= "&nbsp;&nbsp;<button TYPE='button' class='calendario' id='f_trigger_fecha_factura'></button>";
-	$cadena .= "&nbsp;Numero Factura:<input type='text' id='codigo' value='".ultimo_codigo()."'  size='6'/>";
-	$cadena .= "&nbsp;Observaciones:<input type='text' id='observaciones' name='observaciones' size='60' /></td></tr>";
-	return $cadena;
-}
-function opciones($tipo)
-{
-	if($tipo == 1)
-	{
-	$cadena = "<tr><th>Datos especificos facturaci&oacute;n puntual</th></tr>";
-	$cadena .= "<tr><td>Fecha a Facturar:<input type='text' id='fecha_inicial_factura' name='fechaInicialFactura' size = '10' value='00-00-0000'/>";
-	$cadena .= "&nbsp;&nbsp;<button TYPE='button' class='calendario' id='f_trigger_fecha_inicial_factura'></button>";
-	$cadena .= "&nbsp;Fecha fin Rango:<input type='text' id='fechaFinalFactura' name='fecha_final_factura' size = '10' value='00-00-0000'/>";
-	$cadena .= "&nbsp;&nbsp;<button TYPE='button' class='calendario' id='f_trigger_fecha_final_factura'></button></td></tr>";
-	}
-	else {
-	    $cadena ="";
-	}
-	$cadena .= "<input type='hidden' id='tipo' value='".$tipo."' />";
-	return $cadena;
-}
-function ultimo_codigo()
-{
-	global $con;
-	$sql = "select codigo from regfacturas where codigo != 0 order by codigo desc limit 1 offset 0";
-	$consulta = mysql_query($sql,$con);
-	if(mysql_numrows($consulta)!=0)
-		{
-		$resultado = mysql_fetch_array($consulta);
-		$codigo = $resultado[0] + 1;
-		}
-	else
-		$codigo = 2003;
-	return $codigo;
-}
+
