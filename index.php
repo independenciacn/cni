@@ -1,6 +1,21 @@
 <?php
 require_once 'inc/variables.php';
 require_once 'inc/Cni.php';
+/**
+ * index.php File Doc Comment
+ *
+ * Pagina principal de la aplicación
+ *
+ * PHP Version 5.2.6
+ *
+ * @category main
+ * @package  cni
+ * @author   Ruben Lacasa Mas <ruben@ensenalia.com>
+ * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/
+ *           Creative Commons Reconocimiento-NoComercial-SinObraDerivada
+ *           3.0 Unported
+ * @link     https://github.com/independenciacn/cni
+ */
 Cni::chequeaSesion();
 $tituloGeneral = APLICACION. " - ". VERSION;
 ?>
@@ -34,21 +49,23 @@ if (!isset($_SESSION['usuario'])) {
     }
     ?>
     <div id='registro'>
-        <img src='imagenes/logotipo2.png' width='538px' alt='The Perfect
-        Place' />
-        <?= $mensaje; ?>
+        <img src='imagenes/logotipo2.png' alt='The Perfect Place' />
+        <div id='mensajesEstado'>
+            <?= $mensaje; ?>
+        </div>
         <form id='login_usuario' method='post' action='inc/valida.php'>
             <label for='usuario'>Usuario:</label>
             <input type='text' id='usuario' name='usuario' tabindex="1" />
             <label for='passwd'>Contraseña:</label>
             <input type='password' id='passwd' name='passwd' tabindex="2" />
-            <input type='submit' class='boton' tabindex="3"
-                   value='[&raquo;]Entrar' />
+            <button type='submit' class='boton' tabindex="3">
+                [&raquo;]Entrar
+            </button>
         </form>
         <div class="etiqueta">
             Desarrollado por:
             <a href='http://www.ensenalia.com'>
-                <img src='imagenes/ensenalia.jpg' width='128' />
+                <img src='imagenes/ensenalia.jpg'/>
             </a>
         </div>
     </div>
@@ -70,5 +87,7 @@ if (!isset($_SESSION['usuario'])) {
     <?php
 }
 ?>
+</div>
+
 </body>
 </html>

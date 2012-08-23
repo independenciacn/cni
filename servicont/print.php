@@ -19,11 +19,11 @@ require_once '../inc/Cni.php';
 Cni::chequeaSesion();
 $tabla = "";
 if ( isset($_SESSION['titulo']) ) {
-	$tabla = Cni::generaTablaDatos(
-	        $_SESSION['sqlQuery'],
-			$_SESSION['vars'],
-	        $_SESSION['titulo']
-	    );
+    $tabla = Cni::generaTablaDatos(
+        $_SESSION['sqlQuery'],
+        $_SESSION['vars'],
+        $_SESSION['titulo']
+    );
 }
 ?>
 <!DOCTYPE html>
@@ -40,5 +40,3 @@ if ( isset($_SESSION['titulo']) ) {
 	<?php echo $tabla; ?>
 </body>
 </html>
-<?php
- 

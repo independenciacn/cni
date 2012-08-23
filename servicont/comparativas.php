@@ -195,7 +195,7 @@ function comparativaCategorias($vars)
  * @param  String $filtro      Valor sobre el que filtar
  * @param  String $titulo      Titulo del primer campo del listado
  * 
- * @return String              Resultado de todo
+ * @return String              Resultado
  */
 function procesaComparativa($primerCampo, $igual, $vars, $filtro, $titulo)
 {

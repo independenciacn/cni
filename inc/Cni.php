@@ -370,8 +370,8 @@ final class Cni
      */
     public static function mensajeError($mensaje)
     {
-        $html = "<span class='alert alert-danger'><strong>Error:</strong> ".
-            $mensaje."</span>";
+        $html = "<div class='alert alert-danger'><strong>Error:</strong> ".
+            $mensaje."</div>";
         return $html;
     }
     /**
@@ -383,7 +383,7 @@ final class Cni
      */
     public static function mensajeExito($mensaje)
     {
-        $html = "<span class='alert alert-success'>".$mensaje."</span>";
+        $html = "<div class='alert alert-success'>".$mensaje."</div>";
         return $html;
     }
 

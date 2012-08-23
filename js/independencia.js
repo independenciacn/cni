@@ -9,7 +9,7 @@ function validar()
 	var pars = "opcion=0&usuario="+usuario+"&passwd="+passwd;
 	var myAjax = new Ajax.Request(url,
 	{
-		method:'post',
+		method: 'post',
 		parameters: pars,
 		onComplete: function gen(t)
 		{

@@ -97,5 +97,3 @@ $tituloGeneral = APLICACION. " - ". VERSION;
   	</div>
 	<div id='formulario'></div>
 </body>
-<?php
- 

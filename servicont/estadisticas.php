@@ -10,7 +10,7 @@
  * @package  cni/servicont
  * @author   Ruben Lacasa Mas <ruben@ensenalia.com>
  * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/
- *           Creative Commons Reconocimiento-NoComercial-SinObraDerivada 
+ *           Creative Commons Reconocimiento-NoComercial-SinObraDerivada
  *           3.0 Unported
  * @link     https://github.com/independenciacn/cni
  */
@@ -20,7 +20,7 @@ require_once 'comparativas.php';
 Cni::chequeaSesion();
 /**
  * Muestra por pantalla la opcion de imprimir el listado
- * 
+ *
  * @var string
  */
 $imprimir = "<div class='pull-right'>
@@ -28,19 +28,24 @@ $imprimir = "<div class='pull-right'>
 		onclick='window.open(\"print.php\",\"_self\")'>
 		<i class='icon-print icon-white'></i>
 		Imprimir</button></div>";
-if ( isset( $_SESSION['usuario']) ) {
-    if ( isset( $_POST['opcion'] ) ) {
+
+$cadena = "";
+if (isset($_SESSION['usuario'])) {
+    if (isset($_POST['opcion'])) {
         switch ($_POST['opcion']) {
-            case(0):
-                $cadena = formulario( $_POST );
-                break;//Generamos el formulario
-            case(1):
-                $cadena = respuesta( $_POST );
+            case (0):
+                $cadena = formulario($_POST);
+                break;
+            //Generamos el formulario
+            case (1):
+                $cadena = respuesta($_POST);
                 $cadena .= ($_POST['formu'] != 7) ? $imprimir : "";
-                break;//Generamos la respuesta
-            case(2):
-                $cadena = opcionComparativas( $_POST );
-                break;//Genera la pantalla de comparativa
+                break;
+            //Generamos la respuesta
+            case (2):
+                $cadena = opcionComparativas($_POST);
+                break;
+            //Genera la pantalla de comparativa
         }
         echo $cadena;
     } else {
@@ -51,9 +56,9 @@ if ( isset( $_SESSION['usuario']) ) {
 }
 /**
  * Devuelve el nombre del cliente
- * 
+ *
  * @param  integer $cliente Id del Cliente
- * 
+ *
  * @return string          Nombre del Cliente
  */
 function nombreCliente($cliente)
@@ -68,9 +73,10 @@ function nombreCliente($cliente)
 
     return $nombreCliente;
 }
+
 /**
  * Listado de Clientes
- * 
+ *
  * @return string Select de clientes
  */
 function clientes()
@@ -80,18 +86,19 @@ function clientes()
     $form = "<select id='cliente' name='cliente' class='span4'>";
     $form .= "<option value='0'>-Cliente-</option>";
     foreach ($resultados as $resultado) {
-        if ( trim( $resultado [1] ) != "" ) {
-            $form .= "<option value='".$resultado[0]."'>" .
-            $resultado [1] ."</option>";
+        if (trim($resultado [1]) != "") {
+            $form .= "<option value='" . $resultado[0] . "'>" .
+                $resultado [1] . "</option>";
         }
     }
     $form .= "</select>";
 
     return $form;
 }
+
 /**
  * Listado de las categorias
- * 
+ *
  * @return string
  */
 function categorias()
@@ -101,18 +108,19 @@ function categorias()
     $form = "<select id='categoria' name='categoria' class='span4'>";
     $form .= "<option value='0'>-Categorias-</option>";
     foreach ($resultados as $resultado) {
-        if (trim ( $resultado [0] ) != "") {
+        if (trim($resultado [0]) != "") {
             $form .= "<option value='" . $resultado [0] . "' >" .
-            $resultado [0] . "</option>";
+                $resultado [0] . "</option>";
         }
     }
     $form .= "</select>";
 
     return $form;
 }
+
 /**
  * Select de los servicios
- * 
+ *
  * @return string
  */
 function servicios()
@@ -123,20 +131,19 @@ function servicios()
     $form = "<select id='servicios' name='servicios' class='span4'>";
     $form .= "<option value='0'>-Servicios-</option>";
     foreach ($resultados as $resultado) {
-        $form .= "<option value='".trim($resultado[0])."' >".
-            trim($resultado[0])."</option>";
+        $form .= "<option value='" . trim($resultado[0]) . "' >" .
+            trim($resultado[0]) . "</option>";
     }
     $form .= "</select>";
 
     return $form;
 }
+
 /**
  * Devuelve el tipo de formulario solicitado
- * 
- * @param  Integer $tipoFormulario [description]
- * @param  String $inicioFin      [description]
- * 
- * @return String                 El formulario solicitado
+ *
+ * @param integer $tipoFormulario   El tipo de formulario que queremos
+ * @return string           El formulario solicitado
  */
 function tipoFormulario($tipoFormulario)
 {
@@ -149,22 +156,22 @@ function tipoFormulario($tipoFormulario)
             $formulario = categorias();
             break;
         case 2:
-            $formulario = servicios()."Inicio:";
+            $formulario = servicios() . "Inicio:";
             break;
         case 3:
-            $formulario = clientes().servicios()."<br/>";
+            $formulario = clientes() . servicios() . "<br/>";
             break;
         case 4:
-            $formulario = categorias().servicios()."<br/>";
+            $formulario = categorias() . servicios() . "<br/>";
             break;
     }
     return $formulario;
 }
+
 /**
  * Se genera el formulario para la consulta por cliente
- *
- * @param array $vars
- * @todo Cyclomatic 11
+ * @param Array $vars
+ * @return string
  */
 function formulario($vars)
 {
@@ -185,9 +192,9 @@ function formulario($vars)
         <form name='consulta' class='form-inline' id='consulta' method='post'
             onsubmit='procesa();return false'>
             <fieldset>
-            <legend>".$titulosFormulario[$vars['form']]."</legend>   
+            <legend>" . $titulosFormulario[$vars['form']] . "</legend>
             <input type='hidden' name='formu' id='formu' 
-                value='".$vars['form']."'>";
+                value='" . $vars['form'] . "'>";
     $inicioFin = "
     		<label for='fechaInical'> Inicio:</label>
             <input type='text' class='span2 datepicker' readonly
@@ -195,8 +202,8 @@ function formulario($vars)
     		<label for='fechaFinal'> Fin:</label>
             <input type='text' class='span2 datepicker' readonly
                 name='fechaFinal' id='fechaFinal' value='00-00-0000' />";
-    if ($vars['form'] !=7) {
-        $cadena .= tipoFormulario($vars['form']).$inicioFin;
+    if ($vars['form'] != 7) {
+        $cadena .= tipoFormulario($vars['form']) . $inicioFin;
         $cadena .= "
         		<div class='controls'>
         		<label class='radio'>
@@ -210,7 +217,7 @@ function formulario($vars)
         		Limitar Resultados:</label>";
         $cadena .= "<select name='limite' class='span1'>";
         for ($i = 10; $i <= 90; $i = $i + 10) {
-            $cadena.="<option value=".$i.">".$i."</option>";
+            $cadena .= "<option value=" . $i . ">" . $i . "</option>";
         }
         $cadena .= "<option selected value=0>Todos</option>";
         $cadena .= "</select>";
@@ -225,7 +232,7 @@ function formulario($vars)
                 </button>
                 </div>";
     } else {
-        $cadena .= formularioComparativas( $vars );
+        $cadena .= formularioComparativas($vars);
         // $cadena .= "Las comparativas estan deshabilitadas";
     }
     $cadena .= "</fieldset></form>";
@@ -233,9 +240,10 @@ function formulario($vars)
 
     return $cadena;
 }
+
 /**
  * Generamos la respuesta dependiendo de los parametros que llegan
- * 
+ *
  * @param array $vars
  * @return string
  */
@@ -243,15 +251,15 @@ function respuesta($vars)
 {
     $titulo = "Consumo mensual y acumulado entre fechas por";
     $titulos = array(
-            0 => $titulo." cliente",
-            1 => $titulo." categoria",
-            2 => $titulo." servicios",
-            3 => $titulo." clientes/servicio",
-            4 => $titulo." categoria/servicio",
-            5 => "Servicios mas facturados",
-            6 => "Clientes con mas facturación",
-            7 => "Comparativas",
-            );
+        0 => $titulo . " cliente",
+        1 => $titulo . " categoria",
+        2 => $titulo . " servicios",
+        3 => $titulo . " clientes/servicio",
+        4 => $titulo . " categoria/servicio",
+        5 => "Servicios mas facturados",
+        6 => "Clientes con mas facturación",
+        7 => "Comparativas",
+    );
     $vars['titulo'] = $titulos[$vars['formu']];
     if ($vars['formu'] == 7) {
         return procesaComparativas($vars);
@@ -259,47 +267,49 @@ function respuesta($vars)
         return procesaConsultas($vars);
     }
 }
+
 /**
  * Procesa y devuelve el subtitulo
- * @param unknown_type $vars
+ * @param Array $vars
  * @return string
  */
 function procesaParams($vars)
 {
-	switch ($vars['formu']) {
-		case 0:
-			$params['titulo'] = nombreCliente($vars['cliente']);
-			$params['vars'] = array($vars['cliente']);
-			break;
-		case 1:
-			$params['titulo'] = $vars['categoria'];
-			$params['vars'] = array($vars['categoria']);
-			break;
-		case 2:
-			$params['titulo'] = $vars['servicios'];
-			$params['vars'] = array($vars['servicios']);
-			break;
-		case 3:
-			$params['titulo'] = nombreCliente($vars['cliente']).
-				" / ".$vars['servicios'];
-			$params['vars'] = array($vars['servicios'], $vars['cliente']);
-			break;
-		case 4:
-			$params['titulo'] = $vars['categoria']." / ".$vars['servicios'];
-			$params['vars'] = array($vars['servicios'], $vars['categoria']);
-			break;
-		default:
-			$params['titulo'] = "";
-			$params['vars'] = array();
-			break;
-	}
-	return $params;
+    switch ($vars['formu']) {
+        case 0:
+            $params['titulo'] = nombreCliente($vars['cliente']);
+            $params['vars'] = array($vars['cliente']);
+            break;
+        case 1:
+            $params['titulo'] = $vars['categoria'];
+            $params['vars'] = array($vars['categoria']);
+            break;
+        case 2:
+            $params['titulo'] = $vars['servicios'];
+            $params['vars'] = array($vars['servicios']);
+            break;
+        case 3:
+            $params['titulo'] = nombreCliente($vars['cliente']) .
+                " / " . $vars['servicios'];
+            $params['vars'] = array($vars['servicios'], $vars['cliente']);
+            break;
+        case 4:
+            $params['titulo'] = $vars['categoria'] . " / " . $vars['servicios'];
+            $params['vars'] = array($vars['servicios'], $vars['categoria']);
+            break;
+        default:
+            $params['titulo'] = "";
+            $params['vars'] = array();
+            break;
+    }
+    return $params;
 }
+
 /**
  * Genera los filtros de la consulta
- * 
+ *
  * @param  Array $vars Array de valores
- * 
+ *
  * @return String       Parte de la consulta donde salen los filtros
  */
 function filtrosConsulta($vars)
@@ -308,34 +318,36 @@ function filtrosConsulta($vars)
     $filtroFecha = consultaFecha($vars);
     if ($filtroFecha != "") {
         if ($vars['formu'] == 5) {
-            $filtro .= " WHERE ".$filtroFecha;
+            $filtro .= " WHERE " . $filtroFecha;
         } else {
-            $filtro .= " AND ".$filtroFecha;
+            $filtro .= " AND " . $filtroFecha;
         }
     }
     return $filtro;
 }
+
 /**
- * Procesa la consulta Sql y la genera 
+ * Procesa la consulta Sql y la genera
  * @param Array $vars
  * @return String
  */
 function procesaConsultas($vars)
 {
-	$agrupamiento = "";
-	$opcion = $vars['formu'];
-	$params = procesaParams($vars);
-	$options = array(
-			0 => 'WHERE c.id_cliente LIKE ? ',
-			1 => 'WHERE l.Categoria LIKE ? ',
-			2 => 'WHERE TRIM(h.servicio) LIKE ? ',
-			3 => 'WHERE TRIM(h.servicio) LIKE ? AND c.id_cliente LIKE ? ',
-			4 => 'WHERE TRIM(h.servicio) LIKE ? AND l.Categoria LIKE ? ',
-			5 => ' ',
-			6 => ' '
-	);
-	if ($vars['tipo'] == 'acumulado') {
-		$sql = "
+    $sql = "";
+    $agrupamiento = "";
+    $opcion = $vars['formu'];
+    $params = procesaParams($vars);
+    $options = array(
+        0 => 'WHERE c.id_cliente LIKE ? ',
+        1 => 'WHERE l.Categoria LIKE ? ',
+        2 => 'WHERE TRIM(h.servicio) LIKE ? ',
+        3 => 'WHERE TRIM(h.servicio) LIKE ? AND c.id_cliente LIKE ? ',
+        4 => 'WHERE TRIM(h.servicio) LIKE ? AND l.Categoria LIKE ? ',
+        5 => ' ',
+        6 => ' '
+    );
+    if ($vars['tipo'] == 'acumulado') {
+        $sql = "
         SELECT
         TRIM(h.servicio) AS Servicio,
         SUM(h.cantidad) AS Unidades,
@@ -349,18 +361,18 @@ function procesaConsultas($vars)
         ON h.factura = c.codigo
         INNER JOIN `clientes` AS l
         ON c.id_cliente = l.Id ";
-        if ($opcion == 6 ) {
+        if ($opcion == 6) {
             $sql = preg_replace(
-                    '#TRIM\(h.servicio\) AS Servicio#',
-                    'l.Nombre AS Cliente',
-                    $sql
+                '#TRIM\(h.servicio\) AS Servicio#',
+                'l.Nombre AS Cliente',
+                $sql
             );
             $agrupamiento = "GROUP BY TRIM(l.nombre)";
         } else {
             $agrupamiento = "GROUP BY TRIM(h.servicio)";
         }
-	} elseif ($vars['tipo'] == 'detallado' ) {
-		$sql = "
+    } elseif ($vars['tipo'] == 'detallado') {
+        $sql = "
         SELECT
         TRIM(l.Nombre) AS Cliente,
         DATE_FORMAT(c.Fecha,'%d-%m-%Y') AS Fecha,   
@@ -377,28 +389,29 @@ function procesaConsultas($vars)
         ON h.factura = c.codigo
         INNER JOIN `clientes` AS l
         ON c.id_cliente = l.Id ";
-	}
+    }
     $sql .= $options[$opcion];
     $sql .= filtrosConsulta($vars);
     $sql .= $agrupamiento;
     $sql .= ($vars['formu'] == 5 || $vars['formu'] == 6) ?
-    	"ORDER BY Total DESC " : " ";
-    $sql .= ($vars['limite'] != 0) ? " LIMIT ".$vars['limite']." ": " ";
-	/**
-	 * Comprobamos el tipo de consulta y la devolvemos preparada
-	 */
-	$_SESSION['sqlQuery'] = $sql;
-	$_SESSION['vars'] = $params['vars'];
-	$_SESSION['titulo'] = $params['titulo'];
-	return Cni::generaTablaDatos(
-			$sql,
-			$params['vars'],
-			$params['titulo']
-			);
+        "ORDER BY Total DESC " : " ";
+    $sql .= ($vars['limite'] != 0) ? " LIMIT " . $vars['limite'] . " " : " ";
+    /**
+     * Comprobamos el tipo de consulta y la devolvemos preparada
+     */
+    $_SESSION['sqlQuery'] = $sql;
+    $_SESSION['vars'] = $params['vars'];
+    $_SESSION['titulo'] = $params['titulo'];
+    return Cni::generaTablaDatos(
+        $sql,
+        $params['vars'],
+        $params['titulo']
+    );
 }
+
 /**
  * Generación de la consulta con las fechas
- * 
+ *
  * @param array $vars
  * @return string
  */
@@ -407,11 +420,11 @@ function consultaFecha($vars)
     $sql = "";
     if ($vars['fechaInicial'] != '00-00-000') {
         $sql .= " AND (c.Fecha) >= 
-        		STR_TO_DATE('".$vars['fechaInicial']."','%d-%m-%Y') ";
+        		STR_TO_DATE('" . $vars['fechaInicial'] . "','%d-%m-%Y') ";
     }
     if ($vars['fechaFinal'] != '00-00-0000') {
         $sql .= " AND (c.Fecha) <= 
-        		STR_TO_DATE('".$vars['fechaFinal']."','%d-%m-%Y') ";
+        		STR_TO_DATE('" . $vars['fechaFinal'] . "','%d-%m-%Y') ";
     }
     $sql = substr($sql, 4);
 

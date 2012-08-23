@@ -62,84 +62,62 @@ function selectAnyos($anyoMarcado = null)
 	<meta charset="utf-8">
 	<link  href="../estilo/cni.css" rel="stylesheet"/>
 	<link  href="../estilo/calendario.css"  rel="stylesheet"/>
-	<script src='../js/prototype.js'></script>
-	<script src="../js/calendar.js"></script>
-	<script src="../js/lang/calendar-es.js"></script>
-	<script src="../js/calendar-setup.js"></script>
-	<script src="js/rapido.js" ></script>
 	<title>Servicios - <?= $tituloGeneral ?></title>
 </head>
 <body>
-<form name='seleccion_cliente' id='seleccion_cliente'>
-	<table class='tabla'>
-	<tr>
-		<td align='left' valign='top' colspan='4'>
-			<input type='button' class='boton' 
-				onclick='window.close()' value='[X] Cerrar' />
-		</td>
-		<td></td>
-		<td></td>
-		<td></td>
-	</tr>
-	<tr>
-		<th valign='top'>
-			<input type='hidden' id='id_cliente' name='id_cliente' />
-			<img src='../iconos/personal.png' alt='cliente' />&nbsp;Cliente:
-		</th>
-		<td>
-			<input type='text' name='cliente' id='cliente' 
-				 onkeyup='buscaCliente()' size='60'/>
-		</td>
-		<th>
-			<img src='../iconos/date.png' alt='Mes' />&nbsp;Mes:
-		</th>
-		<td>
-			<select id='meses' name='meses'>
-                <?= selectMeses() ?>
-			</select>
+<form name ='seleccionCliente' id='seleccionCliente'>
+    <button class='boton' onclick="window.close()">
+        [X] Cerrar
+    </button>
+    <input type='hidden' id='idCliente' name='idCliente' />
 
-		</td>
-		<td>
-			<select id='anyo' name='anyo'>
-                <?= selectAnyos() ?>
-		    </select>
-	    </td>
-	    <td>
-		    <input type='button' class='ver_servicios'
-			    onclick='verServiciosContratados(false)'
-                value='Ver Servicios' />
-	    </td>
-	    <td>
-		    <input type='reset' class='limpiar' value='Limpiar' />
-	    </td>
-    </tr>
-    <tr>
-	    <td colspan = '2'>
-		<input class='boton' type = 'button' onclick = 'clienteRango(0)' 
-			value = '>Facturacion Mensual' />
-		<input class='boton' type = 'button' onclick = 'clienteRango(1)' 
-			value ='>Facturacion Puntual' />
-		<input class='boton' type = 'button' onclick ='gestionFacturas(0)'
-			title = 'Muestra las facturas del cliente en el año marcado' 
-			value = '>Gesti&oacute;n Facturas'/>
-		<input class='boton' type = 'button' onclick = 'oculta_parametros()' 
-			value = '>Ocultar Ventana' />
-		<input class='boton' type = 'button' onclick = 'gestionFacturas(1)'
-			title = 'Muestra todas las facturas en el año marcado' 
-			value = '>Listar todas las facturas' />
-	</td>
-</tr>
-</table>
+    <div id='clientes'>
+        <label for='cliente'>
+            <img src='../iconos/personal.png' alt='cliente' />&nbsp;Cliente:
+        </label>
+        <input type='text' id='cliente' name='cliente' onkeyup='buscaCliente()'
+            size='60'/>
+        <div id='listadoClientes'></div>
+    </div>
+    <label for='meses'>
+        <img src='../iconos/date.png' alt='Mes' />&nbsp;Mes:
+    </label>
+    <select id='meses' name='meses'>
+        <?= selectMeses() ?>
+    </select>
+    <label for='anyo'>Año:</label>
+    <select id='anyo' name='anyo'>
+        <?= selectAnyos() ?>
+    </select>
+    <button class='ver_servicios' onclick='verServiciosContratados(false)'>
+        Ver Servicios
+    </button>
+    <button type='reset' class='limpiar'>Limpiar</button>
+    <input class='boton' type = 'button' onclick = 'clienteRango(0)'
+           value = '>Facturacion Mensual' />
+    <input class='boton' type = 'button' onclick = 'clienteRango(1)'
+           value ='>Facturacion Puntual' />
+    <input class='boton' type = 'button' onclick = 'gestionFacturas(0)'
+           title = 'Muestra las facturas del cliente en el año marcado'
+           value = '>Gesti&oacute;n Facturas'/>
+    <input class='boton' type = 'button' onclick = 'oculta_parametros()'
+           value = '>Ocultar Ventana' />
+    <input class='boton' type = 'button' onclick = 'gestionFacturas(1)'
+           title = 'Muestra todas las facturas en el año marcado'
+           value = '>Listar todas las facturas' />
 </form>
 <div id='precargaDatos'></div>
 <div id='parametros_facturacion'></div>
 <br/>
-<div id='listado_clientes'></div>
 <div id='tabla'></div>
 <div id='observa'></div>
 <div id='modificar'></div>
 <div id='debug'></div>
+<script src='../js/prototype.js'></script>
+<script src="../js/calendar.js"></script>
+<script src="../js/lang/calendar-es.js"></script>
+<script src="../js/calendar-setup.js"></script>
+<script src="js/rapido.js" ></script>
 </body>
 </html>
-<?php
  
