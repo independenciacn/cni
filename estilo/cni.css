@@ -205,9 +205,7 @@ textarea {
 
 /*Clase Tabla Generica*/
 .tabla {
-    border-style: solid;
-    border-width: 1px;
-    border-color: #7d0063;
+    border: 1px solid #7d0063;
     background: #ffffff;
 }
 
@@ -220,10 +218,9 @@ textarea {
     font-size: 11px;
     background: #7d0063;
     color: #ffffff;
-    border-right: solid;
-    border-bottom: solid;
-    border-width: 1px;
-    border-color: #dddddd;
+    border: 1px #dddddd;
+    border-right-style: solid;
+    border-bottom-style: solid;
 }
 
 .tabla a {
@@ -263,11 +260,7 @@ textarea {
     width: 200px;
     height: 100px;
     opacity: 0.80;
-    filter: alpha(opacity = 80);
-    -moz-opacity: 0.80;
-    border-style: solid;
-    border-width: 1px;
-    border-color: #003399;
+    border: 1px solid #003399;
 }
 
 #modificar {
@@ -284,28 +277,20 @@ textarea {
     width: 520px;
     height: 160px;
     opacity: 0.80;
-    filter: alpha(opacity = 90);
-    -moz-opacity: 0.90;
-    border-style: solid;
-    border-width: 1px;
-    border-color: #003399;
+    border: 1px solid #003399;
 }
 
 #modificar textarea {
     font-size: small;
-    border-style: solid;
-    border-width: 1px;
-    border-color: #FCD393;
+    border: 1px solid #FCD393;
     background: #FFFFFF;
 }
 
 #modif {
     padding: 1px;
     font-size: smaller;
-    background: #7d0063 url(../imagenes/actual.png) no-repeat center left;
-    border-style: solid;
-    border-width: 1px;
-    border-color: #FCD393;
+    background: #7d0063 url('../imagenes/actual.png') no-repeat center left;
+    border: 1px solid #FCD393;
     color: #ffffff;
     cursor: pointer;
     cursor: pointer;
@@ -328,7 +313,7 @@ textarea {
 #tbl_catserv {
     position: relative;
     top: 20px;
-    left: 0px;
+    left: 0;
     width: 200px;
 }
 
@@ -373,17 +358,13 @@ textarea {
     font-size: small;
     font-style: normal;
     text-transform: capitalize;
-    border-style: solid;
-    border-color: #CCCCCC;
-    border-width: thin;
+    border: thin solid #CCCCCC;
 }
 
 .listado_telecos th {
     color: #fff;
     background-color: #0066FF;
-    border-style: solid;
-    border-color: #CCCCCC;
-    border-width: thin;
+    border: thin solid #CCCCCC;
 }
 
 .listado_telecos td {
@@ -406,9 +387,7 @@ textarea {
     visibility: hidden;
     display: none;
     width: 200px;
-    border-style: solid;
-    border-width: 1px;
-    border-color: #7d0063;
+    border: 1px solid #7d0063;
     font-size: 11px;
     background: #ffffff;
     padding-left: 4px;
@@ -489,9 +468,7 @@ textarea {
 
 .formulario {
     font-size: 11px;
-    border-style: solid;
-    border-width: 1px;
-    border-color: #7d0063;
+    border: 1px solid #7d0063;
     background: #ffffff;
     color: #333333;
     width: 100%;
@@ -516,9 +493,7 @@ textarea {
     text-align: center;
     color: #7d0063;
     background: #FFFFFF;
-    border-style: solid;
-    border-width: 1px;
-    border-color: #7d0063;
+    border: 1px solid #7d0063;
 }
 
 .listado {
@@ -527,24 +502,18 @@ textarea {
     top: 300px;
     left: 220px;
     width: 750px;
-    border-style: solid;
-    border-width: 1px;
-    border-bottom-color: #333333;
+    border: 1px solid #CCCCCC;
     border-right-color: #333333;
-    border-left-color: #CCCCCC;
-    border-top-color: #CCCCCC;
+    border-bottom-color: #333333;
     font-size: 10px;
     color: #333;
 }
 
 #subformulario {
     background: #FFCC33;
-    border-style: solid;
-    border-width: 1px;
-    border-bottom-color: #333333;
+    border: 1px solid #CCCCCC;
     border-right-color: #333333;
-    border-left-color: #CCCCCC;
-    border-top-color: #CCCCCC;
+    border-bottom-color: #333333;
 }
 
 .titulo_categoria {
@@ -573,25 +542,20 @@ textarea {
     color: #7d0063;
     background: #ffffff;
     padding: 5px;
-    border-style: solid;
-    border-width: 1px;
-    border-color: #7d0063;
+    border: 1px solid #7d0063;
 }
 
 #formulario_rapido {
     font-size: small;
     color: #333;
     padding: 2px;
-    border-style: solid;
-    border-width: 1px;
-    border-bottom-color: #333333;
+    border: thin solid #CCCCCC;
     border-right-color: #333333;
-    border-left-color: #CCCCCC;
-    border-top-color: #CCCCCC;
+    border-bottom-color: #333333;
 }
 
 #formulario_rapido th {
-    font-family: Tahoma, Verdana, Arial, Georgia;
+    font-family: Tahoma, Verdana, Arial, Georgia, sans-serif;
     font-size: 12px;
     color: #333;
     background: #ffffcc;
@@ -602,22 +566,19 @@ textarea {
 .almacenaje {
     background: #ddd;
     color: #333;
-    font-family: Tahoma, Verdana, Arial, Georgia;
+    font-family: Tahoma, Verdana, Arial, Georgia, sans-serif;
     font-size: 12px;
     font-style: normal;
     text-transform: capitalize;
-    border-style: solid;
-    border-width: 1px;
-    border-bottom-color: #333333;
+    border: 1px solid #CCCCCC;
     border-right-color: #333333;
-    border-left-color: #CCCCCC;
-    border-top-color: #CCCCCC;
+    border-bottom-color: #333333;
     padding: 4px;
 }
 
 .almacenaje select {
     color: #333;
-    font-family: Tahoma, Verdana, Arial, Georgia;
+    font-family: Tahoma, Verdana, Arial, Georgia, sans-serif;
     font-size: 12px;
     font-style: normal;
     text-transform: capitalize;
@@ -650,7 +611,6 @@ textarea {
 #datos td {
     color: #333;
     text-align: center;
-
 }
 
 #lbl_cliente {
@@ -667,30 +627,21 @@ textarea {
     color: #333;
     background: #dddddd;
     padding: 4px;
-    border-style: solid;
-    border-width: 1px;
-    border-bottom-color: #333333;
+    border: 1px solid #CCCCCC;
     border-right-color: #333333;
-    border-left-color: #CCCCCC;
-    border-top-color: #CCCCCC;
+    border-bottom-color: #333333;
 }
 
 #datos_consulta {
-    border-style: solid;
-    border-width: 1px;
-    border-bottom-color: #333333;
+    border: 1px solid #CCCCCC;
     border-right-color: #333333;
-    border-left-color: #CCCCCC;
-    border-top-color: #CCCCCC;
+    border-bottom-color: #333333;
 }
 
 .mes {
-    border-style: solid;
-    border-width: 1px;
-    border-bottom-color: #333333;
+    border: 1px solid #CCCCCC;
     border-right-color: #333333;
-    border-left-color: #CCCCCC;
-    border-top-color: #CCCCCC;
+    border-bottom-color: #333333;
     cursor: pointer;
 }
 #listadoClientes {
@@ -714,8 +665,6 @@ textarea {
     color: #333;
     background: #FFF;
     opacity: 0.80;
-    filter: alpha(opacity = 80);
-    -moz-opacity: 0.80;
     border: 1px solid #CCCCCC;
     border-right-color: #333333;
     border-bottom-color: #333333;
@@ -728,14 +677,11 @@ textarea {
 /*Botones personalizados***/
 .agregar {
     height: 20px;
-
     font-size: 12px;
     text-indent: 16px;
     background: #7d0063 url(../iconos/edit_add.png) no-repeat center left;
     color: #ffffff;
-    border-style: solid;
-    border-width: 1px;
-    border-color: #333;
+    border: 1px solid #333;
     cursor: pointer;
     cursor: pointer;
 }
@@ -743,14 +689,11 @@ textarea {
 .ver_servicios {
     height: 20px;
     padding: 2px;
-
     font-size: 12px;
     text-indent: 16px;
     background: #7d0063 url(../iconos/find.png) no-repeat center left;
     color: #ffffff;
-    border-style: solid;
-    border-width: 1px;
-    border-color: #333;
+    border: 1px solid #333;
     cursor: pointer;
     cursor: pointer;
 }
@@ -758,14 +701,11 @@ textarea {
 .limpiar {
     height: 20px;
     padding: 2px;
-
     font-size: 12px;
     text-indent: 16px;
     background: #7d0063 url(../iconos/empty.png) no-repeat center left;
     color: #ffffff;
-    border-style: solid;
-    border-width: 1px;
-    border-color: #333;
+    border: 1px solid #333;
     cursor: pointer;
     cursor: pointer;
 }
@@ -778,9 +718,7 @@ textarea {
     text-indent: 16px;
     background: #7d0063 url(../iconos/fileprint.png) no-repeat center left;
     color: #ffffff;
-    border-style: solid;
-    border-width: 1px;
-    border-color: #333;
+    border: 1px solid #333;
     cursor: pointer;
     cursor: pointer;
 }
@@ -793,9 +731,7 @@ textarea {
     text-indent: 16px;
     background: #7d0063 url(../iconos/exit.png) no-repeat center left;
     color: #ffffff;
-    border-style: solid;
-    border-width: 1px;
-    border-color: #333;
+    border: 1px solid #333;
     cursor: pointer;
     cursor: pointer;
 }
@@ -806,9 +742,7 @@ textarea {
     font-size: 12px;
     text-indent: 16px;
     background: #7d0063 url(../iconos/reload.png) no-repeat center left;
-    border-style: solid;
-    border-width: 1px;
-    border-color: #333;
+    border: 1px solid #333;
     cursor: pointer;
     cursor: pointer;
     color: #ffffff;
@@ -893,9 +827,7 @@ textarea {
     text-indent: 16px;
     background: #7d0063 url(../iconos/edittrash.png) no-repeat center left;
     color: #ffffff;
-    border-style: solid;
-    border-width: 1px;
-    border-color: #333;
+    border: 1px solid #333;
     cursor: pointer;
     cursor: pointer;
 }
@@ -907,9 +839,7 @@ textarea {
     font-size: 12px;
     text-indent: 20px;
     background: #7d0063 url(../iconos/date.png) no-repeat center center;
-    border-style: solid;
-    border-color: #333;
-    border-width: 1px;
+    border: 1px solid #333;
     cursor: pointer;
 }
 
@@ -920,9 +850,7 @@ textarea {
     font-size: 12px;
     text-indent: 16px;
     background: #7d0063 url(../iconos/excel.png) no-repeat center left;
-    border-style: solid;
-    border-width: 1px;
-    border-color: #333;
+    border: 1px solid #333;
     cursor: pointer;
 }
 
@@ -951,24 +879,18 @@ textarea {
 
 #tablon_telefonos {
 
-    width: 0px;
-    height: 0px;
+    width: 0;
+    height: 0;
     font-size: 10px;
-    bottom: 0px;
+    bottom: 0;
     left: 215px;
     position: fixed;
     z-index: 1;
     color: #000;
     background: #FFF url('../imagenes/linphone.png') no-repeat top right;
-    border-style: solid;
-    border-width: 1px;
-    border-color: #003399;
-    border-style: solid;
-    border-width: 1px;
-    border-bottom-color: #333333;
+    border: 1px solid #CCCCCC;
     border-right-color: #333333;
-    border-left-color: #CCCCCC;
-    border-top-color: #CCCCCC;
+    border-bottom-color: #333333;
     overflow: auto;
 }
 
@@ -981,13 +903,9 @@ textarea {
     left: 200px;
     width: 400px;
     height: 300px;
-    border-color: #003399;
-    border-style: solid;
-    border-width: 1px;
-    border-bottom-color: #333333;
+    border: 1px solid #CCCCCC;
     border-right-color: #333333;
-    border-left-color: #CCCCCC;
-    border-top-color: #CCCCCC;
+    border-bottom-color: #333333;
 }
 
 #resultados_busqueda_avanzada {
@@ -996,13 +914,9 @@ textarea {
 }
 
 #tabla_asignacion_telefonos {
-    border-color: #003399;
-    border-style: solid;
-    border-width: 1px;
-    border-bottom-color: #333333;
+    border: 1px solid #CCCCCC;
     border-right-color: #333333;
-    border-left-color: #CCCCCC;
-    border-top-color: #CCCCCC;
+    border-bottom-color: #333333;
 }
 
 .listado_1 {
@@ -1046,31 +960,25 @@ textarea {
 
 /*AGENDA******************************/
 #agenda td {
-    border-style: solid;
-    border-width: 1px;
-    border-color: #333333;
+    border: 1px solid #333333;
     width: 16%;
     vertical-align: top;
     font-size: 10px;
-    padding: 0px;
+    padding: 0;
     text-indent: 5px;
 }
 
 #semana td {
-    border-style: solid;
-    border-width: 1px;
-    border-color: #333333;
+    border: 1px solid #333333;
     width: 16%;
     vertical-align: top;
     font-size: 10px;
-    padding: 0px;
+    padding: 0;
     text-indent: 5px;
 }
 
 #semana th {
-    border-style: solid;
-    border-color: #333333;
-    border-width: 1px;
+    border: 1px solid #333333;
     color: #FFD700; /*gold;*/
     background: #333333;
     font-size: 10px;
@@ -1115,9 +1023,7 @@ textarea {
     visibility: hidden;
     display: none;
     position: fixed;
-    border-style: solid;
-    border-color: #333333;
-    border-width: 1px;
+    border: 1px solid #333333;
     background: #708090;
     color: #b0c4de;
     font-size: 10px;
@@ -1140,17 +1046,9 @@ textarea {
     color: #333;
     background: #FFFFFF;
     opacity: 0.80;
-    filter: alpha(opacity = 80);
-    -moz-opacity: 0.80;
-    border-style: solid;
-    border-width: 1px;
-    border-color: #003399;
-    border-style: solid;
-    border-width: 1px;
-    border-bottom-color: #333333;
+    border: 1px solid #CCCCCC;
     border-right-color: #333333;
-    border-left-color: #CCCCCC;
-    border-top-color: #CCCCCC;
+    border-bottom-color: #333333;
     text-align: left;
     text-indent: 2px;
 }
@@ -1160,14 +1058,10 @@ textarea {
     width: 20px;
     font-size: 10px;
     background: #eeeeee url(../iconos/date.png) no-repeat center center;
-    border-width: 1px;
+    border: thin solid #333333;
     cursor: pointer;
     color: #666699;
     cursor: pointer;
-    border-style: solid;
-    border-width: thin;
-    border-color: #333333;
-    background-color: #eeeeee;
     padding: 2px;
 }
 
@@ -1183,9 +1077,7 @@ textarea {
     background: #ccccff;
     width: 200px;
     height: 600px;
-    border-style: solid;
-    border-width: 1px;
-    border-color: gold;
+    border: 1px solid gold;
     text-indent: 16px;
     color: #333333;
 }
@@ -1235,7 +1127,7 @@ textarea {
     width: 16%;
     vertical-align: top;
     font-size: 10px;
-    padding: 0px;
+    padding: 0;
     text-indent: 5px;
 }
 
@@ -1271,9 +1163,7 @@ textarea {
 .listado_par {
     background: #eeeeee;
     padding: 0.2em;
-    border-bottom-style: dotted;
-    border-bottom-width: thin;
-    border-bottom-color: #7d0063;
+    border-bottom: thin dotted #7d0063;
     font-size: 11px;
     width: 70%;
     color: #333;
@@ -1285,9 +1175,7 @@ textarea {
 .listado_impar {
     background: #dddddd;
     padding: 0.2em;
-    border-bottom-style: dotted;
-    border-bottom-width: thin;
-    border-bottom-color: #7d0063;
+    border-bottom: thin dotted #7d0063;
     font-size: 11px;
     width: 70%;
     color: #333;
@@ -1304,12 +1192,10 @@ textarea {
 /*Agenda INTERNA*/
 #tareas {
     background-color: #ffffff;
-    border-style: solid;
-    border-color: #dddddd;
-    border-width: 1px;
+    border: 1px solid #dddddd;
     text-align: justify;
     color: #708090;
-    -moz-border-radius: 5px;
+    border-radius: 5px;
 }
 
 /*SECCION PDF*/
@@ -1328,29 +1214,19 @@ textarea {
 /*Tabla del sublistado*/
 .sublistado {
     font-size: small;
-    border-style: dotted;
-    border-color: #7d0063;
-    border-width: 1px;
+    border: 1px dotted #7d0063;
 }
 
 .sublistado th {
     background: #7d0063;
     color: #ffffff;
-    border-right-style: solid;
-    border-right-color: #ffffff;
-    border-right-width: 1px;
-    border-bottom-style: solid;
-    border-bottom-color: #ffffff;
-    border-bottom-width: 1px;
+    border-right: 1px solid #ffffff;
+    border-bottom: 1px solid #ffffff;
 }
 
 .sublistado td {
-    border-right-style: dotted;
-    border-right-width: 1px;
-    border-right-color: #7d0063;
-    border-bottom-style: dotted;
-    border-bottom-width: 1px;
-    border-bottom-color: #7d0063;
+    border-right: 1px dotted #7d0063;
+    border-bottom: 1px dotted #7d0063;
 }
 
 /*Nuevos formularios Gestion*/
@@ -1384,9 +1260,7 @@ textarea {
     font-weight: bold;
     color: #7d0063;
     cursor: pointer;
-    border-style: solid;
-    border-width: 1px;
-    border-color: #7d0063;
+    border: 1px solid #7d0063;
     background-color: #eeeeee;
 }
 

@@ -26,6 +26,7 @@ $tituloGeneral = APLICACION. " - ". VERSION;
     <link href="estilo/cni.css" rel="stylesheet" />
     <link href="estilo/calendario.css" rel="stylesheet" />
     <script src='js/prototype.js'></script>
+    <script src='js/sortPrototype.js'></script>
     <script src="js/calendar.js"></script>
     <script src="js/lang/calendar-es.js"></script>
     <script src="js/calendar-setup.js"></script>
@@ -78,16 +79,20 @@ if (!isset($_SESSION['usuario'])) {
         <?= menu(); ?>
     </div>
     <div id='avisos'>
-        <?= avisos(); ?>
     </div>
     <div id='resultados'></div>
     <div id='formulario'></div>
     <div id='datos_interesantes'></div>
     <div id='debug'></div>
+    <script>
+        ver_avisos();
+    </script>
     <?php
+    /**
+     * TODO: Revisar la ejecucion de la vista de avisos
+     */
 }
 ?>
 </div>
-
 </body>
 </html>
