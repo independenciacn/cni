@@ -59,14 +59,14 @@ if((isset($_GET['factura'])) || (isset($_POST['factura']))) {
 	 * @todo Genera consumo alto revisar formato imagen
 	 * @var unknown_type
 	 */
-    $im = imagecreatefromjpeg("pie_n.jpg");
-	$pdf->addImage($im,0,0,600);
+    $im = imagecreatefromjpeg("pie_n1.jpg");
+	$pdf->addImage($im, 0, 15, 600);
 	/**
 	 * @todo Genera consumo alto revisar formato imagen
 	 * @var unknown_type
 	 */
-	$im = imagecreatefromjpeg("nif_n.jpg");
-	$pdf->addImage($im,0,200,33);
+	$im = imagecreatefromjpeg("nif_n1.jpg");
+	$pdf->addImage($im, 5, 115, 35);
 	$pdf->restoreState();
 	$pdf->closeObject();
 	$pdf->addObject( $all, 'all' );
