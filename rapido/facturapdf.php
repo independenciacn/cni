@@ -189,7 +189,7 @@ from historico where factura like '$factura' group by factura";
 			$ruta_wxp = "\\\\HALL_TRES\\RED\\PLANTILLAS\\facturas\\";
 			if(isset($_POST['envio'])) {
 				include_once 'envia.php';
-				set_time_limit(120);	
+				set_time_limit(120);
 				envia($pdfcode, $factura, $dup);
 			} else {
 				$ruta = $ruta_wxp.$nombre_factura;

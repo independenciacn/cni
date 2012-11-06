@@ -126,9 +126,10 @@ function seleccion_meses($mes = null)
 <div id='parametros_facturacion'></div>
 <br/>
 <div id='listado_clientes'></div>
+<div id='debug'>Linea depuracion</div>
 <div id='tabla'></div>
 <div id='observa'></div>
 <div id='modificar'></div>
-<div id='debug'></div>
+
 </body>
 </html>

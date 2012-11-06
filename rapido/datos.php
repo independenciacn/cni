@@ -765,7 +765,8 @@ function dibuja_pantalla($sql,$marca_cliente,$marca_factura,$marca_fecha,$marca_
 	<span class='boton' onclick='envia_check_pdf(0)'>Enviar PDF's por email</span>
 	<span class='boton' onclick='guarda_check_pdf(1)'>Guardar seleccionados como Duplicados PDF</span>
 	<span class='boton' onclick='envia_check_pdf(1)'>Enviar Duplicados PDF's por email</span>
-	</div>";
+	</div>
+	<div id='linea_generacion'></div>";
 	$cadena .="<table width='100%' class='tabla'>";
 	$consulta = mysql_query($sql,$con);
 	if ( mysql_numrows( $consulta ) !=0 ) {
@@ -811,7 +812,6 @@ function dibuja_pantalla($sql,$marca_cliente,$marca_factura,$marca_fecha,$marca_
 		$cadena .= "<tr><th colspan='5'>No hay facturas</th></tr>";
 	}
 	$cadena .= "</table>
-	</div>
-	<div id='linea_generacion'></div>";
+	</div>";
 	return $cadena;
 }
