@@ -7,10 +7,8 @@ error_reporting(0);
 /*
  * Recoge la opcion y la manda a su destino
  */
-if(isset($_POST['opcion']))
-{
-	switch($_POST['opcion'])
-	{
+if (isset($_POST['opcion'])) {
+	switch ($_POST['opcion']) {
 		case 0:$respuesta=formulario_despacho($_POST);break;
 		case 1:$respuesta=cuca($_POST);break;
 		case 2:$respuesta=dame_nombre_cliente($_POST);break;
