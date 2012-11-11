@@ -83,7 +83,7 @@ $cadena = "";
     foreach ($hoy as $linea) {
     	foreach ($linea as $lin)
         	$cumple_dia[]= array(
-            	$lin['nombre']." ".$lin['apellidos'],
+            	$lin['nombre'],
             	$lin['Nombre']
         );
     }
