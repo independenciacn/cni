@@ -922,11 +922,22 @@ function genera_consultas($inicio,$fin)
 								$campo = $resultado[$i];
 							} else {
 								$campo = $resultado[$i];
-							}
+							} 
 						break;
 						case "real":
-							$campo = number_format($resultado[$i],2,',','.');
-							$tot[$i]=$tot[$i]+$resultado[$i];
+							if (mysql_field_name($consulta, $i) == 'Unidades') {
+								$campoUnidades = $i;
+								$mostrar = $resultado[$i];
+								$calculo = $resultado[$i];
+							} elseif (mysql_field_name($consulta, $i) == 'Importe') {
+								$mostrar = $resultado[$i];
+								$calculo = $resultado[$i] * $resultado[$campoUnidades];
+							} else {
+								$mostrar = $resultado[$i];
+								$calculo = $resultado[$i];
+							}
+							$campo = number_format($mostrar, 2, ',', '.');
+							$tot[$i]=$tot[$i] + $calculo;
 						break;
 						case "date":
 							$campo = cambiaf($resultado[$i]);
@@ -964,7 +975,6 @@ function genera_consultas($inicio,$fin)
 	$cadena.="<div id='titulo'>Total Resultados: ".mysql_numrows($consulta)."</div>";
 	return $cadena;
 }
- 
 /*
  * Generacion de las tablas de las comparativas 
  */

@@ -50,8 +50,19 @@ if ( isset($_SESSION['titulo']) ) {
 						    $campo = $resultado[$i];
 						    break;
 						case "real":
-						    $campo = number_format($resultado[$i],2,',','.');
-							$tot[$i]=$tot[$i]+$resultado[$i];
+							if (mysql_field_name($consulta, $i) == 'Unidades') {
+								$campoUnidades = $i;
+								$mostrar = $resultado[$i];
+								$calculo = $resultado[$i];
+							} elseif (mysql_field_name($consulta, $i) == 'Importe') {
+								$mostrar = $resultado[$i];
+								$calculo = $resultado[$i] * $resultado[$campoUnidades];
+							} else {
+								$mostrar = $resultado[$i];
+								$calculo = $resultado[$i];
+							}
+							$campo = number_format($mostrar, 2, ',', '.');
+							$tot[$i]=$tot[$i] + $calculo;
 						    break;
 						case "date":
 						    $campo = cambiaf($resultado[$i]);
