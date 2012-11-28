@@ -17,6 +17,7 @@ if ( isset( $_SESSION['usuario']) ) {
 			    $cadena = comparativas( $_POST );
 			    break;//Genera la pantalla de comparativa
 		}
+		$_SESSION['tipo'] = $_POST['tipo'];
 		echo $cadena;
 	} else {
 		echo "No se ha pasado opcion";
@@ -925,19 +926,22 @@ function genera_consultas($inicio,$fin)
 							} 
 						break;
 						case "real":
-							if (mysql_field_name($consulta, $i) == 'Unidades') {
-								$campoUnidades = $i;
+						if (mysql_field_name($consulta, $i) == 'Unidades'
+									&& $vars['tipo'] == 'detallado') {
+							$campoUnidades = $i;
+							$mostrar = $resultado [$i];
+							$calculo = $resultado [$i];
+						} elseif (mysql_field_name($consulta, $i) == 'Importe'
+									&& $vars['tipo'] == 'detallado') {
+							$mostrar = $resultado [$i];
+							$calculo =
+								$resultado [$i] * $resultado [$campoUnidades];
+						} else {
 								$mostrar = $resultado[$i];
 								$calculo = $resultado[$i];
-							} elseif (mysql_field_name($consulta, $i) == 'Importe') {
-								$mostrar = $resultado[$i];
-								$calculo = $resultado[$i] * $resultado[$campoUnidades];
-							} else {
-								$mostrar = $resultado[$i];
-								$calculo = $resultado[$i];
-							}
-							$campo = number_format($mostrar, 2, ',', '.');
-							$tot[$i]=$tot[$i] + $calculo;
+						}
+						$campo = number_format($mostrar, 2, ',', '.');
+						$tot[$i]=$tot[$i] + $calculo;
 						break;
 						case "date":
 							$campo = cambiaf($resultado[$i]);
