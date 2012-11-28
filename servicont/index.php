@@ -10,7 +10,7 @@
 <script type="text/javascript" src="../js/calendar.js"></script>
 <script type="text/javascript" src="../js/lang/calendar-es.js"></script>
 <script type="text/javascript" src="../js/calendar-setup.js"></script>
-<title>Informes - <?php echo APLICACION; ?> - <?php echo VERSION; ?></title>
+<title>Informes - <?= APLICACION ?> - <?= VERSION ?></title>
 </head>
 <body>
 <div id='titulo'>
