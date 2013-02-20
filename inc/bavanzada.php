@@ -55,15 +55,17 @@ function busca_valores($vars)
 		$vars['texto']=$token;
 	}
     $vars['texto'] = $vars['texto']; //convertimos caracteres
-	$sql = "SELECT c.id, c.Nombre, c.Contacto, p.nombre, p.apellidos
+	$sql = "SELECT c.id, c.Nombre, c.Contacto, p.nombre, p.apellidos, t.persona_central
 	FROM clientes AS c
-	JOIN pempresa AS p ON c.id = p.idemp
+	LEFT JOIN pempresa AS p ON c.id = p.idemp
+	LEFT JOIN pcentral AS t ON c.id = t.idemp
 	WHERE (c.Nombre LIKE '%".$vars['texto']."%'
 	OR c.Contacto LIKE '%".$vars['texto']."%'
 	OR p.nombre LIKE '%".$vars['texto']."%'
 	OR p.apellidos LIKE '%".$vars['texto']."%'
 	OR concat(p.nombre,'',p.apellidos,'%') LIKE '%".$vars['texto']."%')
-    and c.Estado_de_cliente = '-1'
+	OR t.persona_central LIKE '%".$vars['texto']."%' 
+	and c.Estado_de_cliente = '-1'
 	";
 	//echo $sql; //Punto de control
 	$cadena.="<p><b><u>Resultados busqueda en Clientes</u></b></p>";
