@@ -1170,4 +1170,3 @@ JOIN empleados AS e ON e.id = t.asignada where t.vencimiento like curdate() and 
 	
 	return $cadena;
 }
-?>

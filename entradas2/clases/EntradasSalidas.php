@@ -77,7 +77,8 @@ class EntradasSalidas extends Sql
     private $_horasDespacho = array(
         'Sala de Reuniones (una hora)',
         'Sala de Juntas (una hora)',
-        'Despacho (una hora)'
+        'Despacho (una hora)',
+        'Bonos salas'
     );
     private $_anyoCeroKeys = array(
         '2' => array('entradas' => '128', 'salidas' => '103'), 
@@ -291,7 +292,7 @@ class EntradasSalidas extends Sql
     public function HorasDespachoSala($anyo = FALSE)
     {
         $horas = 0;
-        foreach($this->_horasDespacho  as $servicio){
+        foreach($this->_horasDespacho as $servicio) {
             $datos = $this->ocupacionesPuntuales($servicio,$anyo);
             if(isset($datos[0]['Total']))
                 $horas += $datos[0]['Total'];
@@ -567,7 +568,7 @@ class EntradasSalidas extends Sql
         $this->_conn->consulta($sql);
         return $this->_conn->datos();
     }
-    
+
     /*
 	 * Funcion a la que se le pasa por parametro el tipo 'entrada' 'salida' 
 	 * y la categoria, y devuelve el numero total de entradas o salidas por mes
@@ -858,7 +859,8 @@ EOD;
         	<td>
         	    &nbsp;
         	</td>
-        </tr>	
+        </tr>
+
 EOD;
         /*Fin de la seccion de las ocupaciones y despachos salas/horas*/
         $html .= <<<EOD
@@ -1206,7 +1208,7 @@ EOD;
         
         $html .= "</table>";
         $html .= "<div id='dialog'><div id='subcarga'>
-        <img src='css/custom-theme/images/ajax-loader.gif' alt='Cargando'></img></div></div>";
+        <img src='css/custom-theme/images/ajax-loader.gif' alt='Cargando' /></div></div>";
         $html .= <<<EOD
         <script type="text/javascript">
         	$('.celda').click(function(){ 
