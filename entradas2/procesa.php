@@ -173,12 +173,12 @@ if (isset($_POST['cliente'])) {
     $html .= "</table>";
     echo $html;
 }
-if (isset($_POST['ocupacion'])){
+if (isset($_POST['ocupacion'])) {
     $anyoFinal = NULL;
     $dato = explode('#',urldecode($_POST['ocupacion']));
     $class = "celdadialog";
-    if($dato[2]!=100){
-        if( $dato[2]> '11' ){
+    if ($dato[2]!=100) {
+        if ($dato[2]> '11') {
             $mes = $dato[2] - 11;
             $anyo = $_POST['fin'];
         }
@@ -186,33 +186,87 @@ if (isset($_POST['ocupacion'])){
             $mes = $dato[2] + 1;
             $anyo = $_POST['inicial'];
         } 
-    }
-    else{
+    } else {
             $mes = $dato[2];
             $anyo = $_POST['inicial'];
             $anyoFinal = $_POST['fin'];
             $class = "ui-widget-content";
-        }
-    
-        
+    }
     $detalles = $entradas->DetallesOcupacionHoras($mes,$anyo,$dato[0],$dato[1],$anyoFinal);
     $i=0;
+    $j=0;
     $mes = 0;
     $inicio = 0;
     $total = 0;
     $html = "<table class='listaacumulada'>";
-    $html .= "
-        <tr>
-         <th class='datosacumulados'>&nbsp;</th>
-         <th class='acumulada'>Cliente</th>
-         <th class='acumulada'>Servicio</th>
-         <th class='datosacumulados'>Fecha</th>
-        </tr>";
+    if (preg_match('#Horas#', $_POST['ocupacion'])) {
+        $html .= "
+            <tr>
+                <th class='datosacumulados'>&nbsp;</th>
+                <th class='acumulada'>Cliente</th>
+                <th class='acumulada'>Servicio</th>
+                <th class='acumulada'>Fecha</th>
+                <th class='datosacumulados'>Horas</th>
+            </tr>";
         foreach ($detalles as $detalle) {
-            
+            $j++;
             $nombre = $detalle['Nombre'];
             $servicio = $detalle['Servicio'];
             $fecha = $entradas->fecha->cambiaf($detalle['fecha']);
+            $horas = $detalle["Total"];
+            if ($horas == 0) {
+                $horas = intval($detalle["cantidad"]);
+            }
+            if ($mes != $entradas->fecha->verMes($detalle["fecha"])) {
+                if ($inicio != 0) {
+                    $html .= "<tr class='ui-widget-content'>
+                 <td colspan='5'>
+                 <strong>Total {$i}</strong>
+                 </td>
+                 </tr>";
+                    $total += $i;
+                    $i=0;
+                    $j=1;
+                }
+                $mes = $entradas->fecha->verMes($detalle["fecha"]);
+                $anyo = $entradas->fecha->verAnyo($detalle["fecha"]);
+                $html .="<tr class=''>
+                 <th colspan='5'>{$entradas->meses[$mes]} {$anyo}</th>
+                 </tr>";
+                $inicio = 1;
+            }
+            $i += $horas;
+            $html .= "
+            <tr class='{$class}'>
+             <td>{$j}</td>
+             <td>{$nombre}</td>
+             <td>{$servicio}</td>
+             <td>{$fecha}</td>
+             <td>{$horas}</td>
+            </tr>";
+        }
+        $html .= "<tr class='ui-widget-content'>
+             <td colspan='5'>
+             <strong>Total {$i}</strong>
+             </td>
+             </tr>";
+        $total += $i;
+        $html .= "<tr class=''><th colspan='5'>Total {$total}</th></tr>";
+
+        } else {
+        $html .= "
+            <tr>
+                <th class='datosacumulados'>&nbsp;</th>
+                <th class='acumulada'>Cliente</th>
+                <th class='acumulada'>Servicio</th>
+                <th class='datosacumulados'>Fecha</th>
+            </tr>";
+        foreach ($detalles as $detalle) {
+            $nombre = $detalle['Nombre'];
+            $servicio = $detalle['Servicio'];
+            $fecha = $entradas->fecha->cambiaf($detalle['fecha']);
+            $horas = $detalle["Total"];
+
             if($mes != $entradas->fecha->verMes($detalle["fecha"]))
             {
                 if($inicio!=0){
@@ -227,7 +281,7 @@ if (isset($_POST['ocupacion'])){
                 $mes = $entradas->fecha->verMes($detalle["fecha"]);
                 $anyo = $entradas->fecha->verAnyo($detalle["fecha"]);
                 $html .="<tr class=''>
-                 <th colspan='4'>{$entradas->meses[$mes]} {$anyo}</th>
+                 <th colspan='5'>{$entradas->meses[$mes]} {$anyo}</th>
                  </tr>";
                 $inicio = 1;
             }
@@ -240,13 +294,14 @@ if (isset($_POST['ocupacion'])){
              <td>{$fecha}</td>
             </tr>";
         }
-    $html .= "<tr class='ui-widget-content'>
-                 <td colspan='4'>
-                 <strong>Total {$i}</strong>
-                 </td>
-                 </tr>";
-    $total += $i;
-    $html .= "<tr class=''><th colspan='4'>Total {$total}</th></tr>";
+        $html .= "<tr class='ui-widget-content'>
+             <td colspan='4'>
+             <strong>Total {$i}</strong>
+             </td>
+             </tr>";
+        $total += $i;
+        $html .= "<tr class=''><th colspan='4'>Total {$total}</th></tr>";
+    }
     $html .= "</table>";
     $html .= "<a href='#arriba' class='enlacedetallada'>Ir Arriba</a>";
     echo $html;

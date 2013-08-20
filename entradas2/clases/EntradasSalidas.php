@@ -6,6 +6,7 @@
  * TODO:Los consumos de los clientes externos deben aparecer
  * FIXME: Repasar y arreglar las lineas HTML y jQuery (Marcadas con FIXME)
  * FIXME: Revision de las comillas
+ * FIXME: Movimientos clientes Detallada Despacho/Sala Horas los totales no salen bien
  */
 
 require_once 'Sql.php';
@@ -293,7 +294,7 @@ class EntradasSalidas extends Sql
     {
         $horas = 0;
         foreach($this->_horasDespacho as $servicio) {
-            $datos = $this->ocupacionesPuntuales($servicio,$anyo);
+            $datos = $this->ocupacionesPuntuales($servicio, $anyo);
             if(isset($datos[0]['Total']))
                 $horas += $datos[0]['Total'];
         }
@@ -303,7 +304,7 @@ class EntradasSalidas extends Sql
     /*
      * Funcion de presentacion de los datos de Ocupacion puntual y Horas
      */
-    public function DetallesOcupacionHoras($mes,$anyo,$tipo,$tiempo,$anyoFinal = NULL){
+    public function DetallesOcupacionHoras($mes, $anyo, $tipo, $tiempo, $anyoFinal = NULL){
        
         $filtro = "";
        
@@ -317,25 +318,24 @@ class EntradasSalidas extends Sql
                     $filtro .= " d.servicio LIKE '{$servicio['Nombre']}' OR";
             }
         }
-        if($anyoFinal != NULL && $mes == 100)
-        {
-            $filtroAnyo = "YEAR(c.fecha) >= '{$anyo}' ".
-            "AND YEAR(c.fecha) <= '{$anyoFinal}' ";
-        }
-        else
+        if($anyoFinal != NULL && $mes == 100) {
+            $filtroAnyo = "YEAR(c.fecha) BETWEEN {$anyo} AND {$anyoFinal}";
+        } else {
             $filtroAnyo = "YEAR(c.fecha) LIKE '{$anyo}' " . 
              "AND MONTH(c.fecha) LIKE '{$mes}' ";
-            
+        }
         $filtro = substr($filtro, 0, strlen($filtro)-2);    
-            $sql = "SELECT d.Servicio as Servicio, l.Nombre, c.fecha " .
+            $sql = "SELECT d.Servicio as Servicio,
+            extractNumber(d.observaciones) as Total, d.cantidad,
+            l.Nombre, c.fecha " .
              "FROM `detalles consumo de servicios` AS d " .
              "INNER JOIN `consumo de servicios` as c " .
              "ON d.`Id Pedido` = c.`Id Pedido` " . 
              "INNER JOIN `clientes` AS l " .
              "ON c.`cliente` = l.id " . 
              "WHERE ({$filtro}) " .    
-             "AND ({$filtroAnyo}) " . 
-             "ORDER BY c.fecha;";
+             "AND {$filtroAnyo} " .
+             "ORDER BY c.fecha";
              $this->_conn = new Sql();
              $this->_conn->consulta($sql);
              return $this->_conn->datos();
@@ -365,65 +365,78 @@ class EntradasSalidas extends Sql
     /*
      * Calcula la ocupaciones puntuales
      */
-    public function ocupacionesPuntuales($servicio,$anyo = FALSE)
+    public function ocupacionesPuntuales($servicio, $anyo = FALSE)
     {
-        if($anyo == FALSE)
+        if ($anyo == FALSE) {
             $anyo = $this->anyoInicial;
-        else
+        } else {
             $anyo = $this->anyoZero;
-                
-        $sql = "SELECT d.Servicio as Servicio, count(d.servicio) AS Total " .
+        }
+        $total = 'count(d.servicio)';
+        if ($servicio == "Bonos salas") { // En el caso de ser Bonos salas coge el total de las Observaciones
+            $total = 'SUM(extractNumber(d.observaciones))';
+        }
+        $sql = "SELECT d.Servicio as Servicio, {$total} AS Total " .
              "FROM `detalles consumo de servicios` AS d " .
              "INNER JOIN `consumo de servicios` as c " .
              "ON d.`Id Pedido` = c.`Id Pedido` " . 
              "INNER JOIN `clientes` AS l " .
-             "ON c.`cliente` = l.id " . 
-             
+             "ON c.`cliente` = l.id " .
              "WHERE d.servicio like '{$servicio}' " .    
-             "AND (YEAR(c.fecha) >= {$anyo} " . 
-             "AND YEAR(c.fecha) <= {$this->anyoFinal}) " . 
+             "AND YEAR(c.fecha) BETWEEN {$anyo} AND {$this->anyoFinal} " .
              "GROUP BY d.Servicio " .
-             "ORDER BY d.Servicio; ";  
+             "ORDER BY d.Servicio; ";
             $this->_conn = new Sql();
             $this->_conn->consulta($sql);
             return $this->_conn->datos();
    }
-   public function cuentaServiciosPorMes($servicio,$todos = FALSE)
-   {
-    if(!$todos){
-    	$filtro = " l.categoria LIKE 'clientes externos' AND ";
+
+    public function cuentaServiciosPorMes($servicio, $todos = FALSE)
+    {
+        if (!$todos) {
+            $filtro = " l.categoria LIKE 'clientes externos' AND ";
+        } else {
+            $filtro = "";
+        }
+        $total = 'COUNT(MONTH(c.fecha))';
+        if ($servicio == "Bonos salas") { // En el caso de ser Bonos salas coge el total de las Observaciones
+            $total = 'SUM(extractNumber(d.observaciones))';
+        }
+        // Hacemos que los resultados de horas despacho sea para todos los clientes
+        if (in_array($servicio, $this->_horasDespacho)) {
+            $filtro = "";
+        }
+        $sql = "SELECT MONTH(c.fecha) AS mes, " .
+            " {$total} AS total, " .
+            "YEAR(c.fecha) AS anyo " .
+            "FROM `detalles consumo de servicios` AS d " .
+            "INNER JOIN `consumo de servicios` as c " .
+            "ON d.`Id Pedido` = c.`Id Pedido` " .
+            "INNER JOIN `clientes` AS l " .
+            "ON c.`cliente` = l.id " .
+            "WHERE {$filtro}" .
+            " d.servicio like '{$servicio}' " .
+            "AND YEAR(c.fecha) BETWEEN {$this->anyoInicial} AND {$this->anyoFinal} " .
+            "GROUP BY MONTH(c.fecha), YEAR(c.fecha) " .
+            "ORDER BY c.fecha";
+        $this->_conn = new Sql();
+        $this->_conn->consulta($sql);
+        $arrayFinal = array_fill(0, $this->diferencia(), 0);
+        foreach ($this->_conn->datos() as $dato) {
+            $key = $dato['mes'];
+            if ($dato['anyo'] > $this->anyoInicial) {
+                $key = $dato['mes'] + 11;
+            } else {
+                $key = $dato['mes'] - 1;
+            }
+            if (array_key_exists($key, $arrayFinal)) {
+                $arrayFinal[$key] += $dato['total'];
+            } else {
+                $arrayFinal[$key] = $dato['total'];
+            }
+        }
+        return $arrayFinal;
     }
-    else
-    	$filtro = "";   
-   	$sql = "SELECT MONTH(c.fecha) AS mes, " .
-        "COUNT(MONTH(c.fecha)) AS total, " .
-        "YEAR(c.fecha) AS anyo " .
-        "FROM `detalles consumo de servicios` AS d " .
-        "INNER JOIN `consumo de servicios` as c " .
-        "ON d.`Id Pedido` = c.`Id Pedido` " . 
-        "INNER JOIN `clientes` AS l " .
-        "ON c.`cliente` = l.id " . 
-        "WHERE {$filtro}" .
-        " d.servicio like '{$servicio}' ".
-        "AND (YEAR(c.fecha) >= {$this->anyoInicial} ".
-        "AND YEAR(c.fecha) <= {$this->anyoFinal}) ".
-        "GROUP BY MONTH(c.fecha), YEAR(c.fecha) " .
-        "ORDER BY c.fecha";
-       
-       $this->_conn = new Sql();
-       $this->_conn->consulta($sql);
-       $arrayFinal = array_fill(0, $this->diferencia(), 0);
-       foreach($this->_conn->datos() as $dato)
-       {
-           $key = $dato['mes'];
-           if($dato['anyo']>$this->anyoInicial)
-             $key = $dato['mes']+11;
-           else
-             $key = $dato['mes']-1;
-          $arrayFinal[$key] = $dato['total'];       
-       }
-       return $arrayFinal;
-   }
    
     
     /*
@@ -1286,7 +1299,6 @@ EOD;
           */
          foreach($this->_horasDespacho as $servicio)
              $horasDespacho[$servicio] =  $this->cuentaServiciosPorMes($servicio);
-             
          $datosHorasDespacho = array_fill(0, $this->diferencia(), 0);
          foreach($horasDespacho as $servicio)
              foreach($servicio as $key => $dato)
