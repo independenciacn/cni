@@ -52,8 +52,8 @@ if((isset($_GET['factura'])) || (isset($_POST['factura']))) {
 	$im = imagecreatefromjpeg("logo_n.jpg");
 	$pdf->addImage($im,33,740,200);
     //10 aniversario
-    $gif = imagecreatefromgif("image001.gif");
-	$pdf->addImage(&$gif, 470, 750, 90);
+    //$gif = imagecreatefromgif("image001.gif");
+	//$pdf->addImage($gif, 470, 750, 90);
 	//fin 10 aniversario
 	/**
 	 * @todo Genera consumo alto revisar formato imagen
@@ -65,7 +65,7 @@ if((isset($_GET['factura'])) || (isset($_POST['factura']))) {
 	 * @todo Genera consumo alto revisar formato imagen
 	 * @var unknown_type
 	 */
-	$im = imagecreatefromjpeg("nif_n1.jpg");
+	$im = imagecreatefromjpeg("nif_n1.JPG");
 	$pdf->addImage($im, 5, 115, 35);
 	$pdf->restoreState();
 	$pdf->closeObject();
@@ -91,7 +91,7 @@ if((isset($_GET['factura'])) || (isset($_POST['factura']))) {
 	$cliente = $resultado[6];
 	$texto="FECHA:".cambiaf($resultado[5]);
 	$pdf->addText(50,700,12,$texto);
-	$texto="Num. FACTURA:".$factura;
+	$texto="Num. FACTURA: ".$factura;
 	$pdf->addText(50,685,12,$texto);
 /*Datos cliente*/
 	$pdf->addText(265,698,10,"<b>".utf8_decode($resultado[0])."</b>");
