@@ -19,7 +19,7 @@
 
     <target name="phpmd" description="PHP Mess Detector">
         <exec dir="${applicationDir}" executable="phpmd">
-            <arg line="${applicationDir}" />
+            <arg line="${basedir}" />
             <arg line="xml" />
             <arg line="cleancode,codesize,controversial,design,naming,unusedcode" />
             <arg line="--reportfile ${buildDir}/logs/pmd.xml" />
@@ -30,7 +30,7 @@
     <target name="phpcpd" description="Copy/Paste Detector">
         <exec dir="${applicationDir}" executable="phpcpd">
             <arg line="--log-pmd ${buildDir}/logs/pmd-cpd.xml" />
-            <arg line="${applicationDir}" />
+            <arg line="${basedir}" />
         </exec>
         <echo message="##teamcity[importData type='pmdCpd' path='${buildDir}/logs/pmd-cpd.xml']"/>
         <echo message="##teamcity[publishArtifacts '${buildDir}/logs/pmd-cpd.xml']" />
@@ -44,7 +44,7 @@
             <arg line="--summary-xml=${buildDir}/logs/pdepend.summary.xml"/>
             <arg line="--coverage-report=${buildDir}/logs/phpunit.clover.xml"/>
             <arg line="--coderank-mode=inheritance,property,method"/>
-            <arg line="."/>
+            <arg line="${basedir}"/>
         </exec>
         <echo message="##teamcity[publishArtifacts '${buildDir}/logs/pdepend.jdepend.chart.png']" />
         <echo message="##teamcity[publishArtifacts '${buildDir}/logs/pdepend.jdepend.xml']" />
@@ -60,7 +60,8 @@
             <arg line="--report=checkstyle" />
             <arg line="--standard=PSR2" />
             <arg line="--report-file=${buildDir}/logs/checkstyle.xml" />
-            <arg line="." />
+            <arg line="--ignore=*/jpgraph/*,*/ezpdf/*" />
+            <arg line="${basedir}" />
         </exec>
         <echo message="##teamcity[importData type='checkstyle'
          path='${buildDir}/logs/checkstyle.xml']"/>
@@ -72,7 +73,7 @@
         <exec dir="${applicationDir}" executable="phploc">
             <arg line="--count-tests" />
             <arg line="--log-xml ${buildDir}/logs/phploc.xml" />
-            <arg line="${applicationDir}" />
+            <arg line="${basedir}" />
         </exec>
         <echo message="##teamcity[publishArtifacts '${buildDir}/logs/phploc.xml']" />
     </target>
@@ -81,7 +82,7 @@
         <exec dir="${applicationDir}" executable="phpdcd"
               output="${buildDir}/logs/phpdcd.txt">
             <arg line="--recursive" />
-            <arg line="${applicationDir}" />
+            <arg line="${basedir}" />
         </exec>
         <echo message="##teamcity[publishArtifacts '${buildDir}/logs/phpdcd.txt']" />
     </target>
@@ -89,7 +90,7 @@
     <target name="phpcb" description="PHP_CodeBrowser">
         <exec dir="${applicationDir}" executable="phpcb">
             <arg line="--log ${buildDir}/logs" />
-            <arg line="--source ${applicationDir}" />
+            <arg line="--source ${basedir}" />
             <arg line="-e '*/Zend/*'" />
             <arg line="--output ${buildDir}/html/phpcb" />
         </exec>
@@ -104,7 +105,7 @@
             <arg line="--template='clean'" />
             <arg line="--sourcecode"/>
             <arg line="-t ${buildDir}/html/phpdoc"/>
-            <arg line="-d ${applicationDir}"/>
+            <arg line="-d ${basedir"/>
         </exec>
         <zip destfile="${buildDir}/phpdoc.zip" basedir="${buildDir}/html/phpdoc"/>
         <echo message="##teamcity[publishArtifacts '${buildDir}/phpdoc.zip']" />
