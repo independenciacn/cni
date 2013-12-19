@@ -4,3 +4,4 @@
 // Prueba de modificacion en trabajo
 // Prueba recibida OK
 // Para subir utilizar PUSH. Para Recibir PULL
+phpinfo();
