@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="cni" default="build">
+
+    <target name="build"
+            depends="clean,prepare,phpmd,phpcpd,phpdcd,phploc,phpcs,phpcb,phpdoc"/>
+    <property name="basedir" value="." />
+    <property name="applicationDir" value="${basedir}" />
+    <property name="buildDir" value="${basedir}/build" />
+
+    <target name="clean">
+        <delete dir="${buildDir}" />
+    </target>
+
+    <target name="prepare">
+        <mkdir dir="${buildDir}/logs" />
+        <mkdir dir="${buildDir}/html/phpdoc" />
+        <mkdir dir="${buildDir}/html/phpcb" />
+    </target>
+
+    <target name="phpmd" description="PHP Mess Detector">
+        <exec dir="${applicationDir}" executable="phpmd">
+            <arg line="${applicationDir}" />
+            <arg line="xml" />
+            <arg line="cleancode,codesize,controversial,design,naming,unusedcode" />
+            <arg line="--reportfile ${buildDir}/logs/pmd.xml" />
+        </exec>
+        <echo message="##teamcity[importData type='pmd' path='${buildDir}/logs/pmd.xml']"/>
+    </target>
+
+    <target name="phpcpd" description="Copy/Paste Detector">
+        <exec dir="${applicationDir}" executable="phpcpd">
+            <arg line="--log-pmd ${buildDir}/logs/pmd-cpd.xml" />
+            <arg line="${applicationDir}" />
+        </exec>
+        <echo message="##teamcity[importData type='pmdCpd' path='${buildDir}/logs/pmd-cpd.xml']"/>
+        <echo message="##teamcity[publishArtifacts '${buildDir}/logs/pmd-cpd.xml']" />
+    </target>
+
+    <target name="pdepend" description="PHP_Depend">
+        <exec dir="${applicationDir}" executable="pdepend">
+            <arg line="--jdepend-chart=${buildDir}/logs/pdepend.jdepend.chart.png" />
+            <arg line="--jdepend-xml=${buildDir}/logs/pdepend.jdepend.xml"/>
+            <arg line="--overview-pyramid=${buildDir}/logs/pdepend.overview.pyramid.png" />
+            <arg line="--summary-xml=${buildDir}/logs/pdepend.summary.xml"/>
+            <arg line="--coverage-report=${buildDir}/logs/phpunit.clover.xml"/>
+            <arg line="--coderank-mode=inheritance,property,method"/>
+            <arg line="."/>
+        </exec>
+        <echo message="##teamcity[publishArtifacts '${buildDir}/logs/pdepend.jdepend.chart.png']" />
+        <echo message="##teamcity[publishArtifacts '${buildDir}/logs/pdepend.jdepend.xml']" />
+        <echo message="##teamcity[publishArtifacts '${buildDir}/logs/pdepend.overview.pyramid.png']" />
+        <echo message="##teamcity[publishArtifacts '${buildDir}/logs/pdepend.phpunit.xml']" />
+        <echo message="##teamcity[publishArtifacts '${buildDir}/logs/pdepend.summary.xml']" />
+        <echo message="##teamcity[publishArtifacts '${buildDir}/logs/clover.xml']" />
+    </target>
+
+    <target name="phpcs" description="PHP_CodeSniffer">
+        <exec dir="${applicationDir}" executable="phpcs">
+            <arg line="--tab-width=4" />
+            <arg line="--report=checkstyle" />
+            <arg line="--standard=PSR2" />
+            <arg line="--report-file=${buildDir}/logs/checkstyle.xml" />
+            <arg line="." />
+        </exec>
+        <echo message="##teamcity[importData type='checkstyle'
+         path='${buildDir}/logs/checkstyle.xml']"/>
+        <echo
+                message="##teamcity[publishArtifacts '${buildDir}/logs/checkstyle.xml']" />
+    </target>
+
+    <target name="phploc" description="Tool for quickly measuring the size of a PHP project">
+        <exec dir="${applicationDir}" executable="phploc">
+            <arg line="--count-tests" />
+            <arg line="--log-xml ${buildDir}/logs/phploc.xml" />
+            <arg line="${applicationDir}" />
+        </exec>
+        <echo message="##teamcity[publishArtifacts '${buildDir}/logs/phploc.xml']" />
+    </target>
+
+    <target name="phpdcd" description="PHP Dead Code Detector">
+        <exec dir="${applicationDir}" executable="phpdcd"
+              output="${buildDir}/logs/phpdcd.txt">
+            <arg line="--recursive" />
+            <arg line="${applicationDir}" />
+        </exec>
+        <echo message="##teamcity[publishArtifacts '${buildDir}/logs/phpdcd.txt']" />
+    </target>
+
+    <target name="phpcb" description="PHP_CodeBrowser">
+        <exec dir="${applicationDir}" executable="phpcb">
+            <arg line="--log ${buildDir}/logs" />
+            <arg line="--source ${applicationDir}" />
+            <arg line="-e '*/Zend/*'" />
+            <arg line="--output ${buildDir}/html/phpcb" />
+        </exec>
+        <zip destfile="${buildDir}/html/phpcb.zip" basedir="${buildDir}/html/phpcb" />
+        <echo message="##teamcity[publishArtifacts '${buildDir}/html/phpcb.zip']" />
+        <delete dir="${buildDir}/html/phpcb"/>
+    </target>
+
+    <target name="phpdoc" description="PHP Documentor">
+        <exec dir="${applicationDir}" executable="phpdoc">
+            <arg line="--encoding='UTF-8'"/>
+            <arg line="--template='clean'" />
+            <arg line="--sourcecode"/>
+            <arg line="-t ${buildDir}/html/phpdoc"/>
+            <arg line="-d ${applicationDir}"/>
+        </exec>
+        <zip destfile="${buildDir}/phpdoc.zip" basedir="${buildDir}/html/phpdoc"/>
+        <echo message="##teamcity[publishArtifacts '${buildDir}/phpdoc.zip']" />
+    </target>
+</project>

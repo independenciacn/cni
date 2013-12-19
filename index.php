@@ -70,7 +70,9 @@ if(isset($_SESSION['usuario'])) {
   </p>
   <p>
   	<a href='http://www.ensenalia.com'><img src='imagenes/ensenalia.jpg' width='128' /></a>
-  </p></center>
+  </p>
+    ZendDevel Version
+</center>
  </div>
 <?php 
 } 
