@@ -41,13 +41,14 @@ define('IVA', 18 );
  * @var integer
  */
 define('ALMACENAJE',0.70);
-/**
- * Conexion a la base de datos
- * 
- * @var resource
- */
 
-$con = mysql_connect ("localhost","cni","inc") or die (mysql_error());
+/**
+ * Conexión a la base de datos
+ *
+ * @var resource
+ * @deprecated
+ */
+$con = mysql_connect ("localhost", "cni", "inc") or die (mysql_error());
 mysql_set_charset('utf8', $con);
 /**
  * Nombre de la tabla
@@ -55,7 +56,7 @@ mysql_set_charset('utf8', $con);
  * @deprecated - establecerlo dentro de la funcion mysql_select_db
  * @var string
  */
-$dbname = "centro"; 
+$dbname = "centro";
 mysql_select_db($dbname, $con);
 /**
  * Imagen en el mensaje de correcto
@@ -125,7 +126,7 @@ function clase($k)
  * Se le puede pasar como parametro un array o una string y la sanea
  *
  * @param mixed $vars
- *
+ * @deprecated
  */
 function sanitize( &$vars ) {
     global $con;

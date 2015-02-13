@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="dataSourceStorageLocal">
+    <data-source name="Centro" uuid="2ffae29d-d607-4017-ae58-6970f5b1bb74">
+      <secret-storage>master_key</secret-storage>
+      <user-name>root</user-name>
+      <schema-pattern>centro.*</schema-pattern>
+      <default-schemas>centro.* test.*</default-schemas>
+    </data-source>
+  </component>
+</project>

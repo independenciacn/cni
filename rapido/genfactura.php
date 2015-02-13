@@ -727,7 +727,7 @@ if($historico == "ok") {
 	<th width='15%'>&nbsp;</th>
 	<th  class='celdilla_tot' >TOTAL BRUTO</th>
 	<th width='15%'>&nbsp;</th>
-	<th  class='celdilla_tot' >IVA</th>
+	<th  class='celdilla_tot' >IVA 21%</th>
 	<th width='15%'>&nbsp;</th>
 	<th  class='celdilla_tot' >TOTAL</th></tr>
 	<tr>
