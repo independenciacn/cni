@@ -53,11 +53,11 @@ function seleccion_meses($mes = null)
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link REL="stylesheet" TYPE="text/css" href="../estilo/cni.css">
 <link href="../estilo/calendario.css" rel="stylesheet" type="text/css"></link>
-<script type="text/javascript"src='../js/prototype.js'></script>
+<script type="text/javascript" src='../js/prototype.js'></script>
 <script type="text/javascript" src="../js/calendar.js"></script>
 <script type="text/javascript" src="../js/lang/calendar-es.js"></script>
 <script type="text/javascript" src="../js/calendar-setup.js"></script>
-<script type="text/javascript"src="js/ajax.js" ></script>
+<script type="text/javascript" src="js/ajax.js" ></script>
 <meta http-equiv="cache-control" content="no-cache">
 <meta http-equiv="pragma" content="no-cache">
 <title>Servicios - <?php echo APLICACION; ?> - <?php echo VERSION; ?></title>
@@ -86,7 +86,7 @@ function seleccion_meses($mes = null)
 		<img src='../iconos/date.png' alt='Mes' />&nbsp;Mes:
 	</th>
 	<td>
-		<? echo seleccion_meses(); ?>
+		<?php echo seleccion_meses(); ?>
 	</td>
 	<td>
 		<select id='anyo'>

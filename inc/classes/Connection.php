@@ -5,7 +5,7 @@ class Connection
      * @var null|Pdo
      */
     private $conexion = null;
-    private $host = "127.0.0.1:3306";
+    private $host = "localhost";
     private $username = "cni";
     private $password = "inc";
     private $dbname = "centro";
