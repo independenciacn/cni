@@ -154,14 +154,27 @@ from historico where factura like '$factura' group by factura";
 			'TOTAL'=>array('justification'=>'right')));
 
 		$pdf->ezTable($data,6,"",$options);
-		$pie[]=array("TOTAL BRUTO"=>number_format($resultado[1],2,',','.')."!","IVA"=>number_format($resultado[2],2,',','.')."!","TOTAL"=>number_format($resultado[3],2,',','.')."!");
+		$pie[] = array(
+            "TOTAL BRUTO"=>number_format($resultado[1],2,',','.')."!",
+            "IVA"=>number_format($resultado[2],2,',','.')."!",
+            "TOTAL"=>number_format($resultado[3],2,',','.')."!"
+        );
 		$pdf->ezText("");
-		$pdf->ezTable($pie,3,"",
-			array('xPos'=>'398','width'=>'300','maxWidth'=>'300',
-				'cols'=>array('TOTAL BRUTO'=>array('justification'=>'center'),
-				'IVA'=>array('justification'=>'center'),
-				'TOTAL'=>array('justification'=>'center'))));
-
+		$pdf->ezTable(
+            $pie,
+            3,
+            "",
+			array(
+                'xPos'=>'398',
+                'width'=>'300',
+                'maxWidth'=>'300',
+				'cols'=>array(
+                    'TOTAL BRUTO'=>array('justification'=>'center'),
+				    'IVA'=>array('justification'=>'center'),
+				    'TOTAL'=>array('justification'=>'center')
+                )
+            )
+        );
 		/*Modificar para sacar de regfacturas*/
 		$sql = "Select fpago,obs_fpago,obs_alt, pedidoCliente from regfacturas where codigo like $factura";
 		$consulta = mysql_query($sql,$con);
