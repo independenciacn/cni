@@ -724,7 +724,8 @@ if($historico == "ok") {
 		$resultado = mysql_fetch_array($consulta);
 		if(($resultado[0] != "") && ($resultado[0] != "")) {
 			$porcentaje = explode("%",$resultado[0]); // Porcentaje del descuento
-			$descuento = ($importeServiciosFijos * $porcentaje[0])/100;// @FIXME calculo en base al total de servicios fijos
+			$descuento = ($importeServiciosFijos * $porcentaje[0])/100;
+			// @FIXME calculo en base al total de servicios fijos
 			// FIXME Esta calculando el descuento con 18
             $descuento_con_iva = $descuento * 1.18;
 			echo "<tr>
@@ -847,7 +848,7 @@ function comprueba_la_factura($cliente,$codigo,$fecha,$total_iva,$total)
 			iva='".$total_iva."',importe='".$total."' 
 			where id_cliente like '".$cliente."' and codigo 
 			like '".$codigo."' and fecha like '".$fecha."'";
-			$consulta = mysql_query($sql,$con);
+			$consulta = mysql_query($sql, $con);
 		}
 		return false;
 	}
@@ -856,8 +857,8 @@ function comprueba_la_factura($cliente,$codigo,$fecha,$total_iva,$total)
 //PIE FACTURA*************************************************************************/
 echo pie_factura($cliente, $codigo);
 //echo $pie_factura;
-xdebug_var_dump($total);
-xdebug_var_dump($ivas);
+/*xdebug_var_dump($total);
+xdebug_var_dump($ivas);*/
 ?>
 </body></html>
 
