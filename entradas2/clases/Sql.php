@@ -1,33 +1,34 @@
 <?php
 class Sql
 {
-    private $_conexion = null;
-    private $_result = false;
-    private $_host = "127.0.0.1:3306";
-    private $_username = "cni";
-    private $_password = "inc";
-    private $_dbname = "centro";
-    function __construct ()
+    private $conexion = null;
+    private $result = false;
+    private $host = "127.0.0.1:3306";
+    private $username = "cni";
+    private $password = "inc";
+    private $dbname = "centro";
+
+    public function __construct()
     {
-        $this->_conexion = 
-        mysql_connect($this->_host, $this->_username, $this->_password);
-        mysql_set_charset('utf8', $this->_conexion);
-        if (! $this->_conexion)
+        $this->conexion =
+        mysql_connect($this->host, $this->username, $this->password);
+        mysql_set_charset('utf8', $this->conexion);
+        if (! $this->conexion)
             die("Database connection failed: " . mysql_error());
-        if (! mysql_select_db($this->_dbname, $this->_conexion))
+        if (! mysql_select_db($this->dbname, $this->conexion))
             die("Database selection failed: " . mysql_error());
     }
     
     function consulta ($sql)
     {
-    	$this->_result = mysql_query($sql, $this->_conexion);
+    	$this->result = mysql_query($sql, $this->conexion);
     }
     
     function datos ()
     {
         $rows = array();
-        if ( $this->_result ) {
-            while (($row = mysql_fetch_array($this->_result, MYSQL_ASSOC)) == TRUE) {
+        if ( $this->result ) {
+            while (($row = mysql_fetch_array($this->result, MYSQL_ASSOC)) == TRUE) {
                 $rows[] = $row;
             }
         }
@@ -41,6 +42,6 @@ class Sql
     
     function close ()
     {
-        mysql_close($this->_conexion);
+        mysql_close($this->conexion);
     }
 }

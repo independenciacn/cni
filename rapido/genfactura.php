@@ -88,7 +88,7 @@ function consulta_fecha($cliente,$mes,$inicial,$final) //consulta los rangos de 
 	$final=cambiaf($final);
 	if($inicial!='0000-00-00') {
 		if(($final!="0000-00-00") && ($final!="--") && ($final!="")) {
-			$cadena .= " and datediff(c.fecha,'".$inicial."') >= 0 
+			$cadena = " and datediff(c.fecha,'".$inicial."') >= 0
 			and datediff(c.fecha,'".$final."') <=0 ";
 		} else {
 			$cadena = " and c.fecha like '".$inicial."' ";
@@ -466,7 +466,7 @@ if(($fecha_inicial_factura != '0000-00-00') && ($fecha_final_factura != '0000-00
 }
 $tituloPagina = ( $inicio!= "0000-00-00") ? "ocupacion puntual" : dame_el_mes( "m" );
 ?>
-<html>
+<html lang="es">
 <head>
 <title><?php echo $fichero . " " . $tituloPagina; ?></title>
 <link rel="stylesheet" type='text/css' href="estilo.css" />
@@ -482,12 +482,12 @@ $tituloPagina = ( $inicio!= "0000-00-00") ? "ocupacion puntual" : dame_el_mes( "
 	echo "
 	<table cellpadding='2px' cellspacing='0px' width='100%' id='tabloide'>
 	<tr>
-	<th align='center' width='48%' >Servicio</th>
-	<th align='center' width='8%' >Cant.</th>
-	<th align='center' width='12%' >P/Unitario</th>
-	<th align='center' width='12%' >IMPORTE</th>
-	<th align='center' width='8%' >IVA</th>
-	<th align='center' width='12%' >TOTAL</th>
+	<th align='center' width='48%'>Servicio</th>
+	<th align='center' width='8%'>Cant.</th>
+	<th align='center' width='12%'>P/Unitario</th>
+	<th align='center' width='12%'>IMPORTE</th>
+	<th align='center' width='8%'>IVA</th>
+	<th align='center' width='12%'>TOTAL</th>
 	</tr>";
 //PARTE DEL CONTRATO Y DEL ALMACENAJE SI PROCEDE cuidado con el mes
 //la primera linea tiene que ser el importe del mes del tipo de cliente
@@ -581,14 +581,19 @@ if($historico == "ok") {
 	$consulta = mysql_query($sql,$con);
 	while (true == ($resultado = mysql_fetch_array($consulta))) {
 		$dias_almacen = $resultado[1];
+<<<<<<< HEAD
 		$precioUnitario = $dias_almacen*$par_almacenaje['PrecioEuro'];
 		$subtotala = $resultado[0]*$precioUnitario;
+=======
+        $precioUnitario = $dias_almacen * $par_almacenaje['PrecioEuro'];
+		$subtotala = $resultado[0] * $precioUnitario;
+>>>>>>> origin/goodOf
         $totala = iva($subtotala,$par_almacenaje['iva']);
 		echo "<tr>
 		<td ><p class='texto'>Bultos Almacenados del  ".
 		cambiaf($resultado[2])." al ".cambiaf($resultado[3])."</p></td>
 		<td align='right'>".number_format($resultado[0],2,',','.')."&nbsp;</td>
-		<td align='right'>0,70&euro;&nbsp;</td>
+		<td align='right'>".$par_almacenaje['PrecioEuro']."&euro;&nbsp;</td>
 		<td align='right'>".number_format($subtotala,2,',','.')."&euro;&nbsp;</td>
 		<td align='right'>".$par_almacenaje['iva']."%&nbsp;</td>
 		<td align='right'>".number_format($totala,2,',','.')."&euro;&nbsp;</td></tr>";
@@ -728,7 +733,7 @@ if($historico == "ok") {
 	<th width='15%'>&nbsp;</th>
 	<th  class='celdilla_tot' >TOTAL BRUTO</th>
 	<th width='15%'>&nbsp;</th>
-	<th  class='celdilla_tot' >IVA</th>
+	<th  class='celdilla_tot' >IVA 21%</th>
 	<th width='15%'>&nbsp;</th>
 	<th  class='celdilla_tot' >TOTAL</th></tr>
 	<tr>

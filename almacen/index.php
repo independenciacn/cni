@@ -8,7 +8,7 @@ function clientes($cliente)
 {
 	include("../inc/variables.php");
 	$sql = "Select Id,Nombre from clientes where `Estado_de_cliente` like '-1' or `Estado_de_cliente` like 'on' order by Nombre";
-	$consulta = mysql_query($sql,$con);
+	$consulta = mysql_query($sql, $con);
 	while(true == ($resultado = mysql_fetch_array($consulta)))
 	{
 		if($cliente == $resultado[0])
@@ -40,7 +40,7 @@ function clientes($cliente)
 	<br/>
 	Seleccione Cliente: <select id='cliente' onchange='abreform()'>
 	<option value='0'>--Seleccione cliente--</option>
-	<? echo clientes($cliente); ?>
+	<?php echo clientes($cliente); ?>
 	</select>
 	<span class='boton' onclick='abre()'>[R]Recargar Cliente</span>
 	<span class='boton' onclick='window.close()'>[X]Cerrar</span>

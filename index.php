@@ -70,7 +70,9 @@ if(isset($_SESSION['usuario'])) {
   </p>
   <p>
   	<a href='http://www.ensenalia.com'><img src='imagenes/ensenalia.jpg' width='128' /></a>
-  </p></center>
+  </p>
+    GoodOf Version
+</center>
  </div>
 <?php 
 } 
@@ -82,7 +84,8 @@ if(isset($_SESSION['usuario'])) {
 if(isset($_SESSION['usuario']))
 {
 	echo "<div id='avisos'>";
-	include("inc/avisos.php");//Se muestran los avisos solo con el include
+	include_once 'inc/avisos.php';
+	//Se muestran los avisos solo con el include
 	//echo "Eh co lets go";
 	//echo avisos();
 	echo "</div>";
