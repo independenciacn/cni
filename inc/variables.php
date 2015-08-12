@@ -14,7 +14,7 @@
  * @link     https://github.com/independenciacn/cni
  * @version  2.0e Estable
  */
-error_reporting(E_ALL ^ E_DEPRECATED);
+error_reporting(0);
 /**
  * Establecemos la zona horaria 
  */ 
