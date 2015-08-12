@@ -581,7 +581,8 @@ if($historico == "ok") {
 	$consulta = mysql_query($sql,$con);
 	while (true == ($resultado = mysql_fetch_array($consulta))) {
 		$dias_almacen = $resultado[1];
-		$subtotala = $resultado[0]*$dias_almacen*$par_almacenaje['PrecioEuro'];
+		$precioUnitario = $dias_almacen*$par_almacenaje['PrecioEuro'];
+		$subtotala = $resultado[0]*$precioUnitario;
         $totala = iva($subtotala,$par_almacenaje['iva']);
 		echo "<tr>
 		<td ><p class='texto'>Bultos Almacenados del  ".
@@ -598,7 +599,7 @@ if($historico == "ok") {
 		$cadena_texto = " del  ".cambiaf($resultado[2])." al ".cambiaf($resultado[3]);
 		if(($historico == "ko")&& (!isset($_GET['prueba']))) { //Agregamos al historico
 			agrega_historico($codigo,"Bultos Almacenados",$resultado[0],
-					$subtotala,$par_almacenaje['iva'],$cadena_texto);
+					$precioUnitario,$par_almacenaje['iva'],$cadena_texto);
 		}
 	}
 //fin del almacenaje**********************************************************************/
