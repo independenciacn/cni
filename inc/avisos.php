@@ -101,7 +101,7 @@ function avisos()
     }
 
     $texto.="</table></td>";
-    $texto.= "<td valign='top'>".avisos_new()."</td></tr></table>";
+    $texto.= "</tr></table></td></tr></table></td><td valign='top'>" . avisos_new() . "</td></tr></table>";
     return $texto;
 }
 /**
