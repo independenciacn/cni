@@ -14,8 +14,8 @@ function dameElMes($mes)
         1 => "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
         "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
     );
-    if (array_key_exists($mes, $meses)) {
-        $marcado = $meses[$mes];
+    if (array_key_exists(intval($mes), $meses)) {
+        $marcado = $meses[intval($mes)];
     }
     return $marcado;
 }
