@@ -17,3 +17,11 @@ tmp/*
 /build
 build/*
 atlassian*
+
+nbproject/project.xml
+
+nbproject/private/private.properties
+
+nbproject/private/private.xml
+
+nbproject/project.properties

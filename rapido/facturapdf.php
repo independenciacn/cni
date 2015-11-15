@@ -3,6 +3,8 @@ require_once '../inc/variables.php';
 require_once '../inc/classes/Connection.php';
 require_once '../inc/ezpdf/class.ezpdf.php';
 
+$getParams = filter_input_array(INPUT_GET, FILTER_SANITIZE_STRING);
+$postParams = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 /**
  * @param $mes
  * @return string
@@ -113,7 +115,14 @@ if((isset($_GET['factura'])) || (isset($_POST['factura']))) {
         $totalConIva = $totalBruto + $totalIva;
         $bruto[] = (float) $totalBruto;
         $total[] = (float) $totalConIva;
-        $iva[$resultado['iva']][] = (float) $totalIva;
+        if (isset($iva[$resultado['iva']])) {
+            $iva[$resultado['iva']]['iva'] += (float) $totalIva;
+            $iva[$resultado['iva']]['valor'] += (float) $totalBruto;
+        } else {
+            $iva[$resultado['iva']]['iva'] = (float) $totalIva;
+            $iva[$resultado['iva']]['valor'] = (float) $totalBruto;
+        }
+        //$iva[$resultado['iva']][] = (float) $totalIva;
         $lineas++;
         $data[] = array(
             "Servicio" => ucfirst(utf8_decode($resultado['servicio'])) . " " . ucfirst(utf8_decode($resultado['obs'])),
@@ -135,7 +144,8 @@ if((isset($_GET['factura'])) || (isset($_POST['factura']))) {
     }
     $pdf->ezSetY(640);
 //Opciones de tabla
-    $options = array("width"=>500,"maxWidth"=>500,"shadeCol"=>array(0.866,0.866,0.866),
+    // Quitada ,"shadeCol"=>array(0.866,0.866,0.866)
+    $options = array("width"=>500,"maxWidth"=>500,'shaded'=> 0,
     "cols"=>array(
         'Cant.'=>array('justification'=>'right'),
         'P/Unitario'=>array('justification'=>'right'),
@@ -145,15 +155,29 @@ if((isset($_GET['factura'])) || (isset($_POST['factura']))) {
 
     $pdf->ezTable($data, 6, "", $options);
     // Se almacena el array de datos del pie
-    $linea["TOTAL BRUTO"] = number_format(array_sum($bruto), 2, ',', '.') . "!";
-    $cols[] = array('TOTAL BRUTO' => array('justification' => 'center'));
+    // Columnas Tipo Iva, Base Imponible, Cuota Iva, Total
+    
+    
+    $cols[] = array('Tipo Iva' => array('justification' => 'center'));
+    $cols[] = array('Base Imponible' => array('justification' => 'center'));
+    $cols[] = array('Cuota Iva' => array('justification' => 'center'));
+    $cols[] = array('Total' => array('justification' => 'center'));
+    
     foreach ($iva as $key => $val) {
-        $linea['IVA '.$key.'%'] = number_format(array_sum($val), 2, ',', '.') . "!" ;
-        $cols[] = array('IVA ' . $key . '%' => array('justification' => 'center'));
+        $linea["Tipo Iva"] = $key . '%';
+        $linea["Base Imponible"] = number_format($val['valor'], 2, ',', '.') . "!";
+        $linea["Cuota Iva"] = number_format($val['iva'], 2, ',', '.') . "!";
+        $linea["Total"] = number_format($val['valor'] + $val['iva'], 2, ',', '.') . "!" ;
+        $pie[] = $linea;
     }
-    $linea["TOTAL"] = number_format(array_sum($total), 2, ',', '.') . "!";
-    $cols[] = array('TOTAL' => array('justification' => 'center'));
-    $pie[] = $linea;
+    $pie[] = array(
+        "Tipo Iva" => "",
+        "Base Imponible" => "",
+        "Cuota Iva" => "",
+        "Total" => number_format(array_sum($total), 2, ',', '.') . "!"
+    );
+    //$cols[] = array('TOTAL' => array('justification' => 'center'));
+    
     $pdf->ezText("");
     // Se genera la tabla del pie con los datos, numero columnas y titulares
     $pdf->ezTable(
@@ -164,7 +188,13 @@ if((isset($_GET['factura'])) || (isset($_POST['factura']))) {
             'xPos'=>'398',
             'width'=>'300',
             'maxWidth'=>'300',
-            'cols'=>$cols
+            'cols'=>$cols,
+            'shaded'=> 0,
+            'fontSize' => 8,
+            'titleFontSize' => 10,
+            'innerLineThickness' => 0,
+            'outerLineThickness' => 0,
+            'rowGap' => 1
         )
     );
     /**

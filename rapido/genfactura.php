@@ -3,6 +3,10 @@
 //error_reporting(E_ALL);//fichero genfactura.php le llegan el mes y el cliente y genera un word.
 require_once '../inc/variables.php';
 require_once 'telecos.php';
+
+$getParams = filter_input_array(INPUT_GET, FILTER_SANITIZE_STRING);
+$postParams = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+
 /**
  * Calculo del importe del IVA
  * @param $importe
@@ -52,23 +56,22 @@ function observaciones_especiales($factura)
  */
 function dame_el_mes($mes)
 {
-	$marcado = "";
-    switch($mes)
-	{
-		case 1: $marcado = "Enero";breaK;
-		case 2: $marcado = "Febrero";breaK;
-		case 3: $marcado = "Marzo";breaK;
-		case 4: $marcado = "Abril";breaK;
-		case 5: $marcado = "Mayo";breaK;
-		case 6: $marcado = "Junio";breaK;
-		case 7: $marcado = "Julio";breaK;
-		case 8: $marcado = "Agosto";breaK;
-		case 9: $marcado = "Septiembre";breaK;
-		case 10: $marcado = "Octubre";breaK;
-		case 11: $marcado = "Noviembre";breaK;
-		case 12: $marcado = "Diciembre";breaK;
-	}
-	return $marcado;
+    $marcado = "";
+    switch($mes) {
+        case 1: $marcado = "Enero";breaK;
+        case 2: $marcado = "Febrero";breaK;
+        case 3: $marcado = "Marzo";breaK;
+        case 4: $marcado = "Abril";breaK;
+        case 5: $marcado = "Mayo";breaK;
+        case 6: $marcado = "Junio";breaK;
+        case 7: $marcado = "Julio";breaK;
+        case 8: $marcado = "Agosto";breaK;
+        case 9: $marcado = "Septiembre";breaK;
+        case 10: $marcado = "Octubre";breaK;
+        case 11: $marcado = "Noviembre";breaK;
+        case 12: $marcado = "Diciembre";breaK;
+    }
+    return $marcado;
 }
 /**
  * Cambia el formato de la fecha en un sentido u otro
@@ -517,9 +520,11 @@ if($historico == "ok") {
 		$importe_sin_iva = $resultado['cantidad'] * $resultado['unitario'];
         // Almacenamos los ivas para mostrarlo al final
         if (array_key_exists($resultado['iva'], $ivas)) {
-            $ivas[$resultado['iva']] += importeIva($importe_sin_iva, $resultado['iva']);
+            $ivas[$resultado['iva']]['iva'] += importeIva($importe_sin_iva, $resultado['iva']);
+            $ivas[$resultado['iva']]['importe'] += $importe_sin_iva;
         } else {
-            $ivas[$resultado['iva']] = importeIva($importe_sin_iva, $resultado['iva']);
+            $ivas[$resultado['iva']]['iva'] = importeIva($importe_sin_iva, $resultado['iva']);
+            $ivas[$resultado['iva']]['importe'] = $importe_sin_iva;
         }
 		echo "<tr>
 		<td><p class='texto'>".ucfirst($resultado[2])." ".ucfirst($resultado[6])."</td>
@@ -556,9 +561,11 @@ if($historico == "ok") {
 			$importeServiciosFijos += $importe_sin_iva;
             // Almacenamos los ivas para mostrarlo al final
             if (array_key_exists($resultado['iva'], $ivas)) {
-                $ivas[$resultado['iva']] += importeIva($importe_sin_iva, $resultado['iva']);
+                $ivas[$resultado['iva']]['iva'] += importeIva($importe_sin_iva, $resultado['iva']);
+                $ivas[$resultado['iva']]['importe'] += $importe_sin_iva;
             } else {
-                $ivas[$resultado['iva']] = importeIva($importe_sin_iva, $resultado['iva']);
+                $ivas[$resultado['iva']]['iva'] = importeIva($importe_sin_iva, $resultado['iva']);
+                $ivas[$resultado['iva']]['importe'] = $importe_sin_iva;
             }
 			echo "<tr>
 			<td>
@@ -612,9 +619,11 @@ if($historico == "ok") {
 		$subtotala = $resultado[0] * $precioUnitario;
         // Almacenamos los ivas para mostrarlo al final
         if (array_key_exists($resultado['iva'], $ivas)) {
-            $ivas[$resultado['iva']] += importeIva($subtotala, $par_almacenaje['iva']);
+            $ivas[$resultado['iva']]['iva'] += importeIva($subtotala, $par_almacenaje['iva']);
+            $ivas[$resultado['iva']]['importe'] += $importe_sin_iva;
         } else {
-            $ivas[$resultado['iva']] = importeIva($subtotala, $par_almacenaje['iva']);
+            $ivas[$resultado['iva']]['iva'] = importeIva($subtotala, $par_almacenaje['iva']);
+            $ivas[$resultado['iva']]['importe'] = $importe_sin_iva;
         }
         $totala = iva($subtotala,$par_almacenaje['iva']);
 		echo "<tr>
@@ -657,9 +666,11 @@ if($historico == "ok") {
 //fin acumulados
         // Almacenamos los ivas para mostrarlo al final
         if (array_key_exists($resultado['iva'], $ivas)) {
-            $ivas[$resultado['iva']] += importeIva($subtotal, $resultado['iva']);
+            $ivas[$resultado['iva']]['iva'] += importeIva($subtotal, $resultado['iva']);
+            $ivas[$resultado['iva']]['importe'] += $importe_sin_iva;
         } else {
-            $ivas[$resultado['iva']] = importeIva($subtotal, $resultado['iva']);
+            $ivas[$resultado['iva']]['iva'] = importeIva($subtotal, $resultado['iva']);
+            $ivas[$resultado['iva']]['importe'] = $importe_sin_iva;
         }
 		echo "<tr>
 		<td ><p class='texto'>".ucfirst($resultado[0])." 
@@ -694,9 +705,11 @@ if($historico == "ok") {
 //fin acumulados
         // Almacenamos los ivas para mostrarlo al final
         if (array_key_exists($resultado['iva'], $ivas)) {
-            $ivas[$resultado['iva']] += importeIva($subtotal, $resultado['iva']);
+            $ivas[$resultado['iva']]['iva'] += importeIva($subtotal, $resultado['iva']);
+            $ivas[$resultado['iva']]['importe'] += $importe_sin_iva;
         } else {
-            $ivas[$resultado['iva']] = importeIva($subtotal, $resultado['iva']);
+            $ivas[$resultado['iva']]['iva'] = importeIva($subtotal, $resultado['iva']);
+            $ivas[$resultado['iva']]['importe'] = $importe_sin_iva;
         }
 		echo "<tr>
 		<td ><p class='texto'>".ucfirst($resultado[0])." 
@@ -771,28 +784,35 @@ if($historico == "ok") {
 	echo "</table>";
 //RESUMEN
 	$total_iva = $total - $bruto;
-	echo "<br/><table width='100%' cellpadding='2px' cellspacing='2px' style='font-size:10.0pt'><tr>
-	<th width='15%'>&nbsp;</th>
-	<th  class='celdilla_tot' >TOTAL BRUTO</th>
-	<th width='15%'>&nbsp;</th>";
+	echo "<br/>
+            <table width='100%' cellpadding='2px' cellspacing='2px' style='font-size:10.0pt'>
+            <tr>
+                <th width='15%'>&nbsp;</th>
+                <th width='15%'>&nbsp;</th>
+                <th width='15%'>&nbsp;</th>
+                <th class='celdilla_tot'>TIPO IVA</th>
+                <th class='celdilla_tot'>BASE IMPONIBLE</th>
+                <th class='celdilla_tot'>CUOTA IVA</th>
+                <th class='celdilla_tot'>TOTAL</th>
+            </tr>";
     foreach ($ivas as $key => $valor) {
-        echo "<th class='celdilla_tot'>IVA ".$key."%</th>";
+        echo "
+            <tr>
+                <td width='15%'>&nbsp;</td>
+                <th width='15%'>&nbsp;</th>
+                <th width='15%'>&nbsp;</th>
+                <td class='celdilla_sec'>" . $key . "%</td>
+                <td class='celdilla_sec'>" . number_format($valor['importe'], 2, ',', '.') . "&euro;</td>
+                <td class='celdilla_sec'>" . number_format($valor['iva'], 2, ',', '.') . "&euro;</td>
+                <td class='celdilla_sec'>" . number_format($valor['importe'] + $valor['iva'], 2, ',', '.') . "&euro;</td>
+            </tr>";
     }
-	/*<th  class='celdilla_tot' >IVA 21%</th>
-	<th width='15%'>&nbsp;</th>*/
-    echo "
-    <th width='15%'>&nbsp;</th>
-	<th  class='celdilla_tot' >TOTAL</th></tr>
-	<tr>
-	<th width='15%'>&nbsp;</th>
-	<th  class='celdilla_tot' >".number_format($bruto,2,',','.')."&euro;</th>
-	<th width='15%'>&nbsp;</th>
-	";
-	foreach ($ivas as $valor) {
-        echo "<th  class='celdilla_tot' >" . number_format($valor, 2, ',', '.') . "&euro;</th> ";
-    }
-	echo "<th width='15%'>&nbsp;</th>
-	<th  class='celdilla_tot' >".number_format($total,2,',','.')."&euro;</th></tr>
+	echo "
+        <tr>    
+            <th colspan='5'>&nbsp;</th>
+            <th class='celdilla_tot'>TOTAL FACTURA</th>
+            <th  class='celdilla_tot' >".number_format($total, 2, ',', '.')."&euro;</th>
+            </tr>
 	</table>";
 	//$pie_factura .= "<br />".$bruto."-".iva($bruto,16)."<br />";
 //aqui insertaria la factura en la base de datos
