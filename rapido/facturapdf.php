@@ -145,7 +145,7 @@ if((isset($_GET['factura'])) || (isset($_POST['factura']))) {
     $pdf->ezSetY(640);
 //Opciones de tabla
     // Quitada ,"shadeCol"=>array(0.866,0.866,0.866)
-    $options = array("width"=>500,"maxWidth"=>500,'shaded'=> 0,
+    $options = array("width"=>500,"maxWidth"=>500, "shadeCol"=>array(0.866,0.866,0.866),
     "cols"=>array(
         'Cant.'=>array('justification'=>'right'),
         'P/Unitario'=>array('justification'=>'right'),
@@ -189,7 +189,7 @@ if((isset($_GET['factura'])) || (isset($_POST['factura']))) {
             'width'=>'300',
             'maxWidth'=>'300',
             'cols'=>$cols,
-            'shaded'=> 0,
+            "shadeCol"=>array(0.866,0.866,0.866),
             'fontSize' => 8,
             'titleFontSize' => 10,
             'innerLineThickness' => 0,
