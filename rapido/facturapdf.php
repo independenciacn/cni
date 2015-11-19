@@ -146,7 +146,7 @@ if((isset($_GET['factura'])) || (isset($_POST['factura']))) {
 //Opciones de tabla
     // Quitada ,"shadeCol"=>array(0.866,0.866,0.866)
     $options = array("width"=>500,"maxWidth"=>500, "shadeCol"=>array(0.866,0.866,0.866),'fontSize' => 9,
-            'titleFontSize' => 10,
+         'titleFontSize' => 10,
     "cols"=>array(
         'Cant.'=>array('justification'=>'right'),
         'P/Unitario'=>array('justification'=>'right'),
@@ -158,7 +158,7 @@ if((isset($_GET['factura'])) || (isset($_POST['factura']))) {
     // Se almacena el array de datos del pie
     // Columnas Tipo Iva, Base Imponible, Cuota Iva, Total
     
-    
+    $pdf->ezSetY(165);
     $cols[] = array('Tipo Iva' => array('justification' => 'center'));
     $cols[] = array('Base Imponible' => array('justification' => 'center'));
     $cols[] = array('Cuota Iva' => array('justification' => 'center'));
@@ -187,16 +187,15 @@ if((isset($_GET['factura'])) || (isset($_POST['factura']))) {
         "",
         array(
             'xPos'=>'398',
-            'yPos' => '150',
             'width'=>'300',
             'maxWidth'=>'300',
             'cols'=>$cols,
             "shadeCol"=>array(0.866,0.866,0.866),
             'fontSize' => 9,
-            'titleFontSize' => 10,
             'innerLineThickness' => 0,
             'outerLineThickness' => 0,
-            'rowGap' => 1
+            'rowGap' => 1,
+            'titleFontSize' => 10
         )
     );
     /**
@@ -205,18 +204,18 @@ if((isset($_GET['factura'])) || (isset($_POST['factura']))) {
     $sql = "Select fpago, obs_fpago, obs_alt, pedidoCliente from regfacturas where codigo like $factura";
     $resultados = $conexion->consulta($sql);
     $resultado = current($resultados);
-    $pdf->ezSetY(165);
-    $pdf->ezText("   Forma de Pago:" .$resultado['fpago']);
+    $pdf->ezSetY(155);
+    $pdf->ezText("   Forma de Pago:" .$resultado['fpago'], 10);
     //if(($resultado[fpago] != "Cheque") && ($resultado[fpago] != "Contado") && ($resultado[fpago] != "Tarjeta credito")&& ($resultado[fpago] != utf8_decode("Liquidación")))
     //$pdf->ezText("CC:".$resultado[1]);
     $observacion = preg_replace('|<br\/>|', "\n\r", $resultado['obs_fpago']);
     $observacion = preg_replace('|\(|' ,"\n\r(", $observacion );
     $observacion = preg_replace('|Vto|',"\n\rVto", $observacion );
     $observacion = preg_replace('|Vencimien|',"\n\rVencimien", $observacion );
-    $pdf->ezText("   ".utf8_decode($observacion)." ".utf8_decode($resultado['obs_alt']));
+    $pdf->ezText("   ".utf8_decode($observacion)." ".utf8_decode($resultado['obs_alt']), 10);
     // Agregamos si existe en Pedido de Cliente
     if ( !is_null( $resultado['pedidoCliente'] ) ) {
-        $pdf->ezText("  ". $resultado['pedidoCliente'] );
+        $pdf->ezText("  ". $resultado['pedidoCliente'], 10);
     }
 //Si se ha mandado a guardar escribimos en el fichero
     if(isset($_POST['factura']))
