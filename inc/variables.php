@@ -14,7 +14,10 @@
  * @link     https://github.com/independenciacn/cni
  * @version  2.0e Estable
  */
-error_reporting(0);
+
+
+error_reporting(E_ALL);
+$localhost = getenv('HTTP_HOST');
 /**
  * Establecemos la zona horaria 
  */ 
@@ -48,7 +51,7 @@ define('ALMACENAJE',0.70);
  * @var resource
  * @deprecated
  */
-$con = mysql_connect ("localhost", "cni", "inc") or die (mysql_error());
+$con = mysql_connect ($localhost, "cni", "inc") or die (mysql_error());
 mysql_set_charset('utf8', $con);
 /**
  * Nombre de la tabla
