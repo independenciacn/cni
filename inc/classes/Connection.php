@@ -15,6 +15,7 @@ class Connection
      */
     public function __construct()
     {
+        $this->host = getenv('HTTP_HOST');
         $dsn = 'mysql:dbname='.$this->dbname.';host='.$this->host;
         $options = array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8'");
         try {

@@ -16,7 +16,7 @@
  */
 
 
-error_reporting(E_ALL);
+error_reporting(E_NOTICE);
 $localhost = getenv('HTTP_HOST');
 /**
  * Establecemos la zona horaria 

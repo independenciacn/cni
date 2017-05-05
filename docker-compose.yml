@@ -26,5 +26,7 @@ services:
           - .:/var/www/html/
       ports:
        - "80:80"
+      environment:
+       - REMOTE_XDEBUG_HOST=172.18.0.1
       links:
        - mysql
