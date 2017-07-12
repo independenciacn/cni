@@ -1,5 +1,6 @@
 <?php
 echo "Hola soy el phpinfo";
+var_dump(getenv('MYSQL_HOSTNAME'));
 var_dump(getenv('HTTP_HOST'));
 var_dump(getenv('DB_HOST'));
 //PHP Version 5.2.6

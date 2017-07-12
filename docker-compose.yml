@@ -3,7 +3,21 @@
 ###############################################################################
 version: "3.1"
 services:
-
+    webserver:
+      build:
+        context: .
+        dockerfile: phpdocker/php/Dockerfile
+      container_name: cni-webserver
+      working_dir: /var/www/html/
+      volumes:
+          - .:/var/www/html/
+      ports:
+       - "80:8081"
+      environment:
+       - REMOTE_XDEBUG_HOST=172.18.0.1
+       - MYSQL_HOSTNAME=172.18.0.1
+      links:
+        - mysql
     mysql:
       build:
         context: .
@@ -14,19 +28,3 @@ services:
         - MYSQL_DATABASE=centro
         - MYSQL_USER=cni
         - MYSQL_PASSWORD=inc
-      ports:
-        - "3306:3306"
-    webserver:
-      build:
-        context: .
-        dockerfile: phpdocker/php/Dockerfile
-      container_name: cni-webserver
-      working_dir: /var/www/html/
-      volumes:
-          - .:/var/www/html/
-      ports:
-       - "80:80"
-      environment:
-       - REMOTE_XDEBUG_HOST=172.18.0.1
-      links:
-       - mysql

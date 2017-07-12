@@ -81,6 +81,11 @@ class EntradasSalidas extends Sql
         'Despacho (una hora)',
         'Bonos salas'
     );
+    private $_horasDespachoClientes = array(
+        'Sala de Reuniones (una hora)/Clientes',
+        'Sala de Juntas (una hora)/Clientes',
+        'Despacho (una hora)/Clientes'
+    );
     private $_anyoCeroKeys = array(
         '2' => array('entradas' => '128', 'salidas' => '103'), 
         '3' => array('entradas' => '95', 'salidas' => '53'), 
@@ -300,6 +305,20 @@ class EntradasSalidas extends Sql
         }
         return $horas;
     }
+
+    /*
+     * Funcion que devuelve las horas de Despachos por clientes externos
+     */
+    public function HorasDespachoSalaClientes($anyo = FALSE)
+    {
+        $horas = 0;
+        foreach ($this->_horasDespachoClientes as $servicio) {
+            $datos = $this->ocupacionesPuntuales($servicio, $anyo);
+            if (isset($datos[0]['Total']))
+                $horas += $datos[0]['Total'];
+        }
+        return $horas;
+    }
     
     /*
      * Funcion de presentacion de los datos de Ocupacion puntual y Horas
@@ -309,13 +328,18 @@ class EntradasSalidas extends Sql
         $filtro = "";
        
         if($tipo == 'Horas'){
-            foreach($this->_horasDespacho as $servicio)
-             $filtro .= " d.servicio LIKE '{$servicio}' OR";
-        }
-        else{
-            foreach($this->_serviciosOcupacion as $servicio){
-                if($servicio['Tipo'] == $tipo && $servicio['Tiempo'] == $tiempo)
+            foreach($this->_horasDespacho as $servicio) {
+                $filtro .= " d.servicio LIKE '{$servicio}' OR";
+            }
+        } else if ($tipo == 'HorasClientes') {
+            foreach ($this->_horasDespachoClientes as $servicio) {
+                $filtro .= " d.servicio LIKE '{$servicio}' OR";
+            }
+        } else {
+            foreach($this->_serviciosOcupacion as $servicio) {
+                if($servicio['Tipo'] == $tipo && $servicio['Tiempo'] == $tiempo) {
                     $filtro .= " d.servicio LIKE '{$servicio['Nombre']}' OR";
+                }
             }
         }
         if($anyoFinal != NULL && $mes == 100) {
@@ -324,9 +348,10 @@ class EntradasSalidas extends Sql
             $filtroAnyo = "YEAR(c.fecha) LIKE '{$anyo}' " . 
              "AND MONTH(c.fecha) LIKE '{$mes}' ";
         }
+        //FIXME: Solo tiene que coger de bonos salas
         $filtro = substr($filtro, 0, strlen($filtro)-2);    
             $sql = "SELECT d.Servicio as Servicio,
-            extractNumber(d.observaciones) as Total, d.cantidad,
+            IF(Servicio = 'Bonos salas', extractNumber(d.observaciones), '') as Total, d.cantidad,
             l.Nombre, c.fecha " .
              "FROM `detalles consumo de servicios` AS d " .
              "INNER JOIN `consumo de servicios` as c " .
@@ -372,7 +397,7 @@ class EntradasSalidas extends Sql
         } else {
             $anyo = $this->anyoZero;
         }
-        $total = 'count(d.servicio)';
+        $total = '(count(d.servicio) * IF(d.Cantidad != 0, d.Cantidad, 1))';
         if ($servicio == "Bonos salas") { // En el caso de ser Bonos salas coge el total de las Observaciones
             $total = 'SUM(extractNumber(d.observaciones))';
         }
@@ -393,12 +418,12 @@ class EntradasSalidas extends Sql
 
     public function cuentaServiciosPorMes($servicio, $todos = FALSE)
     {
+        $filtro = "";
+        $total = 'COUNT(MONTH(c.fecha))';
         if (!$todos) {
             $filtro = " l.categoria LIKE 'clientes externos' AND ";
-        } else {
-            $filtro = "";
+            $total = "(count(d.servicio) * IF(d.Cantidad != 0, d.Cantidad, 1))";
         }
-        $total = 'COUNT(MONTH(c.fecha))';
         if ($servicio == "Bonos salas") { // En el caso de ser Bonos salas coge el total de las Observaciones
             $total = 'SUM(extractNumber(d.observaciones))';
         }
@@ -1294,15 +1319,33 @@ EOD;
          foreach($serviciosOcupacionDespachoCompleta as $servicio)
              foreach($servicio as $key => $dato)
                  $datosOcupacionDespachoCompleta[$key] += $dato;
+
+        /**
+         * Llenado datos despachos Hora Clientes
+         */
+         $horasDespachoClientes = [];
+         foreach ($this->_horasDespachoClientes as $servicio) {
+             $horasDespachoClientes[$servicio] = $this->cuentaServiciosPorMes($servicio);
+         }
+         $datosHorasDespachoClientes = array_fill(0, $this->diferencia(), 0);
+         foreach ($horasDespachoClientes as $servicio) {
+             foreach ($servicio as $key => $dato) {
+                $datosHorasDespachoClientes[$key] += $dato;
+             }
+         }
          /*
-          * Llenado datos despachos Hora
+          * Llenado datos despachos Hora Externos
           */
-         foreach($this->_horasDespacho as $servicio)
-             $horasDespacho[$servicio] =  $this->cuentaServiciosPorMes($servicio);
+         $horasDespacho = [];
+         foreach($this->_horasDespacho as $servicio) {
+             $horasDespacho[$servicio] = $this->cuentaServiciosPorMes($servicio);
+         }
          $datosHorasDespacho = array_fill(0, $this->diferencia(), 0);
-         foreach($horasDespacho as $servicio)
-             foreach($servicio as $key => $dato)
+         foreach($horasDespacho as $servicio) {
+             foreach ($servicio as $key => $dato) {
                  $datosHorasDespacho[$key] += $dato;
+             }
+         }
                  
                 
          
@@ -1378,12 +1421,47 @@ EOD;
        $html .= "</table>";
        $html .= "<a class='enlacedetallada' href='#arriba'>Ir arriba</a>";
        $html .= "<br/><br/>";
+
+        /*
+         * Despachos/Sala Horas Clientes
+         */
+        $totalHorasDespachoClientes = array_sum($datosHorasDespachoClientes);
+        $html .= "<h4><a name='despachosSalaHorasClientes'>Despacho/Sala Horas (Clientes)</a></h4>";
+        $html .= "<table class='listadetallada'>
+       <tr><th>&nbsp;</th>";
+        foreach ($this->mesesRango() as $mes) {
+            $html .= "<th class='datosdetalladosservicios'>{$mes}</th>";
+        }
+        $html .= "<th class='datosdetalladosservicios'>Total</th>";
+        $html .= "</tr>";
+        $html .= "<tr class='ui-widget-content celda'><td>Horas</td>";
+        foreach ($datosHorasDespachoClientes as $key => $dato) {
+            $html .= "<td class='ocupacionClientes' id='HorasClientes#Completa#{$key}'>{$dato}</td>";
+        }
+        $html .= "<td>{$totalHorasDespachoClientes}</td>";
+        $html .= "</tr>";
+        $html .= "</table>";
+        $html .= "<a class='enlacedetallada' href='#arriba'>Ir arriba</a>";
+        $html .= "<br/><br/>";
+        $html .= <<<EOD
+	   <script type="text/javascript">
+        	$('.ocupacionClientes').click(function(){
+        		$('.ocupacionClientes').removeClass('ui-widget-header').ajaxStop(function(){ $('#dialog').dialog('open');});
+        		$('.consumo').removeClass('ui-widget-header');
+        		$(this).addClass('ui-widget-header'); 
+				$('#dialog').html('').dialog({ autoOpen: false, width: 600}); 			 
+				$.post('procesa.php',{ocupacion:this.id,inicial:$('#inicio').val(),fin:$('#fin').val()},function(data){ 
+					$('#dialog').html(data);
+    			}); 
+			});
+	   </script>
        
+EOD;
        /*
-        * Despachos/Sala Horas
+        * Despachos/Sala Horas Externos
         */
        $totalHorasDespacho = array_sum($datosHorasDespacho);
-       $html .= "<h4><a name='despachosSalaHoras'>Despacho/Sala Horas</a></h4>"; 
+       $html .= "<h4><a name='despachosSalaHoras'>Despacho/Sala Horas (Clientes Externos)</a></h4>";
        $html .= "<table class='listadetallada'>
        <tr><th>&nbsp;</th>";
        foreach($this->mesesRango() as $mes){

@@ -3,14 +3,16 @@ class Sql
 {
     private $conexion = null;
     private $result = false;
-    private $host = "127.0.0.1:3306";
+    private $host = "localhost";
     private $username = "cni";
     private $password = "inc";
     private $dbname = "centro";
 
     public function __construct()
     {
-        $this->host = getenv('HTTP_HOST');
+        if (getenv('MYSQL_HOSTNAME')) {
+            $this->host = getenv('MYSQL_HOSTNAME');
+        }
         $this->conexion =
         mysql_connect($this->host, $this->username, $this->password);
         mysql_set_charset('utf8', $this->conexion);

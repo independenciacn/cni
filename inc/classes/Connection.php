@@ -15,7 +15,9 @@ class Connection
      */
     public function __construct()
     {
-        $this->host = getenv('HTTP_HOST');
+        if (getenv('MYSQL_HOSTNAME')) {
+            $this->host = getenv('MYSQL_HOSTNAME');
+        }
         $dsn = 'mysql:dbname='.$this->dbname.';host='.$this->host;
         $options = array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8'");
         try {
@@ -27,6 +29,7 @@ class Connection
             );
         } catch (PDOException $e) {
             echo 'Connection failed: ' . $e->getMessage();
+            var_dump($e->getTrace());
         }
     }
 
