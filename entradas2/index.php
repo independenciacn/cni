@@ -53,8 +53,7 @@ datos que desea visualizar</p>
 	value='Ver Datos' /> <input type="reset"  value="Limpiar" /></form>
 </div>
 <div id='resultado'>
-<div id='carga'><img src="css/custom-theme/images/ajax-loader.gif"
-	alt="Cargando"></img></div>
+<div id='carga'><img src="css/custom-theme/images/ajax-loader.gif" alt="Cargando" /></div>
 <div id='resultados'></div>
 <!-- Visualizaremos el resultado de la opción seleccionada --></div>
 

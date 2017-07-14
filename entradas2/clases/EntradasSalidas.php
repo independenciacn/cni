@@ -416,12 +416,15 @@ class EntradasSalidas extends Sql
             return $this->_conn->datos();
    }
 
-    public function cuentaServiciosPorMes($servicio, $todos = FALSE)
+    public function cuentaServiciosPorMes($servicio, $todos = FALSE, $clientes = false)
     {
         $filtro = "";
         $total = 'COUNT(MONTH(c.fecha))';
         if (!$todos) {
             $filtro = " l.categoria LIKE 'clientes externos' AND ";
+            if ($clientes) {
+                $filtro = " l.categoria NOT LIKE 'clientes externos' AND ";
+            }
             $total = "(count(d.servicio) * IF(d.Cantidad != 0, d.Cantidad, 1))";
         }
         if ($servicio == "Bonos salas") { // En el caso de ser Bonos salas coge el total de las Observaciones
@@ -1015,7 +1018,9 @@ EOD;
         $html .= 
         "<a class='enlacedetallada' href='#puntualDespachos'>Ocupación Puntual Despachos</a>";
         $html .= 
-        "<a class='enlacedetallada' href='#despachosSalaHoras'>Despacho/Sala Horas</a>";
+        "<a class='enlacedetallada' href='#despachosSalaHorasClientes'>Despacho/Sala Horas (Clientes)</a>";
+        $html .=
+            "<a class='enlacedetallada' href='#despachosSalaHoras'>Despacho/Sala Horas (Clientes Externos)</a>";
         $html .= "</div>";
         return $html;
     }
@@ -1325,7 +1330,7 @@ EOD;
          */
          $horasDespachoClientes = [];
          foreach ($this->_horasDespachoClientes as $servicio) {
-             $horasDespachoClientes[$servicio] = $this->cuentaServiciosPorMes($servicio);
+             $horasDespachoClientes[$servicio] = $this->cuentaServiciosPorMes($servicio, false, true);
          }
          $datosHorasDespachoClientes = array_fill(0, $this->diferencia(), 0);
          foreach ($horasDespachoClientes as $servicio) {
@@ -1446,13 +1451,14 @@ EOD;
         $html .= <<<EOD
 	   <script type="text/javascript">
         	$('.ocupacionClientes').click(function(){
-        		$('.ocupacionClientes').removeClass('ui-widget-header').ajaxStop(function(){ $('#dialog').dialog('open');});
+        		$('.ocupacionClientes').removeClass('ui-widget-header');
         		$('.consumo').removeClass('ui-widget-header');
         		$(this).addClass('ui-widget-header'); 
 				$('#dialog').html('').dialog({ autoOpen: false, width: 600}); 			 
 				$.post('procesa.php',{ocupacion:this.id,inicial:$('#inicio').val(),fin:$('#fin').val()},function(data){ 
 					$('#dialog').html(data);
-    			}); 
+    			});
+				$('.ocupacionClientes').ajaxStop(function(){ $('#dialog').dialog('open');});
 			});
 	   </script>
        
