@@ -192,7 +192,7 @@ if (isset($_POST['ocupacion'])) {
             $anyoFinal = $_POST['fin'];
             $class = "ui-widget-content";
     }
-    $detalles = $entradas->DetallesOcupacionHoras($mes,$anyo,$dato[0],$dato[1],$anyoFinal);
+    $detalles = $entradas->DetallesOcupacionHoras($mes, $anyo, $dato[0], $dato[1], $anyoFinal);
     $i=0;
     $j=0;
     $mes = 0;

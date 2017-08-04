@@ -11,7 +11,7 @@ class Connection
     private $dbname = "centro";
 
     /**
-     *
+     * Constructor de clase
      */
     public function __construct()
     {
@@ -37,12 +37,13 @@ class Connection
      * Ejecuta la consulta
      * @param $sql
      * @param null $params
+     * @param int $mode
      * @return array
      */
-    public function consulta($sql, $params = null)
+    public function consulta($sql, $params = null, $mode = PDO::FETCH_BOTH)
     {
         $stmt = $this->conexion->prepare($sql);
         $stmt->execute($params);
-        return $stmt->fetchAll();
+        return $stmt->fetchAll($mode);
     }
 }

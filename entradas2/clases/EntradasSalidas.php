@@ -1,6 +1,6 @@
 <?php
 /**
- * PHP Version 5.1.4
+ * PHP Version 5.6
  * 
  * @author Ruben Lacasa <ruben@ensenalia.com>
  * TODO:Los consumos de los clientes externos deben aparecer
@@ -9,9 +9,14 @@
  * FIXME: Movimientos clientes Detallada Despacho/Sala Horas los totales no salen bien
  */
 
-require_once 'Sql.php';
+require_once __DIR__.'/../../inc/classes/Connection.php';
 require_once 'Fecha.php';
-class EntradasSalidas extends Sql
+
+/**
+ * Class EntradasSalidas
+ * FIXME: Reducir Metodos
+ */
+class EntradasSalidas extends Connection
 {
     /*
      * Variables de la Clase
@@ -79,12 +84,10 @@ class EntradasSalidas extends Sql
         'Sala de Reuniones (una hora)',
         'Sala de Juntas (una hora)',
         'Despacho (una hora)',
-        'Bonos salas'
-    );
-    private $_horasDespachoClientes = array(
         'Sala de Reuniones (una hora)/Clientes',
         'Sala de Juntas (una hora)/Clientes',
-        'Despacho (una hora)/Clientes'
+        'Despacho (una hora)/Clientes',
+        'Bonos salas'
     );
     private $_anyoCeroKeys = array(
         '2' => array('entradas' => '128', 'salidas' => '103'), 
@@ -94,13 +97,13 @@ class EntradasSalidas extends Sql
         '7' => array('entradas' => '1', 'salidas' => '0')
     );
     private $_categoriasClientes = null;
-    private $_movimientos = array();
     
     /*
      * Comienzo de Funciones 
      */
     function __construct ()
     {
+        parent::__construct();
         $this->fecha = New Fecha();
         $this->meses = $this->fecha->get_meses();
         $this->mesesCortos = $this->fecha->get_meses_cortos();
@@ -143,28 +146,26 @@ class EntradasSalidas extends Sql
 	 */
     public function inicioSalidas ()
     {
-        if ($this->anyoInicial > $this->anyoZero)
+        $salida = " YEAR(salida) >= {$this->anyoZero} ";
+        if ($this->anyoInicial > $this->anyoZero) {
             $salida = " salida >= '" . ($this->anyoInicial - 1) . "-12-16' ";
-        else
-            $salida = " YEAR(salida) >={$this->anyoZero} ";
+        }
         return $salida;
     }
-    
-    /*
-	 * Establecemos el titulo del listado
-	 */
+
+    /**
+     * Establecemos el titulo del listado
+     * @return string
+     */
     public function titulo ()
     {
-        ($this->_tipoDato == 'clientes') ? 
-        $titulo = 'Movimientos Clientes' : 
-        $titulo = 'Consumo Servicios';
-        
-        $titulo .= " " . ucfirst($this->_tipoVista) . " ";
-        
-        ($this->anyoInicial == $this->anyoFinal) ? 
-        $titulo .= " " .$this->anyoInicial : 
-        $titulo .= " " . $this->anyoInicial . "-" .$this->anyoFinal;
-        
+        $titulo = ($this->_tipoDato == 'clientes') ?
+            'Movimientos Clientes' : 'Consumo Servicios';
+        if ($this->_tipoVista !== null) {
+            $titulo .= " " . ucfirst($this->_tipoVista);
+        }
+        $titulo .= ($this->anyoInicial == $this->anyoFinal) ?
+            " ".$this->anyoInicial : " ".$this->anyoInicial . "-" .$this->anyoFinal;
         return $titulo;
     }
     
@@ -175,33 +176,31 @@ class EntradasSalidas extends Sql
     {
         $datos = array();
         $sql = "SELECT Nombre FROM `categorías clientes`";
-        $this->_conn = new Sql();
-        $this->_conn->consulta($sql);
-        $this->_datos = $this->_conn->datos();
+        $this->_datos = $this->consulta($sql, null, PDO::FETCH_ASSOC);
         foreach ($this->_datos as $key => $dato) {
             if (array_search($dato['Nombre'], $this->_categoriasBaneadas) === FALSE)
                 $datos[] = $dato;
         }
-        $this->_conn->close();
         return $datos;
     }
-    
-    /*
-	 * Devuelve los valores de la categoria en el año 0
-	 */
+
+    /**
+     * Devuelve los valores de la categoria en el año 0
+     * @param $categoria
+     * @param $tipo
+     * @return int
+     */
     public function valoresCategoriasAnyoCero ($categoria, $tipo)
     {
-        $sql = "SELECT Id FROM `categorías clientes` ".
-               "WHERE Nombre LIKE '" . $categoria . "'";
-        $this->_conn = new Sql();
-        $this->_conn->consulta($sql);
-        $this->_datos = $this->_conn->datos();
+        $result = 0;
+        $sql = "SELECT Id FROM `categorías clientes` WHERE Nombre LIKE ?";
+        $this->_datos = $this->consulta($sql, array($categoria), PDO::FETCH_ASSOC);
         foreach ($this->_datos as $dato) {
             if (array_key_exists($dato['Id'], $this->_anyoCeroKeys)) {
-                return $this->_anyoCeroKeys[$dato['Id']][$tipo];
-            } else
-                return 0;
+                $result = $this->_anyoCeroKeys[$dato['Id']][$tipo];
+            }
         }
+        return $result;
     }
     
     /*
@@ -273,8 +272,8 @@ class EntradasSalidas extends Sql
          'despachoCompleta' => 0,
          'despachoMedia' => 0
         );
-        foreach($this->_serviciosOcupacion as $key => $servicio){
-            $datos = $this->ocupacionesPuntuales($servicio['Nombre'],$anyo);
+        foreach($this->_serviciosOcupacion as $key => $servicio) {
+            $datos = $this->ocupacionesPuntuales($servicio['Nombre'], $anyo);
             if(isset($datos[0]['Total'])){
                if($servicio['Tipo'] == 'Sala'){
                    if($servicio['Tiempo'] == 'Media')
@@ -293,54 +292,54 @@ class EntradasSalidas extends Sql
         return $ocupaciones;
     }
     /*
-     * Funcion que devuelve las horas de Despachos por clientes externos
+     *
      */
-    public function HorasDespachoSala($anyo = FALSE)
+    /**
+     * Funcion que devuelve las horas de Despachos por clientes
+     * @param bool $anyo
+     * @param bool $externos
+     * @return int
+     */
+    public function HorasDespachoSala($anyo = FALSE, $externos = FALSE)
     {
         $horas = 0;
         foreach($this->_horasDespacho as $servicio) {
-            $datos = $this->ocupacionesPuntuales($servicio, $anyo);
+            $datos = $this->ocupacionesPuntuales($servicio, $anyo, $externos);
             if(isset($datos[0]['Total']))
                 $horas += $datos[0]['Total'];
         }
         return $horas;
     }
-
-    /*
-     * Funcion que devuelve las horas de Despachos por clientes externos
-     */
-    public function HorasDespachoSalaClientes($anyo = FALSE)
-    {
-        $horas = 0;
-        foreach ($this->_horasDespachoClientes as $servicio) {
-            $datos = $this->ocupacionesPuntuales($servicio, $anyo);
-            if (isset($datos[0]['Total']))
-                $horas += $datos[0]['Total'];
-        }
-        return $horas;
-    }
-    
-    /*
+    /**
      * Funcion de presentacion de los datos de Ocupacion puntual y Horas
+     * @param $mes
+     * @param $anyo
+     * @param $tipo
+     * @param $tiempo
+     * @param null $anyoFinal
+     * @return array
      */
     public function DetallesOcupacionHoras($mes, $anyo, $tipo, $tiempo, $anyoFinal = NULL){
        
         $filtro = "";
        
-        if($tipo == 'Horas'){
+        if($tipo == 'Horas' || $tipo == 'HorasClientes'){
+            $filtroCategoria = "l.Categoria LIKE 'Clientes externos' AND ";
+            if ($tipo == 'HorasClientes') {
+                $filtroCategoria = "l.Categoria NOT LIKE 'Clientes externos' AND ";
+            }
             foreach($this->_horasDespacho as $servicio) {
                 $filtro .= " d.servicio LIKE '{$servicio}' OR";
             }
-        } else if ($tipo == 'HorasClientes') {
-            foreach ($this->_horasDespachoClientes as $servicio) {
-                $filtro .= " d.servicio LIKE '{$servicio}' OR";
-            }
+            $filtro = substr($filtro, 0, strlen($filtro) - 2);
+            $filtro = $filtroCategoria."(".$filtro.")";
         } else {
             foreach($this->_serviciosOcupacion as $servicio) {
                 if($servicio['Tipo'] == $tipo && $servicio['Tiempo'] == $tiempo) {
                     $filtro .= " d.servicio LIKE '{$servicio['Nombre']}' OR";
                 }
             }
+            $filtro = substr($filtro, 0, strlen($filtro) - 2);
         }
         if($anyoFinal != NULL && $mes == 100) {
             $filtroAnyo = "YEAR(c.fecha) BETWEEN {$anyo} AND {$anyoFinal}";
@@ -348,75 +347,83 @@ class EntradasSalidas extends Sql
             $filtroAnyo = "YEAR(c.fecha) LIKE '{$anyo}' " . 
              "AND MONTH(c.fecha) LIKE '{$mes}' ";
         }
-        //FIXME: Solo tiene que coger de bonos salas
-        $filtro = substr($filtro, 0, strlen($filtro)-2);    
-            $sql = "SELECT d.Servicio as Servicio,
-            IF(Servicio = 'Bonos salas', extractNumber(d.observaciones), '') as Total, d.cantidad,
-            l.Nombre, c.fecha " .
-             "FROM `detalles consumo de servicios` AS d " .
-             "INNER JOIN `consumo de servicios` as c " .
-             "ON d.`Id Pedido` = c.`Id Pedido` " . 
-             "INNER JOIN `clientes` AS l " .
-             "ON c.`cliente` = l.id " . 
-             "WHERE ({$filtro}) " .    
-             "AND {$filtroAnyo} " .
-             "ORDER BY c.fecha";
-             $this->_conn = new Sql();
-             $this->_conn->consulta($sql);
-             return $this->_conn->datos();
+        $sql = "SELECT d.Servicio as Servicio,
+        IF(Servicio = 'Bonos salas', extractNumber(d.observaciones), '') as Total, d.cantidad,
+        l.Nombre, c.fecha " .
+         "FROM `detalles consumo de servicios` AS d " .
+         "INNER JOIN `consumo de servicios` as c " .
+         "ON d.`Id Pedido` = c.`Id Pedido` " .
+         "INNER JOIN `clientes` AS l " .
+         "ON c.`cliente` = l.id " .
+         "WHERE ({$filtro}) " .
+         "AND {$filtroAnyo} " .
+         "ORDER BY c.fecha";
+         return $this->consulta($sql, null, PDO::FETCH_ASSOC);
      }
-    /*
-     * FUNCIONES DE CONSULTAS
+
+    /**
+     * Calcula los movimientos totales por categoria en un rango de años
+     * @return array
      */
-    /*
-	 * Calcula los movimientos totales por categoria en un rango de años
-	 */
     public function movimientosTotales ()
     {
         $sql = "SELECT categoria, count(categoria) as total " .
-         "FROM `centro`.`entradas_salidas` " .
-         "WHERE ((YEAR(entrada) >= {$this->anyoInicial} ".
-         "AND YEAR(entrada) <= {$this->anyoFinal} ) ".
-         "OR ( {$this->inicioSalidas()} ".
-         "AND salida <= '{$this->anyoFinal}-12-15')) ".
-         "GROUP by categoria;";
-        
-        $this->_conn = new Sql();
-        $this->_conn->consulta($sql);
-        return $this->_conn->datos();
+            "FROM `centro`.`entradas_salidas` " .
+            "WHERE ((YEAR(entrada) BETWEEN ? AND ? ) " .
+            "OR ( {$this->inicioSalidas()} " .
+            "AND salida <= ?)) " .
+            "GROUP by categoria;";
+        $params = array(
+            $this->anyoInicial,
+            $this->anyoFinal,
+            $this->anyoFinal."-12-15"
+        );
+        return $this->consulta($sql, $params, PDO::FETCH_ASSOC);
     }
-    
-    
-    /*
-     * Calcula la ocupaciones puntuales
+
+    /**
+     * Calcula las ocupaciones puntuales
+     * @param $servicio
+     * @param bool $anyo
+     * @param bool $externos
+     * @return array
      */
-    public function ocupacionesPuntuales($servicio, $anyo = FALSE)
+    public function ocupacionesPuntuales($servicio, $anyo = FALSE, $externos = FALSE)
     {
-        if ($anyo == FALSE) {
-            $anyo = $this->anyoInicial;
-        } else {
-            $anyo = $this->anyoZero;
+        $anyoInicial = $this->anyoInicial;
+        $tipoCliente = "NOT";
+        if ($anyo) {
+            $anyoInicial = $this->anyoZero;
+        }
+        if ($externos) {
+            $tipoCliente = "";
         }
         $total = '(count(d.servicio) * IF(d.Cantidad != 0, d.Cantidad, 1))';
         if ($servicio == "Bonos salas") { // En el caso de ser Bonos salas coge el total de las Observaciones
             $total = 'SUM(extractNumber(d.observaciones))';
         }
-        $sql = "SELECT d.Servicio as Servicio, {$total} AS Total " .
-             "FROM `detalles consumo de servicios` AS d " .
-             "INNER JOIN `consumo de servicios` as c " .
-             "ON d.`Id Pedido` = c.`Id Pedido` " . 
-             "INNER JOIN `clientes` AS l " .
-             "ON c.`cliente` = l.id " .
-             "WHERE d.servicio like '{$servicio}' " .    
-             "AND YEAR(c.fecha) BETWEEN {$anyo} AND {$this->anyoFinal} " .
-             "GROUP BY d.Servicio " .
-             "ORDER BY d.Servicio; ";
-            $this->_conn = new Sql();
-            $this->_conn->consulta($sql);
-            return $this->_conn->datos();
+        $sql = "SELECT d.Servicio as Servicio, ".$total." AS Total 
+            FROM `detalles consumo de servicios` AS d 
+            INNER JOIN `consumo de servicios` as c 
+            ON d.`Id Pedido` = c.`Id Pedido` 
+            INNER JOIN `clientes` AS l 
+            ON c.`cliente` = l.id 
+            WHERE d.servicio like ? 
+            AND l.categoria ".$tipoCliente." LIKE 'clientes externos'
+            AND YEAR(c.fecha) BETWEEN ? AND ? 
+            GROUP BY d.Servicio ORDER BY d.Servicio";
+        $params = array($servicio, $anyoInicial, $this->anyoFinal);
+        return $this->consulta($sql, $params, PDO::FETCH_ASSOC);
    }
 
-    public function cuentaServiciosPorMes($servicio, $todos = FALSE, $clientes = false)
+    /**
+     * Cuenta el servicio por tipo de cliente agrupado por mes
+     * @param $servicio
+     * @param bool $todos
+     * @param bool $clientes
+     * @return array
+     */
+   public function cuentaServiciosPorMes($servicio, $todos = FALSE, $clientes = false)
     {
         $filtro = "";
         $total = 'COUNT(MONTH(c.fecha))';
@@ -431,9 +438,9 @@ class EntradasSalidas extends Sql
             $total = 'SUM(extractNumber(d.observaciones))';
         }
         // Hacemos que los resultados de horas despacho sea para todos los clientes
-        if (in_array($servicio, $this->_horasDespacho)) {
+       /* if ($todos && in_array($servicio, $this->_horasDespacho)) {
             $filtro = "";
-        }
+        }*/
         $sql = "SELECT MONTH(c.fecha) AS mes, " .
             " {$total} AS total, " .
             "YEAR(c.fecha) AS anyo " .
@@ -447,10 +454,10 @@ class EntradasSalidas extends Sql
             "AND YEAR(c.fecha) BETWEEN {$this->anyoInicial} AND {$this->anyoFinal} " .
             "GROUP BY MONTH(c.fecha), YEAR(c.fecha) " .
             "ORDER BY c.fecha";
-        $this->_conn = new Sql();
-        $this->_conn->consulta($sql);
+        var_dump($sql);
+        $datos = $this->consulta($sql, null, PDO::FETCH_ASSOC);
         $arrayFinal = array_fill(0, $this->diferencia(), 0);
-        foreach ($this->_conn->datos() as $dato) {
+        foreach ($datos as $dato) {
             $key = $dato['mes'];
             if ($dato['anyo'] > $this->anyoInicial) {
                 $key = $dato['mes'] + 11;
@@ -475,10 +482,7 @@ class EntradasSalidas extends Sql
         $finales = array();
         foreach ($this->categorias() as $categoria) 
             $finales[] = array('categoria' => $categoria['Nombre'], 'total' => 0);
-        
-        $this->_conn = new Sql();
-        $this->_conn->consulta($sql);
-        $original = $this->_conn->datos();
+        $original = $this->consulta($sql, null, PDO::FETCH_ASSOC);;
         for ($i = 0; $i < count($finales); $i ++) {
             foreach ($original as $dato) {
                 if ($dato['categoria'] == $finales[$i]['categoria']) {
@@ -495,14 +499,13 @@ class EntradasSalidas extends Sql
 	 */
     public function entradasTotales ($anyo = FALSE)
     {
-        if($anyo == FALSE)
-            $anyo = $this->anyoInicial;
-        else
-            $anyo = $this->anyoZero;
-            
+        $anyoInicial = $this->anyoInicial;
+        if ($anyo) {
+            $anyoInicial = $this->anyoZero;
+        }
         $sql = "SELECT categoria, count(categoria) as total " .
          "FROM `centro`.`entradas_salidas` " .
-         "WHERE (YEAR(entrada) >= {$anyo} " .
+         "WHERE (YEAR(entrada) >= {$anyoInicial} " .
          "AND YEAR(entrada) <= {$this->anyoFinal} ) " . 
          "GROUP BY categoria;";
         return $this->auxiliarTotales($sql);
@@ -545,9 +548,7 @@ class EntradasSalidas extends Sql
             
         $sql .= "AND e.categoria LIKE '" . $categoria ."' ".
                 "ORDER by e.{$tipo};";
-        $this->_conn = new Sql();
-        $this->_conn->consulta($sql);
-        return $this->_conn->datos();
+        return $this->consulta($sql, null, PDO::FETCH_ASSOC);
     }
     
     /*
@@ -561,7 +562,7 @@ class EntradasSalidas extends Sql
             $grupo = "GROUP BY d.Servicio " .
              "ORDER BY d.Servicio ";
         }
-        else{
+        else {
             $cuenta = " c.fecha ";
             $grupo = "ORDER BY c.fecha";
         }
@@ -576,9 +577,7 @@ class EntradasSalidas extends Sql
          "AND (YEAR(c.fecha) >= {$this->anyoInicial} " .
          "AND YEAR(c.fecha) <= {$this->anyoFinal}) " . 
          "{$grupo};";
-        $this->_conn = new Sql();
-        $this->_conn->consulta($sql);
-        return $this->_conn->datos();
+        return $this->consulta($sql, null, PDO::FETCH_ASSOC);
     }
   
      /*
@@ -605,9 +604,7 @@ class EntradasSalidas extends Sql
          "AND d.servicio like '{$servicio}' " .
          "{$nexo}" . 
          "ORDER BY c.fecha;";
-        $this->_conn = new Sql();
-        $this->_conn->consulta($sql);
-        return $this->_conn->datos();
+        return $this->consulta($sql, null, PDO::FETCH_ASSOC);
     }
 
     /*
@@ -617,20 +614,15 @@ class EntradasSalidas extends Sql
 	 */
     public function totalesPorMeses ($tipo, $categoria)
     {
-        
-        
-        if ($tipo == 'entrada') {
-            $sql = "SELECT MONTH({$tipo}) AS mes, " .
-             "COUNT(MONTH({$tipo})) AS total, " . 
-             "YEAR({$tipo}) AS anyo " .
-             "FROM `centro`.`entradas_salidas` " .
-             "WHERE (YEAR({$tipo}) >= {$this->anyoInicial} " .
-             "AND YEAR({$tipo}) <= {$this->anyoFinal}) " .
-             "AND categoria LIKE '{$categoria}' " .
-             "GROUP BY MONTH({$tipo}), YEAR({$tipo}) " . 
-             "ORDER BY {$tipo} ;";
-        }
-       
+        $sql = "SELECT MONTH({$tipo}) AS mes, " .
+         "COUNT(MONTH({$tipo})) AS total, " .
+         "YEAR({$tipo}) AS anyo " .
+         "FROM `centro`.`entradas_salidas` " .
+         "WHERE (YEAR({$tipo}) >= {$this->anyoInicial} " .
+         "AND YEAR({$tipo}) <= {$this->anyoFinal}) " .
+         "AND categoria LIKE '{$categoria}' " .
+         "GROUP BY MONTH({$tipo}), YEAR({$tipo}) " .
+         "ORDER BY {$tipo} ;";
         if ($tipo == 'salida') {
             $sql = "SELECT {$tipo} " . 
              "FROM `centro`.`entradas_salidas` AS e " .
@@ -639,10 +631,7 @@ class EntradasSalidas extends Sql
              "AND categoria LIKE '{$categoria}' " . 
              "ORDER BY {$tipo}  ;";
         }
-        
-        $this->_conn = new Sql();
-        $this->_conn->consulta($sql);
-        return $this->_conn->datos();
+        return $this->consulta($sql, null, PDO::FETCH_ASSOC);
     }
     
     /*
@@ -678,10 +667,8 @@ class EntradasSalidas extends Sql
         }
         
         $sql .= "AND e.categoria LIKE '{$categoria}' ORDER BY e.{$tipo};";
-        
-        $this->_conn = new Sql();
-        $this->_conn->consulta($sql);
-        return $this->_conn->datos();
+
+        return $this->consulta($sql, null, PDO::FETCH_ASSOC);
     }
     
     /*
@@ -704,8 +691,9 @@ class EntradasSalidas extends Sql
         for ($i = 0; $i < $this->diferencia(); $i ++) {
             $meses[$i] = $this->mesesCortos[$j + 1];
             $j ++;
-            if ($j == 12 && $i != 0)
+            if ($j == 12 && $i != 0) {
                 $j = 0;
+            }
         }
         return $meses;
     }
@@ -1049,7 +1037,7 @@ EOD;
     public function graficaServicios ()
     {
         $grafico = urlencode("grafico#{$this->anyoInicial}#{$this->anyoFinal}");
-        return "<img src = 'graphservicios.php?datos={$grafico}' alt='Grafica Servicios' />";
+        return "<img src='graphservicios.php?datos={$grafico}' alt='Grafica Servicios' />";
     }
     
     /*
@@ -1329,7 +1317,7 @@ EOD;
          * Llenado datos despachos Hora Clientes
          */
          $horasDespachoClientes = [];
-         foreach ($this->_horasDespachoClientes as $servicio) {
+         foreach ($this->_horasDespacho as $servicio) {
              $horasDespachoClientes[$servicio] = $this->cuentaServiciosPorMes($servicio, false, true);
          }
          $datosHorasDespachoClientes = array_fill(0, $this->diferencia(), 0);
@@ -1343,7 +1331,7 @@ EOD;
           */
          $horasDespacho = [];
          foreach($this->_horasDespacho as $servicio) {
-             $horasDespacho[$servicio] = $this->cuentaServiciosPorMes($servicio);
+             $horasDespacho[$servicio] = $this->cuentaServiciosPorMes($servicio, false, false);
          }
          $datosHorasDespacho = array_fill(0, $this->diferencia(), 0);
          foreach($horasDespacho as $servicio) {
@@ -1467,6 +1455,7 @@ EOD;
         * Despachos/Sala Horas Externos
         */
        $totalHorasDespacho = array_sum($datosHorasDespacho);
+       var_dump($datosHorasDespacho);
        $html .= "<h4><a name='despachosSalaHoras'>Despacho/Sala Horas (Clientes Externos)</a></h4>";
        $html .= "<table class='listadetallada'>
        <tr><th>&nbsp;</th>";
@@ -1486,13 +1475,10 @@ EOD;
        $html .= "<br/><br/>";
        $html .= <<<EOD
 	   <script type="text/javascript">
-	  
         	$('.ocupacion').click(function(){
-  
         		$('.ocupacion').removeClass('ui-widget-header');
         		$('.consumo').removeClass('ui-widget-header');
-        		$(this).addClass('ui-widget-header'); 
-    		
+        		$(this).addClass('ui-widget-header');
 				$('#dialog').html('');
 				$('#dialog').dialog({ autoOpen: false, width: 600}); 			 
 				$.post('procesa.php',{ocupacion:this.id,inicial:$('#inicio').val(),fin:$('#fin').val()},function(data){ 
@@ -1500,9 +1486,7 @@ EOD;
     			}); 
 		 		$('.ocupacion').ajaxStop(function(){ $('#dialog').dialog('open');});
 			});
-	   
 	   </script>
-       
 EOD;
        
        return $html;

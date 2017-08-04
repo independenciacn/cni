@@ -1,0 +1,14 @@
+<phpunit>
+    <testsuite name="CNI">
+        <directory>tests</directory>
+    </testsuite>
+    <filter>
+        <whitelist>
+            <directory suffix=".php">entradas2</directory>
+            <directory suffix=".php">inc/classes</directory>
+            <exclude>
+                <directory suffix=".php">contratos</directory>
+            </exclude>
+        </whitelist>
+    </filter>
+</phpunit>
