@@ -18,6 +18,9 @@
 
 error_reporting(E_NOTICE);
 $localhost = getenv('HTTP_HOST');
+if (getenv('MYSQL_HOSTNAME')) {
+    $localhost = getenv('MYSQL_HOSTNAME');
+}
 /**
  * Establecemos la zona horaria 
  */ 
