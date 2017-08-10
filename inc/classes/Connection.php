@@ -4,7 +4,7 @@ class Connection
     /**
      * @var null|Pdo
      */
-    private $conexion = null;
+    protected $conexion = null;
     private $host = "localhost";
     private $username = "cni";
     private $password = "inc";
@@ -18,7 +18,7 @@ class Connection
         if (getenv('MYSQL_HOSTNAME')) {
             $this->host = getenv('MYSQL_HOSTNAME');
         }
-        $dsn = 'mysql:dbname='.$this->dbname.';host='.$this->host;
+        $dsn = 'mysql:dbname='.$this->dbname.';host='.$this->host.';port=3306';
         $options = array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8'");
         try {
             $this->conexion = new PDO(
@@ -35,13 +35,14 @@ class Connection
     /**
      * Ejecuta la consulta
      * @param $sql
-     * @param null $params
+     * @param array $params
+     * @param int $fetchMode
      * @return array
      */
-    public function consulta($sql, $params = null)
+    public function consulta($sql, $params = array(), $fetchMode = PDO::FETCH_ASSOC)
     {
         $stmt = $this->conexion->prepare($sql);
         $stmt->execute($params);
-        return $stmt->fetchAll();
+        return $stmt->fetchAll($fetchMode);
     }
 }

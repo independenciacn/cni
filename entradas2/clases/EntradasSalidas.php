@@ -9,9 +9,9 @@
  * FIXME: Movimientos clientes Detallada Despacho/Sala Horas los totales no salen bien
  */
 
-require_once 'Sql.php';
+require_once __DIR__.'/../../inc/classes/Connection.php';
 require_once 'Fecha.php';
-class EntradasSalidas extends Sql
+class EntradasSalidas extends Connection
 {
     /*
      * Variables de la Clase
@@ -96,6 +96,7 @@ class EntradasSalidas extends Sql
      */
     function __construct ()
     {
+        parent::__construct();
         $this->fecha = New Fecha();
         $this->meses = $this->fecha->get_meses();
         $this->mesesCortos = $this->fecha->get_meses_cortos();
@@ -104,6 +105,7 @@ class EntradasSalidas extends Sql
         $this->anyoFinal = date('Y');
         $this->anyoActual = date('Y');
         $this->_categoriasClientes = $this->categorias();
+
     }
     
     /*
@@ -170,33 +172,32 @@ class EntradasSalidas extends Sql
     {
         $datos = array();
         $sql = "SELECT Nombre FROM `categorías clientes`";
-        $this->_conn = new Sql();
-        $this->_conn->consulta($sql);
-        $this->_datos = $this->_conn->datos();
+        $this->_datos = $this->consulta($sql);
         foreach ($this->_datos as $key => $dato) {
             if (array_search($dato['Nombre'], $this->_categoriasBaneadas) === FALSE)
                 $datos[] = $dato;
         }
-        $this->_conn->close();
         return $datos;
     }
-    
-    /*
-	 * Devuelve los valores de la categoria en el año 0
-	 */
+
+    /**
+     * Devuelve los valores de la categoria en el año 0
+     * @param $categoria
+     * @param $tipo
+     * @return int
+     */
     public function valoresCategoriasAnyoCero ($categoria, $tipo)
     {
-        $sql = "SELECT Id FROM `categorías clientes` ".
-               "WHERE Nombre LIKE '" . $categoria . "'";
-        $this->_conn = new Sql();
-        $this->_conn->consulta($sql);
-        $this->_datos = $this->_conn->datos();
+        $sql = "SELECT Id FROM `categorías clientes` WHERE Nombre LIKE ?";
+        $this->_datos = $this->consulta($sql, array($categoria));
+        $result = 0;
         foreach ($this->_datos as $dato) {
             if (array_key_exists($dato['Id'], $this->_anyoCeroKeys)) {
-                return $this->_anyoCeroKeys[$dato['Id']][$tipo];
-            } else
-                return 0;
+                $result = $this->_anyoCeroKeys[$dato['Id']][$tipo];
+                break;
+            }
         }
+        return $result;
     }
     
     /*
@@ -336,9 +337,7 @@ class EntradasSalidas extends Sql
              "WHERE ({$filtro}) " .    
              "AND {$filtroAnyo} " .
              "ORDER BY c.fecha";
-             $this->_conn = new Sql();
-             $this->_conn->consulta($sql);
-             return $this->_conn->datos();
+             return $this->consulta($sql);
      }
     /*
      * FUNCIONES DE CONSULTAS
@@ -355,10 +354,7 @@ class EntradasSalidas extends Sql
          "OR ( {$this->inicioSalidas()} ".
          "AND salida <= '{$this->anyoFinal}-12-15')) ".
          "GROUP by categoria;";
-        
-        $this->_conn = new Sql();
-        $this->_conn->consulta($sql);
-        return $this->_conn->datos();
+        return $this->consulta($sql);
     }
     
     
@@ -386,9 +382,7 @@ class EntradasSalidas extends Sql
              "AND YEAR(c.fecha) BETWEEN {$anyo} AND {$this->anyoFinal} " .
              "GROUP BY d.Servicio " .
              "ORDER BY d.Servicio; ";
-            $this->_conn = new Sql();
-            $this->_conn->consulta($sql);
-            return $this->_conn->datos();
+            return $this->consulta($sql);
    }
 
     public function cuentaServiciosPorMes($servicio, $todos = FALSE)
@@ -419,10 +413,9 @@ class EntradasSalidas extends Sql
             "AND YEAR(c.fecha) BETWEEN {$this->anyoInicial} AND {$this->anyoFinal} " .
             "GROUP BY MONTH(c.fecha), YEAR(c.fecha) " .
             "ORDER BY c.fecha";
-        $this->_conn = new Sql();
-        $this->_conn->consulta($sql);
+        $datos = $this->consulta($sql);
         $arrayFinal = array_fill(0, $this->diferencia(), 0);
-        foreach ($this->_conn->datos() as $dato) {
+        foreach ($datos as $dato) {
             $key = $dato['mes'];
             if ($dato['anyo'] > $this->anyoInicial) {
                 $key = $dato['mes'] + 11;
@@ -445,12 +438,10 @@ class EntradasSalidas extends Sql
     public function auxiliarTotales($sql)
     {
         $finales = array();
-        foreach ($this->categorias() as $categoria) 
+        foreach ($this->categorias() as $categoria) {
             $finales[] = array('categoria' => $categoria['Nombre'], 'total' => 0);
-        
-        $this->_conn = new Sql();
-        $this->_conn->consulta($sql);
-        $original = $this->_conn->datos();
+        }
+        $original = $this->consulta($sql);
         for ($i = 0; $i < count($finales); $i ++) {
             foreach ($original as $dato) {
                 if ($dato['categoria'] == $finales[$i]['categoria']) {
@@ -517,9 +508,7 @@ class EntradasSalidas extends Sql
             
         $sql .= "AND e.categoria LIKE '" . $categoria ."' ".
                 "ORDER by e.{$tipo};";
-        $this->_conn = new Sql();
-        $this->_conn->consulta($sql);
-        return $this->_conn->datos();
+        return $this->consulta($sql);
     }
     
     /*
@@ -548,9 +537,7 @@ class EntradasSalidas extends Sql
          "AND (YEAR(c.fecha) >= {$this->anyoInicial} " .
          "AND YEAR(c.fecha) <= {$this->anyoFinal}) " . 
          "{$grupo};";
-        $this->_conn = new Sql();
-        $this->_conn->consulta($sql);
-        return $this->_conn->datos();
+        return $this->consulta($sql);
     }
   
      /*
@@ -577,9 +564,7 @@ class EntradasSalidas extends Sql
          "AND d.servicio like '{$servicio}' " .
          "{$nexo}" . 
          "ORDER BY c.fecha;";
-        $this->_conn = new Sql();
-        $this->_conn->consulta($sql);
-        return $this->_conn->datos();
+        return $this->consulta($sql);
     }
 
     /*
@@ -611,10 +596,7 @@ class EntradasSalidas extends Sql
              "AND categoria LIKE '{$categoria}' " . 
              "ORDER BY {$tipo}  ;";
         }
-        
-        $this->_conn = new Sql();
-        $this->_conn->consulta($sql);
-        return $this->_conn->datos();
+        return $this->consulta($sql);
     }
     
     /*
@@ -650,10 +632,8 @@ class EntradasSalidas extends Sql
         }
         
         $sql .= "AND e.categoria LIKE '{$categoria}' ORDER BY e.{$tipo};";
-        
-        $this->_conn = new Sql();
-        $this->_conn->consulta($sql);
-        return $this->_conn->datos();
+
+        return $this->consulta($sql);
     }
     
     /*

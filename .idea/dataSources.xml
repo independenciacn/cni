@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="centro@localhost" uuid="a396b4ae-7afb-44cd-b0ef-72918d2745af">
+    <data-source source="LOCAL" name="centro@192.168.1.248" uuid="a396b4ae-7afb-44cd-b0ef-72918d2745af">
       <driver-ref>mysql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://localhost:3306/centro</jdbc-url>
+      <jdbc-url>jdbc:mysql://192.168.1.248:3306/centro</jdbc-url>
       <driver-properties>
         <property name="autoReconnect" value="true" />
         <property name="zeroDateTimeBehavior" value="convertToNull" />
