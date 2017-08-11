@@ -35,7 +35,7 @@ function iva($importe,$iva)
 	return $total;
 }
 //Generacion del codigo de factura, posible almacenaje
-function dame_el_mes($mes)
+function dameElMes($mes)
 {
 	switch($mes)
 	{
@@ -204,7 +204,7 @@ $codigo_factura = genera_codigo_factura($cliente,$mes);
 		$cantidad = $resultado[1] + $cantidad;
 //fin acumulados
 		echo "<tr>
-		<td style='border-right-style:solid; border-width:1px;border-color:#000000;'align='center'>".dame_el_mes($mes)."/".date(Y)."</td>
+		<td style='border-right-style:solid; border-width:1px;border-color:#000000;'align='center'>".dameElMes($mes)."/".date(Y)."</td>
 		<td style='border-right-style:solid; border-width:1px;border-color:#000000;'>".$resultado[0]." ".$resultado[7]."</td>
 		<td style='border-right-style:solid; border-width:1px;border-color:#000000;'align='center'>".round($resultado[1],2)."</td>
 		<td style='border-right-style:solid; border-width:1px;border-color:#000000;'align='center'>".round($resultado[3],2)."&euro;</td>

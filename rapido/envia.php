@@ -25,6 +25,8 @@ Zend_Loader_Autoloader::getInstance();
  */
 function envia( $fichero, $numeroFactura, $dup ) {
 	global $con;
+	$erroneas = '';
+	$correctas = '';
 	$sql = "Select date_format(r.fecha,'%d-%m-%Y') as fecha,
 	c.Nombre as cliente,f.direccion as direccion
 	from regfacturas as r
@@ -40,8 +42,12 @@ function envia( $fichero, $numeroFactura, $dup ) {
 				'destinatario' => $resultado['cliente'],
 				'email' => $direccion	
 			);
+		} else {
+			$erroneas .= "<div id='error'>Direccion ".$resultado['cliente'] 
+			." Incorrecta o nula. No se enviara la factura - ".$direccion."</div>";
 		}
 	}
+	
 	if ( $dup ) {
 		$duplicado = "duplicado de ";
 		$dupli = "Duplicado ";
@@ -139,10 +145,10 @@ que la ley lo exija expresamente.
 			Zend_Mime::ENCODING_BASE64,
 		    "factura-".$numeroFactura.".pdf"
 		);
+		echo "<div class='span-24 success'>Factura ".$numeroFactura." Enviada a ".$correo['destinatario']."</div>";
 		if ( $mail->send($transport) ) {
-			echo "<div class='span-24 success'>Factura ".$numeroFactura." Enviada</div>";
-		} else {
-			echo "<div class='span-24 error'>No se ha enviado la Factura</div>";
-		}
+			 $correctas .= "<div class='span-24 success'>Factura ".$numeroFactura." Enviada</div>";
+		} 
+		echo $correctas."<br/>".$erroneas;
 	}
 }

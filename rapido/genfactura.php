@@ -95,7 +95,7 @@ function cambiaf($stamp)
  * @param string $final
  * @return string $cadena
  */
-function consulta_fecha($cliente,$mes,$inicial,$final) //consulta los rangos de la fecha
+function consultaFecha($cliente,$mes,$inicial,$final) //consulta los rangos de la fecha
 {
 	global $con;
 	$check1=$inicial{4};
@@ -654,7 +654,7 @@ if($historico == "ok") {
 	d.observaciones from `detalles consumo de servicios` as d join `consumo de servicios` as c 
 	on c.`Id Pedido` = d.`Id Pedido` where c.Cliente like ".$cliente;
 //consulta de fecha
-	$sql .= consulta_fecha($cliente,$mes,$inicio,$final); //con esta miramos los rangos de la factura
+	$sql .= consultaFecha($cliente,$mes,$inicio,$final); //con esta miramos los rangos de la factura
 	$sql .= consulta_no_agrupado($cliente);
 	//echo $sql;/*PUNTO DE CONTROL*/
 	$consulta = mysql_query($sql,$con);
@@ -692,7 +692,7 @@ if($historico == "ok") {
 	d.PrecioUnidadEuros, sum(d.ImporteEuro), d.iva, c.`Id Pedido` ,
 	d.observaciones from `detalles consumo de servicios` as d join `consumo de servicios` as c 
 	on c.`Id Pedido` = d.`Id Pedido` where c.Cliente like $cliente";
-	$sql .= consulta_fecha($cliente,$mes,$inicio,$final);
+	$sql .= consultaFecha($cliente,$mes,$inicio,$final);
 	$sql .= consulta_agrupado($cliente);
 	//echo $sql;//<- Punto de Control
 	//echo $cliente.",".$mes.",".$inicio.",".$final;
