@@ -386,21 +386,19 @@ class EntradasSalidas extends Connection
 
     public function cuentaServiciosPorMes($servicio, $todos = FALSE)
     {
-        $total = " SUM(IF(d.Servicio='Bonos salas', extractNumber(d.observaciones)*d.Cantidad, d.Cantidad)) ";
-        $sql = "SELECT MONTH(c.fecha) AS mes, " .
-            " {$total} AS total, " .
-            "YEAR(c.fecha) AS anyo " .
-            "FROM `detalles consumo de servicios` AS d " .
-            "INNER JOIN `consumo de servicios` as c " .
-            "ON d.`Id Pedido` = c.`Id Pedido` " .
-            "INNER JOIN `clientes` AS l " .
-            "ON c.`cliente` = l.id " .
-            "WHERE " .
-            " d.servicio like '{$servicio}' " .
-            "AND YEAR(c.fecha) BETWEEN {$this->anyoInicial} AND {$this->anyoFinal} " .
-            "GROUP BY MONTH(c.fecha), YEAR(c.fecha) " .
-            "ORDER BY c.fecha";
-        $datos = $this->consulta($sql);
+        $sql = "SELECT MONTH(c.fecha) AS mes,
+					SUM(IF(d.Servicio='Bonos salas', extractNumber(d.observaciones) * d.Cantidad, d.Cantidad)) AS total,
+					YEAR(c.fecha) AS anyo 
+					FROM `detalles consumo de servicios` AS d 
+					INNER JOIN `consumo de servicios` as c 
+					ON d.`Id Pedido` = c.`Id Pedido` 
+					INNER JOIN `clientes` AS l 
+					ON c.`cliente` = l.id 
+					WHERE d.servicio like ? 
+					AND YEAR(c.fecha) BETWEEN ? AND ? 
+					GROUP BY MONTH(c.fecha), YEAR(c.fecha) 
+					ORDER BY c.fecha";
+        $datos = $this->consulta($sql, array($servicio, $this->anyoInicial, $this->anyoFinal));
         $arrayFinal = array_fill(0, $this->diferencia(), 0);
         foreach ($datos as $dato) {
             $key = $dato['mes'];
