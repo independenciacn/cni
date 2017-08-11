@@ -14,7 +14,7 @@ echo date ( 'Y' );
 </head>
 <body>
 <div id='container'>
-<div id='header'><img src='css/bc.png' alt='The Perfect Place' width='125px' />
+<div id='header'><img src='css/bc.png' alt='The Perfect Place' />
 <h1>Cuadro de Entradas, Salidas y Comparativas</h1>
 </div>
 <div id='menu'>

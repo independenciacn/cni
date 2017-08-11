@@ -253,54 +253,66 @@ if (isset($_POST['ocupacion'])) {
         $total += $i;
         $html .= "<tr class=''><th colspan='5'>Total {$total}</th></tr>";
 
-        } else {
+    } else {
         $html .= "
             <tr>
                 <th class='datosacumulados'>&nbsp;</th>
                 <th class='acumulada'>Cliente</th>
                 <th class='acumulada'>Servicio</th>
-                <th class='datosacumulados'>Fecha</th>
+                <th class='acumulada'>Fecha</th>
+                <th class='datosacumulados'>Cantidad</th>
             </tr>";
+        $totalHoras = 0;
+        $i = 1;
+        $j = 1;
+        $inicio = 0;
+        $totalMes = 0;
         foreach ($detalles as $detalle) {
             $nombre = $detalle['Nombre'];
             $servicio = $detalle['Servicio'];
             $fecha = $entradas->fecha->cambiaf($detalle['fecha']);
             $horas = $detalle["Total"];
-
-            if($mes != $entradas->fecha->verMes($detalle["fecha"]))
-            {
-                if($inicio!=0){
-                    $html .= "<tr class='ui-widget-content'>
-                 <td colspan='4'>
-                 <strong>Total {$i}</strong>
-                 </td>
-                 </tr>";
-                    $total += $i;
-                    $i=0;
+            $totalHoras += $horas;
+            if ($mes != $entradas->fecha->verMes($detalle["fecha"])) {
+                if ($inicio == 1) {
+                    $html .= "
+                    <tr class='ui-widget-content'>
+                        <td colspan='5'>
+                            <strong>Total {$totalMes}</strong>
+                        </td>
+                    </tr>";
                 }
+                $inicio = 1;
                 $mes = $entradas->fecha->verMes($detalle["fecha"]);
                 $anyo = $entradas->fecha->verAnyo($detalle["fecha"]);
-                $html .="<tr class=''>
+                $html .= "<tr class=''>
                  <th colspan='5'>{$entradas->meses[$mes]} {$anyo}</th>
                  </tr>";
-                $inicio = 1;
+                $i = 1;
+                $totalMes = 0;
             }
-            ++$i;
+            $totalMes += $horas;
             $html .= "
             <tr class='{$class}'>
              <td>{$i}</td>
              <td>{$nombre}</td>
              <td>{$servicio}</td>
              <td>{$fecha}</td>
+             <td>{$horas}</td>
             </tr>";
+            $i++;
+            if ($j == count($detalles)) {
+                $html .= "
+                    <tr class='ui-widget-content'>
+                        <td colspan='5'>
+                            <strong>Total {$totalMes}</strong>
+                        </td>
+                    </tr>";
+            }
+            $j++;
         }
-        $html .= "<tr class='ui-widget-content'>
-             <td colspan='4'>
-             <strong>Total {$i}</strong>
-             </td>
-             </tr>";
         $total += $i;
-        $html .= "<tr class=''><th colspan='4'>Total {$total}</th></tr>";
+        $html .= "<tr class=''><th colspan='5'>Total {$totalHoras}</th></tr>";
     }
     $html .= "</table>";
     $html .= "<a href='#arriba' class='enlacedetallada'>Ir Arriba</a>";

@@ -6,7 +6,6 @@
  * TODO:Los consumos de los clientes externos deben aparecer
  * FIXME: Repasar y arreglar las lineas HTML y jQuery (Marcadas con FIXME)
  * FIXME: Revision de las comillas
- * FIXME: Movimientos clientes Detallada Despacho/Sala Horas los totales no salen bien
  */
 
 require_once __DIR__.'/../../inc/classes/Connection.php';
@@ -35,7 +34,6 @@ class EntradasSalidas extends Connection
     );
     private $_tipoVista = null;
     private $_tipoDato = null;
-    private $_conn = null;
     private $_datos = null;
     private $_categoriasBaneadas = array(
         'Clientes externos',
@@ -77,8 +75,11 @@ class EntradasSalidas extends Connection
     );
     private $_horasDespacho = array(
         'Sala de Reuniones (una hora)',
+        'Sala de Reuniones (una hora)/Clientes',
         'Sala de Juntas (una hora)',
+        'Sala de Juntas (una hora)/Clientes',
         'Despacho (una hora)',
+        'Despacho (una hora)/Clientes',
         'Bonos salas'
     );
     private $_anyoCeroKeys = array(
@@ -133,17 +134,18 @@ class EntradasSalidas extends Connection
     {
         $this->_tipoDato = $this->_tipoDatos[$dato];
     }
-    
-    /*
-	 * Chequeamos en el año inicial del calculo de salidas, 
-	 * si es 2008 no se cuentan las salidas de la 2 quincena de 2007
-	 */
+
+    /**
+     * Chequeamos en el año inicial del calculo de salidas,
+     * si es 2008 no se cuentan las salidas de la 2 quincena de 2007
+     * @return string
+     */
     public function inicioSalidas ()
     {
-        if ($this->anyoInicial > $this->anyoZero)
+        $salida = " YEAR(salida) >={$this->anyoZero} ";
+        if ($this->anyoInicial > $this->anyoZero) {
             $salida = " salida >= '" . ($this->anyoInicial - 1) . "-12-16' ";
-        else
-            $salida = " YEAR(salida) >={$this->anyoZero} ";
+        }
         return $salida;
     }
     
@@ -327,7 +329,7 @@ class EntradasSalidas extends Connection
         }
         $filtro = substr($filtro, 0, strlen($filtro)-2);    
             $sql = "SELECT d.Servicio as Servicio,
-            extractNumber(d.observaciones) as Total, d.cantidad,
+            (IF(d.Servicio='Bonos salas', extractNumber(d.observaciones) * d.cantidad, d.cantidad)) as Total, d.cantidad,
             l.Nombre, c.fecha " .
              "FROM `detalles consumo de servicios` AS d " .
              "INNER JOIN `consumo de servicios` as c " .
@@ -368,11 +370,8 @@ class EntradasSalidas extends Connection
         } else {
             $anyo = $this->anyoZero;
         }
-        $total = 'count(d.servicio)';
-        if ($servicio == "Bonos salas") { // En el caso de ser Bonos salas coge el total de las Observaciones
-            $total = 'SUM(extractNumber(d.observaciones))';
-        }
-        $sql = "SELECT d.Servicio as Servicio, {$total} AS Total " .
+        $sql = "SELECT d.Servicio as Servicio, 
+           SUM(IF(d.Servicio='Bonos salas', extractNumber(d.observaciones)*d.Cantidad, d.Cantidad)) as Total " .
              "FROM `detalles consumo de servicios` AS d " .
              "INNER JOIN `consumo de servicios` as c " .
              "ON d.`Id Pedido` = c.`Id Pedido` " . 
@@ -387,19 +386,7 @@ class EntradasSalidas extends Connection
 
     public function cuentaServiciosPorMes($servicio, $todos = FALSE)
     {
-        if (!$todos) {
-            $filtro = " l.categoria LIKE 'clientes externos' AND ";
-        } else {
-            $filtro = "";
-        }
-        $total = 'COUNT(MONTH(c.fecha))';
-        if ($servicio == "Bonos salas") { // En el caso de ser Bonos salas coge el total de las Observaciones
-            $total = 'SUM(extractNumber(d.observaciones))';
-        }
-        // Hacemos que los resultados de horas despacho sea para todos los clientes
-        if (in_array($servicio, $this->_horasDespacho)) {
-            $filtro = "";
-        }
+        $total = " SUM(IF(d.Servicio='Bonos salas', extractNumber(d.observaciones)*d.Cantidad, d.Cantidad)) ";
         $sql = "SELECT MONTH(c.fecha) AS mes, " .
             " {$total} AS total, " .
             "YEAR(c.fecha) AS anyo " .
@@ -408,7 +395,7 @@ class EntradasSalidas extends Connection
             "ON d.`Id Pedido` = c.`Id Pedido` " .
             "INNER JOIN `clientes` AS l " .
             "ON c.`cliente` = l.id " .
-            "WHERE {$filtro}" .
+            "WHERE " .
             " d.servicio like '{$servicio}' " .
             "AND YEAR(c.fecha) BETWEEN {$this->anyoInicial} AND {$this->anyoFinal} " .
             "GROUP BY MONTH(c.fecha), YEAR(c.fecha) " .
@@ -574,8 +561,13 @@ class EntradasSalidas extends Connection
 	 */
     public function totalesPorMeses ($tipo, $categoria)
     {
-        
-        
+
+        $sql = "SELECT {$tipo} " .
+            "FROM `centro`.`entradas_salidas` AS e " .
+            "WHERE ({$this->inicioSalidas()} " .
+            "AND {$tipo} <= '{$this->anyoFinal}-12-15') " .
+            "AND categoria LIKE '{$categoria}' " .
+            "ORDER BY {$tipo}  ;";
         if ($tipo == 'entrada') {
             $sql = "SELECT MONTH({$tipo}) AS mes, " .
              "COUNT(MONTH({$tipo})) AS total, " . 
@@ -586,15 +578,6 @@ class EntradasSalidas extends Connection
              "AND categoria LIKE '{$categoria}' " .
              "GROUP BY MONTH({$tipo}), YEAR({$tipo}) " . 
              "ORDER BY {$tipo} ;";
-        }
-       
-        if ($tipo == 'salida') {
-            $sql = "SELECT {$tipo} " . 
-             "FROM `centro`.`entradas_salidas` AS e " .
-             "WHERE ({$this->inicioSalidas()} " .
-             "AND {$tipo} <= '{$this->anyoFinal}-12-15') " .
-             "AND categoria LIKE '{$categoria}' " . 
-             "ORDER BY {$tipo}  ;";
         }
         return $this->consulta($sql);
     }
@@ -722,7 +705,6 @@ class EntradasSalidas extends Connection
      */
     /*
 	 * Funcion que muestra la tabla de Acumulado de Clientes en el rango especificado
-	 * TODO: Poner las ocupaciones y los despachos hora
 	 */
     public function listadoAcumuladoClientes ()
     {
@@ -833,7 +815,6 @@ EOD;
        /*Nueva seccion de despacho salas horas*/
 	    $horasDespachoSala = $this->HorasDespachoSala();
 	    $horasDespachoSalaAcumuladas = $this->HorasDespachoSala(TRUE);
-        
 	    $html .=<<<EOD
         <tr>
         	<th class="acumulada">Despacho/Sala Horas</th>
