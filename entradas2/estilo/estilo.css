@@ -1,0 +1,145 @@
+/* 
+    Document   : estilo
+    Created on : 08-ene-2009, 13:24:54
+    Author     : USUARIO
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+/* 
+   TODO customize this sample style
+   Syntax recommendation http://www.w3.org/TR/REC-CSS2/
+*/
+
+.tabla_mes
+{
+    display:table-cell;
+    float:left;
+    background:white;
+    width:24%;
+    border-style:solid;
+    border-color:#7d0063;
+    border-width:thin;
+    font-size:x-small;
+    text-indent: 6px;
+}
+button
+{
+    border-style:solid;
+    border-color:#7d0063;
+    border-width:thin;
+    color:#7d0063;
+    font-size:x-small;
+    font-family: "Trebuchet MS";
+    font-weight:bold;
+    background:white;
+}
+h2
+{
+    border-bottom-style:solid;
+    border-bottom-color:#7d0063;
+    border-bottom-width:thin;
+}
+h3
+{
+    background:#7d0063;
+    color:#ffffff;
+}
+.linea_par
+{
+    font-size:x-small;
+    background:#eeeeee;
+    border-bottom-color:#7d0063;
+    border-bottom-width:thin;
+    border-bottom-style:solid;
+
+}
+.linea_impar
+{
+    font-size:x-small;
+    background:#dddddd;
+    border-bottom-color:#7d0063;
+    border-bottom-width:thin;
+    border-bottom-style:solid;
+}
+.linea_res_par
+{
+    font-size:small;
+    background:#cccccc;
+    border-bottom-color:#ffffff;
+    border-bottom-width:thin;
+    border-bottom-style:solid;
+    font-weight:bold;
+}
+.linea_res_impar
+{
+    font-size:small;
+    background:#eeeeee;
+    border-bottom-color:#ffffff;
+    border-bottom-width:thin;
+    border-bottom-style:solid;
+    font-weight:bold;
+}
+
+.total
+{
+    color:#7d0063;
+    font-size:small;
+    font-weight:bold;
+
+}
+#tabla_entradas
+{
+    width:100%;
+    display:table;
+}
+.celda_datos
+{
+    
+    display:table-cell;
+    float:left;
+    padding:0px 1px;
+    
+}
+.linea_datos_c
+{
+    background:#7d0063;
+    color:#ffffff;
+    padding:0px 1px;
+}
+.linea_datos_e
+{
+    background:#eeeeee;
+    text-align:center;
+    padding:0px 1px;
+}
+.linea_datos_s
+{
+    background:#cccccc;
+    text-align:center;
+    padding:0px 1px;
+}
+.linea_datos_t
+{
+    background:#ffffff;
+    color:#7d0063;
+    text-align:center;
+    padding:0px 1px;
+}
+#detalles_mes
+{
+    display:none;
+    visibility:hidden;
+    position:fixed;
+    left:25%;
+    top:25%;
+    z-index:10;
+    width:50%;
+    height:50%;
+    overflow:auto;
+    background:white;
+    border-color:#7d0063;
+    border-style:solid;
+    border-width:thin;
+    padding:10px 10px;
+}

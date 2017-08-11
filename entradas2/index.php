@@ -9,8 +9,8 @@
 <title>Cuadro de Entradas, Salidas y Comparativas - The Perfect Place <?php
 echo date ( 'Y' );
 ?></title>
-<script src='js/jquery-1.7.2.min.js' type="text/javascript"></script>
-<script src='js/jquery-ui-1.8.8.custom.min.js' type="text/javascript"></script>
+<script src='../js/jquery-1.7.2.min.js' type="text/javascript"></script>
+<script src='../js/jquery-ui-1.8.8.custom.min.js' type="text/javascript"></script>
 </head>
 <body>
 <div id='container'>
