@@ -26,3 +26,5 @@ nbproject/private/private.xml
 
 nbproject/project.properties
 .idea/*
+/nbproject/private/
+.vscode/launch.json

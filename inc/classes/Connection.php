@@ -1,4 +1,7 @@
 <?php
+/**
+ * Clase Connection conecta a la base de datos
+ */
 class Connection
 {
     /**
