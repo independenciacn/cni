@@ -71,7 +71,7 @@ if(isset($_SESSION['usuario'])) {
   <p>
   	<a href='http://www.ensenalia.com'><img src='imagenes/ensenalia.jpg' width='128' /></a>
   </p>
-    GoodOf Version
+    Master Version
 </center>
  </div>
 <?php 
