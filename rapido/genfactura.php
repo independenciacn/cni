@@ -229,7 +229,7 @@ function cabezera_factura( $nombre_fichero, $fecha_factura, $codigo, $cliente)
 	<tr>
 		<td  align='left' class='celdilla_sec'>
 		<br/>FECHA:". $fecha_de_factura . "
-		<br/>";
+		<br/>";	
 	if ( $nombre_fichero =='PROFORMA' ) {
 		$cabezera .= "<br/>" . $nombre_fichero;	
 	} else {
@@ -249,9 +249,10 @@ function cabezera_factura( $nombre_fichero, $fecha_factura, $codigo, $cliente)
  * 
  * @param string $cliente
  * @param string $codigo
+ * @param string $fichero
  * @return string $pie_factura;
  */
-function pie_factura($cliente, $codigo)
+function pie_factura($cliente, $codigo, $fichero)
 {
 	global $con;
 	$pie_factura = "";
@@ -304,6 +305,11 @@ function pie_factura($cliente, $codigo)
 				where codigo like " . $codigo;
 			    mysql_query( $sql , $con );
 		    }
+	    }
+	    
+	    if ($fichero === 'PROFORMA') {
+	        $valoresPie['fpago'] = FORMA_PAGO;
+	        $valoresPie['obs_fpago'] = "Cuenta: ". NUMERO_CUENTA;
 	    }
 	    $pie_factura = "<br/>
 		<div class='celdia_sec'>
@@ -873,12 +879,8 @@ function comprueba_la_factura($cliente,$codigo,$fecha,$total_iva,$total)
 		return false;
 	}
 }	
-/**************************************************************************************/	
 //PIE FACTURA*************************************************************************/
-echo pie_factura($cliente, $codigo);
-//echo $pie_factura;
-/*xdebug_var_dump($total);
-xdebug_var_dump($ivas);*/
+echo pie_factura($cliente, $codigo, $fichero);
 ?>
 </body></html>
 
