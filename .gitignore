@@ -13,7 +13,6 @@ tests
 copias/*
 tmp/*
 */tmp/*
-*.sql
 /build
 build/*
 atlassian*
