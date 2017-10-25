@@ -87,7 +87,7 @@ class EntradasSalidas extends Connection
         'Sala de Reuniones (una hora)/Clientes',
         'Sala de Juntas (una hora)/Clientes',
         'Despacho (una hora)/Clientes',
-        'Bonos salas'
+        'Bonos salas',
     );
     private $_anyoCeroKeys = array(
         '2' => array('entradas' => '128', 'salidas' => '103'), 
