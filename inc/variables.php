@@ -16,7 +16,7 @@
  */
 
 
-error_reporting(E_NONE);
+error_reporting(0);
 $localhost = 'localhost';
 if (getenv('MYSQL_HOSTNAME')) {
     $localhost = getenv('MYSQL_HOSTNAME');

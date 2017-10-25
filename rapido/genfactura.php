@@ -56,22 +56,21 @@ function observaciones_especiales($factura)
  */
 function dame_el_mes($mes)
 {
-    $marcado = "";
-    switch($mes) {
-        case 1: $marcado = "Enero";breaK;
-        case 2: $marcado = "Febrero";breaK;
-        case 3: $marcado = "Marzo";breaK;
-        case 4: $marcado = "Abril";breaK;
-        case 5: $marcado = "Mayo";breaK;
-        case 6: $marcado = "Junio";breaK;
-        case 7: $marcado = "Julio";breaK;
-        case 8: $marcado = "Agosto";breaK;
-        case 9: $marcado = "Septiembre";breaK;
-        case 10: $marcado = "Octubre";breaK;
-        case 11: $marcado = "Noviembre";breaK;
-        case 12: $marcado = "Diciembre";breaK;
-    }
-    return $marcado;
+    $meses = array(
+        1 => "Enero",
+        2 => "Febrero",
+        3 => "Marzo",
+        4 => "Abril",
+        5 => "Mayo",
+        6 => "Junio",
+        7 => "Julio",
+        8 => "Agosto",
+        9 => "Septiembre",
+        10 => "Octubre",
+        11 => "Noviembre",
+        12 => "Diciembre"
+    );
+    return (array_key_exists($mes, $meses)) ? $meses[$mes]: "";
 }
 /**
  * Cambia el formato de la fecha en un sentido u otro
@@ -257,17 +256,17 @@ function pie_factura($cliente, $codigo, $fichero)
 	global $con;
 	$pie_factura = "";
 	// Con estos tipos de formas de pago aparecera
-	$pagoCC = array("Cheque","Contado","Tarjeta credito","Liquidación");
+	$pagoCC = array("Cheque", "Contado", "Tarjeta credito", "Liquidación");
 	$pagoNCC = array("Cheque");
 	/* 
 	 * Comprobamos si esta metido dentro de regfacturas,
 	 * si no lo consultamos, lo metemos y lo mostramos
 	 */
 	$sql="Select * from regfacturas where codigo like '" . $codigo ."'";
-	$consulta = mysql_query( $sql, $con );
-	$resultado = mysql_fetch_array( $consulta );
-	$camposPie = array( 0=>'fpago', 1=>'obs_fpago', 2=>'obs', 3=>'pedidoCliente');
-	//$camposPieFac = array( 0=>'fpago', 1=>'cc', 2=>'obs', 3=>'dpago');
+	$consulta = mysql_query($sql, $con);
+	$resultado = mysql_fetch_array($consulta);
+	$camposPie = array('fpago','obs_fpago', 'obs', 'pedidoCliente');
+	
 	// Si es 1 la factura esta dada de alta
 	if ( mysql_num_rows( $consulta )!= 0 ) {
 		foreach( $resultado as $key => $row ) {
@@ -306,10 +305,6 @@ function pie_factura($cliente, $codigo, $fichero)
 			    mysql_query( $sql , $con );
 		    }
 	    }
-	    if ($fichero === 'PROFORMA') {
-	        $valoresPie['fpago'] = FORMA_PAGO;
-	        $valoresPie['obs_fpago'] = "Cuenta: ". NUMERO_CUENTA;
-	    }
 	    $pie_factura = "<br/>
 		<div class='celdia_sec'>
 		Forma de pago: ". $valoresPie['fpago'] ."<br/>" .
@@ -317,6 +312,13 @@ function pie_factura($cliente, $codigo, $fichero)
 	    $valoresPie['pedidoCliente'] . 
 	    observaciones_especiales($codigo) .
 		"</div>";
+	} elseif ($fichero === 'PROFORMA') {
+	    $pie_factura = "
+	       <br/>
+		   <div class='celdia_sec'>
+		   Forma de pago: ". FORMA_PAGO ."<br/>
+	       Cuenta: ". NUMERO_CUENTA ."
+	       </div>";
 	}
 	return $pie_factura;
 }
