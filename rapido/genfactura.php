@@ -306,7 +306,6 @@ function pie_factura($cliente, $codigo, $fichero)
 			    mysql_query( $sql , $con );
 		    }
 	    }
-	    
 	    if ($fichero === 'PROFORMA') {
 	        $valoresPie['fpago'] = FORMA_PAGO;
 	        $valoresPie['obs_fpago'] = "Cuenta: ". NUMERO_CUENTA;
