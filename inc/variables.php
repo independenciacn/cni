@@ -26,7 +26,7 @@ if (getenv('MYSQL_HOSTNAME')) {
  */ 
 date_default_timezone_set('Europe/Madrid'); 
 /**
- * Version de la aplicaci�n
+ * Version de la aplicación
  * 
  * @var string
  */
