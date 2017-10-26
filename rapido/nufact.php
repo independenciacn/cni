@@ -56,7 +56,7 @@ function generales()
 	$cadena = "<tr><th>Datos generales de la Factura</th></tr>";
 	$cadena .= "<tr><td>&nbsp;Fecha Factura:<input type='text' id='fecha_factura' name='fecha_factura' size = '10' value='".date('d-m-Y')."'/>";
 	$cadena .= "&nbsp;&nbsp;<button TYPE='button' class='calendario' id='f_trigger_fecha_factura'></button>";
-	$cadena .= "&nbsp;Numero Factura:<input type='text' id='codigo' value='".ultimo_codigo()."'  size='6'/>";
+	$cadena .= "&nbsp;Numero Factura:<input type='text' id='codigo' value='".ultimo_codigo()."'  size='8'/>";
 	$cadena .= "&nbsp;Observaciones:<input type='text' id='observaciones' name='observaciones' size='60' /></td></tr>";
 	return $cadena;
 }

@@ -17,7 +17,7 @@ function cambiaf($stamp) {
 	
 if ( isset($_SESSION['titulo']) ) {
 		$sql = $_SESSION['sqlQuery'];
-		$consulta = mysql_query($sql,$con);
+		$consulta = mysql_query($sql, $con);
 		$totalCampos = mysql_num_fields($consulta);
 		$totalCeldas = mysql_numrows($consulta);
 		$mensaje = "";
@@ -50,9 +50,23 @@ if ( isset($_SESSION['titulo']) ) {
 						    $campo = $resultado[$i];
 						    break;
 						case "real":
-						    $campo = number_format($resultado[$i],2,',','.');
-							$tot[$i]=$tot[$i]+$resultado[$i];
-						    break;
+						if (mysql_field_name($consulta, $i) == 'Unidades'
+									&& $_SESSION['tipo'] == 'detallado') {
+							$campoUnidades = $i;
+							$mostrar = $resultado [$i];
+							$calculo = $resultado [$i];
+						} elseif (mysql_field_name($consulta, $i) == 'Importe'
+									&& $_SESSION['tipo'] == 'detallado') {
+							$mostrar = $resultado [$i];
+							$calculo =
+								$resultado [$i] * $resultado [$campoUnidades];
+						} else {
+								$mostrar = $resultado[$i];
+								$calculo = $resultado[$i];
+						}
+						$campo = number_format($mostrar, 2, ',', '.');
+						$tot[$i]=$tot[$i] + $calculo;
+						break;
 						case "date":
 						    $campo = cambiaf($resultado[$i]);
 						    break;

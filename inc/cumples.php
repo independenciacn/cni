@@ -33,7 +33,7 @@ class Cumples
                 'host'  =>  '127.0.0.1',
                 'username'  =>  'cni',
                 'password'  =>  'inc',
-                'dbname'    =>  'CENTRO',
+                'dbname'    =>  'centro',
                 'driver_options' => $pdoParams
         ));
      }
@@ -56,6 +56,7 @@ class Cumples
     }
 }
 $cumple = new Cumples();
+$cadena = "";
 //Cumpleaños hoy
    //empleados
     $hoy[] = $cumple->consulta("Select
@@ -79,11 +80,11 @@ $cumple = new Cumples();
     FROM pcentral INNER JOIN clientes ON pcentral.idemp = clientes.Id
     WHERE date_format(cumple,'%d %c') LIKE date_format(curdate(),'%d %c') 
     and clientes.Estado_de_cliente != 0");
-    foreach($hoy as $linea) {
-    foreach($linea as $lin)
-        $cumple_dia[]= array(
-            $lin['nombre']." ".$lin['apellidos'],
-            $lin['Nombre']
+    foreach ($hoy as $linea) {
+    	foreach ($linea as $lin)
+        	$cumple_dia[]= array(
+            	$lin['nombre'],
+            	$lin['Nombre']
         );
     }
 //Parte del mes

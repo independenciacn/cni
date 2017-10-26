@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .settings
 .settings/*
 .buildpath
@@ -16,3 +17,9 @@ tmp/*
 *.sql
 /build
 build/*
+=======
+*.sql
+tests/phpunit.phar
+.idea/*
+data/
+>>>>>>> SoloIVA

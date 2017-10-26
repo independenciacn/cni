@@ -3,29 +3,48 @@
 //error_reporting(E_ALL);//fichero genfactura.php le llegan el mes y el cliente y genera un word.
 require_once '../inc/variables.php';
 require_once 'telecos.php';
-/********************************************************************************************************************/
-//calculo del total con iva
-function iva($importe,$iva)
+
+$getParams = filter_input_array(INPUT_GET, FILTER_SANITIZE_STRING);
+$postParams = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+
+/**
+ * Calculo del importe del IVA
+ * @param $importe
+ * @param $iva
+ * @return float
+ */
+function importeIva($importe, $iva)
 {
-	$total = round($importe + ($importe * $iva)/100,2);
-	return $total;
+    return ($importe * $iva) / 100;
 }
-/*******************************************************************************************************************/
-//observaciones especiales 
-function observaciones_especiales($cliente,$factura)
+/**
+ * Calculo del iva total
+ * @param $importe
+ * @param $iva
+ * @return float
+ */
+function iva($importe, $iva)
+{
+	return round($importe + importeIva($importe, $iva), 2);
+}
+
+/**
+ * observaciones especiales
+ * @param $factura
+ * @return string
+ */
+function observaciones_especiales($factura)
 {
 	global $con;
 	$sql = "Select obs_alt from regfacturas 
 	where codigo like ".$factura." and obs_alt is not null";
-	//$sql = "Select obs_alt, fpago, obs_fpago from regfacturas where codigo like $factura";
 	$consulta = mysql_query($sql,$con);
-	if ( mysql_numrows($consulta) != 0 ) {
+	$obser = "";
+    $pedidoCliente = "";
+    if (mysql_numrows($consulta) != 0) {
 		$resultado = mysql_fetch_array($consulta);
 		$obser = $resultado[0];
-		$pedidoCliente = "<br/>" . $resultado['pedidoCliente'];
-	} else {
-		$obser = "";
-		$pedidoCliente = "";
+		$pedidoCliente = (isset($resultado['pedidoCliente'])) ? "<br/>" . $resultado['pedidoCliente']: '';
 	}
 	return $obser . $pedidoCliente ;
 }
@@ -37,23 +56,21 @@ function observaciones_especiales($cliente,$factura)
  */
 function dame_el_mes($mes)
 {
-	$marcado = "";
-    switch($mes)
-	{
-		case 1: $marcado = "Enero";breaK;
-		case 2: $marcado = "Febrero";breaK;
-		case 3: $marcado = "Marzo";breaK;
-		case 4: $marcado = "Abril";breaK;
-		case 5: $marcado = "Mayo";breaK;
-		case 6: $marcado = "Junio";breaK;
-		case 7: $marcado = "Julio";breaK;
-		case 8: $marcado = "Agosto";breaK;
-		case 9: $marcado = "Septiembre";breaK;
-		case 10: $marcado = "Octubre";breaK;
-		case 11: $marcado = "Noviembre";breaK;
-		case 12: $marcado = "Diciembre";breaK;
-	}
-	return $marcado;
+    $meses = array(
+        1 => "Enero",
+        2 => "Febrero",
+        3 => "Marzo",
+        4 => "Abril",
+        5 => "Mayo",
+        6 => "Junio",
+        7 => "Julio",
+        8 => "Agosto",
+        9 => "Septiembre",
+        10 => "Octubre",
+        11 => "Noviembre",
+        12 => "Diciembre"
+    );
+    return (array_key_exists($mes, $meses)) ? $meses[$mes]: "";
 }
 /**
  * Cambia el formato de la fecha en un sentido u otro
@@ -88,7 +105,7 @@ function consulta_fecha($cliente,$mes,$inicial,$final) //consulta los rangos de 
 	$final=cambiaf($final);
 	if($inicial!='0000-00-00') {
 		if(($final!="0000-00-00") && ($final!="--") && ($final!="")) {
-			$cadena .= " and datediff(c.fecha,'".$inicial."') >= 0 
+			$cadena = " and datediff(c.fecha,'".$inicial."') >= 0
 			and datediff(c.fecha,'".$final."') <=0 ";
 		} else {
 			$cadena = " and c.fecha like '".$inicial."' ";
@@ -118,10 +135,11 @@ function consulta_fecha($cliente,$mes,$inicial,$final) //consulta los rangos de 
 	//echo "Punto de control consulta_fecha valor cadena:".$cadena;
 	return $cadena;
 }
+
 /**
  * Generacion de los no agrupados
- * 
- * @param string $cliente
+ * @param $cliente
+ * @return string
  */
 function consulta_no_agrupado($cliente)
 {
@@ -193,13 +211,13 @@ function consulta_agrupado($cliente)
  * @param string $cliente
  * @return string $cabezera
  */
-function cabezera_factura( $nombre_fichero, $fecha_factura, $codigo, $cliente )
+function cabezera_factura( $nombre_fichero, $fecha_factura, $codigo, $cliente)
 {
 	global $con;
 	$fecha_factura = explode("-",$fecha_factura);
 	$fecha_de_factura = $fecha_factura[0]." de ".dame_el_mes( $fecha_factura[1] )
 	." de ". $fecha_factura[2];
-	$sql = "Select * from clientes where id like " .$cliente;
+	$sql = "Select * from clientes where Id like " .$cliente;
 	$consulta = mysql_query($sql,$con);
 	$resultado = mysql_fetch_array($consulta);
 	$cabezera = "
@@ -210,7 +228,7 @@ function cabezera_factura( $nombre_fichero, $fecha_factura, $codigo, $cliente )
 	<tr>
 		<td  align='left' class='celdilla_sec'>
 		<br/>FECHA:". $fecha_de_factura . "
-		<br/>";
+		<br/>";	
 	if ( $nombre_fichero =='PROFORMA' ) {
 		$cabezera .= "<br/>" . $nombre_fichero;	
 	} else {
@@ -229,26 +247,26 @@ function cabezera_factura( $nombre_fichero, $fecha_factura, $codigo, $cliente )
  * Genera el Pie de la factura
  * 
  * @param string $cliente
- * @param string $observaciones
  * @param string $codigo
+ * @param string $fichero
  * @return string $pie_factura;
  */
-function pie_factura( $cliente, $observaciones, $codigo )
+function pie_factura($cliente, $codigo, $fichero)
 {
 	global $con;
 	$pie_factura = "";
 	// Con estos tipos de formas de pago aparecera
-	$pagoCC = array("Cheque","Contado","Tarjeta credito","Liquidación");
+	$pagoCC = array("Cheque", "Contado", "Tarjeta credito", "Liquidación");
 	$pagoNCC = array("Cheque");
 	/* 
 	 * Comprobamos si esta metido dentro de regfacturas,
 	 * si no lo consultamos, lo metemos y lo mostramos
 	 */
 	$sql="Select * from regfacturas where codigo like '" . $codigo ."'";
-	$consulta = mysql_query( $sql, $con );
-	$resultado = mysql_fetch_array( $consulta );
-	$camposPie = array( 0=>'fpago', 1=>'obs_fpago', 2=>'obs', 3=>'pedidoCliente');
-	//$camposPieFac = array( 0=>'fpago', 1=>'cc', 2=>'obs', 3=>'dpago');
+	$consulta = mysql_query($sql, $con);
+	$resultado = mysql_fetch_array($consulta);
+	$camposPie = array('fpago','obs_fpago', 'obs', 'pedidoCliente');
+	
 	// Si es 1 la factura esta dada de alta
 	if ( mysql_num_rows( $consulta )!= 0 ) {
 		foreach( $resultado as $key => $row ) {
@@ -292,8 +310,15 @@ function pie_factura( $cliente, $observaciones, $codigo )
 		Forma de pago: ". $valoresPie['fpago'] ."<br/>" .
 	    $valoresPie['obs_fpago']."<br/>" .
 	    $valoresPie['pedidoCliente'] . 
-	    observaciones_especiales( $cliente, $codigo ) .
+	    observaciones_especiales($codigo) .
 		"</div>";
+	} elseif ($fichero === 'PROFORMA') {
+	    $pie_factura = "
+	       <br/>
+		   <div class='celdia_sec'>
+		   Forma de pago: ". FORMA_PAGO ."<br/>
+	       Cuenta: ". NUMERO_CUENTA ."
+	       </div>";
 	}
 	return $pie_factura;
 }
@@ -390,7 +415,7 @@ function agrega_historico( $factura, $servicio, $cantidad, $unitario, $iva, $obs
 	values
 	('".$factura."','".$servicio."','".$cantidad."',
 	'".$unitario."','".$iva."','".$obs."')";
-	$consulta = mysql_query($sql,$con);
+	mysql_query($sql,$con);
 }
 /**
  * Funcion Principal - Obligatorio el cliente
@@ -448,12 +473,12 @@ if( isset( $_GET['factura'] ) || isset( $_GET['duplicado'] ) ) {
 		//Guardamos datos en factura
 	}
 }
-
+$ivas = array();
 $nombre_fichero = "<span style='font-size:16.0pt'>" . $titulo . "</span>";
 /**
  * Cabezera de la factura - $ficher, $fecha_factura, $codigo, $cliente
  */
-$cabezera_factura = cabezera_factura($fichero,$fecha_factura,$codigo,$cliente);
+$cabezera_factura = cabezera_factura($fichero, $fecha_factura, $codigo, $cliente);
 //PRESENTACION************************************************************************/
 //CASOS POSIBLES, MENSUAL y PUNTUAL en puntual hay que pasar los limites
 //fecha_inicial_factura y fecha_final_factura
@@ -466,7 +491,7 @@ if(($fecha_inicial_factura != '0000-00-00') && ($fecha_final_factura != '0000-00
 }
 $tituloPagina = ( $inicio!= "0000-00-00") ? "ocupacion puntual" : dame_el_mes( "m" );
 ?>
-<html>
+<html lang="es">
 <head>
 <title><?php echo $fichero . " " . $tituloPagina; ?></title>
 <link rel="stylesheet" type='text/css' href="estilo.css" />
@@ -482,12 +507,12 @@ $tituloPagina = ( $inicio!= "0000-00-00") ? "ocupacion puntual" : dame_el_mes( "
 	echo "
 	<table cellpadding='2px' cellspacing='0px' width='100%' id='tabloide'>
 	<tr>
-	<th align='center' width='48%' >Servicio</th>
-	<th align='center' width='8%' >Cant.</th>
-	<th align='center' width='12%' >P/Unitario</th>
-	<th align='center' width='12%' >IMPORTE</th>
-	<th align='center' width='8%' >IVA</th>
-	<th align='center' width='12%' >TOTAL</th>
+	<th align='center' width='48%'>Servicio</th>
+	<th align='center' width='8%'>Cant.</th>
+	<th align='center' width='12%'>P/Unitario</th>
+	<th align='center' width='12%'>IMPORTE</th>
+	<th align='center' width='8%'>IVA</th>
+	<th align='center' width='12%'>TOTAL</th>
 	</tr>";
 //PARTE DEL CONTRATO Y DEL ALMACENAJE SI PROCEDE cuidado con el mes
 //la primera linea tiene que ser el importe del mes del tipo de cliente
@@ -499,7 +524,15 @@ if($historico == "ok") {
 	$sql = "Select * from historico where factura like ".$codigo;
 	$consulta = mysql_query($sql,$con);
 	while ( true == ($resultado = mysql_fetch_array($consulta))) {
-		$importe_sin_iva = $resultado['cantidad']*$resultado['unitario'];
+		$importe_sin_iva = $resultado['cantidad'] * $resultado['unitario'];
+        // Almacenamos los ivas para mostrarlo al final
+        if (array_key_exists($resultado['iva'], $ivas)) {
+            $ivas[$resultado['iva']]['iva'] += importeIva($importe_sin_iva, $resultado['iva']);
+            $ivas[$resultado['iva']]['importe'] += $importe_sin_iva;
+        } else {
+            $ivas[$resultado['iva']]['iva'] = importeIva($importe_sin_iva, $resultado['iva']);
+            $ivas[$resultado['iva']]['importe'] = $importe_sin_iva;
+        }
 		echo "<tr>
 		<td><p class='texto'>".ucfirst($resultado[2])." ".ucfirst($resultado[6])."</td>
 		<td align='right'>".number_format($resultado['cantidad'],2,',','.')."&nbsp;</td>
@@ -509,7 +542,7 @@ if($historico == "ok") {
 		<td align='right'>".
 			number_format(iva($importe_sin_iva,$resultado['iva']),2,',','.')."&euro;&nbsp;
 		</td></tr>";
-		$total = $total + iva($importe_sin_iva,$resultado[5]);
+		$total = $total + iva($importe_sin_iva, $resultado[5]);
 		$bruto = $bruto + $importe_sin_iva;
 		$celdas++;
 		$cantidad++;
@@ -532,7 +565,15 @@ if($historico == "ok") {
 		$importeServiciosFijos = 0;
 		while ( true == ($resultado = mysql_fetch_array($consulta))) {
 			$importe_sin_iva = $resultado[7]*$resultado[4];
-			$importeServiciosFijos += $importe_sin_iva; 
+			$importeServiciosFijos += $importe_sin_iva;
+            // Almacenamos los ivas para mostrarlo al final
+            if (array_key_exists($resultado['iva'], $ivas)) {
+                $ivas[$resultado['iva']]['iva'] += importeIva($importe_sin_iva, $resultado['iva']);
+                $ivas[$resultado['iva']]['importe'] += $importe_sin_iva;
+            } else {
+                $ivas[$resultado['iva']]['iva'] = importeIva($importe_sin_iva, $resultado['iva']);
+                $ivas[$resultado['iva']]['importe'] = $importe_sin_iva;
+            }
 			echo "<tr>
 			<td>
 			<p class='texto'>".ucfirst($resultado[2])." ".ucfirst($resultado[6])."</p>
@@ -581,13 +622,22 @@ if($historico == "ok") {
 	$consulta = mysql_query($sql,$con);
 	while (true == ($resultado = mysql_fetch_array($consulta))) {
 		$dias_almacen = $resultado[1];
-		$subtotala = $resultado[0]*$dias_almacen*$par_almacenaje['PrecioEuro'];
+        $precioUnitario = $dias_almacen * $par_almacenaje['PrecioEuro'];
+		$subtotala = $resultado[0] * $precioUnitario;
+        // Almacenamos los ivas para mostrarlo al final
+        if (array_key_exists($resultado['iva'], $ivas)) {
+            $ivas[$resultado['iva']]['iva'] += importeIva($subtotala, $par_almacenaje['iva']);
+            $ivas[$resultado['iva']]['importe'] += $importe_sin_iva;
+        } else {
+            $ivas[$resultado['iva']]['iva'] = importeIva($subtotala, $par_almacenaje['iva']);
+            $ivas[$resultado['iva']]['importe'] = $importe_sin_iva;
+        }
         $totala = iva($subtotala,$par_almacenaje['iva']);
 		echo "<tr>
 		<td ><p class='texto'>Bultos Almacenados del  ".
 		cambiaf($resultado[2])." al ".cambiaf($resultado[3])."</p></td>
 		<td align='right'>".number_format($resultado[0],2,',','.')."&nbsp;</td>
-		<td align='right'>0,70&euro;&nbsp;</td>
+		<td align='right'>".$par_almacenaje['PrecioEuro']."&euro;&nbsp;</td>
 		<td align='right'>".number_format($subtotala,2,',','.')."&euro;&nbsp;</td>
 		<td align='right'>".$par_almacenaje['iva']."%&nbsp;</td>
 		<td align='right'>".number_format($totala,2,',','.')."&euro;&nbsp;</td></tr>";
@@ -598,7 +648,7 @@ if($historico == "ok") {
 		$cadena_texto = " del  ".cambiaf($resultado[2])." al ".cambiaf($resultado[3]);
 		if(($historico == "ko")&& (!isset($_GET['prueba']))) { //Agregamos al historico
 			agrega_historico($codigo,"Bultos Almacenados",$resultado[0],
-					$subtotala,$par_almacenaje['iva'],$cadena_texto);
+					$precioUnitario,$par_almacenaje['iva'],$cadena_texto);
 		}
 	}
 //fin del almacenaje**********************************************************************/
@@ -616,11 +666,19 @@ if($historico == "ok") {
 	//echo $sql;/*PUNTO DE CONTROL*/
 	$consulta = mysql_query($sql,$con);
 	while (true == ($resultado=mysql_fetch_array($consulta))) {
-		$subtotal = $resultado[4] + ($resultado[4]*$resultado[5])/100;
+		$subtotal = $resultado[4] + ($resultado[4] * $resultado[5])/100;
 //acumulados
 		$total = $subtotal + $total;
 		$cantidad = $resultado[1] + $cantidad;
 //fin acumulados
+        // Almacenamos los ivas para mostrarlo al final
+        if (array_key_exists($resultado['iva'], $ivas)) {
+            $ivas[$resultado['iva']]['iva'] += importeIva($subtotal, $resultado['iva']);
+            $ivas[$resultado['iva']]['importe'] += $importe_sin_iva;
+        } else {
+            $ivas[$resultado['iva']]['iva'] = importeIva($subtotal, $resultado['iva']);
+            $ivas[$resultado['iva']]['importe'] = $importe_sin_iva;
+        }
 		echo "<tr>
 		<td ><p class='texto'>".ucfirst($resultado[0])." 
 		".ucfirst($resultado[7])."</p></td>
@@ -652,6 +710,14 @@ if($historico == "ok") {
 		$total = $subtotal + $total;
 		$cantidad = $resultado[1] + $cantidad;
 //fin acumulados
+        // Almacenamos los ivas para mostrarlo al final
+        if (array_key_exists($resultado['iva'], $ivas)) {
+            $ivas[$resultado['iva']]['iva'] += importeIva($subtotal, $resultado['iva']);
+            $ivas[$resultado['iva']]['importe'] += $importe_sin_iva;
+        } else {
+            $ivas[$resultado['iva']]['iva'] = importeIva($subtotal, $resultado['iva']);
+            $ivas[$resultado['iva']]['importe'] = $importe_sin_iva;
+        }
 		echo "<tr>
 		<td ><p class='texto'>".ucfirst($resultado[0])." 
 		".ucfirst($resultado[7])."</p></td>
@@ -678,8 +744,10 @@ if($historico == "ok") {
 		$resultado = mysql_fetch_array($consulta);
 		if(($resultado[0] != "") && ($resultado[0] != "")) {
 			$porcentaje = explode("%",$resultado[0]); // Porcentaje del descuento
-			$descuento = ($importeServiciosFijos * $porcentaje[0])/100;// @FIXME calculo en base al total de servicios fijos
-			$descuento_con_iva = $descuento * 1.18; 
+			$descuento = ($importeServiciosFijos * $porcentaje[0])/100;
+			// @FIXME calculo en base al total de servicios fijos
+			// FIXME Esta calculando el descuento con 18
+            $descuento_con_iva = $descuento * 1.18;
 			echo "<tr>
 			<td ><p class='texto'>Descuento del ".$porcentaje[0]."%</p></td>
 			<td align='right'>1&nbsp;</td>
@@ -723,20 +791,35 @@ if($historico == "ok") {
 	echo "</table>";
 //RESUMEN
 	$total_iva = $total - $bruto;
-	echo "<br/><table width='100%' cellpadding='2px' cellspacing='2px' style='font-size:10.0pt'><tr>
-	<th width='15%'>&nbsp;</th>
-	<th  class='celdilla_tot' >TOTAL BRUTO</th>
-	<th width='15%'>&nbsp;</th>
-	<th  class='celdilla_tot' >IVA</th>
-	<th width='15%'>&nbsp;</th>
-	<th  class='celdilla_tot' >TOTAL</th></tr>
-	<tr>
-	<th width='15%'>&nbsp;</th>
-	<th  class='celdilla_tot' >".number_format($bruto,2,',','.')."&euro;</th>
-	<th width='15%'>&nbsp;</th>
-	<th  class='celdilla_tot' >".number_format($total_iva,2,',','.')."&euro;</th>
-	<th width='15%'>&nbsp;</th>
-	<th  class='celdilla_tot' >".number_format($total,2,',','.')."&euro;</th></tr>
+	echo "<br/>
+            <table width='100%' cellpadding='2px' cellspacing='2px' style='font-size:10.0pt'>
+            <tr>
+                <th width='15%'>&nbsp;</th>
+                <th width='15%'>&nbsp;</th>
+                <th width='15%'>&nbsp;</th>
+                <th class='celdilla_tot'>TIPO IVA</th>
+                <th class='celdilla_tot'>BASE IMPONIBLE</th>
+                <th class='celdilla_tot'>CUOTA IVA</th>
+                <th class='celdilla_tot'>TOTAL</th>
+            </tr>";
+    foreach ($ivas as $key => $valor) {
+        echo "
+            <tr>
+                <td width='15%'>&nbsp;</td>
+                <th width='15%'>&nbsp;</th>
+                <th width='15%'>&nbsp;</th>
+                <td class='celdilla_sec'>" . $key . "%</td>
+                <td class='celdilla_sec'>" . number_format($valor['importe'], 2, ',', '.') . "&euro;</td>
+                <td class='celdilla_sec'>" . number_format($valor['iva'], 2, ',', '.') . "&euro;</td>
+                <td class='celdilla_sec'>" . number_format($valor['importe'] + $valor['iva'], 2, ',', '.') . "&euro;</td>
+            </tr>";
+    }
+	echo "
+        <tr>    
+            <th colspan='5'>&nbsp;</th>
+            <th class='celdilla_tot'>TOTAL FACTURA</th>
+            <th  class='celdilla_tot' >".number_format($total, 2, ',', '.')."&euro;</th>
+            </tr>
 	</table>";
 	//$pie_factura .= "<br />".$bruto."-".iva($bruto,16)."<br />";
 //aqui insertaria la factura en la base de datos
@@ -792,15 +875,13 @@ function comprueba_la_factura($cliente,$codigo,$fecha,$total_iva,$total)
 			iva='".$total_iva."',importe='".$total."' 
 			where id_cliente like '".$cliente."' and codigo 
 			like '".$codigo."' and fecha like '".$fecha."'";
-			$consulta = mysql_query($sql,$con);
+			$consulta = mysql_query($sql, $con);
 		}
 		return false;
 	}
 }	
-/**************************************************************************************/	
 //PIE FACTURA*************************************************************************/
-echo pie_factura($cliente,$observaciones,$codigo);
-//echo $pie_factura;
+echo pie_factura($cliente, $codigo, $fichero);
 ?>
 </body></html>
 

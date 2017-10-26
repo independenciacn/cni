@@ -17,6 +17,7 @@ if ( isset( $_SESSION['usuario']) ) {
 			    $cadena = comparativas( $_POST );
 			    break;//Genera la pantalla de comparativa
 		}
+		$_SESSION['tipo'] = $_POST['tipo'];
 		echo $cadena;
 	} else {
 		echo "No se ha pasado opcion";
@@ -154,34 +155,33 @@ function mes($modo) {
 	$select .= "</select>";
 	return $select;
 }
-/*
- * ano(): Funcion que muestra los anyos desde el 2000 hasta	
- */	
-function anyo($modo) {
+/**
+ * Funcion que muestra los años desde el 2007 hasta el siguiente al actual
+ * @param unknown_type $modo
+ * @return string
+ */
+function anyo($modo)
+{
 	$select = "";
 	switch ($modo) {
-		case 0 :
+		case 0:
 			$tipo = "ano";
 			break;
-		case 1 :
+		case 1:
 			$tipo = "anof";
 			break;
-		case 2 :
+		case 2:
 			$tipo = "rano";
 			break;
-		case 3 :
+		case 3:
 			$tipo = "ranof";
 			break;
 	}
 	$select .= "<select id='" . $tipo . "' name='" . $tipo . "'>";
 	$select .= "<option value='0'>-A&ntilde;o-</option>";
 	$select .= "<option value='2007'>2007</option>";
-	for($i = 8; $i <= 20; $i ++) {
-		if ($i <= 9)
-			$valor = "200" . $i;
-		else
-			$valor = "20" . $i;
-		$select .= "<option value='" . $valor . "'>" . $valor . "</option>";
+	for ($i = 2008; $i <= date('Y') + 1; $i++) {
+		$select .= "<option value='" . $i . "'>" . $i . "</option>";
 	}
 	$select .= "</select>";
 	return $select;
@@ -922,11 +922,25 @@ function genera_consultas($inicio,$fin)
 								$campo = $resultado[$i];
 							} else {
 								$campo = $resultado[$i];
-							}
+							} 
 						break;
 						case "real":
-							$campo = number_format($resultado[$i],2,',','.');
-							$tot[$i]=$tot[$i]+$resultado[$i];
+						if (mysql_field_name($consulta, $i) == 'Unidades'
+									&& $vars['tipo'] == 'detallado') {
+							$campoUnidades = $i;
+							$mostrar = $resultado [$i];
+							$calculo = $resultado [$i];
+						} elseif (mysql_field_name($consulta, $i) == 'Importe'
+									&& $vars['tipo'] == 'detallado') {
+							$mostrar = $resultado [$i];
+							$calculo =
+								$resultado [$i] * $resultado [$campoUnidades];
+						} else {
+								$mostrar = $resultado[$i];
+								$calculo = $resultado[$i];
+						}
+						$campo = number_format($mostrar, 2, ',', '.');
+						$tot[$i]=$tot[$i] + $calculo;
 						break;
 						case "date":
 							$campo = cambiaf($resultado[$i]);
@@ -964,7 +978,6 @@ function genera_consultas($inicio,$fin)
 	$cadena.="<div id='titulo'>Total Resultados: ".mysql_numrows($consulta)."</div>";
 	return $cadena;
 }
- 
 /*
  * Generacion de las tablas de las comparativas 
  */

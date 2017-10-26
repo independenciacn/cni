@@ -2,10 +2,10 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link href='http://fonts.googleapis.com/css?family=Reenie+Beanie' rel='stylesheet' type='text/css'></link>
+<link href='http://fonts.googleapis.com/css?family=Reenie+Beanie' rel='stylesheet' type='text/css'>
 <link href="css/custom-theme/jquery-ui-1.8.8.custom.css"
-	rel="stylesheet" type="text/css"></link>
-<link href="css/entradas.css" rel="stylesheet" type="text/css"></link>
+	rel="stylesheet" type="text/css">
+<link href="css/entradas.css" rel="stylesheet" type="text/css">
 <title>Cuadro de Entradas, Salidas y Comparativas - The Perfect Place <?php
 echo date ( 'Y' );
 ?></title>
@@ -14,8 +14,7 @@ echo date ( 'Y' );
 </head>
 <body>
 <div id='container'>
-<div id='header'><img src='css/bc.png' alt='The Perfect Place'
-	width='125px' />
+<div id='header'><img src='css/bc.png' alt='The Perfect Place' width='125px' />
 <h1>Cuadro de Entradas, Salidas y Comparativas</h1>
 </div>
 <div id='menu'>
@@ -53,8 +52,7 @@ datos que desea visualizar</p>
 	value='Ver Datos' /> <input type="reset"  value="Limpiar" /></form>
 </div>
 <div id='resultado'>
-<div id='carga'><img src="css/custom-theme/images/ajax-loader.gif"
-	alt="Cargando"></img></div>
+<div id='carga'><img src="css/custom-theme/images/ajax-loader.gif" alt="Cargando" /></div>
 <div id='resultados'></div>
 <!-- Visualizaremos el resultado de la opción seleccionada --></div>
 
