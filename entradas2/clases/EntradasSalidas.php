@@ -1316,7 +1316,7 @@ EOD;
         /**
          * Llenado datos despachos Hora Clientes
          */
-         $horasDespachoClientes = [];
+         $horasDespachoClientes = array();
          foreach ($this->_horasDespacho as $servicio) {
              $horasDespachoClientes[$servicio] = $this->cuentaServiciosPorMes($servicio, false, true);
          }
@@ -1329,7 +1329,7 @@ EOD;
          /*
           * Llenado datos despachos Hora Externos
           */
-         $horasDespacho = [];
+         $horasDespacho = array();
          foreach($this->_horasDespacho as $servicio) {
              $horasDespacho[$servicio] = $this->cuentaServiciosPorMes($servicio, false, false);
          }
