@@ -454,7 +454,6 @@ class EntradasSalidas extends Connection
             "AND YEAR(c.fecha) BETWEEN {$this->anyoInicial} AND {$this->anyoFinal} " .
             "GROUP BY MONTH(c.fecha), YEAR(c.fecha) " .
             "ORDER BY c.fecha";
-        var_dump($sql);
         $datos = $this->consulta($sql, null, PDO::FETCH_ASSOC);
         $arrayFinal = array_fill(0, $this->diferencia(), 0);
         foreach ($datos as $dato) {
@@ -1455,7 +1454,6 @@ EOD;
         * Despachos/Sala Horas Externos
         */
        $totalHorasDespacho = array_sum($datosHorasDespacho);
-       var_dump($datosHorasDespacho);
        $html .= "<h4><a name='despachosSalaHoras'>Despacho/Sala Horas (Clientes Externos)</a></h4>";
        $html .= "<table class='listadetallada'>
        <tr><th>&nbsp;</th>";
