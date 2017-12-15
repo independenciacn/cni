@@ -12,10 +12,10 @@ services:
       volumes:
           - .:/var/www/html/
       ports:
-       - "80:8081"
+       - "8081:80"
       environment:
-       - REMOTE_XDEBUG_HOST=172.18.0.1
-       - MYSQL_HOSTNAME=172.18.0.1
+       - REMOTE_XDEBUG_HOST=cni-webserver
+       - MYSQL_HOSTNAME=cni-mysql
       links:
         - mysql
     mysql:

@@ -1,310 +1,288 @@
+/**
+ * Estilo de la agenda
+ */
 body {
-	/*font-family: Tahoma, Verdana, Arial, Georgia, sans-serif;*/
-	font-family: "Trebuchet MS";
-	font-size:small;
-	background:#eeeeee;
+  font-family: "Trebuchet MS", "Times New Roman", Serif;
+  color: #000;
+  font-size: small;
+  background: #e5e5e5;
 }
-table
-{
-	
-	/*font-family: Tahoma, Verdana, Arial, Georgia, sans-serif;*/
-	font-family: "Trebuchet MS";
-	font-size:small;
-	border-style:solid;
-	/*border-color:#bbddff;*/
-	border-color:#38052d;
-	border-width:thin;
-	/*background:#ffffcc;*/
-	background:#ffffff;
+
+input, textarea, select, button, a {
+  font-family: "Trebuchet MS", "Times New Roman", Serif;
+  color: #000;
 }
-a
-{
-	color:#000000;
-	text-decoration:none;
-	
+
+a {
+  text-decoration: none;
 }
-a:hover
-{
-	text-decoration:underline;
+
+a:hover {
+  text-decoration: underline;
 }
-table th
-{
-	/*font-family: Tahoma, Verdana, Arial, Georgia, sans-serif;*/
-	font-family: "Trebuchet MS";
-	font-size:smaller;
-	/*background:#bbddff;*/
-	background:#7d0063;
-	/*color:#003366;*/
-	color:#ffffff;
+
+table {
+  font-size: small;
+  border-style: solid;
+  border-color: #38052d;
+  border-width: thin;
+  background: #fff;
 }
-.hoy
-{
-	background:#aa0086;
+
+table th {
+  font-size: smaller;
+  background: #7d0063;
+  color: #ffffff;
 }
-#semana td
-{
-	background:#ffffff;
-	border-style:solid;
-	border-color:#38052d;
-	border-width:thin;
+
+.hoy {
+  background: #aa0086;
 }
-#agenda td
-{
-	background:#ffffff;
-	border-style:solid;
-	border-color:#38052d;
-	border-width:thin;
+
+#semana td {
+  background: #ffffff;
+  border-style: solid;
+  border-color: #38052d;
+  border-width: thin;
 }
-input
-{
-	/*font-family: Tahoma, Verdana, Arial, Georgia, sans-serif;*/
-	font-family: "Trebuchet MS";
-	font-size:small;
-	border-style:solid;
-	border-color:#38052d;
-	border-width:thin;
-	padding:0.1em;
+
+#agenda td {
+  background: #ffffff;
+  border-style: solid;
+  border-color: #38052d;
+  border-width: thin;
 }
-input submit,button,textarea
-{
-	/*font-family: Tahoma, Verdana, Arial, Georgia, sans-serif;*/
-	font-family: "Trebuchet MS";
-	font-size:small;
-	border-style:solid;
-	border-color:#38052d;
-	border-width:thin;
-	padding:0.1em;
+
+input {
+  font-size: small;
+  border-style: solid;
+  border-color: #38052d;
+  border-width: thin;
+  padding: 0.1em;
 }
-select
-{
-	/*font-family: Tahoma, Verdana, Arial, Georgia, sans-serif;*/
-	font-family: "Trebuchet MS";
-	font-size:small;
-	border-style:solid;
-	border-color:#38052d;
-	border-width:thin;
-	padding:0.1em;
-	
+
+input submit, button, textarea {
+  font-size: small;
+  border-style: solid;
+  border-color: #38052d;
+  border-width: thin;
+  padding: 0.1em;
 }
-form
-{
-	border-style:dotted;
-	border-color:#38052d;
-	border-width:thin;
-	padding:0.1em;
-	background:#7d0063;
-	color:#ffffff;
+
+select {
+  font-size: small;
+  border-style: solid;
+  border-color: #38052d;
+  border-width: thin;
+  padding: 0.1em;
 }
-img
-{
-	border:none;
+
+form {
+  border-style: dotted;
+  border-color: #38052d;
+  border-width: thin;
+  padding: 0.1em;
+  background: #7d0063;
+  color: #ffffff;
 }
-#vista
-{
-	width:74%;
-	position:absolute;
-	left:1px;
+
+img {
+  border: none;
 }
-#informacion_despacho
-{
-	width:22%;
-	position:absolute;
-	right:3%;
-	font-size:smaller;
+
+#vista {
+  width: 74%;
+  position: absolute;
+  left: 1px;
 }
-#formulario_agenda
-{
-	width:22%;
-	position:absolute;
-	right:3%;
-	font-size:smaller;
+
+#informacion_despacho {
+  width: 22%;
+  position: absolute;
+  right: 3%;
+  font-size: smaller;
 }
-.seccion
-{
-	background:#7d0063;
-	color:#ffffff;
-	text-indent:10px;
+
+#formulario_agenda {
+  width: 22%;
+  position: absolute;
+  right: 3%;
+  font-size: smaller;
 }
-#listado_clientes_agenda
-{
-	font-size:smaller;
-	z-index:1;
-	opacity:0.90;
-	filter:alpha(opacity=90);
-	-moz-opacity:0.90;
-	position:absolute;
-	background:#ffffff;
-	width:98%;
-	color:#000000;
-	border-style:solid;
-	border-width:1px;
-	border-color:#7d0063;
-	font-weight:bold;	
+
+.seccion {
+  background: #7d0063;
+  color: #ffffff;
+  text-indent: 10px;
 }
-.boton_cerrar
-{
-	background:url('../imagenes/close.png') no-repeat;
-	width:32px;
-	height:32px;
-	position:absolute;
-	right:-20px;
-	top:-10px;
-	cursor:pointer;
+
+#listado_clientes_agenda {
+  font-size: smaller;
+  z-index: 1;
+  opacity: 0.90;
+  filter: alpha(opacity=90);
+  -moz-opacity: 0.90;
+  position: absolute;
+  background: #ffffff;
+  width: 98%;
+  color: #000000;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #7d0063;
+  font-weight: bold;
 }
-.despacho_ocupado
-{
-	font-size:smaller;
-	color:#003366;
-	border-style:dotted;
-	border-color:#38052d;
-	border-width:thin;
-	width:98%;
-	/*background:#ffcc99;*/
+
+.boton_cerrar {
+  background: url("../imagenes/close.png") no-repeat;
+  width: 32px;
+  height: 32px;
+  position: absolute;
+  right: -20px;
+  top: -10px;
+  cursor: pointer;
 }
-.mini_boton
-{
-	font-size:smaller;
-	background:#dddddd;
-	color:#333333;
-	border-style:solid;
-	border-width:thin;
-	border-color:#38052d;
-	cursor:pointer;
-	
+
+.despacho_ocupado {
+  font-size: smaller;
+  color: #003366;
+  border-style: dotted;
+  border-color: #38052d;
+  border-width: thin;
+  width: 98%;
 }
-.confirmado
-{
-	font-size:smaller;
-	font-weight:bold;
-	color:#339966;
+
+.mini_boton {
+  font-size: smaller;
+  background: #dddddd;
+  color: #333333;
+  border-style: solid;
+  border-width: thin;
+  border-color: #38052d;
+  cursor: pointer;
 }
-.no_confirmado
-{
-	font-size:smaller;
-	font-weight:bold;
-	color:#cc3333;
+
+.confirmado {
+  font-size: smaller;
+  font-weight: bold;
+  color: #339966;
+}
+
+.no_confirmado {
+  font-size: smaller;
+  font-weight: bold;
+  color: #cc3333;
 }
 
 /*
  * Seccion de los despachos
  */
-.cabezera_despacho
-{
-	/*font-family: Tahoma, Verdana, Arial, Georgia, sans-serif;*/
-	font-family: "Trebuchet MS";
-	font-size:smaller;
-	font-weight:bold;
-	background:#38052d;
-	color:#ffffff;
+.cabezera_despacho {
+  font-size: smaller;
+  font-weight: bold;
+  background: #38052d;
+  color: #ffffff;
 }
+
 /*
  * Seccion de la interna
  */
-.celda
-{
-	font-size:smaller;
-	cursor:pointer;
+.celda {
+  font-size: smaller;
+  cursor: pointer;
 }
 
-.celda:hover
-{
-	text-decoration:underline;
+.celda:hover {
+  text-decoration: underline;
 }
+
 /*
  * Tareas Pendientes
  */
-.lista_impar
-{
-	background:#cccccc;
-	padding:0.2em;
-	border-bottom-style:dotted;
-	border-bottom-width:thin;
-	border-bottom-color:#7d0063;
-	/*font-family: Tahoma, Verdana, Arial, Georgia, sans-serif;*/
-	font-family: "Trebuchet MS";
-	font-size:small;
-	
+.lista_impar {
+  background: #cccccc;
+  padding: 0.2em;
+  border-bottom-style: dotted;
+  border-bottom-width: thin;
+  border-bottom-color: #7d0063;
+  font-size: small;
 }
-.lista_par
-{
-	background:#dddddd;
-	padding:0.2em;
-	border-bottom-style:dotted;
-	border-bottom-width:thin;
-	border-bottom-color:#7d0063;
-	/*font-family: Tahoma, Verdana, Arial, Georgia, sans-serif;*/
-	font-family: "Trebuchet MS";
-	font-size:small;
-	
-}
-.fecha_tarea
-{
-	color:#7d0063;
-	font-weight:bold;
-	font-size:small;
-	/*font-family: Tahoma, Verdana, Arial, Georgia, sans-serif;*/
-	font-family: "Trebuchet MS";
-}
-.prioridad_normal
-{
-	font-size:small;
-	font-weight:bold;
-	color:#99ff00;
-	background:url('imagenes/green_flag.png') no-repeat center center;
-}
-.prioridad_media
-{
-	font-size:small;
-	font-weight:bold;
-	color:#ffff00;
-	background:url('imagenes/yellow_flag.png') no-repeat center center;
-}
-.prioridad_alta
-{
-	font-size:small;
-	font-weight:bold;
-	color:#ff9900;
-	background:url('imagenes/orange_flag.png') no-repeat center center;
-}
-.prioridad_muy_alta
-{
-	font-size:small;
-	font-weight:bold;
-	color:#ff0000;
-	background:url('imagenes/red_flag.png') no-repeat center center;
-}
-.check
-{
-	position:absolute;
-	right:1px;
-}
-/* Notas */
-.fecha_nota
-{
-	color:#7d0063;
-	border-top-style:dotted;
-	border-top-width:1px;
-	border-top-color:#7d0063;
-	border-left-style:dotted;
-	border-left-width:1px;
-	border-left-color:#7d0063;
-	border-right-style:dotted;
-	border-right-width:1px;
-	border-right-color:#7d0063;
-	padding:2px;
-}
-.texto_nota
-{
-	border-style:dotted;
-	border-width:1px;
-	border-color:#7d0063;
-	color:#000000;
-	padding:2px;
-	text-indent:16px;
-}
-/* The main calendar widget.  DIV containing a table. */
 
-div.calendar { position: relative; }
+.lista_par {
+  background: #dddddd;
+  padding: 0.2em;
+  border-bottom-style: dotted;
+  border-bottom-width: thin;
+  border-bottom-color: #7d0063;
+  font-size: small;
+}
+
+.fecha_tarea {
+  color: #7d0063;
+  font-weight: bold;
+  font-size: small;
+}
+
+.prioridad_normal {
+  font-size: small;
+  font-weight: bold;
+  color: #99ff00;
+  background: url("imagenes/green_flag.png") no-repeat center center;
+}
+
+.prioridad_media {
+  font-size: small;
+  font-weight: bold;
+  color: #ffff00;
+  background: url("imagenes/yellow_flag.png") no-repeat center center;
+}
+
+.prioridad_alta {
+  font-size: small;
+  font-weight: bold;
+  color: #ff9900;
+  background: url("imagenes/orange_flag.png") no-repeat center center;
+}
+
+.prioridad_muy_alta {
+  font-size: small;
+  font-weight: bold;
+  color: #ff0000;
+  background: url("imagenes/red_flag.png") no-repeat center center;
+}
+
+.check {
+  position: absolute;
+  right: 1px;
+}
+
+/* Notas */
+.fecha_nota {
+  color: #7d0063;
+  border-top-style: dotted;
+  border-top-width: 1px;
+  border-top-color: #7d0063;
+  border-left-style: dotted;
+  border-left-width: 1px;
+  border-left-color: #7d0063;
+  border-right-style: dotted;
+  border-right-width: 1px;
+  border-right-color: #7d0063;
+  padding: 2px;
+}
+
+.texto_nota {
+  border-style: dotted;
+  border-width: 1px;
+  border-color: #7d0063;
+  color: #000000;
+  padding: 2px;
+  text-indent: 16px;
+}
+
+/* The main calendar widget.  DIV containing a table. */
+div.calendar {
+  position: relative;
+}
 
 .calendar, .calendar table {
   border: 1px solid #556;
@@ -316,68 +294,80 @@ div.calendar { position: relative; }
 }
 
 /* Header part -- contains navigation buttons and day names. */
-
-.calendar .button { /* "<<", "<", ">", ">>" buttons have this class */
-  text-align: center;    /* They are the navigation buttons */
-  padding: 2px;          /* Make the buttons seem like they're pressing */
+.calendar .button {
+  /* "<<", "<", ">", ">>" buttons have this class */
+  text-align: center;
+  /* They are the navigation buttons */
+  padding: 2px;
+  /* Make the buttons seem like they're pressing */
 }
 
 .calendar .nav {
   background: #778 url(../menuarrow.gif) no-repeat 100% 100%;
 }
 
-.calendar thead .title { /* This holds the current "month, year" */
-  font-weight: bold;      /* Pressing it will take you to the current date */
+.calendar thead .title {
+  /* This holds the current "month, year" */
+  font-weight: bold;
+  /* Pressing it will take you to the current date */
   text-align: center;
   background: #fff;
   color: #000;
   padding: 2px;
 }
 
-.calendar thead .headrow { /* Row <TR> containing navigation buttons */
+.calendar thead .headrow {
+  /* Row <TR> containing navigation buttons */
   background: #778;
   color: #fff;
 }
 
-.calendar thead .daynames { /* Row <TR> containing the day names */
+.calendar thead .daynames {
+  /* Row <TR> containing the day names */
   background: #bdf;
 }
 
-.calendar thead .name { /* Cells <TD> containing the day names */
+.calendar thead .name {
+  /* Cells <TD> containing the day names */
   border-bottom: 1px solid #556;
   padding: 2px;
   text-align: center;
   color: #000;
 }
 
-.calendar thead .weekend { /* How a weekend day name shows in header */
+.calendar thead .weekend {
+  /* How a weekend day name shows in header */
   color: #a66;
 }
 
-.calendar thead .hilite { /* How do the buttons in header appear when hover */
+.calendar thead .hilite {
+  /* How do the buttons in header appear when hover */
   background-color: #aaf;
   color: #000;
   border: 1px solid #04f;
   padding: 1px;
 }
 
-.calendar thead .active { /* Active (pressed) buttons in header */
+.calendar thead .active {
+  /* Active (pressed) buttons in header */
   background-color: #77c;
   padding: 2px 0px 0px 2px;
 }
 
 /* The body part -- contains all the days in month. */
-
-.calendar tbody .day { /* Cells <TD> containing month days dates */
+.calendar tbody .day {
+  /* Cells <TD> containing month days dates */
   width: 2em;
   color: #456;
   text-align: right;
   padding: 2px 4px 2px 2px;
 }
+
 .calendar tbody .day.othermonth {
   font-size: 80%;
   color: #bbb;
 }
+
 .calendar tbody .day.othermonth.oweekend {
   color: #fbb;
 }
@@ -396,18 +386,21 @@ div.calendar { position: relative; }
   background: #eef;
 }
 
-.calendar tbody td.hilite { /* Hovered cells <TD> */
+.calendar tbody td.hilite {
+  /* Hovered cells <TD> */
   background: #def;
   padding: 1px 3px 1px 1px;
   border: 1px solid #bbb;
 }
 
-.calendar tbody td.active { /* Active (pressed) cells <TD> */
+.calendar tbody td.active {
+  /* Active (pressed) cells <TD> */
   background: #cde;
   padding: 2px 2px 0px 2px;
 }
 
-.calendar tbody td.selected { /* Cell showing today date */
+.calendar tbody td.selected {
+  /* Cell showing today date */
   font-weight: bold;
   border: 1px solid #000;
   padding: 1px 3px 1px 1px;
@@ -415,54 +408,62 @@ div.calendar { position: relative; }
   color: #000;
 }
 
-.calendar tbody td.weekend { /* Cells showing weekend days */
+.calendar tbody td.weekend {
+  /* Cells showing weekend days */
   color: #a66;
 }
 
-.calendar tbody td.today { /* Cell showing selected date */
+.calendar tbody td.today {
+  /* Cell showing selected date */
   font-weight: bold;
   color: #00f;
 }
 
-.calendar tbody .disabled { color: #999; }
+.calendar tbody .disabled {
+  color: #999;
+}
 
-.calendar tbody .emptycell { /* Empty cells (the best is to hide them) */
+.calendar tbody .emptycell {
+  /* Empty cells (the best is to hide them) */
   visibility: hidden;
 }
 
-.calendar tbody .emptyrow { /* Empty row (some months need less than 6 rows) */
+.calendar tbody .emptyrow {
+  /* Empty row (some months need less than 6 rows) */
   display: none;
 }
 
 /* The footer part -- status bar and "Close" button */
-
-.calendar tfoot .footrow { /* The <TR> in footer (only one right now) */
+.calendar tfoot .footrow {
+  /* The <TR> in footer (only one right now) */
   text-align: center;
   background: #556;
   color: #fff;
 }
 
-.calendar tfoot .ttip { /* Tooltip (status bar) cell <TD> */
+.calendar tfoot .ttip {
+  /* Tooltip (status bar) cell <TD> */
   background: #fff;
   color: #445;
   border-top: 1px solid #556;
   padding: 1px;
 }
 
-.calendar tfoot .hilite { /* Hover style for buttons in footer */
+.calendar tfoot .hilite {
+  /* Hover style for buttons in footer */
   background: #aaf;
   border: 1px solid #04f;
   color: #000;
   padding: 1px;
 }
 
-.calendar tfoot .active { /* Active (pressed) style for buttons in footer */
+.calendar tfoot .active {
+  /* Active (pressed) style for buttons in footer */
   background: #77c;
   padding: 2px 0px 0px 2px;
 }
 
 /* Combo boxes (menus that display months/years for direct selection) */
-
 .calendar .combo {
   position: absolute;
   display: none;
@@ -534,4 +535,8 @@ div.calendar { position: relative; }
   background-color: #000;
   color: #0f0;
 }
+
 /*Fin del calendario*/
+ 
+
+ /*# sourceMappingURL= agenda.css.map */

@@ -10,7 +10,7 @@
  * @package  cni/inc
  * @author   Ruben Lacasa Mas <ruben@ensenalia.com>
  * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/
- * 			 Creative Commons Reconocimiento-NoComercial-SinObraDerivada 3.0 Unported
+ *           Creative Commons Reconocimiento-NoComercial-SinObraDerivada 3.0 Unported
  * @link     https://github.com/independenciacn/cni
  * @version  2.0e Estable
  */
@@ -22,31 +22,31 @@ if (getenv('MYSQL_HOSTNAME')) {
     $localhost = getenv('MYSQL_HOSTNAME');
 }
 /**
- * Establecemos la zona horaria 
- */ 
-date_default_timezone_set('Europe/Madrid'); 
+ * Establecemos la zona horaria
+ */
+date_default_timezone_set('Europe/Madrid');
 /**
  * Version de la aplicación
- * 
+ *
  * @var string
  */
-define('VERSION',"2.0e");
+define('VERSION', "2.0e");
 /**
- * Titulo de la aplicaci�n
- * 
+ * Titulo de la aplicación
+ *
  * @var string
  */
-define('APLICACION','Aplicación Gestión Independencia Centro Negocios');
+define('APLICACION', 'Aplicación Gestión Independencia Centro Negocios');
 /**
  * Iva Generico a utilizar en la aplicación
  * @var integer
  */
-define('IVA', 18 );
+define('IVA', 18);
 /**
  * Precio Generico del almacenaje
  * @var integer
  */
-define('ALMACENAJE',0.70);
+define('ALMACENAJE', 0.70);
 define('FORMA_PAGO', 'Transferencia');
 define('NUMERO_CUENTA', 'ES88 0049 2833 91 2116206154');
 
@@ -56,7 +56,7 @@ define('NUMERO_CUENTA', 'ES88 0049 2833 91 2116206154');
  * @var resource
  * @deprecated
  */
-$con = mysql_connect ($localhost, "cni", "inc") or die (mysql_error());
+$con = mysql_connect($localhost, "cni", "inc") or die (mysql_error());
 mysql_set_charset('utf8', $con);
 /**
  * Nombre de la tabla
