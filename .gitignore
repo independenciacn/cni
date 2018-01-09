@@ -17,6 +17,7 @@ tmp/*
 *.sql
 /build
 build/*
+.vscode/*
 =======
 *.sql
 tests/phpunit.phar
