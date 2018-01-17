@@ -10,7 +10,7 @@
  * @package  cni/inc
  * @author   Ruben Lacasa Mas <ruben@ensenalia.com>
  * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/
- * 			 Creative Commons Reconocimiento-NoComercial-SinObraDerivada 3.0 Unported
+ *           Creative Commons Reconocimiento-NoComercial-SinObraDerivada 3.0 Unported
  * @link     https://github.com/independenciacn/cni
  * @version  2.0e Estable
  */
@@ -22,31 +22,31 @@ if (getenv('MYSQL_HOSTNAME')) {
     $localhost = getenv('MYSQL_HOSTNAME');
 }
 /**
- * Establecemos la zona horaria 
- */ 
-date_default_timezone_set('Europe/Madrid'); 
+ * Establecemos la zona horaria
+ */
+date_default_timezone_set('Europe/Madrid');
 /**
  * Version de la aplicación
- * 
+ *
  * @var string
  */
-define('VERSION',"2.0e");
+define('VERSION', "2.0e");
 /**
  * Titulo de la aplicaci�n
- * 
+ *
  * @var string
  */
-define('APLICACION','Aplicación Gestión Independencia Centro Negocios');
+define('APLICACION', 'Aplicación Gestión Independencia Centro Negocios');
 /**
  * Iva Generico a utilizar en la aplicación
  * @var integer
  */
-define('IVA', 18 );
+define('IVA', 18);
 /**
  * Precio Generico del almacenaje
  * @var integer
  */
-define('ALMACENAJE',0.70);
+define('ALMACENAJE', 0.70);
 define('FORMA_PAGO', 'Transferencia');
 define('NUMERO_CUENTA', 'ES88 0049 2833 91 2116206154');
 
@@ -56,11 +56,11 @@ define('NUMERO_CUENTA', 'ES88 0049 2833 91 2116206154');
  * @var resource
  * @deprecated
  */
-$con = mysql_connect ($localhost, "cni", "inc") or die (mysql_error());
+$con = mysql_connect($localhost, "cni", "inc") or die (mysql_error());
 mysql_set_charset('utf8', $con);
 /**
  * Nombre de la tabla
- * 
+ *
  * @deprecated - establecerlo dentro de la funcion mysql_select_db
  * @var string
  */
@@ -68,7 +68,7 @@ $dbname = "centro";
 mysql_select_db($dbname, $con);
 /**
  * Imagen en el mensaje de correcto
- * 
+ *
  * @deprecated - Estan siendo retiradas de donde aparecian
  * @var unknown_type
  */
@@ -78,14 +78,14 @@ define("OK", "imagenes/clean.png");
  * @deprecated - Estan siendo retiradas de donde aparecian
  * @var unknown_type
  */
-define("NOK","imagenes/error.png");
+define("NOK", "imagenes/error.png");
 //define("SISTEMA","*nix");
 /**
  * Define el sistema operativo donde va a trabajar la aplicacion
- * 
+ *
  * @var unknown_type
  */
-define("SISTEMA","windows");
+define("SISTEMA", "windows");
 setlocale(LC_ALL, 'es_ES');
 setlocale(LC_NUMERIC, 'es_ES');
 /**
@@ -93,9 +93,10 @@ setlocale(LC_NUMERIC, 'es_ES');
  * el simbolo del Euro;
  * @param integer $number
  */
-function formatoDinero( $number ) {
-    if ( SISTEMA == "windows" ) {
-        $number = number_format($number,2,',','.')."&euro;";
+function formatoDinero($number)
+{
+    if (SISTEMA == "windows") {
+        $number = number_format($number, 2, ',', '.')."&euro;";
     } else {
         $number = money_format('%n', $number);
     }
@@ -105,15 +106,17 @@ function formatoDinero( $number ) {
  * Devuelve el numero formateado con 2 decimales separados por , y miles .
  * @param unknown_type $number
  */
-function formatoNoDinero( $number ) {
-    $number = number_format($number,2,',','.');
+function formatoNoDinero($number)
+{
+    $number = number_format($number, 2, ',', '.');
     return $number;
 }
 /**
  * Chequea si la sesion se ha iniciado
  */
-function checkSession(){
-    if ( session_id() != null ){
+function checkSession()
+{
+    if (session_id() != null) {
         session_regenerate_id();
     } else {
         session_start();
@@ -121,7 +124,7 @@ function checkSession(){
 }
 /**
  * Devuelve el tipo de clase css que sera el campo
- * 
+ *
  * @param integer $k
  * @return string
  */
