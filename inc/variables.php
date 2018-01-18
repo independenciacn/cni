@@ -46,7 +46,7 @@ define('IVA', 18);
  * 
  * @var integer
  */
-define('ALMACENAJE',0.70);
+define('ALMACENAJE', 0.70);
 define('FORMA_PAGO', 'Transferencia');
 define('NUMERO_CUENTA', 'ES88 0049 2833 91 2116206154');
 
