@@ -6,15 +6,13 @@
  *
  * PHP Version 5.2.6
  *
- * @category Valida
- * @package  cni/inc
+ * @category Inc
+ * @package  CniInc
  * @author   Ruben Lacasa Mas <ruben@ensenalia.com>
- * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/
- * 			 Creative Commons Reconocimiento-NoComercial-SinObraDerivada 3.0 Unported
+ * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/ CC BY-NC-ND 3.0
+ * @version  GIT: $Id$ In development. Very stable.
  * @link     https://github.com/independenciacn/cni
- * @version  2.0e Estable
  */
-
 
 error_reporting(0);
 $localhost = 'localhost';
@@ -30,20 +28,22 @@ date_default_timezone_set('Europe/Madrid');
  * 
  * @var string
  */
-define('VERSION',"2.0e");
+define('VERSION', "2.0e");
 /**
- * Titulo de la aplicaci�n
+ * Titulo de la aplicación
  * 
  * @var string
  */
-define('APLICACION','Aplicación Gestión Independencia Centro Negocios');
+define('APLICACION', 'Aplicación Gestión Independencia Centro Negocios');
 /**
  * Iva Generico a utilizar en la aplicación
+ * 
  * @var integer
  */
-define('IVA', 18 );
+define('IVA', 18);
 /**
  * Precio Generico del almacenaje
+ * 
  * @var integer
  */
 define('ALMACENAJE',0.70);
