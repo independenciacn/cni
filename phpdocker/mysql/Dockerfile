@@ -1,3 +1,3 @@
 FROM mysql:5.5
 
-ADD ./data/copia260617172608.sql /docker-entrypoint-initdb.d/00-centro.sql
+ADD ./data/copia090118151159.sql /docker-entrypoint-initdb.d/00-centro.sql
