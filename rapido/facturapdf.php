@@ -1,46 +1,26 @@
 <?php
+/**
+* facturapdf File Doc Comment
+*
+* Generación de facturas en PDF
+*
+* PHP Version 5.2.6
+*
+* @category Rapido
+* @package  CniRapido
+* @author   Ruben Lacasa Mas <ruben@ensenalia.com>
+* @license  http://creativecommons.org/licenses/by-nc-nd/3.0/ CC BY-NC-ND 3.0
+* @version  GIT: Id$ In development. Very stable.
+* @link     https://github.com/independenciacn/cni
+*/
 require_once '../inc/variables.php';
 require_once '../inc/classes/Connection.php';
+require_once '../inc/classes/Cni.php';
 require_once '../inc/ezpdf/class.ezpdf.php';
 
 $getParams = filter_input_array(INPUT_GET, FILTER_SANITIZE_STRING);
 $postParams = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
-/**
- * Devuelve en nombre del Mes
- * 
- * @param string $mes Numero del mes
- * 
- * @deprecated Sustituir por las funciones generales
- * @return     string
- */
-function dameElMes($mes)
-{
-    $marcado = 'Enero';
-    $meses = array(
-        1 => "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-        "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
-    );
-    if (array_key_exists(intval($mes), $meses)) {
-        $marcado = $meses[intval($mes)];
-    }
-    return $marcado;
-}
-
-/**
- * Funcion del cambio de fecha
- * 
- * @param string $stamp fecha completa
- * 
- * @deprecated Sustituir por las funciones generales de fecha
- * @return     string
- */
-function cambiaf($stamp)
-{
-    //formato en el que llega aaaa-mm-dd o al reves
-    $fdia = explode("-", $stamp);
-    $fecha = $fdia[2] . " de " . dameElMes($fdia[1]) . " de " . $fdia[0];
-    return $fecha;
-}
+$cni = new Cni();
 
 if ((isset($_GET['factura'])) || (isset($_POST['factura']))) {
     $factura = (isset($_POST['factura'])) ? $_POST['factura'] : $_GET['factura'];
@@ -88,7 +68,7 @@ if ((isset($_GET['factura'])) || (isset($_POST['factura']))) {
     $resultado = current($resultados);
     $dup = false;
     $text = "<b>FACTURA</b>";
-    if((isset($_GET['dup']))||(isset($_POST['dup']))){
+    if ((isset($_GET['dup']))||(isset($_POST['dup']))) {
         $text = "<b>FACTURA (DUPLICADO)</b>";
         $dup = true;
     }
@@ -96,7 +76,7 @@ if ((isset($_GET['factura'])) || (isset($_POST['factura']))) {
     $pdf->rectangle(263, 660, 280, 50);
 //ID CLIENTE
     $cliente = $resultado['Id'];
-    $texto="FECHA:" . cambiaf($resultado['Fecha']);
+    $texto="FECHA: " . $cni->getFechaConNombreMes($resultado['Fecha']);
     $pdf->addText(50, 700, 12, $texto);
     $texto="Num. FACTURA: " . $factura;
     $pdf->addText(50, 685, 12, $texto);

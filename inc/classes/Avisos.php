@@ -1,7 +1,23 @@
 <?php
+/**
+* Avisos File Doc Comment
+*
+* Clase de Avisos
+*
+* PHP Version 5.2.6
+*
+* @category Classes
+* @package  CniClasses
+* @author   Ruben Lacasa Mas <ruben@ensenalia.com>
+* @license  http://creativecommons.org/licenses/by-nc-nd/3.0/ CC BY-NC-ND 3.0
+* @version  GIT: Id$ In development. Very stable.
+* @link     https://github.com/independenciacn/cni
+*/
 require_once 'Connection.php';
 
-
+/**
+ * Clase Avisos
+ */
 class Avisos
 {
 
