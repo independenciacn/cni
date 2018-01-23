@@ -54,7 +54,9 @@ class CNI
      */
     public function getFechaConNombreMes($fecha, $format = 'Y-m-d')
     {
-        $date = date_create_from_format($format, $fecha, new DateTimeZone('Europe/Madrid'));
+        $date = new DateTime($fecha, new DateTimeZone('Europe/Madrid'));
+    
+    //    $date = date_create_from_format($format, $fecha, new DateTimeZone('Europe/Madrid'));
         return $date->format('d'). " de ". $this->getMes($date->format('n')). " de ". $date->format('Y');
     }
 }
