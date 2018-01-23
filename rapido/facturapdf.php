@@ -68,11 +68,13 @@ if ((isset($_GET['factura'])) || (isset($_POST['factura']))) {
     $resultado = current($resultados);
     $dup = false;
     $text = "<b>FACTURA</b>";
+    $posX = 463;
     if ((isset($_GET['dup']))||(isset($_POST['dup']))) {
         $text = "<b>FACTURA (DUPLICADO)</b>";
         $dup = true;
+        $posX = 358;
     }
-    $pdf->addText(463, 730, 16, $text);
+    $pdf->addText($posX, 730, 16, $text);
     $pdf->rectangle(263, 660, 280, 50);
 //ID CLIENTE
     $cliente = $resultado['Id'];

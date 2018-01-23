@@ -85,18 +85,21 @@ function cambiaf($stamp)
  * @param string $inicial
  * @param string $final
  * @return string $cadena
+ * FIXME: Sustutuir la consulta por clase
  */
 function consulta_fecha($cliente, $mes, $inicial, $final) //consulta los rangos de la fecha
 {
     global $con;
-    $check1=$inicial{4};
-    $check2=$final{4};
-    if($check1!='-')
-    $inicial=cambiaf($inicial);
-    if($check2!='-')
-    $final=cambiaf($final);
-    if($inicial!='0000-00-00') {
-        if(($final!="0000-00-00") && ($final!="--") && ($final!="")) {
+    $check1 = $inicial{4};
+    $check2 = $final{4};
+    if ($check1 != '-') {
+        $inicial=cambiaf($inicial);
+    }
+    if ($check2 != '-') {
+        $final=cambiaf($final);
+    }
+    if ($inicial!='0000-00-00') {
+        if (($final!="0000-00-00") && ($final!="--") && ($final!="")) {
             $cadena = " and datediff(c.fecha,'".$inicial."') >= 0
             and datediff(c.fecha,'".$final."') <=0 ";
         } else {
@@ -105,10 +108,10 @@ function consulta_fecha($cliente, $mes, $inicial, $final) //consulta los rangos 
     } else {
         $sql = "Select valor from agrupa_factura 
         where idemp like ".$cliente." and concepto like 'dia'";
-        $consulta = mysql_query($sql,$con);
-        if(mysql_numrows($consulta)!=0) {
+        $consulta = mysql_query($sql, $con);
+        if (mysql_numrows($consulta)!=0) {
             $resultado = mysql_fetch_array($consulta);
-            if($resultado[0]!="") {
+            if ($resultado[0]!="") {
                 $mes_ant = $mes - 1;
                 $fecha_inicial = date('Y')."-".$mes_ant."-".$resultado[0];
                 $fecha_final = date('Y')."-".$mes."-".$resultado[0];
@@ -120,7 +123,7 @@ function consulta_fecha($cliente, $mes, $inicial, $final) //consulta los rangos 
                 and '".$mes."' like date_format(c.fecha,'%c')) ";
             }
         } else {
-        $cadena=" and (date_format(curdate(),'%Y') 
+        $cadena =" and (date_format(curdate(),'%Y') 
     like date_format(c.fecha,'%Y') and '$mes' like date_format(c.fecha,'%c')) ";
         }
     }
@@ -132,6 +135,7 @@ function consulta_fecha($cliente, $mes, $inicial, $final) //consulta los rangos 
  * Generacion de los no agrupados
  * @param $cliente
  * @return string
+ * FIXME: Sustutuir la consulta por clase
  */
 function consulta_no_agrupado($cliente)
 {
@@ -143,15 +147,15 @@ function consulta_no_agrupado($cliente)
     $sql = "Select s.Nombre,a.valor from 
     agrupa_factura as a join servicios2 as s on a.valor = s.id 
     where a.idemp like ".$cliente." and a.concepto like 'servicio'";
-    $consulta = mysql_query($sql,$con);
-    if(mysql_numrows($consulta)!=0) {
-        while(true == ($resultado = mysql_fetch_array($consulta))) {
+    $consulta = mysql_query($sql, $con);
+    if (mysql_numrows($consulta)!=0) {
+        while (true == ($resultado = mysql_fetch_array($consulta))) {
             $pila[]=$resultado[0];
             $i++;
         }
     }
     $cadena = "and (";
-    for($j=0;$j<=count($pila)-1;$j++) {
+    for ($j=0;$j<=count($pila)-1;$j++) {
         $cadena .= " d.Servicio like '".$pila[$j]."' ";
         if ($j!=count($pila)-1) {
             $cadena .= " or ";
@@ -165,6 +169,7 @@ function consulta_no_agrupado($cliente)
  *
  * @param string $cliente
  * @return string
+ * FIXME: Sustutuir la consulta por clase
  */
 function consulta_agrupado($cliente)
 {
@@ -176,15 +181,15 @@ function consulta_agrupado($cliente)
     $sql = "Select s.Nombre,a.valor from agrupa_factura as a 
     join servicios2 as s on a.valor = s.id where a.idemp like ".$cliente."
      and a.concepto like 'servicio'";
-    $consulta = mysql_query($sql,$con);
-    if(mysql_numrows($consulta)!=0) {
-        while(true == ($resultado = mysql_fetch_array($consulta))) {
+    $consulta = mysql_query($sql, $con);
+    if (mysql_numrows($consulta)!=0) {
+        while (true == ($resultado = mysql_fetch_array($consulta))) {
             $pila[]=$resultado[0];
             $i++;
         }
     }
     $cadena = "and (";
-    for($j=0;$j<=count($pila)-1;$j++) {
+    for ($j=0;$j<=count($pila)-1;$j++) {
         $cadena .= " d.Servicio not like '".$pila[$j]."' ";
         if ($j!=count($pila)-1) {
             $cadena .= " and ";
@@ -242,6 +247,7 @@ function cabezera_factura($nombre_fichero, $fecha_factura, $codigo, $cliente)
  * @param string $codigo
  * @param string $fichero
  * @return string $pie_factura;
+ * FIXME: Sustutuir la consulta por clase
  */
 function pie_factura($cliente, $codigo, $fichero)
 {
@@ -260,8 +266,8 @@ function pie_factura($cliente, $codigo, $fichero)
     $camposPie = array('fpago','obs_fpago', 'obs', 'pedidoCliente');
     
     // Si es 1 la factura esta dada de alta
-    if ( mysql_num_rows( $consulta )!= 0 ) {
-        foreach( $resultado as $key => $row ) {
+    if (mysql_num_rows($consulta)!= 0) {
+        foreach ($resultado as $key => $row) {
             if ( in_array( $key, $camposPie ) ) {
                 if ( !is_null( $row ) && $row != "" ) {
                     $valoresPie[$key] = $row;
@@ -322,8 +328,9 @@ function pie_factura($cliente, $codigo, $fichero)
  * @param string $inicial
  * @param string $final
  * @return string
+ * FIXME: Sustutuir la consulta por clase
  */
-function consulta_almacenaje($cliente,$mes,$inicial,$final)
+function consulta_almacenaje($cliente, $mes, $inicial, $final)
 {
     global $con;
     $check1=$inicial{4};
@@ -398,6 +405,7 @@ function historico($factura)
  * @param string $unitario
  * @param string $iva
  * @param string $obs
+ * FIXME: Sustutuir la consulta por clase
  */
 function agrega_historico($factura, $servicio, $cantidad, $unitario, $iva, $obs )
 {
@@ -410,11 +418,41 @@ function agrega_historico($factura, $servicio, $cantidad, $unitario, $iva, $obs 
     mysql_query($sql, $con);
 }
 /**
+ * Comprobar la factura
+ *
+ * Comprobamos la factura y si existe no se crea
+ *
+ * @param Type $var Description
+ * @return type
+ * FIXME: Sustutuir la consulta por clase
+ **/
+function comprueba_la_factura($cliente, $codigo, $fecha, $total_iva, $total)
+{
+    global $con;
+    $sql = "Select * from regfacturas where id_cliente like ".$cliente." 
+    and codigo like ".$codigo." and fecha like '".$fecha."'";
+    $consulta = mysql_query($sql, $con);
+    if (mysql_numrows($consulta)==0) {
+        return true;
+    } else {//existe
+        $resultado = mysql_fetch_array($consulta);
+        if (($resultado['iva']!=$total_iva) && ($resultado['importe']!=$total)) {
+            $sql = "Update regfacturas set 
+            iva='".$total_iva."',importe='".$total."' 
+            where id_cliente like '".$cliente."' and codigo 
+            like '".$codigo."' and fecha like '".$fecha."'";
+            $consulta = mysql_query($sql, $con);
+        }
+        return false;
+    }
+}
+/**
  * Funcion Principal - Obligatorio el cliente
  * Parametros del get cliente, mes, fecha_factura, codigo
  * En puntual: fecha_inicial_factura, fecha_final_factura para filtrado
  * Proforma: prueba = 1
  * FIXME: Quitar consultas embebidas y migrarlas a funciones.
+ * FIXME: Sustutuir la consulta por clase
  */
 if (isset($_GET['cliente'])) {
     $ano_factura = explode("-", $_GET['fecha_factura']);
@@ -515,7 +553,7 @@ $tituloPagina = ($inicio!= "0000-00-00") ? "ocupacion puntual" : $cni->getMes(da
 /*CHEQUEO DE HISTORICO, si no esta en el historico se agrega*/
 if ($historico == "ok") {
     $sql = "Select * from historico where factura like ".$codigo;
-    $consulta = mysql_query($sql,$con);
+    $consulta = mysql_query($sql, $con);
     while (true == ($resultado = mysql_fetch_array($consulta))) {
         $importe_sin_iva = $resultado['cantidad'] * $resultado['unitario'];
         // Almacenamos los ivas para mostrarlo al final
@@ -852,27 +890,6 @@ if(($fichero!="PROFORMA") && (!isset($_GET['duplicado']))) {
     //else
         //echo comprueba_la_factura($cliente,$codigo,$fecha,$total_iva,$total);
 }
-/******************COMPROBAMOS SI EXISTE LA FACTURA PARA NO CREARLA********************/
-function comprueba_la_factura($cliente,$codigo,$fecha,$total_iva,$total)
-{
-    global $con;
-    $sql = "Select * from regfacturas where id_cliente like ".$cliente." 
-    and codigo like ".$codigo." and fecha like '".$fecha."'";
-    $consulta = mysql_query($sql,$con);
-    if (mysql_numrows($consulta)==0) {
-        return true;
-    } else {//existe
-        $resultado = mysql_fetch_array($consulta);
-        if(($resultado['iva']!=$total_iva) && ($resultado['importe']!=$total)) {
-            $sql = "Update regfacturas set 
-            iva='".$total_iva."',importe='".$total."' 
-            where id_cliente like '".$cliente."' and codigo 
-            like '".$codigo."' and fecha like '".$fecha."'";
-            $consulta = mysql_query($sql, $con);
-        }
-        return false;
-    }
-}	
 //PIE FACTURA*************************************************************************/
 echo pie_factura($cliente, $codigo, $fichero);
 ?>
