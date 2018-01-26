@@ -4,6 +4,7 @@
  * 
  * @param integer $cliente
  * @return string
+ * @deprecated Migrar a funciones
  */
 function clientes( $cliente = null )
 {
@@ -23,6 +24,7 @@ function clientes( $cliente = null )
  * Muestra el select de los meses
  * 
  * @param integer $mes
+ * @deprecated migrar a funciones
  */
 function seleccion_meses($mes = null)
 {
@@ -57,7 +59,7 @@ function seleccion_meses($mes = null)
 <script type="text/javascript" src="../js/calendar.js"></script>
 <script type="text/javascript" src="../js/lang/calendar-es.js"></script>
 <script type="text/javascript" src="../js/calendar-setup.js"></script>
-<script type="text/javascript" src="js/ajax.js" ></script>
+<script type="text/javascript" src="js/ajax.min.js" ></script>
 <meta http-equiv="cache-control" content="no-cache">
 <meta http-equiv="pragma" content="no-cache">
 <title>Servicios - <?php echo APLICACION; ?> - <?php echo VERSION; ?></title>

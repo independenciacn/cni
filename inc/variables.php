@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * Variables File Doc Comment
  *

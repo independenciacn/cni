@@ -20,3 +20,6 @@ build/*
 tests/phpunit.phar
 .idea/*
 data/
+node_modules/
+.eslintrc.json
+package-lock.json

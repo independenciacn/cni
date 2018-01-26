@@ -16,3 +16,6 @@ Libraries
 *   ezpdf
 *   Zend Framework 1.x ( rapido )
 *   PEAR
+TODO
+________
+* Cambiar la secuencia de fin de linea a LF

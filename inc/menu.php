@@ -1,19 +1,18 @@
-<?php 
+<?php
 /**
- * Validacion File Doc Comment
- *
- * Solo genera el menu - Refractorizar el nombre a menu.php
- *
- * PHP Version 5.2.6
- *
- * @category Validacion
- * @package  cni/inc
- * @author   Ruben Lacasa Mas <ruben@ensenalia.com>
- * @license  http://creativecommons.org/licenses/by-nc-nd/3.0/
- * 			 Creative Commons Reconocimiento-NoComercial-SinObraDerivada 3.0 Unported
- * @link     https://github.com/independenciacn/cni
- * @version  2.0e Estable
- */
+* menu File Doc Comment
+*
+* Genera el menu de la aplicacion
+*
+* PHP Version 5.2.6
+*
+* @category rapido
+* @package  CniRapido
+* @author   Ruben Lacasa Mas <ruben@ensenalia.com>
+* @license  http://creativecommons.org/licenses/by-nc-nd/3.0/ CC BY-NC-ND 3.0
+* @version  GIT: Id$ In development. Very stable.
+* @link     https://github.com/independenciacn/cni
+*/
 require_once 'variables.php';
 checkSession();
 /**
