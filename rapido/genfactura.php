@@ -525,7 +525,7 @@ $tituloPagina = ($inicio!= "0000-00-00") ? "ocupacion puntual" : $cni->getMes(da
 <html lang="es">
 <head>
 <title><?php echo $fichero . " " . $tituloPagina; ?></title>
-<link rel="stylesheet" type='text/css' href="estilo.css" />
+<link rel="stylesheet" type='text/css' href="estilo.min.css" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
