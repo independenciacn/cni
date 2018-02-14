@@ -146,23 +146,7 @@ function busca_valores($vars)
             <a href='javascript:muestra(".$resultado[0].")'>"
             .$resultado[1]." - ".$resultado[2]." ".$resultado[3]."</a></p>";
         }
-    }
-    /*$sql = "Select * from pproveedores where nombre like '%$vars[texto]%'
-    or apellidos like '%$vars[texto]%'
-    or telefono like '%$vars[texto]%' 
-    or email like '%$vars[texto]%'";
-    $consulta = @mysql_db_query($dbname,$sql,$con);
-    if(mysql_numrows($consulta)!=0)
-    {
-        $prov = 1;
-        while(true == ($resultado = mysql_fetch_array($consulta)))
-        $cadena.="<p/><a href='javascript:muestra(".$resultado[1].")'>
-        ".utf8_encode($resultado[2])." ".utf8_encode($resultado[3])."
-        </a>";
-    
-    }
-    if($prov == 0)*/
-    else {
+    } else {
         $cadena.="<p class='".clase($k++)."'>
         No hay resultados de ".$vars['texto']." en Proveedores</p>";
     }

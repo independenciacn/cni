@@ -59,4 +59,21 @@ class CNI
     //    $date = date_create_from_format($format, $fecha, new DateTimeZone('Europe/Madrid'));
         return $date->format('d'). " de ". $this->getMes($date->format('n')). " de ". $date->format('Y');
     }
+    /**
+     * Chequeo de si la sesión esta iniciada, si no la inicia
+     * @return void
+     */
+    public function checkSession()
+    {
+        $result = false;
+        if (php_sapi_name() != 'cli') {
+            $result = (session_id() === '') ? false : true;
+            if (version_compare(phpversion(), '5.4.0', '>=')) {
+                $result = (session_status() === PHP_SESSION_ACTIVE) ? true : false;
+            }
+        }
+        if (!$result) {
+            session_start();
+        }
+    }
 }

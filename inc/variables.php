@@ -14,7 +14,7 @@
  * @link     https://github.com/independenciacn/cni
  */
 
-error_reporting(0);
+error_reporting(E_ALL);
 $localhost = 'localhost';
 if (getenv('MYSQL_HOSTNAME')) {
     $localhost = getenv('MYSQL_HOSTNAME');

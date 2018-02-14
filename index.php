@@ -1,6 +1,8 @@
 <?php
 require_once 'inc/variables.php';
-checkSession();
+require_once 'inc/classes/Cni.php';
+$cni = new CNI();
+$cni->checkSession();
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -12,7 +14,7 @@ checkSession();
 <script type="text/javascript" src="js/calendar.js"></script>
 <script type="text/javascript" src="js/lang/calendar-es.js"></script>
 <script type="text/javascript" src="js/calendar-setup.js"></script>
-<script type="text/javascript" src='js/independencia.js'></script>
+<script type="text/javascript" src='js/independencia.min.js'></script>
 <title>Principal - <?php echo APLICACION; ?> - <?php echo VERSION; ?></title>
 </head>
 <body>
@@ -24,9 +26,6 @@ checkSession();
  */
 if (isset($_SESSION['usuario'])) {
     include_once 'inc/menu.php';
-    echo "<div id='menu_general'>";
-    echo menu();
-    echo "</div>";
 } else {
 ?>
 <div id='registro'>
