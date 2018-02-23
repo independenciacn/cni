@@ -8,11 +8,11 @@ services:
         context: .
         dockerfile: phpdocker/php/Dockerfile
       container_name: cni-webserver
-      working_dir: /var/www/html/
+      working_dir: /var/www/
       volumes:
-          - .:/var/www/html/
+          - .:/var/www/
       ports:
-       - "80:8081"
+       - "8083:80"
       environment:
        - REMOTE_XDEBUG_HOST=172.18.0.1
        - MYSQL_HOSTNAME=172.18.0.1
