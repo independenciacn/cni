@@ -1,0 +1,27 @@
+{
+  "name": "cni",
+  "version": "2.0.1",
+  "description": "Aplicacion Gestion Independencia",
+  "main": "index.php",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/independenciacn/cni.git"
+  },
+  "author": "Ruben Lacasa Mas",
+  "license": "CC-BY-NC-ND-3.0",
+  "bugs": {
+    "url": "https://sbarrat.myjetbrains.com/youtrack/issues/CNI"
+  },
+  "homepage": "https://github.com/independenciacn/cni#readme",
+  "devDependencies": {
+    "clean-css": "^4.1.9",
+    "standard": "^10.0.3"
+  },
+  "dependencies": {
+    "eslint": "^4.16.0",
+    "uglify-js": "^3.3.9"
+  }
+}
