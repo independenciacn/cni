@@ -147,7 +147,7 @@ if ((isset($_GET['factura'])) || (isset($_POST['factura']))) {
     // Se almacena el array de datos del pie
     // Columnas Tipo Iva, Base Imponible, Cuota Iva, Total
     
-    $pdf->ezSetY(165);
+    $pdf->ezSetY(150);
     $cols[] = array('Tipo Iva' => array('justification' => 'center'));
     $cols[] = array('Base Imponible' => array('justification' => 'center'));
     $cols[] = array('Cuota Iva' => array('justification' => 'center'));
@@ -193,7 +193,7 @@ if ((isset($_GET['factura'])) || (isset($_POST['factura']))) {
     $sql = "Select fpago, obs_fpago, obs_alt, pedidoCliente from regfacturas where codigo like $factura";
     $resultados = $conexion->consulta($sql);
     $resultado = current($resultados);
-    $pdf->ezSetY(155);
+    $pdf->ezSetY(145);
     $pdf->ezText("   Forma de Pago:" .$resultado['fpago'], 10);
     //if(($resultado[fpago] != "Cheque") && ($resultado[fpago] != "Contado") && ($resultado[fpago] != "Tarjeta credito")&& ($resultado[fpago] != utf8_decode("Liquidación")))
     //$pdf->ezText("CC:".$resultado[1]);
@@ -204,7 +204,7 @@ if ((isset($_GET['factura'])) || (isset($_POST['factura']))) {
     $pdf->ezText("   ".utf8_decode($observacion)." ".utf8_decode($resultado['obs_alt']), 10);
     // Agregamos si existe en Pedido de Cliente
     if (!is_null($resultado['pedidoCliente'])) {
-        $pdf->ezText("  ". $resultado['pedidoCliente'], 10);
+        $pdf->ezText("   Num. Pedido: ". $resultado['pedidoCliente'], 10);
     }
 //Si se ha mandado a guardar escribimos en el fichero
     if (isset($_POST['factura'])) {
