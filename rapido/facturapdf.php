@@ -203,7 +203,7 @@ if ((isset($_GET['factura'])) || (isset($_POST['factura']))) {
     $observacion = preg_replace('|Vencimien|', "\n\rVencimien", $observacion);
     $pdf->ezText("   ".utf8_decode($observacion)." ".utf8_decode($resultado['obs_alt']), 10);
     // Agregamos si existe en Pedido de Cliente
-    if (!is_null($resultado['pedidoCliente'])) {
+    if (!is_null($resultado['pedidoCliente']) && strlen(trim($resultado['pedidoCliente'])) > 0) {
         $pdf->ezText("   Num. Pedido: ". $resultado['pedidoCliente'], 10);
     }
 //Si se ha mandado a guardar escribimos en el fichero
