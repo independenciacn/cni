@@ -58,10 +58,12 @@ function observaciones_especiales($factura)
     $observaciones = "";
     $pedidoCliente = "";
     foreach ($resultados as $resultado) {
-        $observaciones = $resultado->obs_alt;
-        $pedidoCliente = (strlen($resultado->pedidoCliente) > 0) ? "<br/>" . $resultado->pedidoCliente : "";
+        $observaciones = trim($resultado->obs_alt);
+        $pedidoCliente = (strlen(trim($resultado->pedidoCliente)) > 0) ?
+            "Numero Pedido: " . $resultado->pedidoCliente : "";
     }
-    return $observaciones . $pedidoCliente ;
+    $observaciones.= (strlen(trim($observaciones)) > 0) ? "<br/>" : "";
+    return "<br/>".$observaciones . $pedidoCliente ;
 }
 /**
  * Cambia el formato de la fecha en un sentido u otro
@@ -306,8 +308,8 @@ function pie_factura($cliente, $codigo, $fichero)
         $pie_factura = "<br/>
         <div class='celdia_sec'>
         Forma de pago: ". $valoresPie['fpago'] ."<br/>" .
-        $valoresPie['obs_fpago']."<br/>" .
-        $valoresPie['pedidoCliente'] . 
+        $valoresPie['obs_fpago'] .
+        /*$valoresPie['pedidoCliente'] . */
         observaciones_especiales($codigo) .
         "</div>";
     } elseif ($fichero === 'PROFORMA') {
