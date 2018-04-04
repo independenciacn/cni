@@ -18,7 +18,7 @@
   "homepage": "https://github.com/independenciacn/cni#readme",
   "devDependencies": {
     "clean-css": "^4.1.9",
-    "standard": "^10.0.3"
+    "standard": "^11.0.1"
   },
   "dependencies": {
     "eslint": "^4.16.0",
