@@ -1,3 +1,5 @@
+[![Code Climate](https://codeclimate.com/github/independenciacn/cni/badges/gpa.svg)](https://codeclimate.com/github/independenciacn/cni)
+
 CNI 2.0e
 ========
 
@@ -9,9 +11,9 @@ Requeriments
 
 Libraries
 ---------
-*   Prototype (all sections except entradas2)
-*   jQuery 1.4.4 ( entradas2 )
-*   jQuery UI 1.8.8 ( entradas 2 )
+*   Prototype (all sections except entradas2 and servicont)
+*   jQuery 1.4.4 ( entradas2/servicont )
+*   jQuery UI 1.8.8 ( entradas2/servicont )
 *   jpgraph ( entradas 2)
 *   ezpdf
 *   Zend Framework 1.x ( rapido )
@@ -19,3 +21,4 @@ Libraries
 TODO
 ________
 * Cambiar la secuencia de fin de linea a LF
+* Cambiar las conexiones MySQL a PDO

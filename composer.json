@@ -1,0 +1,18 @@
+{
+    "name": "independenciacn/cni",
+    "version": "2.0",
+    "description": "Aplicacion Gestion",
+    "type": "project",
+    "homepage": "https://github.com/independenciacn/",
+    "license": "CC-BY-NC-ND-3.0",
+    "authors": [
+        {
+            "name": "Rubén Lacasa Mas",
+            "email": "ruben@ensenalia.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=5.2"
+    }
+}
