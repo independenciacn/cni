@@ -1,7 +1,9 @@
 {
     "name": "independenciacn/cni",
-    "description": "Aplicaci\u0000n Gesti\u0000n",
+    "version": "2.0",
+    "description": "Aplicacion Gestion",
     "type": "project",
+    "homepage": "https://github.com/independenciacn/",
     "license": "CC-BY-NC-ND-3.0",
     "authors": [
         {
@@ -10,5 +12,7 @@
         }
     ],
     "minimum-stability": "stable",
-    "require": {}
+    "require": {
+        "php": ">=5.2"
+    }
 }
