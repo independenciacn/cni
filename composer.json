@@ -1,0 +1,14 @@
+{
+    "name": "independenciacn/cni",
+    "description": "Aplicaci\u0000n Gesti\u0000n",
+    "type": "project",
+    "license": "CC-BY-NC-ND-3.0",
+    "authors": [
+        {
+            "name": "Rubén Lacasa Mas",
+            "email": "ruben@ensenalia.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}
