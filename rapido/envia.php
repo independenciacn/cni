@@ -130,7 +130,7 @@ que la ley lo exija expresamente.
 	$config = array(
 		'auth' => 'login',
 		'username' => 'admon%independenciacn.com',
-		'password' => 'independencia');
+		'password' => '@Admon18*');
 	$transport = new Zend_Mail_Transport_Smtp('mail.independenciacn.com', $config);
 	foreach( $correos as $correo ) {
 		$mail = new Zend_Mail();
