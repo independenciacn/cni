@@ -18,10 +18,26 @@
  */
 class CNI
 {
+    public $meses = array(
+        1 => "Enero",
+        2 => "Febrero",
+        3 => "Marzo",
+        4 => "Abril",
+        5 => "Mayo",
+        6 => "Junio",
+        7 => "Julio",
+        8 => "Agosto",
+        9 => "Septiembre",
+        10 => "Octubre",
+        11 => "Noviembre",
+        12 => "Diciembre"
+    );
+
     public function __construct()
     {
         // Por no hacerla statica o para posible herencia de Connection
     }
+    
     /**
      * Devuelve el nombre del mes en base al numero
      * @param int $numMes numero del mes
@@ -29,21 +45,7 @@ class CNI
      */
     public function getMes($numMes)
     {
-        $meses = array(
-            1 => "Enero",
-            2 => "Febrero",
-            3 => "Marzo",
-            4 => "Abril",
-            5 => "Mayo",
-            6 => "Junio",
-            7 => "Julio",
-            8 => "Agosto",
-            9 => "Septiembre",
-            10 => "Octubre",
-            11 => "Noviembre",
-            12 => "Diciembre"
-        );
-        return (array_key_exists($numMes, $meses)) ? $meses[$numMes]: "";
+        return (array_key_exists($numMes, $this->meses)) ? $this->meses[$numMes]: "";
         return $mes;
     }
     /**

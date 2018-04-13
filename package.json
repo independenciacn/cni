@@ -17,11 +17,11 @@
   },
   "homepage": "https://github.com/independenciacn/cni#readme",
   "devDependencies": {
-    "clean-css": "^4.1.9",
+    "clean-css": "^4.1.11",
     "standard": "^11.0.1"
   },
   "dependencies": {
-    "eslint": "^4.16.0",
-    "uglify-js": "^3.3.9"
+    "eslint": "^4.19.1",
+    "uglify-js": "^3.3.18"
   }
 }
